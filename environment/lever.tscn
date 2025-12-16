@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://ccn7pb3twlr2p"]
 
-[ext_resource type="Script" path="res://environment/lever.gd" id="1_lever"]
+[ext_resource type="Script" uid="uid://bxq7w3yn4jkt8" path="res://environment/lever.gd" id="1_lever"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lever"]
 size = Vector2(40, 40)
