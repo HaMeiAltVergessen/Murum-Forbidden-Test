@@ -1,13 +1,13 @@
 [gd_scene load_steps=14 format=3 uid="uid://dbvhxpr5y6bww"]
 
-[ext_resource type="Script" path="res://levels/test_room.gd" id="1_room"]
-[ext_resource type="PackedScene" uid="uid://b1k5wfkqxc8yx" path="res://player/murum.tscn" id="2_player"]
-[ext_resource type="PackedScene" uid="uid://dkc8y7x0ij6nw" path="res://enemies/untote.tscn" id="3_enemy"]
-[ext_resource type="PackedScene" uid="uid://cfp37ymv1kq4s" path="res://environment/spike_trap.tscn" id="4_spike"]
-[ext_resource type="PackedScene" uid="uid://ccn7pb3twlr2p" path="res://environment/lever.tscn" id="5_lever"]
-[ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="6_door"]
-[ext_resource type="PackedScene" uid="uid://cg1yfqr5u0pjd" path="res://ui/hud.tscn" id="7_hud"]
-[ext_resource type="PackedScene" uid="uid://cnwm5dx2vx7b4" path="res://ui/death_screen.tscn" id="8_death"]
+[ext_resource type="Script" path="res://levels/test_room.gd" id="1_test_room_script"]
+[ext_resource type="PackedScene" uid="uid://b1k5wfkqxc8yx" path="res://player/murum.tscn" id="2_murum_scene"]
+[ext_resource type="PackedScene" uid="uid://dkc8y7x0ij6nw" path="res://enemies/untote.tscn" id="3_untote_scene"]
+[ext_resource type="PackedScene" uid="uid://cfp37ymv1kq4s" path="res://environment/spike_trap.tscn" id="4_spike_trap_scene"]
+[ext_resource type="PackedScene" uid="uid://ccn7pb3twlr2p" path="res://environment/lever.tscn" id="5_lever_scene"]
+[ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="6_door_scene"]
+[ext_resource type="PackedScene" uid="uid://cg1yfqr5u0pjd" path="res://ui/hud.tscn" id="7_hud_scene"]
+[ext_resource type="PackedScene" uid="uid://cnwm5dx2vx7b4" path="res://ui/death_screen.tscn" id="8_death_screen_scene"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_floor"]
 texture_region_size = Vector2i(32, 32)
@@ -29,7 +29,7 @@ size = Vector2(32, 1080)
 size = Vector2(256, 32)
 
 [node name="TestRoom" type="Node2D"]
-script = ExtResource("1_room")
+script = ExtResource("1_test_room_script")
 room_size = Vector2(1920, 1080)
 
 [node name="Background" type="ColorRect" parent="."]
@@ -118,31 +118,31 @@ shape = SubResource("RectangleShape2D_platform")
 position = Vector2(200, 900)
 gizmo_extents = 32.0
 
-[node name="Murum" parent="." instance=ExtResource("2_player")]
+[node name="Murum" parent="." instance=ExtResource("2_murum_scene")]
 position = Vector2(200, 900)
 
 [node name="Enemies" type="Node2D" parent="."]
 
-[node name="Untote" parent="Enemies" instance=ExtResource("3_enemy")]
+[node name="Untote" parent="Enemies" instance=ExtResource("3_untote_scene")]
 position = Vector2(900, 950)
 
-[node name="Untote2" parent="Enemies" instance=ExtResource("3_enemy")]
+[node name="Untote2" parent="Enemies" instance=ExtResource("3_untote_scene")]
 position = Vector2(1300, 450)
 
 [node name="Environment" type="Node2D" parent="."]
 
-[node name="SpikeTrap" parent="Environment" instance=ExtResource("4_spike")]
+[node name="SpikeTrap" parent="Environment" instance=ExtResource("4_spike_trap_scene")]
 position = Vector2(650, 968)
 
-[node name="SpikeTrap2" parent="Environment" instance=ExtResource("4_spike")]
+[node name="SpikeTrap2" parent="Environment" instance=ExtResource("4_spike_trap_scene")]
 position = Vector2(1100, 968)
 
-[node name="Lever" parent="Environment" instance=ExtResource("5_lever")]
+[node name="Lever" parent="Environment" instance=ExtResource("5_lever_scene")]
 position = Vector2(1500, 450)
 
-[node name="Door" parent="Environment" instance=ExtResource("6_door")]
+[node name="Door" parent="Environment" instance=ExtResource("6_door_scene")]
 position = Vector2(1700, 900)
 
-[node name="HUD" parent="." instance=ExtResource("7_hud")]
+[node name="HUD" parent="." instance=ExtResource("7_hud_scene")]
 
-[node name="DeathScreen" parent="." instance=ExtResource("8_death")]
+[node name="DeathScreen" parent="." instance=ExtResource("8_death_screen_scene")]
