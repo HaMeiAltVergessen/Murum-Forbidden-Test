@@ -86,9 +86,10 @@ func _on_damage_taken(damage: int) -> void:
 	print("[Enemy] ", name, " took ", damage, " damage")
 
 
-func _on_damage_received(damage: int, knockback: Vector2, _hitstun: float) -> void:
+func _on_damage_received(_damage: int, knockback: Vector2, _hitstun: float) -> void:
 	"""Handles damage from hurtbox"""
 	# Apply knockback
+	# Note: Damage is handled by HealthComponent via signal
 	velocity = knockback
 
 

@@ -116,9 +116,10 @@ func play_sfx(sfx_name: String, pitch_variation: float = 0.0) -> void:
 	player.play()
 
 
-func play_sfx_at_position(sfx_name: String, position: Vector2, pitch_variation: float = 0.0) -> void:
+func play_sfx_at_position(sfx_name: String, _position: Vector2, pitch_variation: float = 0.0) -> void:
 	"""Plays a positioned sound effect (uses same pool for now)"""
 	# In a full implementation, this would use AudioStreamPlayer2D for spatial audio
+	# Position parameter reserved for future spatial audio implementation
 	play_sfx(sfx_name, pitch_variation)
 
 
