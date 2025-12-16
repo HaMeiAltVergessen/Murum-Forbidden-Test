@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://c0lvewiy4x8x3"
+path="res://.godot/imported/ghost-town.ogg-68f4afc000083d5fe150e3e7c2f505b7.oggvorbisstr"
+
+[deps]
+
+source_file="res://Assets/Placeholder/Legacy Collection/Assets/Packs/Meta data assets files/sounds/music/ghost-town.ogg"
+dest_files=["res://.godot/imported/ghost-town.ogg-68f4afc000083d5fe150e3e7c2f505b7.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

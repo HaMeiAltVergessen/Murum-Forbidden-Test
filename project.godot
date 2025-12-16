@@ -75,10 +75,8 @@ interact={
 
 [physics]
 
-2d/default_gravity=980.0
 2d/physics_ticks_per_second=60
 
 [rendering]
 
-renderer/rendering_method="forward_plus"
 textures/canvas_textures/default_texture_filter=0

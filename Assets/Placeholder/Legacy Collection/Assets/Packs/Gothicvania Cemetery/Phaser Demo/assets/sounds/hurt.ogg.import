@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://b45iui85fp1n6"
+path="res://.godot/imported/hurt.ogg-c8dc9ec80d2dae96f9f0ea6a98ec0ef5.oggvorbisstr"
+
+[deps]
+
+source_file="res://Assets/Placeholder/Legacy Collection/Assets/Packs/Gothicvania Cemetery/Phaser Demo/assets/sounds/hurt.ogg"
+dest_files=["res://.godot/imported/hurt.ogg-c8dc9ec80d2dae96f9f0ea6a98ec0ef5.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,6 +1,6 @@
 [gd_scene load_steps=14 format=3 uid="uid://dbvhxpr5y6bww"]
 
-[ext_resource type="Script" path="res://levels/test_room.gd" id="1_test_room_script"]
+[ext_resource type="Script" uid="uid://cc2sp6gtbqbnh" path="res://levels/test_room.gd" id="1_test_room_script"]
 [ext_resource type="PackedScene" uid="uid://b1k5wfkqxc8yx" path="res://player/murum.tscn" id="2_murum_scene"]
 [ext_resource type="PackedScene" uid="uid://dkc8y7x0ij6nw" path="res://enemies/untote.tscn" id="3_untote_scene"]
 [ext_resource type="PackedScene" uid="uid://cfp37ymv1kq4s" path="res://environment/spike_trap.tscn" id="4_spike_trap_scene"]
