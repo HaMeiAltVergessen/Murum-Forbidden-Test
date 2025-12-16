@@ -1,0 +1,31 @@
+[gd_scene load_steps=3 format=3 uid="uid://bvw3dqr8s1m1k"]
+
+[sub_resource type="Curve" id="Curve_lifetime"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Gradient" id="Gradient_color"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(1, 0.8, 0, 1, 1, 0.4, 0, 1, 1, 0, 0, 0)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_hit"]
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 5.0
+direction = Vector3(0, -1, 0)
+spread = 180.0
+initial_velocity_min = 100.0
+initial_velocity_max = 200.0
+gravity = Vector3(0, 0, 0)
+scale_min = 2.0
+scale_max = 4.0
+scale_curve = SubResource("Curve_lifetime")
+color_ramp = SubResource("Gradient_color")
+
+[node name="HitSpark" type="GPUParticles2D"]
+emitting = false
+amount = 20
+process_material = SubResource("ParticleProcessMaterial_hit")
+lifetime = 0.4
+one_shot = true
+explosiveness = 1.0
