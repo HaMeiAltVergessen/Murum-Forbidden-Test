@@ -10,7 +10,6 @@ script = ExtResource("1_lever")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(1, 1, 0, 1)
-texture = Texture2D.new()
 
 [node name="ColorRect" type="ColorRect" parent="Sprite2D"]
 offset_left = -8.0
