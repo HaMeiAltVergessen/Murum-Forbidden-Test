@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://b1k5wfkqxc8yx"]
+[gd_scene load_steps=10 format=3 uid="uid://b1k5wfkqxc8yx"]
 
 [ext_resource type="Script" path="res://player/murum.gd" id="1_murum"]
 [ext_resource type="Script" path="res://player/movement_controller.gd" id="2_movement"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://dmqxgb7cyujwa" path="res://components/hitbox_component.tscn" id="6_hitbox"]
 [ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="7_hurtbox"]
 [ext_resource type="Script" path="res://player/player_camera.gd" id="8_camera"]
+[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Wizard/wizard-sheet.png" id="9_wizard"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 radius = 16.0
@@ -19,15 +20,10 @@ collision_mask = 1
 script = ExtResource("1_murum")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-modulate = Color(0, 0.8, 0.8, 1)
-texture = Texture2D.new()
-
-[node name="ColorRect" type="ColorRect" parent="Sprite2D"]
-offset_left = -16.0
-offset_top = -24.0
-offset_right = 16.0
-offset_bottom = 24.0
-color = Color(0, 0.8, 0.8, 1)
+texture = ExtResource("9_wizard")
+hframes = 6
+vframes = 1
+frame = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_player")
