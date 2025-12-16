@@ -1,8 +1,8 @@
 [gd_scene load_steps=8 format=3 uid="uid://bhjxv6dwpb3ya"]
 
-[ext_resource type="Script" path="res://enemies/base_enemy.gd" id="1_base"]
-[ext_resource type="Script" path="res://enemies/ai_controller.gd" id="2_ai"]
-[ext_resource type="Script" path="res://player/health_component.gd" id="3_health"]
+[ext_resource type="Script" uid="uid://b7q8w4ym5nktg" path="res://enemies/base_enemy.gd" id="1_base"]
+[ext_resource type="Script" uid="uid://cf5p9xv3mjr2n" path="res://enemies/ai_controller.gd" id="2_ai"]
+[ext_resource type="Script" uid="uid://dm6t8wx4lkpq7" path="res://player/health_component.gd" id="3_health"]
 [ext_resource type="PackedScene" uid="uid://dmqxgb7cyujwa" path="res://components/hitbox_component.tscn" id="4_hitbox"]
 [ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="5_hurtbox"]
 [ext_resource type="Texture2D" uid="uid://d2vjm1flfq7ko" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Slime/slime-sheet.png" id="6_slime"]
