@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://c5jf8k3m0ph8n"]
+
+[ext_resource type="Script" path="res://components/hurtbox_component.gd" id="1_hurtbox"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurtbox"]
+size = Vector2(32, 48)
+
+[node name="HurtboxComponent" type="Area2D"]
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+script = ExtResource("1_hurtbox")
+invulnerability_duration = 0.5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_hurtbox")
+debug_color = Color(0, 0.627451, 0.890196, 0.419608)

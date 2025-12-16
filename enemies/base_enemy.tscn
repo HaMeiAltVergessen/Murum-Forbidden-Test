@@ -1,0 +1,65 @@
+[gd_scene load_steps=7 format=3 uid="uid://bhjxv6dwpb3ya"]
+
+[ext_resource type="Script" path="res://enemies/base_enemy.gd" id="1_base"]
+[ext_resource type="Script" path="res://enemies/ai_controller.gd" id="2_ai"]
+[ext_resource type="Script" path="res://player/health_component.gd" id="3_health"]
+[ext_resource type="PackedScene" uid="uid://dmqxgb7cyujwa" path="res://components/hitbox_component.tscn" id="4_hitbox"]
+[ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="5_hurtbox"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_detection"]
+radius = 300.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy"]
+size = Vector2(32, 32)
+
+[node name="BaseEnemy" type="CharacterBody2D"]
+collision_layer = 16
+collision_mask = 1
+script = ExtResource("1_base")
+max_health = 40
+move_speed = 100.0
+attack_damage = 10
+attack_range = 50.0
+detection_range = 300.0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(1, 0.2, 0.2, 1)
+texture = Texture2D.new()
+
+[node name="ColorRect" type="ColorRect" parent="Sprite2D"]
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+color = Color(1, 0.2, 0.2, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_enemy")
+
+[node name="AIController" type="Node" parent="."]
+script = ExtResource("2_ai")
+idle_duration = 2.0
+attack_cooldown = 1.5
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("3_health")
+max_health = 40
+invulnerability_duration = 0.3
+
+[node name="HitboxComponent" parent="." instance=ExtResource("4_hitbox")]
+position = Vector2(24, 0)
+collision_layer = 32
+collision_mask = 8
+damage = 10
+
+[node name="HurtboxComponent" parent="." instance=ExtResource("5_hurtbox")]
+collision_layer = 64
+collision_mask = 4
+
+[node name="DetectionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource("CircleShape2D_detection")
+debug_color = Color(0.784314, 0.560784, 0.0901961, 0.0666667)

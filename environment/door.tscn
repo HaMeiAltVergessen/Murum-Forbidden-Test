@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3 uid="uid://brmqwmhp0lbtt"]
+
+[ext_resource type="Script" path="res://environment/door.gd" id="1_door"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
+size = Vector2(64, 96)
+
+[node name="Door" type="StaticBody2D"]
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("1_door")
+opening_duration = 1.0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.6, 0.3, 0.1, 1)
+texture = Texture2D.new()
+
+[node name="ColorRect" type="ColorRect" parent="Sprite2D"]
+offset_left = -32.0
+offset_top = -48.0
+offset_right = 32.0
+offset_bottom = 48.0
+color = Color(0.6, 0.3, 0.1, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_door")
