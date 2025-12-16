@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://dmqxgb7cyujwa" path="res://components/hitbox_component.tscn" id="6_hitbox"]
 [ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="7_hurtbox"]
 [ext_resource type="Script" path="res://player/player_camera.gd" id="8_camera"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Wizard/wizard-sheet.png" id="9_wizard"]
+[ext_resource type="Texture2D" uid="uid://jg4v3jkvbw1b" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Wizard/wizard-sheet.png" id="9_wizard"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 radius = 16.0

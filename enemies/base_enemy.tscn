@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://player/health_component.gd" id="3_health"]
 [ext_resource type="PackedScene" uid="uid://dmqxgb7cyujwa" path="res://components/hitbox_component.tscn" id="4_hitbox"]
 [ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="5_hurtbox"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Slime/slime-sheet.png" id="6_slime"]
+[ext_resource type="Texture2D" uid="uid://d2vjm1flfq7ko" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Slime/slime-sheet.png" id="6_slime"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_detection"]
 radius = 300.0
