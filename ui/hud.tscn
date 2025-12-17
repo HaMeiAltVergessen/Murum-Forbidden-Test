@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://cg1yfqr5u0pjd"]
+[gd_scene load_steps=4 format=3 uid="uid://cg1yfqr5u0pjd"]
 
 [ext_resource type="Script" path="res://ui/hud.gd" id="1_hud"]
 [ext_resource type="PackedScene" path="res://ui/hud/combo_display.tscn" id="2_combo_display"]
+[ext_resource type="PackedScene" path="res://ui/hud/resonance_bar.tscn" id="3_resonance_bar"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -50,6 +51,9 @@ grow_vertical = 2
 text = "100/100"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="ResonanceBar" parent="MarginContainer/VBoxContainer" instance=ExtResource("3_resonance_bar")]
+layout_mode = 2
 
 [node name="InteractionPrompt" type="Label" parent="."]
 anchors_preset = 8

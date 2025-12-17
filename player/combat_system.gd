@@ -7,6 +7,7 @@ class_name CombatSystem
 @onready var hitbox: Area2D = $HitboxComponent
 @onready var movement_controller: MovementController = player.get_node_or_null("MovementController")
 @onready var combo_tracker: ComboTracker = null  # Will create dynamically
+@onready var resonance_system: ResonanceSystem = null  # Will create dynamically
 @onready var staff_sprite: Node2D = null  # Will create dynamically
 
 # ============ ATTACK CONFIGURATION ============
@@ -35,6 +36,9 @@ func _ready() -> void:
 
 	# Create combo tracker
 	_create_combo_tracker()
+
+	# Create resonance system
+	_create_resonance_system()
 
 	# Create staff visual
 	_create_staff_visual()
@@ -165,6 +169,24 @@ func _create_combo_tracker() -> void:
 	add_child(combo_tracker)
 
 	print("[CombatSystem] ComboTracker created")
+
+
+# ============ RESONANCE SYSTEM ============
+func _create_resonance_system() -> void:
+	"""Creates the resonance system component."""
+	resonance_system = ResonanceSystem.new()
+	resonance_system.name = "ResonanceSystem"
+	add_child(resonance_system)
+
+	# Connect to resonance full signal (preparation for Commit 003)
+	resonance_system.resonance_full.connect(_on_resonance_full)
+
+	print("[CombatSystem] ResonanceSystem created")
+
+
+func _on_resonance_full() -> void:
+	"""Called when resonance reaches 100% (preparation for Commit 003)."""
+	print("[CombatSystem] Resonance full! (Mode activation in Commit 003)")
 
 
 # ============ STAFF VISUAL ============
