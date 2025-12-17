@@ -41,11 +41,18 @@ func use_mana(amount: int) -> bool:
 	"""
 	Attempts to use mana. Returns true if successful.
 	"""
-	if current_mana < amount:
+	var final_cost: int = amount
+
+	# Apply resonance mode cost reduction
+	var resonance = owner.get_node_or_null("CombatSystem/ResonanceSystem")
+	if resonance and resonance.is_mode_active():
+		final_cost = ceili(amount * resonance.MANA_COST_REDUCTION)
+
+	if current_mana < final_cost:
 		return false
 
-	current_mana -= amount
-	mana_used.emit(amount)
+	current_mana -= final_cost
+	mana_used.emit(final_cost)
 	mana_changed.emit(current_mana, max_mana)
 
 	# Start regeneration delay

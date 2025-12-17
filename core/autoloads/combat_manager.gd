@@ -82,6 +82,16 @@ func calculate_damage(base_damage: int, attacker: Node, target: Node) -> int:
 				combo_count
 			])
 
+		# Apply resonance mode damage bonus
+		var resonance = attacker.get_node_or_null("CombatSystem/ResonanceSystem")
+		if resonance and resonance.is_mode_active():
+			final_damage *= resonance.DAMAGE_BONUS
+			print("[CombatManager] Resonance Mode: %.1f × %.2f = %.1f" % [
+				final_damage / resonance.DAMAGE_BONUS,
+				resonance.DAMAGE_BONUS,
+				final_damage
+			])
+
 	# Round to integer
 	final_damage = round(final_damage)
 

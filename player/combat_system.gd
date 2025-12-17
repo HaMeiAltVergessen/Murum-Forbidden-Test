@@ -8,6 +8,7 @@ class_name CombatSystem
 @onready var movement_controller: MovementController = player.get_node_or_null("MovementController")
 @onready var combo_tracker: ComboTracker = null  # Will create dynamically
 @onready var resonance_system: ResonanceSystem = null  # Will create dynamically
+@onready var parry_system: ParrySystem = null  # Will create dynamically
 @onready var staff_sprite: Node2D = null  # Will create dynamically
 
 # ============ ATTACK CONFIGURATION ============
@@ -39,6 +40,9 @@ func _ready() -> void:
 
 	# Create resonance system
 	_create_resonance_system()
+
+	# Create parry system
+	_create_parry_system()
 
 	# Create staff visual
 	_create_staff_visual()
@@ -187,6 +191,24 @@ func _create_resonance_system() -> void:
 func _on_resonance_full() -> void:
 	"""Called when resonance reaches 100% (preparation for Commit 003)."""
 	print("[CombatSystem] Resonance full! (Mode activation in Commit 003)")
+
+
+# ============ PARRY SYSTEM ============
+func _create_parry_system() -> void:
+	"""Creates the parry system component."""
+	parry_system = ParrySystem.new()
+	parry_system.name = "ParrySystem"
+	add_child(parry_system)
+
+	# Connect to parry signals (optional)
+	parry_system.perfect_parry.connect(_on_perfect_parry)
+
+	print("[CombatSystem] ParrySystem created")
+
+
+func _on_perfect_parry(enemy: Node) -> void:
+	"""Called when a perfect parry is executed."""
+	print("[CombatSystem] Perfect parry on %s!" % enemy.name)
 
 
 # ============ STAFF VISUAL ============

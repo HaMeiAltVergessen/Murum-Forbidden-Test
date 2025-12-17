@@ -21,6 +21,14 @@ class_name BaseEnemy
 var is_dead: bool = false
 var target_player: CharacterBody2D = null
 
+# ============ STUN STATE ============
+var is_stunned: bool = false
+var stun_duration: float = 0.0
+
+# ============ STUN SIGNALS ============
+signal stunned(duration: float)
+signal stun_ended
+
 
 func _ready() -> void:
 	# Set health
@@ -72,6 +80,19 @@ func _physics_process(_delta: float) -> void:
 		velocity.y += 980.0 * _delta
 
 	move_and_slide()
+
+
+# ============ PROCESS ============
+func _process(delta: float) -> void:
+	if is_dead:
+		return
+
+	# Stun countdown
+	if is_stunned:
+		stun_duration -= delta
+		if stun_duration <= 0.0:
+			_end_stun()
+		# Skip AI during stun - AI checks is_stunned
 
 
 # ============ SIGNAL HANDLERS ============
@@ -205,3 +226,49 @@ func get_direction_to_player() -> Vector2:
 func has_target() -> bool:
 	"""Returns true if enemy has detected a player"""
 	return target_player != null
+
+
+# ============ STUN SYSTEM ============
+func stun(duration: float) -> void:
+	"""Stuns enemy for duration seconds"""
+	is_stunned = true
+	stun_duration = duration
+
+	# Cancel current attack
+	if ai_controller and ai_controller.has_method("cancel_attack"):
+		ai_controller.cancel_attack()
+
+	# Visual feedback
+	_apply_stun_visual()
+
+	# Emit signal
+	stunned.emit(duration)
+	EventBus.enemy_stunned.emit(self, duration)
+
+	print("[%s] Stunned for %.2fs" % [name, duration])
+
+
+func _end_stun() -> void:
+	"""Ends stun effect"""
+	is_stunned = false
+	stun_duration = 0.0
+
+	# Remove visual feedback
+	_remove_stun_visual()
+
+	# Emit signal
+	stun_ended.emit()
+
+	print("[%s] Stun ended" % name)
+
+
+func _apply_stun_visual() -> void:
+	"""Applies visual feedback for stun"""
+	if sprite:
+		sprite.modulate = Color(1.5, 1.5, 0.5)  # Yellow tint
+
+
+func _remove_stun_visual() -> void:
+	"""Removes stun visual feedback"""
+	if sprite:
+		sprite.modulate = Color.WHITE

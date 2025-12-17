@@ -7,7 +7,9 @@ enum State {
 	IDLE,
 	PATROL,
 	CHASE,
-	ATTACK
+	ATTACK_WINDUP,  # Telegraph before attack
+	ATTACK_STRIKE,  # Actual attack with hitbox
+	RECOVERY        # After attack cooldown
 }
 
 # ============ REFERENCES ============
@@ -21,8 +23,14 @@ var state_time: float = 0.0
 @export var idle_duration: float = 2.0
 @export var attack_cooldown: float = 1.5
 
+# ============ ATTACK TIMING ============
+@export var windup_duration: float = 0.5  # Telegraph duration
+@export var strike_duration: float = 0.2  # Hitbox active time
+@export var recovery_duration: float = 0.3  # Post-attack recovery
+
 # ============ TIMERS ============
 var attack_timer: float = 0.0
+var attack_hitbox_active: bool = false
 
 
 func _ready() -> void:
@@ -35,6 +43,10 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	if not enemy or enemy.is_dead:
+		return
+
+	# Skip AI wenn stunned
+	if enemy.is_stunned:
 		return
 
 	state_time += delta
@@ -51,8 +63,12 @@ func _process(delta: float) -> void:
 			_process_patrol(delta)
 		State.CHASE:
 			_process_chase(delta)
-		State.ATTACK:
-			_process_attack(delta)
+		State.ATTACK_WINDUP:
+			_process_attack_windup(delta)
+		State.ATTACK_STRIKE:
+			_process_attack_strike(delta)
+		State.RECOVERY:
+			_process_recovery(delta)
 
 
 # ============ STATE: IDLE ============
@@ -89,9 +105,9 @@ func _process_chase(_delta: float) -> void:
 
 	var distance: float = enemy.get_distance_to_player()
 
-	# Check if in attack range
-	if distance <= enemy.attack_range:
-		_change_state(State.ATTACK)
+	# Check if in attack range and cooldown ready
+	if distance <= enemy.attack_range and attack_timer <= 0:
+		_change_state(State.ATTACK_WINDUP)
 		return
 
 	# Move toward player
@@ -103,46 +119,39 @@ func _process_chase(_delta: float) -> void:
 		enemy.sprite.flip_h = direction.x < 0
 
 
-# ============ STATE: ATTACK ============
-func _process_attack(_delta: float) -> void:
-	"""Enemy performs melee attack"""
-	# Check if player moved out of range
-	if not enemy.has_target():
-		_change_state(State.IDLE)
-		return
-
-	var distance: float = enemy.get_distance_to_player()
-
-	if distance > enemy.attack_range * 1.5:
-		_change_state(State.CHASE)
-		return
-
+# ============ STATE: ATTACK WINDUP ============
+func _process_attack_windup(_delta: float) -> void:
+	"""Enemy telegraphs attack (windup animation)"""
 	# Stop movement
 	enemy.velocity.x = 0
 
-	# Perform attack if cooldown ready
-	if attack_timer <= 0:
-		_perform_attack()
+	# Check if windup complete
+	if state_time >= windup_duration:
+		_change_state(State.ATTACK_STRIKE)
 
 
-func _perform_attack() -> void:
-	"""Executes an attack"""
-	attack_timer = attack_cooldown
+# ============ STATE: ATTACK STRIKE ============
+func _process_attack_strike(_delta: float) -> void:
+	"""Enemy executes attack (hitbox active)"""
+	# Stop movement
+	enemy.velocity.x = 0
 
-	# Activate hitbox briefly
-	if enemy.hitbox:
-		enemy.hitbox.set_damage(enemy.attack_damage)
-		enemy.hitbox.activate()
+	# Check if strike complete
+	if state_time >= strike_duration:
+		_change_state(State.RECOVERY)
 
-		# Deactivate after short duration
-		await get_tree().create_timer(0.3).timeout
-		if enemy.hitbox:
-			enemy.hitbox.deactivate()
 
-	# Play attack sound
-	AudioManager.play_sfx("enemy_hurt", 0.2)  # Use hurt sound with pitch variation
+# ============ STATE: RECOVERY ============
+func _process_recovery(_delta: float) -> void:
+	"""Enemy recovers after attack"""
+	# Stop movement
+	enemy.velocity.x = 0
 
-	print("[AIController] ", enemy.name, " attacked!")
+	# Check if recovery complete
+	if state_time >= recovery_duration:
+		# Start attack cooldown
+		attack_timer = attack_cooldown
+		_change_state(State.IDLE)
 
 
 # ============ STATE MANAGEMENT ============
@@ -167,8 +176,13 @@ func _enter_state(state: State) -> void:
 	match state:
 		State.IDLE:
 			enemy.velocity.x = 0
-		State.ATTACK:
+		State.ATTACK_WINDUP:
 			enemy.velocity.x = 0
+			_start_attack_windup()
+		State.ATTACK_STRIKE:
+			_activate_attack_hitbox()
+		State.RECOVERY:
+			_deactivate_attack_hitbox()
 
 
 func _exit_state(_state: State) -> void:
@@ -182,5 +196,66 @@ func _state_to_string(state: State) -> String:
 		State.IDLE: return "IDLE"
 		State.PATROL: return "PATROL"
 		State.CHASE: return "CHASE"
-		State.ATTACK: return "ATTACK"
+		State.ATTACK_WINDUP: return "ATTACK_WINDUP"
+		State.ATTACK_STRIKE: return "ATTACK_STRIKE"
+		State.RECOVERY: return "RECOVERY"
 	return "UNKNOWN"
+
+
+# ============ ATTACK EXECUTION ============
+func _start_attack_windup() -> void:
+	"""Starts attack windup (telegraph)"""
+	print("[AIController] %s starting attack windup" % enemy.name)
+
+	# Play windup sound
+	AudioManager.play_sfx("enemies/untote_attack_windup", enemy.global_position, 0.1)
+
+	# TODO: Play windup animation when available
+	# if enemy.sprite:
+	#     enemy.sprite.play("attack_windup")
+
+
+func _activate_attack_hitbox() -> void:
+	"""Activates attack hitbox (strike phase)"""
+	print("[AIController] %s executing attack strike" % enemy.name)
+
+	# Activate hitbox
+	if enemy.hitbox:
+		enemy.hitbox.set_damage(enemy.attack_damage)
+		enemy.hitbox.activate()
+		attack_hitbox_active = true
+
+	# Play attack sound
+	AudioManager.play_sfx("enemies/untote_attack", enemy.global_position, 0.15)
+
+	# TODO: Play attack animation when available
+	# if enemy.sprite:
+	#     enemy.sprite.play("attack_strike")
+
+
+func _deactivate_attack_hitbox() -> void:
+	"""Deactivates attack hitbox (recovery phase)"""
+	print("[AIController] %s entering recovery" % enemy.name)
+
+	# Deactivate hitbox
+	if enemy.hitbox and attack_hitbox_active:
+		enemy.hitbox.deactivate()
+		attack_hitbox_active = false
+
+	# TODO: Play recovery animation when available
+	# if enemy.sprite:
+	#     enemy.sprite.play("attack_recovery")
+
+
+func cancel_attack() -> void:
+	"""Cancels current attack (called by stun)"""
+	if current_state in [State.ATTACK_WINDUP, State.ATTACK_STRIKE, State.RECOVERY]:
+		print("[AIController] %s attack cancelled" % enemy.name)
+
+		# Deactivate hitbox
+		if enemy.hitbox and attack_hitbox_active:
+			enemy.hitbox.deactivate()
+			attack_hitbox_active = false
+
+		# Return to idle
+		_change_state(State.IDLE)

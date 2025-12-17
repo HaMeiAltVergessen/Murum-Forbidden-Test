@@ -145,6 +145,11 @@ func _process_horizontal_movement() -> void:
 	if is_crouching:
 		current_speed *= crouch_speed_multiplier
 
+	# Apply resonance mode speed bonus
+	var resonance = player.get_node_or_null("CombatSystem/ResonanceSystem")
+	if resonance and resonance.is_mode_active():
+		current_speed *= resonance.SPEED_BONUS
+
 	if input_direction != 0:
 		player.velocity.x = input_direction * current_speed
 		# Update facing direction
@@ -252,6 +257,12 @@ func _process_dash(delta: float) -> void:
 
 	# Calculate dash speed
 	var dash_speed: float = dash_distance / dash_duration
+
+	# Apply resonance mode speed bonus
+	var resonance = player.get_node_or_null("CombatSystem/ResonanceSystem")
+	if resonance and resonance.is_mode_active():
+		dash_speed *= resonance.SPEED_BONUS
+
 	player.velocity = dash_direction * dash_speed
 
 	# No gravity during dash

@@ -1,0 +1,32 @@
+[gd_scene load_steps=2 format=3 uid="uid://parry_indicator_ui"]
+
+[ext_resource type="Script" path="res://ui/hud/parry_indicator.gd" id="1_parry_indicator"]
+
+[node name="ParryIndicator" type="Control"]
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -80.0
+offset_top = -80.0
+grow_horizontal = 0
+grow_vertical = 0
+script = ExtResource("1_parry_indicator")
+
+[node name="ShieldIcon" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 48.0
+offset_bottom = 48.0
+color = Color(0.8, 0.8, 1, 1)
+
+[node name="CooldownLabel" type="Label" parent="."]
+layout_mode = 0
+offset_top = 52.0
+offset_right = 48.0
+offset_bottom = 72.0
+theme_override_font_sizes/font_size = 12
+text = "0.8s"
+horizontal_alignment = 1
+vertical_alignment = 1
