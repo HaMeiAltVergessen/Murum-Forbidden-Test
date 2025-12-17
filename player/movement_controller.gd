@@ -32,10 +32,23 @@ var dash_cooldown_timer: float = 0.0
 # ============ FACING DIRECTION ============
 var facing_right: bool = true
 
+# ============ CROUCH STATE ============
+var is_crouching: bool = false
+var normal_collision_height: float = 48.0
+var crouch_collision_height: float = 24.0
+var crouch_speed_multiplier: float = 0.5
+
 
 func _ready() -> void:
 	if not player:
 		push_error("[MovementController] Parent must be CharacterBody2D")
+		return
+
+	# Store original collision shape height
+	var collision_shape: CollisionShape2D = player.get_node_or_null("CollisionShape2D")
+	if collision_shape and collision_shape.shape is CapsuleShape2D:
+		var capsule: CapsuleShape2D = collision_shape.shape as CapsuleShape2D
+		normal_collision_height = capsule.height
 
 
 func _physics_process(delta: float) -> void:
@@ -46,6 +59,7 @@ func _physics_process(delta: float) -> void:
 	_process_gravity(delta)
 	_process_coyote_time(delta)
 	_process_jump_buffer(delta)
+	_process_crouch()
 	_process_horizontal_movement()
 	_process_jump()
 	_process_dash_input()
@@ -57,20 +71,89 @@ func _physics_process(delta: float) -> void:
 	player.move_and_slide()
 
 
+# ============ CROUCH ============
+func _process_crouch() -> void:
+	"""Handles crouching state"""
+	var wants_to_crouch: bool = Input.is_action_pressed("crouch") and player.is_on_floor()
+
+	if wants_to_crouch and not is_crouching:
+		_start_crouch()
+	elif not wants_to_crouch and is_crouching:
+		_end_crouch()
+
+
+func _start_crouch() -> void:
+	"""Starts crouching"""
+	is_crouching = true
+
+	# Reduce collision shape height
+	var collision_shape: CollisionShape2D = player.get_node_or_null("CollisionShape2D")
+	if collision_shape and collision_shape.shape is CapsuleShape2D:
+		var capsule: CapsuleShape2D = collision_shape.shape as CapsuleShape2D
+		capsule.height = crouch_collision_height
+
+		# Adjust position to keep player on ground
+		collision_shape.position.y = (normal_collision_height - crouch_collision_height) / 2
+
+	print("[Movement] Started crouching")
+
+
+func _end_crouch() -> void:
+	"""Ends crouching"""
+	# Check if there's room to stand up
+	if not _can_stand_up():
+		return
+
+	is_crouching = false
+
+	# Restore collision shape height
+	var collision_shape: CollisionShape2D = player.get_node_or_null("CollisionShape2D")
+	if collision_shape and collision_shape.shape is CapsuleShape2D:
+		var capsule: CapsuleShape2D = collision_shape.shape as CapsuleShape2D
+		capsule.height = normal_collision_height
+		collision_shape.position.y = 0
+
+	print("[Movement] Stopped crouching")
+
+
+func _can_stand_up() -> bool:
+	"""Checks if player can stand up from crouch"""
+	# Simple check: test if there's space above
+	var space_state: PhysicsDirectSpaceState2D = player.get_world_2d().direct_space_state
+	var query: PhysicsShapeQueryParameters2D = PhysicsShapeQueryParameters2D.new()
+
+	# Create a shape for the standing collision
+	var test_shape: CapsuleShape2D = CapsuleShape2D.new()
+	test_shape.radius = 16.0
+	test_shape.height = normal_collision_height
+
+	query.shape = test_shape
+	query.transform = player.global_transform
+	query.collision_mask = 1  # World layer
+
+	var result: Array = space_state.intersect_shape(query, 1)
+	return result.is_empty()
+
+
 # ============ MOVEMENT ============
 func _process_horizontal_movement() -> void:
 	"""Handles horizontal WASD movement"""
 	var input_direction: float = Input.get_axis("move_left", "move_right")
 
+	# Apply crouch speed modifier
+	var current_speed: float = move_speed
+	if is_crouching:
+		current_speed *= crouch_speed_multiplier
+
 	if input_direction != 0:
-		player.velocity.x = input_direction * move_speed
+		player.velocity.x = input_direction * current_speed
 		# Update facing direction
 		if input_direction > 0:
 			facing_right = true
 		else:
 			facing_right = false
 	else:
-		player.velocity.x = move_toward(player.velocity.x, 0, move_speed)
+		player.velocity.x = move_toward(player.velocity.x, 0, current_speed)
 
 
 # ============ GRAVITY ============
@@ -83,6 +166,10 @@ func _process_gravity(delta: float) -> void:
 # ============ JUMP SYSTEM ============
 func _process_jump() -> void:
 	"""Handles jump input with coyote time and jump buffering"""
+	# Can't jump while crouching
+	if is_crouching:
+		return
+
 	# Check for jump input
 	if Input.is_action_just_pressed("jump"):
 		jump_buffer_timer = jump_buffer_time

@@ -6,6 +6,7 @@ class_name CombatSystem
 @onready var player: CharacterBody2D = get_parent()
 @onready var hitbox: Area2D = $HitboxComponent
 @onready var movement_controller: MovementController = player.get_node_or_null("MovementController")
+@onready var staff_sprite: Node2D = null  # Will create dynamically
 
 # ============ ATTACK CONFIGURATION ============
 @export var attack_damages: Array[int] = [10, 12, 15]  # Damage for attacks 1, 2, 3
@@ -30,6 +31,9 @@ func _ready() -> void:
 	# Ensure hitbox is deactivated initially
 	hitbox.monitoring = false
 	hitbox.visible = false
+
+	# Create staff visual
+	_create_staff_visual()
 
 
 func _process(delta: float) -> void:
@@ -81,6 +85,9 @@ func _perform_attack() -> void:
 
 	# Emit signal
 	EventBus.player_attacked.emit(current_combo)
+
+	# Animate staff
+	_animate_staff_attack(current_combo)
 
 	print("[CombatSystem] Attack ", current_combo, " - Damage: ", attack_damages[current_combo - 1])
 
@@ -143,6 +150,59 @@ func _deactivate_hitbox() -> void:
 
 	hitbox.monitoring = false
 	hitbox.visible = false
+
+
+# ============ STAFF VISUAL ============
+func _create_staff_visual() -> void:
+	"""Creates a simple staff sprite using ColorRects"""
+	# Create staff container
+	staff_sprite = Node2D.new()
+	staff_sprite.name = "StaffSprite"
+	add_child(staff_sprite)
+
+	# Staff handle (brown)
+	var handle: ColorRect = ColorRect.new()
+	handle.size = Vector2(6, 48)
+	handle.position = Vector2(20, -24)
+	handle.color = Color(0.4, 0.25, 0.1, 1)
+	staff_sprite.add_child(handle)
+
+	# Staff top (purple/magic)
+	var top: ColorRect = ColorRect.new()
+	top.size = Vector2(12, 12)
+	top.position = Vector2(17, -30)
+	top.color = Color(0.7, 0.3, 1, 1)
+	staff_sprite.add_child(top)
+
+	# Initially hidden
+	staff_sprite.visible = false
+
+
+func _animate_staff_attack(attack_num: int) -> void:
+	"""Animates the staff during attack"""
+	if not staff_sprite:
+		return
+
+	staff_sprite.visible = true
+	staff_sprite.rotation = 0
+
+	# Different animations for each combo
+	var tween: Tween = create_tween()
+
+	match attack_num:
+		1:  # Overhead swing
+			staff_sprite.rotation = -PI/2
+			tween.tween_property(staff_sprite, "rotation", PI/4, attack_durations[0])
+		2:  # Side swing
+			staff_sprite.rotation = -PI/4
+			tween.tween_property(staff_sprite, "rotation", PI/2, attack_durations[1])
+		3:  # Upward thrust
+			staff_sprite.rotation = PI/4
+			tween.tween_property(staff_sprite, "rotation", -PI/2, attack_durations[2])
+
+	# Hide after animation
+	await tween.finished
+	staff_sprite.visible = false
 
 
 # ============ GETTERS ============
