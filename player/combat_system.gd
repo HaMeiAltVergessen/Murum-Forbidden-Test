@@ -39,6 +39,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_update_combo_timer(delta)
 	_update_attack_timer(delta)
+	_update_staff_facing()
 
 
 func _input(event: InputEvent) -> void:
@@ -153,6 +154,19 @@ func _deactivate_hitbox() -> void:
 
 
 # ============ STAFF VISUAL ============
+func _update_staff_facing() -> void:
+	"""Updates staff position based on facing direction"""
+	if not staff_sprite or not movement_controller:
+		return
+
+	var facing: int = movement_controller.get_facing_direction()
+
+	# Flip staff horizontally based on facing direction
+	# Facing right (1) = staff on right side
+	# Facing left (-1) = staff on left side (flipped)
+	staff_sprite.scale.x = facing
+
+
 func _create_staff_visual() -> void:
 	"""Creates a simple staff sprite using ColorRects"""
 	# Create staff container
