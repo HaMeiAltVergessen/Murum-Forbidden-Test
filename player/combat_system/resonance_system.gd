@@ -209,6 +209,9 @@ func _emit_resonance_changed() -> void:
 	var percentage: float = (current_resonance / max_resonance) * 100.0
 	resonance_changed.emit(current_resonance, max_resonance, percentage)
 
+	# Also emit to EventBus for HUD
+	EventBus.resonance_changed.emit(current_resonance, max_resonance, percentage)
+
 
 # ============ EVENT HANDLERS ============
 func _on_hit_registered(attacker: Node, _target: Node, _damage: int) -> void:

@@ -129,6 +129,12 @@ position = Vector2(900, 950)
 [node name="Untote2" parent="Enemies" instance=ExtResource("3_untote_scene")]
 position = Vector2(1300, 450)
 
+[node name="Untote3" parent="Enemies" instance=ExtResource("3_untote_scene")]
+position = Vector2(500, 950)
+
+[node name="Untote4" parent="Enemies" instance=ExtResource("3_untote_scene")]
+position = Vector2(1500, 950)
+
 [node name="Environment" type="Node2D" parent="."]
 
 [node name="SpikeTrap" parent="Environment" instance=ExtResource("4_spike_trap_scene")]
