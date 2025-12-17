@@ -24,7 +24,7 @@ var stun_duration: float = 0.0
 # REFERENCES
 # ============================================================================
 
-@onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
+@onready var animated_sprite: Node2D = $AnimatedSprite2D  # Can be AnimatedSprite2D or Polygon2D placeholder
 @onready var ai_controller: Node = $GeistAI
 @onready var hurtbox: Area2D = $HurtboxComponent
 @onready var hitbox: Area2D = $HitboxComponent
@@ -54,7 +54,8 @@ func _ready() -> void:
 
 	# Start animation
 	if animated_sprite:
-		animated_sprite.play("idle")
+		if animated_sprite.has_method("play"):
+			animated_sprite.play("idle")
 		# Semi-transparent ghost effect
 		animated_sprite.modulate = Color(1.0, 1.0, 1.0, 0.7)
 
@@ -80,7 +81,7 @@ func _on_damage_received(amount: int, attacker: Node = null) -> void:
 	"""Called when hurtbox receives damage"""
 	take_damage(amount, attacker)
 
-func take_damage(amount: int, attacker: Node = null) -> void:
+func take_damage(amount: int, _attacker: Node = null) -> void:
 	"""Takes damage"""
 
 	current_hp -= amount
@@ -129,7 +130,7 @@ func die() -> void:
 	CombatManager.unregister_enemy(self)
 
 	# Play death animation
-	if animated_sprite:
+	if animated_sprite and animated_sprite.has_method("play"):
 		animated_sprite.play("death")
 
 	# Disable collision

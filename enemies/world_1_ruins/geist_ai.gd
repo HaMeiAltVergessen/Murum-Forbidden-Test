@@ -238,7 +238,7 @@ func _start_charging() -> void:
 	charge_progress = 0.0
 
 	# Animation
-	if owner_enemy.animated_sprite:
+	if owner_enemy.animated_sprite and owner_enemy.animated_sprite.has_method("play"):
 		owner_enemy.animated_sprite.play("attack_charge")
 
 	# Audio
@@ -289,7 +289,7 @@ func _shoot_projectile() -> void:
 
 func _face_direction(direction: Vector2) -> void:
 	"""Flips sprite based on direction"""
-	if owner_enemy.animated_sprite:
+	if owner_enemy.animated_sprite and "flip_h" in owner_enemy.animated_sprite:
 		owner_enemy.animated_sprite.flip_h = direction.x < 0
 
 func cancel_attack() -> void:
