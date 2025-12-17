@@ -47,14 +47,21 @@ signal parry_cooldown_started(duration: float)
 # REFERENCES
 # ============================================================================
 
-@onready var player: CharacterBody2D = owner
-@onready var hurtbox: Area2D = owner.get_node_or_null("CombatSystem/HurtboxComponent")
+var player: CharacterBody2D
+var hurtbox: Area2D
 
 # ============================================================================
 # INITIALIZATION
 # ============================================================================
 
 func _ready() -> void:
+	# Get references in _ready() when owner is guaranteed to be set
+	player = owner as CharacterBody2D
+
+	# Get hurtbox from player's CombatSystem
+	if player:
+		hurtbox = player.get_node_or_null("CombatSystem/HurtboxComponent")
+
 	# Connect to hurtbox for attack detection
 	if hurtbox:
 		hurtbox.area_entered.connect(_on_attack_detected)
