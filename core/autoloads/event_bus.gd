@@ -59,6 +59,12 @@ signal combat_started()
 ## Emitted when combat state ends
 signal combat_ended()
 
+## Emitted when resonance mode activates
+signal resonance_mode_activated()
+
+## Emitted when resonance mode deactivates
+signal resonance_mode_deactivated()
+
 ## Emitted when resonance mode timer updates (countdown)
 signal resonance_mode_timer_updated(time_remaining: float)
 
