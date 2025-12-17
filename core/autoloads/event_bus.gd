@@ -38,6 +38,18 @@ signal hit_registered(attacker: Node, target: Node, damage: int)
 ## Emitted when player performs attack
 signal player_attacked(attack_number: int)
 
+## Emitted when combo counter increases
+signal combo_increased(new_count: int, multiplier: float)
+
+## Emitted when combo chain breaks
+signal combo_broken(final_count: int)
+
+## Emitted when damage is calculated with combo applied
+signal damage_calculated(final_damage: int, had_combo: bool)
+
+## Emitted when hitstop effect triggers
+signal hitstop_triggered(duration: float)
+
 # ============ ENVIRONMENT SIGNALS ============
 ## Emitted when lever is activated
 signal lever_activated(lever: Node)
