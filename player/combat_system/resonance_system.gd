@@ -12,10 +12,24 @@ class_name ResonanceSystem
 @export var decay_rate_combat: float = 1.0  # 1.0 per second when in combat
 @export var combat_timeout: float = 3.0  # Time before considered out of combat
 
+# ============ MODE CONFIGURATION ============
+@export var mode_duration: float = 16.0  # 16 seconds duration
+
 # ============ STATE ============
 var current_resonance: float = 0.0
 var is_in_combat: bool = false
 var last_combat_time: float = 0.0
+
+# ============ MODE STATE ============
+var is_active: bool = false  # Mode active flag
+var mode_time_remaining: float = 0.0  # Countdown timer
+var aura_effect: GPUParticles2D = null  # VFX reference
+var glow_tween: Tween = null  # Sprite glow tween
+
+# ============ MODE BONI ============
+const DAMAGE_BONUS: float = 1.25  # +25% damage
+const SPEED_BONUS: float = 1.15  # +15% speed
+const MANA_COST_REDUCTION: float = 0.5  # -50% mana cost
 
 # ============ SIGNALS ============
 signal resonance_changed(current: float, maximum: float, percentage: float)
@@ -51,7 +65,21 @@ func _process(delta: float) -> void:
 	if not enabled:
 		return
 
-	# Apply decay
+	# Mode countdown (takes priority)
+	if is_active:
+		mode_time_remaining -= delta
+
+		# Update HUD countdown
+		EventBus.resonance_mode_timer_updated.emit(mode_time_remaining)
+
+		# Check if mode expired
+		if mode_time_remaining <= 0.0:
+			deactivate_mode()
+
+		# No decay during mode
+		return
+
+	# Normal resonance decay
 	_apply_decay(delta)
 
 	# Update combat state
@@ -64,6 +92,10 @@ func add_resonance(amount: float) -> void:
 	if not enabled:
 		return
 
+	# Block during active mode
+	if is_active:
+		return
+
 	var old_value: float = current_resonance
 	current_resonance = min(current_resonance + amount, max_resonance)
 
@@ -73,10 +105,11 @@ func add_resonance(amount: float) -> void:
 	# Emit signals
 	_emit_resonance_changed()
 
-	# Check if full
+	# Check if full and auto-activate mode
 	if current_resonance >= max_resonance and old_value < max_resonance:
 		resonance_full.emit()
 		print("[ResonanceSystem] RESONANCE FULL!")
+		activate_mode()  # Auto-activate
 
 	print("[ResonanceSystem] +%.2f resonance (%.1f/%.1f)" % [amount, current_resonance, max_resonance])
 
@@ -238,6 +271,91 @@ func _on_combat_ended() -> void:
 	_exit_combat()
 
 
+# ============ MODE ACTIVATION ============
+func activate_mode() -> void:
+	"""Activates Resonance Mode."""
+	if is_active:
+		return
+
+	print("[ResonanceSystem] Activating Resonance Mode")
+
+	is_active = true
+	mode_time_remaining = mode_duration
+	current_resonance = 0.0  # Reset to 0
+
+	# Trigger VFX
+	_start_visual_effects()
+
+	# Emit signal
+	EventBus.resonance_mode_activated.emit()
+
+
+func deactivate_mode() -> void:
+	"""Deactivates Resonance Mode."""
+	if not is_active:
+		return
+
+	print("[ResonanceSystem] Deactivating Resonance Mode")
+
+	is_active = false
+	mode_time_remaining = 0.0
+
+	# Stop VFX
+	_stop_visual_effects()
+
+	# Emit signal
+	EventBus.resonance_mode_deactivated.emit()
+
+
+# ============ VISUAL EFFECTS ============
+func _start_visual_effects() -> void:
+	"""Starts all visual effects."""
+	# Screen flash
+	var camera = owner.get_node_or_null("PlayerCamera")
+	if camera and camera.has_method("flash"):
+		camera.flash(Color(1.0, 1.0, 0.8, 0.7), 0.2)
+
+	# TODO: Spawn aura (will create VFX in next step)
+	# var aura_scene = preload("res://vfx/particles/resonance_aura.tscn")
+	# aura_effect = aura_scene.instantiate()
+	# owner.add_child(aura_effect)
+
+	# Start sprite glow
+	var sprite = owner.get_node_or_null("Sprite2D")
+	if sprite:
+		_start_sprite_glow(sprite)
+
+
+func _stop_visual_effects() -> void:
+	"""Stops all visual effects."""
+	# Stop aura
+	if aura_effect:
+		# aura_effect.stop_emission()
+		await get_tree().create_timer(1.0).timeout
+		if aura_effect:
+			aura_effect.queue_free()
+			aura_effect = null
+
+	# Stop sprite glow
+	var sprite = owner.get_node_or_null("Sprite2D")
+	if sprite:
+		_stop_sprite_glow(sprite)
+
+
+func _start_sprite_glow(sprite: Sprite2D) -> void:
+	"""Starts pulsing glow on sprite."""
+	glow_tween = create_tween().set_loops()
+	glow_tween.tween_property(sprite, "modulate", Color(1.3, 1.3, 1.5), 0.5)
+	glow_tween.tween_property(sprite, "modulate", Color(1.0, 1.0, 1.0), 0.5)
+
+
+func _stop_sprite_glow(sprite: Sprite2D) -> void:
+	"""Stops glow and resets sprite."""
+	if glow_tween:
+		glow_tween.kill()
+	sprite.modulate = Color(1.0, 1.0, 1.0)
+
+
 # ============ GETTERS ============
 func get_current_resonance() -> float:
 	"""Returns current resonance value."""
@@ -276,6 +394,31 @@ func is_resonance_empty() -> bool:
 func is_above_threshold(threshold: int) -> bool:
 	"""Returns true if resonance is above the given threshold."""
 	return get_resonance_percentage() >= threshold
+
+
+func is_mode_active() -> bool:
+	"""Returns true if mode is currently active."""
+	return is_active
+
+
+func get_mode_time_remaining() -> float:
+	"""Returns time remaining in mode."""
+	return mode_time_remaining
+
+
+func get_damage_multiplier() -> float:
+	"""Returns current damage multiplier."""
+	return DAMAGE_BONUS if is_active else 1.0
+
+
+func get_speed_multiplier() -> float:
+	"""Returns current speed multiplier."""
+	return SPEED_BONUS if is_active else 1.0
+
+
+func get_mana_cost_multiplier() -> float:
+	"""Returns current mana cost multiplier."""
+	return MANA_COST_REDUCTION if is_active else 1.0
 
 
 # ============ CONTROL ============

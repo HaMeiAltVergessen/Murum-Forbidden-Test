@@ -59,6 +59,9 @@ signal combat_started()
 ## Emitted when combat state ends
 signal combat_ended()
 
+## Emitted when resonance mode timer updates (countdown)
+signal resonance_mode_timer_updated(time_remaining: float)
+
 # ============ ENVIRONMENT SIGNALS ============
 ## Emitted when lever is activated
 signal lever_activated(lever: Node)

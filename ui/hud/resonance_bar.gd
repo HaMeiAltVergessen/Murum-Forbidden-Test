@@ -164,3 +164,69 @@ func get_percentage() -> float:
 func is_full() -> bool:
 	"""Returns true if resonance is at maximum."""
 	return current_value >= max_value
+
+
+# ============ MODE DISPLAY ============
+func set_mode_active(active: bool, time_remaining: float = 0.0) -> void:
+	"""Sets the mode active state and updates display."""
+	if active:
+		# Lock bar at 100%
+		set_resonance(100.0, 100.0)
+		fill.color = COLOR_FULL
+
+		# Change label
+		percent_label.text = "RESONANCE MODE"
+
+		# Create countdown label if it doesn't exist
+		if not has_node("CountdownLabel"):
+			var countdown = Label.new()
+			countdown.name = "CountdownLabel"
+			countdown.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			countdown.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			countdown.theme_override_font_sizes/font_size = 12
+			countdown.position = Vector2(150, 2)
+			add_child(countdown)
+
+		var countdown = $CountdownLabel
+		countdown.text = "%.0fs" % time_remaining
+
+		# Start pulse animation
+		_start_mode_pulse()
+	else:
+		# Reset to normal state
+		percent_label.text = "0%"
+
+		# Remove countdown label
+		if has_node("CountdownLabel"):
+			$CountdownLabel.queue_free()
+
+		# Stop pulse
+		_stop_mode_pulse()
+
+
+func update_mode_timer(time_remaining: float) -> void:
+	"""Updates the mode countdown timer."""
+	if has_node("CountdownLabel"):
+		$CountdownLabel.text = "%.0fs" % time_remaining
+
+
+func _start_mode_pulse() -> void:
+	"""Starts pulsing animation during mode."""
+	if pulse_tween and pulse_tween.is_running():
+		pulse_tween.kill()
+
+	pulse_tween = create_tween()
+	pulse_tween.set_loops()
+	pulse_tween.set_ease(Tween.EASE_IN_OUT)
+	pulse_tween.set_trans(Tween.TRANS_SINE)
+
+	pulse_tween.tween_property(self, "scale", Vector2(1.05, 1.05), 0.5)
+	pulse_tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.5)
+
+
+func _stop_mode_pulse() -> void:
+	"""Stops mode pulse animation."""
+	if pulse_tween and pulse_tween.is_running():
+		pulse_tween.kill()
+
+	scale = Vector2(1.0, 1.0)
