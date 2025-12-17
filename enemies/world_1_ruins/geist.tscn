@@ -1,0 +1,57 @@
+[gd_scene load_steps=6 format=3 uid="uid://bx7k2qn8m9v4p"]
+
+[ext_resource type="Script" path="res://enemies/world_1_ruins/geist.gd" id="1_geist"]
+[ext_resource type="Script" path="res://enemies/world_1_ruins/geist_ai.gd" id="2_geist_ai"]
+[ext_resource type="Script" path="res://components/hurtbox_component.gd" id="3_hurtbox"]
+[ext_resource type="Script" path="res://components/hitbox_component.gd" id="4_hitbox"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_geist_body"]
+radius = 16.0
+height = 48.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurtbox"]
+size = Vector2(32, 48)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hitbox"]
+size = Vector2(32, 48)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_detection"]
+radius = 400.0
+
+[node name="Geist" type="CharacterBody2D" groups=["enemies", "geist"]]
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("1_geist")
+
+[node name="AnimatedSprite2D" type="Polygon2D" parent="."]
+color = Color(0.5, 0.8, 1, 0.7)
+polygon = PackedVector2Array(-16, -24, 16, -24, 16, 24, -16, 24)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_geist_body")
+
+[node name="HurtboxComponent" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 4
+script = ExtResource("3_hurtbox")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]
+shape = SubResource("RectangleShape2D_hurtbox")
+
+[node name="HitboxComponent" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("4_hitbox")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
+shape = SubResource("RectangleShape2D_hitbox")
+
+[node name="DetectionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource("CircleShape2D_detection")
+
+[node name="GeistAI" type="Node" parent="."]
+script = ExtResource("2_geist_ai")

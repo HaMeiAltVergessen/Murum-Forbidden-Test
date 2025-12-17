@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://c8vjm4qx1y2n3"]
+
+[ext_resource type="Script" path="res://enemies/projectile.gd" id="1_projectile"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_projectile_collision"]
+radius = 8.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hitbox"]
+radius = 8.0
+
+[node name="Projectile" type="Area2D"]
+collision_layer = 8
+collision_mask = 3
+script = ExtResource("1_projectile")
+
+[node name="Sprite2D" type="Polygon2D" parent="."]
+color = Color(0, 1, 1, 0.8)
+polygon = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_projectile_collision")
+
+[node name="HitboxComponent" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
+shape = SubResource("CircleShape2D_hitbox")
+
+[node name="LifetimeTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
