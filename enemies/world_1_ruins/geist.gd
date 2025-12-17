@@ -77,9 +77,9 @@ func _process(delta: float) -> void:
 # DAMAGE HANDLING
 # ============================================================================
 
-func _on_damage_received(amount: int, attacker: Node = null) -> void:
+func _on_damage_received(damage: int, knockback: Vector2, hitstun: float) -> void:
 	"""Called when hurtbox receives damage"""
-	take_damage(amount, attacker)
+	take_damage(damage)
 
 func take_damage(amount: int, _attacker: Node = null) -> void:
 	"""Takes damage"""
