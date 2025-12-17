@@ -1,0 +1,44 @@
+[gd_scene load_steps=2 format=3 uid="uid://combo_display_ui"]
+
+[ext_resource type="Script" path="res://ui/hud/combo_display.gd" id="1_combo_display"]
+
+[node name="ComboDisplay" type="Control"]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -220.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 120.0
+grow_horizontal = 0
+script = ExtResource("1_combo_display")
+
+[node name="Container" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+
+[node name="ComboLabel" type="Label" parent="Container"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "0 HITS"
+horizontal_alignment = 2
+
+[node name="MultiplierLabel" type="Label" parent="Container"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "×1.00"
+horizontal_alignment = 2
+
+[node name="TimerBar" type="ProgressBar" parent="Container"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+max_value = 1.0
+step = 0.01
+value = 1.0
+show_percentage = false

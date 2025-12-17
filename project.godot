@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 GameManager="*res://core/autoloads/game_manager.gd"
 EventBus="*res://core/autoloads/event_bus.gd"
 AudioManager="*res://core/autoloads/audio_manager.gd"
+CombatManager="*res://core/autoloads/combat_manager.gd"
 
 [display]
 

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://cg1yfqr5u0pjd"]
+[gd_scene load_steps=3 format=3 uid="uid://cg1yfqr5u0pjd"]
 
 [ext_resource type="Script" path="res://ui/hud.gd" id="1_hud"]
+[ext_resource type="PackedScene" path="res://ui/hud/combo_display.tscn" id="2_combo_display"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -66,3 +67,5 @@ theme_override_font_sizes/font_size = 24
 text = "Press E"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="ComboDisplay" parent="." instance=ExtResource("2_combo_display")]

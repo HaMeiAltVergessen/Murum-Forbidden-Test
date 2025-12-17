@@ -6,6 +6,7 @@ class_name CombatSystem
 @onready var player: CharacterBody2D = get_parent()
 @onready var hitbox: Area2D = $HitboxComponent
 @onready var movement_controller: MovementController = player.get_node_or_null("MovementController")
+@onready var combo_tracker: ComboTracker = null  # Will create dynamically
 @onready var staff_sprite: Node2D = null  # Will create dynamically
 
 # ============ ATTACK CONFIGURATION ============
@@ -31,6 +32,9 @@ func _ready() -> void:
 	# Ensure hitbox is deactivated initially
 	hitbox.monitoring = false
 	hitbox.visible = false
+
+	# Create combo tracker
+	_create_combo_tracker()
 
 	# Create staff visual
 	_create_staff_visual()
@@ -151,6 +155,16 @@ func _deactivate_hitbox() -> void:
 
 	hitbox.monitoring = false
 	hitbox.visible = false
+
+
+# ============ COMBO TRACKER ============
+func _create_combo_tracker() -> void:
+	"""Creates the combo tracker component."""
+	combo_tracker = ComboTracker.new()
+	combo_tracker.name = "ComboTracker"
+	add_child(combo_tracker)
+
+	print("[CombatSystem] ComboTracker created")
 
 
 # ============ STAFF VISUAL ============

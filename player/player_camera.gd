@@ -25,6 +25,10 @@ func _ready() -> void:
 	# Make this camera current
 	make_current()
 
+	# Connect to combo system for shake effects
+	if CombatManager:
+		CombatManager.combo_increased.connect(_on_combo_increased)
+
 	print("[PlayerCamera] Initialized")
 
 
@@ -103,3 +107,22 @@ func shake_medium() -> void:
 func shake_heavy() -> void:
 	"""Applies a heavy camera shake"""
 	add_trauma(0.6)
+
+
+func shake_combo(combo_count: int) -> void:
+	"""Applies combo-scaled camera shake"""
+	# Scale trauma based on combo count (0.15 - 0.30)
+	var base_trauma: float = 0.15
+	var trauma_per_combo: float = 0.01
+	var max_trauma: float = 0.30
+
+	var trauma_amount: float = base_trauma + (combo_count * trauma_per_combo)
+	trauma_amount = min(trauma_amount, max_trauma)
+
+	add_trauma(trauma_amount)
+
+
+# ============ SIGNAL HANDLERS ============
+func _on_combo_increased(new_count: int, _multiplier: float) -> void:
+	"""Called when combo increases - triggers combo-scaled shake"""
+	shake_combo(new_count)
