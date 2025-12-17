@@ -108,10 +108,7 @@ func can_parry() -> bool:
 	if cooldown_remaining > 0.0:
 		return false
 
-	# Check if player is in valid state (not stunned, etc.)
-	if player.has_method("can_act") and not player.can_act():
-		return false
-
+	# Player can always parry (no additional state checks needed)
 	return true
 
 
