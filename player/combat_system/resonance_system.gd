@@ -310,6 +310,9 @@ func deactivate_mode() -> void:
 # ============ VISUAL EFFECTS ============
 func _start_visual_effects() -> void:
 	"""Starts all visual effects."""
+	if not owner:
+		return
+
 	# Screen flash
 	var camera = owner.get_node_or_null("PlayerCamera")
 	if camera and camera.has_method("flash"):
@@ -337,6 +340,9 @@ func _stop_visual_effects() -> void:
 			aura_effect = null
 
 	# Stop sprite glow
+	if not owner:
+		return
+
 	var sprite = owner.get_node_or_null("Sprite2D")
 	if sprite:
 		_stop_sprite_glow(sprite)
