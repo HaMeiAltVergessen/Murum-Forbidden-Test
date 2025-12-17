@@ -274,6 +274,9 @@ func _handle_failed_parry() -> void:
 func _play_parry_anticipation() -> void:
 	"""Visual feedback for parry startup"""
 	# Optional: Flash player sprite
+	if not player:
+		return
+
 	if player.has_node("Sprite2D"):
 		var sprite = player.get_node("Sprite2D")
 		var tween = create_tween()
@@ -288,7 +291,7 @@ func _play_perfect_parry_vfx(enemy: Node) -> void:
 		print("[ParrySystem] Parry flash VFX not found, skipping")
 
 		# Fallback: Simple sprite flash
-		if player.has_node("Sprite2D"):
+		if player and player.has_node("Sprite2D"):
 			var sprite = player.get_node("Sprite2D")
 			var tween = create_tween()
 			tween.tween_property(sprite, "modulate", Color(0.5, 1.5, 0.5), 0.1)
@@ -314,6 +317,9 @@ func _play_perfect_parry_vfx(enemy: Node) -> void:
 func _play_failed_parry_vfx() -> void:
 	"""Visual feedback for failed parry"""
 	# Gray flash on player
+	if not player:
+		return
+
 	if player.has_node("Sprite2D"):
 		var sprite = player.get_node("Sprite2D")
 		var tween = create_tween()
