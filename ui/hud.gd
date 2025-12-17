@@ -6,6 +6,7 @@ class_name HUD
 @onready var health_container: HBoxContainer = $MarginContainer/VBoxContainer/HealthBar
 @onready var mana_bar: ProgressBar = $MarginContainer/VBoxContainer/ManaBar
 @onready var mana_label: Label = $MarginContainer/VBoxContainer/ManaBar/ManaLabel
+@onready var resonance_bar: ResonanceBar = $MarginContainer/VBoxContainer/ResonanceBar
 @onready var interaction_prompt: Label = $InteractionPrompt
 
 # ============ HEART TRACKING ============
@@ -20,6 +21,7 @@ func _ready() -> void:
 	EventBus.player_mana_changed.connect(_on_player_mana_changed)
 	EventBus.show_interaction_prompt.connect(_on_show_interaction_prompt)
 	EventBus.hide_interaction_prompt.connect(_on_hide_interaction_prompt)
+	EventBus.resonance_changed.connect(_on_resonance_changed)
 
 	# Create heart icons
 	_create_hearts()
@@ -99,3 +101,9 @@ func _on_hide_interaction_prompt() -> void:
 	"""Hides interaction prompt"""
 	if interaction_prompt:
 		interaction_prompt.visible = false
+
+
+func _on_resonance_changed(current: float, maximum: float, percentage: float) -> void:
+	"""Updates resonance bar"""
+	if resonance_bar:
+		resonance_bar.set_resonance(current, maximum)

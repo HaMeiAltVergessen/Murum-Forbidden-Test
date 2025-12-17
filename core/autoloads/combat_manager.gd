@@ -17,6 +17,11 @@ var combo_count: int = 0
 var combo_timer: float = 0.0
 var is_combo_active: bool = false
 
+# ============ COMBAT STATE ============
+var active_enemies: Array[Node] = []
+var time_since_last_combat_action: float = 0.0
+const COMBAT_TIMEOUT: float = 3.0
+
 # ============ HITSTOP STATE ============
 var is_hitstop_active: bool = false
 var hitstop_timer: float = 0.0
@@ -44,6 +49,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_update_combo_timer(delta)
 	_update_hitstop(delta)
+	_update_combat_state(delta)
 
 
 # ============ DAMAGE CALCULATION ============
@@ -199,9 +205,57 @@ func _end_hitstop() -> void:
 	Engine.time_scale = 1.0
 
 
+# ============ COMBAT STATE MANAGEMENT ============
+func is_in_combat() -> bool:
+	"""Returns true if player is in active combat."""
+	if active_enemies.size() > 0:
+		return true
+
+	if time_since_last_combat_action < COMBAT_TIMEOUT:
+		return true
+
+	return false
+
+
+func register_enemy(enemy: Node) -> void:
+	"""Registers an active enemy in combat."""
+	if enemy not in active_enemies:
+		active_enemies.append(enemy)
+		if active_enemies.size() == 1:
+			EventBus.combat_started.emit()
+			print("[CombatManager] Combat started")
+
+
+func unregister_enemy(enemy: Node) -> void:
+	"""Removes an enemy from combat tracking."""
+	if enemy in active_enemies:
+		active_enemies.erase(enemy)
+		if active_enemies.size() == 0:
+			print("[CombatManager] All enemies defeated")
+
+
+func register_combat_action() -> void:
+	"""Updates last combat action timestamp."""
+	time_since_last_combat_action = 0.0
+
+
+func _update_combat_state(delta: float) -> void:
+	"""Updates combat state based on time since last action."""
+	time_since_last_combat_action += delta
+
+	# Check if combat should end
+	if active_enemies.size() == 0 and time_since_last_combat_action >= COMBAT_TIMEOUT:
+		if time_since_last_combat_action - delta < COMBAT_TIMEOUT:
+			EventBus.combat_ended.emit()
+			print("[CombatManager] Combat ended (timeout)")
+
+
 # ============ EVENT HANDLERS ============
 func _on_hit_registered(attacker: Node, target: Node, damage: int) -> void:
 	"""Called when any hit is registered via EventBus."""
+	# Register combat action
+	register_combat_action()
+
 	# Only track combo for player attacks
 	if attacker and attacker.is_in_group("player"):
 		increase_combo()

@@ -50,6 +50,15 @@ signal damage_calculated(final_damage: int, had_combo: bool)
 ## Emitted when hitstop effect triggers
 signal hitstop_triggered(duration: float)
 
+## Emitted when resonance value changes
+signal resonance_changed(current: float, maximum: float, percentage: float)
+
+## Emitted when combat state starts
+signal combat_started()
+
+## Emitted when combat state ends
+signal combat_ended()
+
 # ============ ENVIRONMENT SIGNALS ============
 ## Emitted when lever is activated
 signal lever_activated(lever: Node)
