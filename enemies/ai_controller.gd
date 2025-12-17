@@ -208,7 +208,7 @@ func _start_attack_windup() -> void:
 	print("[AIController] %s starting attack windup" % enemy.name)
 
 	# Play windup sound
-	AudioManager.play_sfx("enemies/untote_attack_windup", enemy.global_position, 0.1)
+	AudioManager.play_sfx("enemy_attack_windup", 0.1)
 
 	# TODO: Play windup animation when available
 	# if enemy.sprite:
@@ -226,7 +226,7 @@ func _activate_attack_hitbox() -> void:
 		attack_hitbox_active = true
 
 	# Play attack sound
-	AudioManager.play_sfx("enemies/untote_attack", enemy.global_position, 0.15)
+	AudioManager.play_sfx("enemy_attack", 0.15)
 
 	# TODO: Play attack animation when available
 	# if enemy.sprite:

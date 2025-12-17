@@ -218,7 +218,7 @@ func _handle_perfect_parry(enemy: Node) -> void:
 	_play_perfect_parry_vfx(enemy)
 
 	# Audio
-	AudioManager.play_sfx("player/parry_success", player.global_position, 0.2)
+	AudioManager.play_sfx("player_parry_success", 0.2)
 
 	# Camera shake
 	var camera = player.get_node_or_null("PlayerCamera")
@@ -254,7 +254,7 @@ func _handle_failed_parry() -> void:
 	_play_failed_parry_vfx()
 
 	# Audio
-	AudioManager.play_sfx("player/parry_failed", player.global_position, 0.05)
+	AudioManager.play_sfx("player_parry_failed", 0.05)
 
 	# Emit signals
 	parry_failed.emit()
