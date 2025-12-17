@@ -60,6 +60,7 @@ func _deal_damage_to(hurtbox: HurtboxComponent) -> void:
 	EventBus.hit_registered.emit(get_parent(), hurtbox.get_parent(), damage)
 
 	print("[Hitbox] Hit registered: ", damage, " damage to ", hurtbox.get_parent().name)
+	print("1")  # Success indicator for hits
 
 
 func _is_same_team(hurtbox: HurtboxComponent) -> bool:
