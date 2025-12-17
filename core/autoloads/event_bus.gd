@@ -120,6 +120,28 @@ signal game_unpaused()
 ## Emitted when returning to main menu
 signal return_to_menu()
 
+# ============ SAVE/LOAD SIGNALS ============
+## Emitted when checkpoint is activated
+signal checkpoint_activated(checkpoint: Node)
+
+## Emitted to open save menu
+signal open_save_menu()
+
+## Emitted when save menu is opened
+signal save_menu_opened()
+
+## Emitted when load menu is opened
+signal load_menu_opened()
+
+## Emitted when menu is closed
+signal menu_closed()
+
+## Emitted to show notification message
+signal show_notification(message: String, duration: float)
+
+## Emitted when enemy is killed
+signal enemy_killed(enemy: Node, killer: Node)
+
 
 func _ready() -> void:
 	print("[EventBus] Initialized")

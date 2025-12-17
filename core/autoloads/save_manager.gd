@@ -1,0 +1,539 @@
+extends Node
+
+## Central Save/Load System
+## Handles game state persistence across sessions
+
+# ============================================================================
+# CONSTANTS
+# ============================================================================
+
+const SAVE_VERSION: String = "1.0.0"
+const SAVE_DIR: String = "user://saves/"
+const SETTINGS_PATH: String = "user://settings.json"
+
+const MAX_SLOTS: int = 3
+const AUTO_SAVE_ENABLED: bool = true
+
+# ============================================================================
+# SAVE SLOT DATA
+# ============================================================================
+
+class SaveSlotMetadata:
+	var slot_index: int
+	var exists: bool = false
+	var timestamp: String = ""
+	var playtime_seconds: int = 0
+	var player_name: String = "Murum"
+	var current_world: String = ""
+	var current_room: String = ""
+	var player_level: int = 1
+
+	func get_formatted_playtime() -> String:
+		var hours = playtime_seconds / 3600
+		var minutes = (playtime_seconds % 3600) / 60
+		return "%02d:%02d" % [hours, minutes]
+
+	func get_formatted_timestamp() -> String:
+		if timestamp.is_empty():
+			return "---"
+
+		var parts = timestamp.split("T")
+		if parts.size() != 2:
+			return timestamp
+
+		var date_parts = parts[0].split("-")
+		if date_parts.size() != 3:
+			return timestamp
+
+		var time_parts = parts[1].split(":")
+		if time_parts.size() < 2:
+			return timestamp
+
+		var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+					  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+		var month_index = int(date_parts[1]) - 1
+
+		return "%s %s, %s %s:%s" % [
+			months[month_index],
+			date_parts[2],
+			date_parts[0],
+			time_parts[0],
+			time_parts[1]
+		]
+
+# ============================================================================
+# STATE
+# ============================================================================
+
+var current_slot: int = -1
+var slot_metadata: Array[SaveSlotMetadata] = []
+
+var playtime_seconds: int = 0
+var playtime_timer: float = 0.0
+
+# Pending data to apply after scene load
+var pending_player_data: Dictionary = {}
+
+# ============================================================================
+# SIGNALS
+# ============================================================================
+
+signal save_completed(slot_index: int, success: bool)
+signal load_completed(slot_index: int, success: bool)
+signal save_failed(slot_index: int, error: String)
+signal load_failed(slot_index: int, error: String)
+
+# ============================================================================
+# INITIALIZATION
+# ============================================================================
+
+func _ready() -> void:
+	# Create save directory if not exists
+	_ensure_save_directory()
+
+	# Load slot metadata
+	_load_all_slot_metadata()
+
+	# Load settings
+	load_settings()
+
+	print("[SaveManager] Initialized")
+	print("[SaveManager] Save directory: %s" % SAVE_DIR)
+
+func _process(delta: float) -> void:
+	# Track playtime
+	if current_slot >= 0:
+		playtime_timer += delta
+		if playtime_timer >= 1.0:
+			playtime_seconds += 1
+			playtime_timer = 0.0
+
+# ============================================================================
+# DIRECTORY MANAGEMENT
+# ============================================================================
+
+func _ensure_save_directory() -> void:
+	"""Creates save directory if it doesn't exist"""
+	var dir = DirAccess.open("user://")
+	if not dir.dir_exists("saves"):
+		var err = dir.make_dir("saves")
+		if err == OK:
+			print("[SaveManager] Created saves directory")
+		else:
+			push_error("[SaveManager] Failed to create saves directory: %d" % err)
+
+# ============================================================================
+# SLOT METADATA
+# ============================================================================
+
+func _load_all_slot_metadata() -> void:
+	"""Loads metadata for all save slots"""
+	slot_metadata.clear()
+
+	for i in range(MAX_SLOTS):
+		var metadata = _load_slot_metadata(i + 1)
+		slot_metadata.append(metadata)
+
+	print("[SaveManager] Loaded metadata for %d slots" % slot_metadata.size())
+
+func _load_slot_metadata(slot_index: int) -> SaveSlotMetadata:
+	"""Loads metadata for specific slot"""
+	var metadata = SaveSlotMetadata.new()
+	metadata.slot_index = slot_index
+
+	var file_path = _get_slot_path(slot_index)
+
+	if not FileAccess.file_exists(file_path):
+		return metadata
+
+	var file = FileAccess.open(file_path, FileAccess.READ)
+	if not file:
+		push_error("[SaveManager] Failed to open slot %d for metadata" % slot_index)
+		return metadata
+
+	var json_string = file.get_as_text()
+	file.close()
+
+	var json = JSON.new()
+	var parse_result = json.parse(json_string)
+
+	if parse_result != OK:
+		push_error("[SaveManager] Failed to parse slot %d JSON" % slot_index)
+		return metadata
+
+	var data = json.data
+
+	# Extract metadata
+	metadata.exists = true
+	metadata.timestamp = data.get("timestamp", "")
+	metadata.playtime_seconds = data.get("playtime_seconds", 0)
+
+	var player_data = data.get("player", {})
+	metadata.current_world = player_data.get("current_world", "")
+	metadata.current_room = player_data.get("current_room", "")
+
+	return metadata
+
+func get_slot_metadata(slot_index: int) -> SaveSlotMetadata:
+	"""Returns metadata for slot (1-3)"""
+	if slot_index < 1 or slot_index > MAX_SLOTS:
+		push_error("[SaveManager] Invalid slot index: %d" % slot_index)
+		return SaveSlotMetadata.new()
+
+	return slot_metadata[slot_index - 1]
+
+func slot_exists(slot_index: int) -> bool:
+	"""Returns true if slot has save data"""
+	return get_slot_metadata(slot_index).exists
+
+# ============================================================================
+# SAVE GAME
+# ============================================================================
+
+func save_game(slot_index: int) -> bool:
+	"""Saves current game state to slot (1-3)"""
+
+	if slot_index < 1 or slot_index > MAX_SLOTS:
+		push_error("[SaveManager] Invalid slot index: %d" % slot_index)
+		save_failed.emit(slot_index, "Invalid slot index")
+		return false
+
+	print("[SaveManager] Saving game to slot %d..." % slot_index)
+
+	# Gather save data
+	var save_data = _gather_save_data(slot_index)
+
+	# Convert to JSON
+	var json_string = JSON.stringify(save_data, "\t")
+
+	# Write to file
+	var file_path = _get_slot_path(slot_index)
+	var file = FileAccess.open(file_path, FileAccess.WRITE)
+
+	if not file:
+		var error = "Failed to open file for writing"
+		push_error("[SaveManager] %s: %s" % [error, file_path])
+		save_failed.emit(slot_index, error)
+		return false
+
+	file.store_string(json_string)
+	file.close()
+
+	# Update metadata
+	current_slot = slot_index
+	_load_all_slot_metadata()
+
+	print("[SaveManager] Save completed: %s" % file_path)
+	save_completed.emit(slot_index, true)
+
+	return true
+
+func _gather_save_data(slot_index: int) -> Dictionary:
+	"""Gathers all game state into save dictionary"""
+
+	var player = get_tree().get_first_node_in_group("player")
+
+	var save_data = {
+		"version": SAVE_VERSION,
+		"timestamp": Time.get_datetime_string_from_system(),
+		"playtime_seconds": playtime_seconds,
+		"slot_index": slot_index,
+
+		"player": _gather_player_data(player),
+		"inventory": _gather_inventory_data(),
+		"progression": _gather_progression_data(),
+		"path_choices": _gather_path_choices(),
+		"statistics": _gather_statistics(),
+		"abilities": _gather_abilities_data()
+	}
+
+	return save_data
+
+func _gather_player_data(player: Node) -> Dictionary:
+	"""Gathers player state"""
+	if not player:
+		return {
+			"current_hp": 100,
+			"max_hp": 100,
+			"current_mana": 100,
+			"max_mana": 100,
+			"position": {"x": 0.0, "y": 0.0},
+			"facing_direction": 1,
+			"current_world": "",
+			"current_room": "",
+			"last_checkpoint": ""
+		}
+
+	return {
+		"current_hp": player.current_hp if player.has("current_hp") else 100,
+		"max_hp": player.MAX_HP if player.has("MAX_HP") else 100,
+		"current_mana": player.current_mana if player.has("current_mana") else 100,
+		"max_mana": player.MAX_MANA if player.has("MAX_MANA") else 100,
+		"position": {
+			"x": player.global_position.x,
+			"y": player.global_position.y
+		},
+		"facing_direction": 1,
+		"current_world": "world_1_ruins",
+		"current_room": "test_room",
+		"last_checkpoint": ""
+	}
+
+func _gather_inventory_data() -> Dictionary:
+	"""Gathers inventory state"""
+	return {
+		"relics": [],
+		"consumables": {},
+		"keys": [],
+		"coins": 0
+	}
+
+func _gather_progression_data() -> Dictionary:
+	"""Gathers world progression"""
+	return {
+		"worlds_unlocked": ["world_1_ruins"],
+		"rooms_cleared": [],
+		"bosses_defeated": [],
+		"checkpoints_activated": [],
+		"secrets_found": []
+	}
+
+func _gather_path_choices() -> Dictionary:
+	"""Gathers path choice stats"""
+	return {
+		"destroy": 0,
+		"mercy": 0,
+		"adapt": 0
+	}
+
+func _gather_statistics() -> Dictionary:
+	"""Gathers gameplay statistics"""
+	return {
+		"total_deaths": 0,
+		"enemies_killed": 0,
+		"perfect_parries": 0,
+		"max_combo": 0,
+		"resonance_modes_activated": 0,
+		"urgathon_uses": 0
+	}
+
+func _gather_abilities_data() -> Dictionary:
+	"""Gathers abilities state"""
+	return {
+		"unlocked": [],
+		"equipped": [null, null, null, null]
+	}
+
+# ============================================================================
+# LOAD GAME
+# ============================================================================
+
+func load_game(slot_index: int) -> bool:
+	"""Loads game state from slot (1-3)"""
+
+	if slot_index < 1 or slot_index > MAX_SLOTS:
+		push_error("[SaveManager] Invalid slot index: %d" % slot_index)
+		load_failed.emit(slot_index, "Invalid slot index")
+		return false
+
+	if not slot_exists(slot_index):
+		var error = "Slot is empty"
+		push_error("[SaveManager] %s: %d" % [error, slot_index])
+		load_failed.emit(slot_index, error)
+		return false
+
+	print("[SaveManager] Loading game from slot %d..." % slot_index)
+
+	# Read file
+	var file_path = _get_slot_path(slot_index)
+	var file = FileAccess.open(file_path, FileAccess.READ)
+
+	if not file:
+		var error = "Failed to open file for reading"
+		push_error("[SaveManager] %s: %s" % [error, file_path])
+		load_failed.emit(slot_index, error)
+		return false
+
+	var json_string = file.get_as_text()
+	file.close()
+
+	# Parse JSON
+	var json = JSON.new()
+	var parse_result = json.parse(json_string)
+
+	if parse_result != OK:
+		var error = "Failed to parse JSON"
+		push_error("[SaveManager] %s" % error)
+		load_failed.emit(slot_index, error)
+		return false
+
+	var save_data = json.data
+
+	# Validate version
+	if save_data.get("version", "") != SAVE_VERSION:
+		push_warning("[SaveManager] Save version mismatch: %s vs %s" % [
+			save_data.get("version", ""),
+			SAVE_VERSION
+		])
+
+	# Apply save data
+	_apply_save_data(save_data)
+
+	# Update state
+	current_slot = slot_index
+	playtime_seconds = save_data.get("playtime_seconds", 0)
+
+	print("[SaveManager] Load completed from slot %d" % slot_index)
+	load_completed.emit(slot_index, true)
+
+	return true
+
+func _apply_save_data(save_data: Dictionary) -> void:
+	"""Applies loaded save data to game state"""
+
+	# Store player data for later application
+	pending_player_data = save_data.get("player", {})
+
+	print("[SaveManager] Stored player data for application after scene load")
+
+# ============================================================================
+# DELETE SAVE
+# ============================================================================
+
+func delete_save(slot_index: int) -> bool:
+	"""Deletes save file from slot"""
+
+	if slot_index < 1 or slot_index > MAX_SLOTS:
+		push_error("[SaveManager] Invalid slot index: %d" % slot_index)
+		return false
+
+	var file_path = _get_slot_path(slot_index)
+
+	if not FileAccess.file_exists(file_path):
+		return true
+
+	var dir = DirAccess.open("user://saves/")
+	var file_name = "slot_%d.json" % slot_index
+	var err = dir.remove(file_name)
+
+	if err != OK:
+		push_error("[SaveManager] Failed to delete slot %d: %d" % [slot_index, err])
+		return false
+
+	print("[SaveManager] Deleted save slot %d" % slot_index)
+
+	# Update metadata
+	_load_all_slot_metadata()
+
+	return true
+
+# ============================================================================
+# SETTINGS
+# ============================================================================
+
+func save_settings() -> bool:
+	"""Saves game settings to settings.json"""
+
+	var settings_data = {
+		"version": SAVE_VERSION,
+		"audio": {
+			"master_volume": AudioServer.get_bus_volume_db(0),
+			"music_volume": 0.7,
+			"sfx_volume": 0.9,
+			"muted": false
+		},
+		"video": {
+			"window_mode": "windowed",
+			"resolution": {
+				"width": 1920,
+				"height": 1080
+			},
+			"vsync": true,
+			"fps_limit": 0
+		},
+		"gameplay": {
+			"blood_effects": true,
+			"screen_shake": true,
+			"damage_numbers": true,
+			"tutorial_prompts": true
+		}
+	}
+
+	var json_string = JSON.stringify(settings_data, "\t")
+
+	var file = FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
+	if not file:
+		push_error("[SaveManager] Failed to save settings")
+		return false
+
+	file.store_string(json_string)
+	file.close()
+
+	print("[SaveManager] Settings saved")
+	return true
+
+func load_settings() -> bool:
+	"""Loads game settings from settings.json"""
+
+	if not FileAccess.file_exists(SETTINGS_PATH):
+		print("[SaveManager] No settings file found, using defaults")
+		return false
+
+	var file = FileAccess.open(SETTINGS_PATH, FileAccess.READ)
+	if not file:
+		push_error("[SaveManager] Failed to open settings file")
+		return false
+
+	var json_string = file.get_as_text()
+	file.close()
+
+	var json = JSON.new()
+	var parse_result = json.parse(json_string)
+
+	if parse_result != OK:
+		push_error("[SaveManager] Failed to parse settings JSON")
+		return false
+
+	var settings_data = json.data
+
+	# Apply settings
+	_apply_settings(settings_data)
+
+	print("[SaveManager] Settings loaded")
+	return true
+
+func _apply_settings(settings: Dictionary) -> void:
+	"""Applies loaded settings"""
+
+	# Audio
+	var audio = settings.get("audio", {})
+	var master_vol = audio.get("master_volume", 0.8)
+	AudioServer.set_bus_volume_db(0, master_vol)
+
+# ============================================================================
+# UTILITY
+# ============================================================================
+
+func _get_slot_path(slot_index: int) -> String:
+	"""Returns file path for slot"""
+	return SAVE_DIR + "slot_%d.json" % slot_index
+
+func get_current_slot() -> int:
+	"""Returns currently loaded slot (or -1)"""
+	return current_slot
+
+func get_playtime() -> int:
+	"""Returns playtime in seconds"""
+	return playtime_seconds
+
+func reset_playtime() -> void:
+	"""Resets playtime counter"""
+	playtime_seconds = 0
+	playtime_timer = 0.0
+
+func set_current_slot(slot_index: int) -> void:
+	"""Sets current active slot (for new game)"""
+	current_slot = slot_index
+	playtime_seconds = 0
+	playtime_timer = 0.0
+	print("[SaveManager] Set current slot to %d" % slot_index)
