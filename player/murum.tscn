@@ -58,7 +58,7 @@ attack_durations = Array[float]([0.3, 0.35, 0.4])
 combo_window = 0.5
 
 [node name="HitboxComponent" parent="CombatSystem" instance=ExtResource("6_hitbox")]
-position = Vector2(32, 0)
+position = Vector2(50, 0)
 collision_layer = 4
 collision_mask = 64
 damage = 10

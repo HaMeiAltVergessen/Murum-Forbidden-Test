@@ -160,22 +160,23 @@ func _create_staff_visual() -> void:
 	staff_sprite.name = "StaffSprite"
 	add_child(staff_sprite)
 
-	# Staff handle (brown)
+	# Staff handle (brown) - Much longer now!
 	var handle: ColorRect = ColorRect.new()
-	handle.size = Vector2(6, 48)
-	handle.position = Vector2(20, -24)
+	handle.size = Vector2(10, 80)  # 10x80 instead of 6x48
+	handle.position = Vector2(30, -40)  # Further from player
 	handle.color = Color(0.4, 0.25, 0.1, 1)
 	staff_sprite.add_child(handle)
 
-	# Staff top (purple/magic)
+	# Staff top (purple/magic) - Bigger and more visible
 	var top: ColorRect = ColorRect.new()
-	top.size = Vector2(12, 12)
-	top.position = Vector2(17, -30)
+	top.size = Vector2(20, 20)  # 20x20 instead of 12x12
+	top.position = Vector2(25, -50)  # At the top of the staff
 	top.color = Color(0.7, 0.3, 1, 1)
 	staff_sprite.add_child(top)
 
-	# Initially hidden
-	staff_sprite.visible = false
+	# Staff is now ALWAYS visible!
+	staff_sprite.visible = true
+	staff_sprite.rotation = 0  # Default idle position
 
 
 func _animate_staff_attack(attack_num: int) -> void:
@@ -183,26 +184,24 @@ func _animate_staff_attack(attack_num: int) -> void:
 	if not staff_sprite:
 		return
 
-	staff_sprite.visible = true
-	staff_sprite.rotation = 0
-
 	# Different animations for each combo
 	var tween: Tween = create_tween()
 
 	match attack_num:
 		1:  # Overhead swing
-			staff_sprite.rotation = -PI/2
-			tween.tween_property(staff_sprite, "rotation", PI/4, attack_durations[0])
+			tween.tween_property(staff_sprite, "rotation", -PI/3, attack_durations[0] * 0.3)
+			tween.tween_property(staff_sprite, "rotation", PI/6, attack_durations[0] * 0.7)
 		2:  # Side swing
-			staff_sprite.rotation = -PI/4
-			tween.tween_property(staff_sprite, "rotation", PI/2, attack_durations[1])
+			tween.tween_property(staff_sprite, "rotation", -PI/6, attack_durations[1] * 0.3)
+			tween.tween_property(staff_sprite, "rotation", PI/3, attack_durations[1] * 0.7)
 		3:  # Upward thrust
-			staff_sprite.rotation = PI/4
-			tween.tween_property(staff_sprite, "rotation", -PI/2, attack_durations[2])
+			tween.tween_property(staff_sprite, "rotation", PI/4, attack_durations[2] * 0.4)
+			tween.tween_property(staff_sprite, "rotation", -PI/4, attack_durations[2] * 0.6)
 
-	# Hide after animation
+	# Return to idle position after attack
 	await tween.finished
-	staff_sprite.visible = false
+	var return_tween: Tween = create_tween()
+	return_tween.tween_property(staff_sprite, "rotation", 0.0, 0.1)
 
 
 # ============ GETTERS ============
