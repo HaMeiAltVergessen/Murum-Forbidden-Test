@@ -213,10 +213,11 @@ func _handle_perfect_parry(enemy: Node) -> void:
 	print("[ParrySystem] Time slow: %.1f× for %.2fs" % [TIME_SLOW_SCALE, TIME_SLOW_DURATION])
 
 	# Add resonance
-	var resonance = player.get_node_or_null("CombatSystem/ResonanceSystem")
-	if resonance:
-		resonance.add_resonance(RESONANCE_GAIN_ON_PARRY)
-		print("[ParrySystem] +%.1f resonance" % RESONANCE_GAIN_ON_PARRY)
+	if player:
+		var resonance = player.get_node_or_null("CombatSystem/ResonanceSystem")
+		if resonance:
+			resonance.add_resonance(RESONANCE_GAIN_ON_PARRY)
+			print("[ParrySystem] +%.1f resonance" % RESONANCE_GAIN_ON_PARRY)
 
 	# Visual effects
 	_play_perfect_parry_vfx(enemy)
@@ -225,9 +226,10 @@ func _handle_perfect_parry(enemy: Node) -> void:
 	AudioManager.play_sfx("player_parry_success", 0.2)
 
 	# Camera shake
-	var camera = player.get_node_or_null("PlayerCamera")
-	if camera and camera.has_method("add_trauma"):
-		camera.add_trauma(0.25)
+	if player:
+		var camera = player.get_node_or_null("PlayerCamera")
+		if camera and camera.has_method("add_trauma"):
+			camera.add_trauma(0.25)
 
 	# Emit signal
 	perfect_parry.emit(enemy)
@@ -303,10 +305,14 @@ func _play_perfect_parry_vfx(enemy: Node) -> void:
 	var flash = flash_scene.instantiate()
 
 	# Position between player and enemy
-	var midpoint = (player.global_position + enemy.global_position) / 2.0
-
-	get_tree().root.add_child(flash)
-	flash.global_position = midpoint
+	if player:
+		var midpoint = (player.global_position + enemy.global_position) / 2.0
+		get_tree().root.add_child(flash)
+		flash.global_position = midpoint
+	else:
+		# Fallback: position at enemy
+		get_tree().root.add_child(flash)
+		flash.global_position = enemy.global_position
 
 	# Auto-cleanup
 	await get_tree().create_timer(1.0).timeout
