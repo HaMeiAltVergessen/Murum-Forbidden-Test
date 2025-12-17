@@ -36,6 +36,11 @@ func take_damage(damage: int, knockback: Vector2, hitstun: float) -> bool:
 	if is_invulnerable:
 		return false
 
+	# Check if player is parrying (Parry System handles the attack)
+	if _is_parrying():
+		print("[HurtboxComponent] Parry active - damage blocked by ParrySystem")
+		return false
+
 	# Emit damage signal
 	damage_received.emit(damage, knockback, hitstun)
 
@@ -78,3 +83,18 @@ func force_end_invulnerability() -> void:
 func get_is_invulnerable() -> bool:
 	"""Returns invulnerability state"""
 	return is_invulnerable
+
+
+# ============ PARRY CHECK ============
+func _is_parrying() -> bool:
+	"""Checks if ParrySystem is active and parrying"""
+	# Check if owner has ParrySystem
+	var parry_system = owner.get_node_or_null("CombatSystem/ParrySystem")
+	if not parry_system:
+		return false
+
+	# Check if parrying
+	if parry_system.has_method("is_parrying"):
+		return parry_system.is_parrying()
+
+	return false

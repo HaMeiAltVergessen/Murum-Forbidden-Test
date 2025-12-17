@@ -62,6 +62,28 @@ signal combat_ended()
 ## Emitted when resonance mode timer updates (countdown)
 signal resonance_mode_timer_updated(time_remaining: float)
 
+# ============ PARRY SIGNALS ============
+## Emitted when parry attempt starts
+signal parry_started()
+
+## Emitted when parry window opens (active parry frame)
+signal parry_window_opened()
+
+## Emitted when perfect parry succeeds
+signal perfect_parry(enemy: Node)
+
+## Emitted when parry fails (timeout)
+signal parry_failed()
+
+## Emitted when parry cooldown starts
+signal parry_cooldown_started(duration: float)
+
+## Emitted when parry cooldown updates
+signal parry_cooldown_updated(time_remaining: float)
+
+## Emitted when enemy is stunned
+signal enemy_stunned(enemy: Node, duration: float)
+
 # ============ ENVIRONMENT SIGNALS ============
 ## Emitted when lever is activated
 signal lever_activated(lever: Node)

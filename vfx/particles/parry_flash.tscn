@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://parry_flash_vfx"]
+
+[ext_resource type="Script" path="res://vfx/particles/parry_flash.gd" id="1_parry_flash_script"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_1"]
+emission_shape = 1
+emission_sphere_radius = 20.0
+particle_flag_disable_z = true
+direction = Vector3(0, 0, 0)
+spread = 180.0
+initial_velocity_min = 100.0
+initial_velocity_max = 200.0
+gravity = Vector3(0, 0, 0)
+scale_min = 1.0
+scale_max = 2.0
+color = Color(0.5, 1.5, 1.5, 1)
+
+[node name="ParryFlash" type="GPUParticles2D"]
+amount = 20
+process_material = SubResource("ParticleProcessMaterial_1")
+texture = null
+lifetime = 0.4
+one_shot = true
+explosiveness = 1.0
+script = ExtResource("1_parry_flash_script")
