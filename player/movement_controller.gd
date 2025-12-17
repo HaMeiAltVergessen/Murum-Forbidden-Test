@@ -95,6 +95,11 @@ func _start_crouch() -> void:
 		# Adjust position to keep player on ground
 		collision_shape.position.y = (normal_collision_height - crouch_collision_height) / 2
 
+	# Scale sprite to 50% height (crouch visual)
+	var sprite: Sprite2D = player.get_node_or_null("Sprite2D")
+	if sprite:
+		sprite.scale = Vector2(1.0, 0.5)
+
 	print("[Movement] Started crouching")
 
 
@@ -112,6 +117,11 @@ func _end_crouch() -> void:
 		var capsule: CapsuleShape2D = collision_shape.shape as CapsuleShape2D
 		capsule.height = normal_collision_height
 		collision_shape.position.y = 0
+
+	# Restore sprite to normal scale
+	var sprite: Sprite2D = player.get_node_or_null("Sprite2D")
+	if sprite:
+		sprite.scale = Vector2(1.0, 1.0)
 
 	print("[Movement] Stopped crouching")
 
