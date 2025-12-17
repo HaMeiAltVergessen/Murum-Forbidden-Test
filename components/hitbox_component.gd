@@ -55,9 +55,13 @@ func _deal_damage_to(hurtbox: HurtboxComponent) -> void:
 	if spawn_hit_effect:
 		_spawn_hit_effect(hurtbox.global_position)
 
+	# Get the actual attacker (owner, not immediate parent)
+	var attacker: Node = owner if owner else get_parent()
+	var target: Node = hurtbox.owner if hurtbox.owner else hurtbox.get_parent()
+
 	# Emit signal
-	hit_registered.emit(hurtbox.get_parent(), damage)
-	EventBus.hit_registered.emit(get_parent(), hurtbox.get_parent(), damage)
+	hit_registered.emit(target, damage)
+	EventBus.hit_registered.emit(attacker, target, damage)
 
 	print("[Hitbox] Hit registered: ", damage, " damage to ", hurtbox.get_parent().name)
 	print("1")  # Success indicator for hits
