@@ -183,7 +183,7 @@ func set_mode_active(active: bool, time_remaining: float = 0.0) -> void:
 			countdown.name = "CountdownLabel"
 			countdown.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 			countdown.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-			countdown.theme_override_font_sizes/font_size = 12
+			countdown.add_theme_font_size_override("font_size", 12)
 			countdown.position = Vector2(150, 2)
 			add_child(countdown)
 
