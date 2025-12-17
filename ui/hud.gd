@@ -106,7 +106,7 @@ func _on_hide_interaction_prompt() -> void:
 		interaction_prompt.visible = false
 
 
-func _on_resonance_changed(current: float, maximum: float, percentage: float) -> void:
+func _on_resonance_changed(current: float, maximum: float, _percentage: float) -> void:
 	"""Updates resonance bar"""
 	if resonance_bar:
 		resonance_bar.set_resonance(current, maximum)
