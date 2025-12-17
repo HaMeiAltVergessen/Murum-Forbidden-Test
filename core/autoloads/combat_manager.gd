@@ -22,10 +22,6 @@ var active_enemies: Array[Node] = []
 var time_since_last_combat_action: float = 0.0
 const COMBAT_TIMEOUT: float = 3.0
 
-# ============ HITSTOP STATE ============
-var is_hitstop_active: bool = false
-var hitstop_timer: float = 0.0
-
 # ============ SIGNALS ============
 signal combo_increased(new_count: int, multiplier: float)
 signal combo_broken(final_count: int)
@@ -48,7 +44,6 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_update_combo_timer(delta)
-	_update_hitstop(delta)
 	_update_combat_state(delta)
 
 
@@ -171,7 +166,7 @@ func _update_combo_timer(delta: float) -> void:
 # ============ HITSTOP SYSTEM ============
 func trigger_hitstop(duration: float = -1.0) -> void:
 	"""
-	Triggers hitstop (freeze frame effect).
+	Triggers hitstop (freeze frame effect) via GlobalTimeEffects.
 
 	Args:
 		duration: Custom duration, or -1 to use combo-based duration
@@ -185,34 +180,13 @@ func trigger_hitstop(duration: float = -1.0) -> void:
 		else:
 			hitstop_duration = hitstop_duration_normal
 
-	# Activate hitstop
-	is_hitstop_active = true
-	hitstop_timer = hitstop_duration
-	Engine.time_scale = 0.0
+	# Use GlobalTimeEffects for hitstop (handles priority with slow motion)
+	GlobalTimeEffects.hit_stop(hitstop_duration)
 
 	# Emit signal
 	hitstop_triggered.emit(hitstop_duration)
 
 	print("[CombatManager] Hitstop: %.3fs" % hitstop_duration)
-
-
-func _update_hitstop(delta: float) -> void:
-	"""Updates hitstop timer and restores time scale."""
-	if not is_hitstop_active:
-		return
-
-	# Use unscaled delta time for hitstop timer
-	hitstop_timer -= get_process_delta_time()
-
-	if hitstop_timer <= 0:
-		_end_hitstop()
-
-
-func _end_hitstop() -> void:
-	"""Ends hitstop effect and restores normal time."""
-	is_hitstop_active = false
-	hitstop_timer = 0.0
-	Engine.time_scale = 1.0
 
 
 # ============ COMBAT STATE MANAGEMENT ============
