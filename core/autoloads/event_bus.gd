@@ -142,6 +142,22 @@ signal show_notification(message: String, duration: float)
 ## Emitted when enemy is killed
 signal enemy_killed(enemy: Node, killer: Node)
 
+# ============ WORLD/ROOM SIGNALS ============
+## Emitted when checkpoint is set
+signal checkpoint_set(checkpoint_id: String, position: Vector2)
+
+## Emitted when room is cleared
+signal room_cleared(room_id: String)
+
+## Emitted when door is unlocked
+signal door_unlocked(door_id: String)
+
+## Emitted when world is unlocked
+signal world_unlocked(world_id: String)
+
+## Emitted when boss is defeated
+signal boss_defeated(boss_id: String)
+
 
 func _ready() -> void:
 	print("[EventBus] Initialized")
