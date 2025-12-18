@@ -23,6 +23,7 @@ AudioManager="*res://core/autoloads/audio_manager.gd"
 CombatManager="*res://core/autoloads/combat_manager.gd"
 GlobalTimeEffects="*res://core/autoloads/global_time_effects.gd"
 SaveManager="*res://core/autoloads/save_manager.gd"
+WorldManager="*res://core/autoloads/world_manager.gd"
 
 [display]
 

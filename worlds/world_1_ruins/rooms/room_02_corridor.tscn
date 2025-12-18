@@ -1,0 +1,61 @@
+[gd_scene load_steps=8 format=3 uid="uid://csm4v9x2ntpqr"]
+
+[ext_resource type="Script" path="res://worlds/world_1_ruins/rooms/room_02_corridor.gd" id="1_room02"]
+[ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="2_spike"]
+[ext_resource type="PackedScene" uid="uid://b9kx4m2v7pqrs" path="res://environment/interactables/lever.tscn" id="3_lever"]
+[ext_resource type="PackedScene" uid="uid://d7kx3n5q8mtyu" path="res://environment/spawn_point.tscn" id="4_spawn"]
+[ext_resource type="PackedScene" path="res://environment/door.tscn" id="5_door"]
+[ext_resource type="PackedScene" path="res://enemies/untote.tscn" id="6_untote"]
+[ext_resource type="PackedScene" path="res://enemies/world_1_ruins/geist.tscn" id="7_geist"]
+
+[node name="Room02Corridor" type="Node2D"]
+script = ExtResource("1_room02")
+
+[node name="TileMap" type="TileMap" parent="."]
+format = 2
+
+[node name="Environment" type="Node2D" parent="."]
+
+[node name="SpikeTrap" parent="Environment" instance=ExtResource("2_spike")]
+position = Vector2(400, 600)
+
+[node name="Lever" parent="Environment" instance=ExtResource("3_lever")]
+position = Vector2(900, 400)
+
+[node name="Enemies" type="Node2D" parent="."]
+
+[node name="Untote1" parent="Enemies" instance=ExtResource("6_untote")]
+position = Vector2(400, 400)
+
+[node name="Geist1" parent="Enemies" instance=ExtResource("7_geist")]
+position = Vector2(700, 300)
+
+[node name="Untote2" parent="Enemies" instance=ExtResource("6_untote")]
+position = Vector2(1000, 500)
+
+[node name="Doors" type="Node2D" parent="."]
+
+[node name="DoorToRoom01" parent="Doors" instance=ExtResource("5_door")]
+position = Vector2(100, 360)
+
+[node name="DoorToRoom03" parent="Doors" instance=ExtResource("5_door")]
+position = Vector2(1180, 360)
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="FromRoom01" parent="SpawnPoints" instance=ExtResource("4_spawn")]
+position = Vector2(150, 360)
+
+[node name="FromRoom03" parent="SpawnPoints" instance=ExtResource("4_spawn")]
+position = Vector2(1130, 360)
+
+[node name="Default" parent="SpawnPoints" instance=ExtResource("4_spawn")]
+position = Vector2(640, 360)
+
+[node name="PlayerCamera" type="Camera2D" parent="."]
+position = Vector2(640, 360)
+limit_left = 0
+limit_top = 0
+limit_right = 1280
+limit_bottom = 720
+position_smoothing_enabled = true

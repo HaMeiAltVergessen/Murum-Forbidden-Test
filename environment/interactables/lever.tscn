@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3 uid="uid://b9kx4m2v7pqrs"]
+
+[ext_resource type="Script" path="res://environment/interactables/lever.gd" id="1_lever"]
+
+[node name="Lever" type="StaticBody2D"]
+script = ExtResource("1_lever")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+rotation = -0.785398
+scale = Vector2(2, 4)
+modulate = Color(0.7, 0.7, 0.7, 1)
+
+[node name="InteractionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
+shape = RectangleShape2D.new()
+
+[node name="PromptLabel" type="Label" parent="."]
+offset_left = -50.0
+offset_top = -60.0
+offset_right = 50.0
+offset_bottom = -40.0
+theme_type_variation = &"LabelOutline"
+text = "Press E to Toggle"
+horizontal_alignment = 1
+vertical_alignment = 1

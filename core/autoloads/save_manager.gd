@@ -264,6 +264,16 @@ func _gather_player_data(player: Node) -> Dictionary:
 			"last_checkpoint": ""
 		}
 
+	# Get current world/room from WorldManager
+	var current_world = "world_1_ruins"
+	var current_room = "test_room"
+	var last_checkpoint = ""
+
+	if WorldManager:
+		current_world = WorldManager.current_world
+		current_room = WorldManager.current_room
+		last_checkpoint = WorldManager.last_checkpoint
+
 	return {
 		"current_hp": player.current_hp if player.has("current_hp") else 100,
 		"max_hp": player.MAX_HP if player.has("MAX_HP") else 100,
@@ -274,9 +284,9 @@ func _gather_player_data(player: Node) -> Dictionary:
 			"y": player.global_position.y
 		},
 		"facing_direction": 1,
-		"current_world": "world_1_ruins",
-		"current_room": "test_room",
-		"last_checkpoint": ""
+		"current_world": current_world,
+		"current_room": current_room,
+		"last_checkpoint": last_checkpoint
 	}
 
 func _gather_inventory_data() -> Dictionary:
@@ -290,6 +300,11 @@ func _gather_inventory_data() -> Dictionary:
 
 func _gather_progression_data() -> Dictionary:
 	"""Gathers world progression"""
+	# Get progression from WorldManager if available
+	if WorldManager:
+		return WorldManager.get_progression_data()
+
+	# Fallback if WorldManager not available
 	return {
 		"worlds_unlocked": ["world_1_ruins"],
 		"rooms_cleared": [],
@@ -393,6 +408,22 @@ func _apply_save_data(save_data: Dictionary) -> void:
 
 	# Store player data for later application
 	pending_player_data = save_data.get("player", {})
+
+	# Load progression data into WorldManager
+	var progression_data = save_data.get("progression", {})
+	if WorldManager:
+		WorldManager.load_progression_data(progression_data)
+		print("[SaveManager] Loaded progression data to WorldManager")
+
+	# Transition to saved room
+	var player_data = save_data.get("player", {})
+	var saved_room = player_data.get("current_room", "test_room")
+
+	if WorldManager and saved_room != WorldManager.current_room:
+		print("[SaveManager] Transitioning to saved room: %s" % saved_room)
+		WorldManager.transition_to_room(saved_room, "default")
+	else:
+		print("[SaveManager] Already in correct room: %s" % saved_room)
 
 	print("[SaveManager] Stored player data for application after scene load")
 

@@ -1,0 +1,33 @@
+extends Node2D
+
+## Room 01 - Entry/Tutorial Room
+
+# ============================================================================
+# PROPERTIES
+# ============================================================================
+
+const ROOM_ID: String = "room_01_entry"
+const WORLD_ID: String = "world_1_ruins"
+
+# ============================================================================
+# REFERENCES
+# ============================================================================
+
+@onready var door_to_room_02: Door = $Doors/DoorToRoom02
+
+# ============================================================================
+# INITIALIZATION
+# ============================================================================
+
+func _ready() -> void:
+	# Configure door
+	if door_to_room_02:
+		door_to_room_02.door_id = "room_01_door_to_room_02"
+		door_to_room_02.is_transition_door = true
+		door_to_room_02.target_room = "room_02_corridor"
+		door_to_room_02.spawn_point = "from_room_01"
+		door_to_room_02.unlock_on_room_clear = false
+		# Unlock by default (tutorial complete)
+		door_to_room_02.unlock()
+
+	print("[Room01] Initialized")
