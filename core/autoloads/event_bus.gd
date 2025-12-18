@@ -158,6 +158,19 @@ signal world_unlocked(world_id: String)
 ## Emitted when boss is defeated
 signal boss_defeated(boss_id: String)
 
+# ============ WAVE SYSTEM SIGNALS ============
+## Emitted when wave spawner starts
+signal wave_spawner_started
+
+## Emitted when new wave starts
+signal wave_started(wave_index: int, total_waves: int)
+
+## Emitted when wave is completed
+signal wave_completed(wave_index: int, total_waves: int)
+
+## Emitted when all waves are completed
+signal all_waves_completed
+
 
 func _ready() -> void:
 	print("[EventBus] Initialized")

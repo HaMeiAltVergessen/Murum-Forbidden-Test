@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://c2nx5q8v4kmpr"]
+
+[ext_resource type="Script" path="res://environment/checkpoint.gd" id="1_checkpoint"]
+
+[node name="Checkpoint" type="Area2D"]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_checkpoint")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.7, 0.7, 0.7, 1)
+scale = Vector2(3, 3)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = RectangleShape2D.new()
