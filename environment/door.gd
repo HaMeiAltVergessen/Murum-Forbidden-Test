@@ -17,6 +17,7 @@ enum DoorState {
 @onready var prompt_label: Label = $PromptLabel
 
 # ============ CONFIGURATION ============
+@export var door_id: String = ""
 @export var opening_duration: float = 1.0
 @export var connected_lever: NodePath
 
@@ -127,6 +128,19 @@ func try_unlock_on_clear(_room_id: String) -> void:
 		unlock()
 
 # ============ STATE MANAGEMENT ============
+func lock() -> void:
+	"""Locks the door"""
+	if current_state == DoorState.LOCKED:
+		return
+
+	current_state = DoorState.LOCKED
+	print("[Door] Locked")
+
+	# Update visual
+	_update_visual()
+	if player_in_range:
+		_update_prompt_text()
+
 func unlock() -> void:
 	"""Unlocks the door (called by lever or room clear)"""
 	if current_state != DoorState.LOCKED:
