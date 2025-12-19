@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://b8mx4n7q9prst"]
+[gd_scene load_steps=5 format=3 uid="uid://b8mx4n7q9prst"]
 
 [ext_resource type="Script" path="res://worlds/world_1_ruins/rooms/room_01_entry.gd" id="1_room01"]
 [ext_resource type="PackedScene" uid="uid://d7kx3n5q8mtyu" path="res://environment/spawn_point.tscn" id="2_spawn"]
 [ext_resource type="PackedScene" path="res://environment/door.tscn" id="3_door"]
+[ext_resource type="PackedScene" uid="uid://b9kx4m2v7pqrs" path="res://environment/interactables/lever.tscn" id="4_lever"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1280, 80)
@@ -43,6 +44,11 @@ facing_direction = -1
 
 [node name="DoorToRoom02" parent="Doors" instance=ExtResource("3_door")]
 position = Vector2(1180, 600)
+
+[node name="Environment" type="Node2D" parent="."]
+
+[node name="Lever" parent="Environment" instance=ExtResource("4_lever")]
+position = Vector2(900, 600)
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 position = Vector2(640, 360)

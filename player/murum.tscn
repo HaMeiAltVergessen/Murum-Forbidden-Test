@@ -72,5 +72,7 @@ collision_mask = 96
 script = ExtResource("10_staff")
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
+position_smoothing_enabled = true
+position_smoothing_speed = 5.0
 script = ExtResource("8_camera")
 zoom = Vector2(1, 1)
