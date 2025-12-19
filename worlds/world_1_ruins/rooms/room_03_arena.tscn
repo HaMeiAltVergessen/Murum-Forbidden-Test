@@ -98,11 +98,3 @@ facing_direction = -1
 
 [node name="Default" parent="PlayerSpawns" instance=ExtResource("5_spawn")]
 position = Vector2(800, 780)
-
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(800, 450)
-limit_left = 0
-limit_top = 0
-limit_right = 1600
-limit_bottom = 900
-position_smoothing_enabled = true
