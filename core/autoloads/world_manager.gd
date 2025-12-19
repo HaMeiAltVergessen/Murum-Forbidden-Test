@@ -110,14 +110,33 @@ func _execute_transition(room_id: String) -> void:
 	# 1. Fade out
 	await _fade_out(0.5)
 
-	# 2. Save player reference before unloading
+	# 2. Save player and UI elements before unloading
 	var player = get_tree().get_first_node_in_group("player")
-	var player_parent = null
+	var hud = get_tree().get_first_node_in_group("hud")
+	var death_screen = get_tree().get_first_node_in_group("death_screen")
+
+	var preserved_nodes = []
+
 	if player:
-		player_parent = player.get_parent()
-		# Reparent player to WorldManager to keep it alive
+		var player_parent = player.get_parent()
 		player_parent.remove_child(player)
 		add_child(player)
+		preserved_nodes.append(player)
+		print("[WorldManager] Player preserved for transition")
+
+	if hud:
+		var hud_parent = hud.get_parent()
+		hud_parent.remove_child(hud)
+		add_child(hud)
+		preserved_nodes.append(hud)
+		print("[WorldManager] HUD preserved for transition")
+
+	if death_screen:
+		var death_screen_parent = death_screen.get_parent()
+		death_screen_parent.remove_child(death_screen)
+		add_child(death_screen)
+		preserved_nodes.append(death_screen)
+		print("[WorldManager] DeathScreen preserved for transition")
 
 	# 3. Unload current scene
 	_unload_current_scene()
@@ -199,21 +218,47 @@ func _spawn_player_at_point(spawn_point_name: String) -> void:
 	# Wait for scene to be ready
 	await get_tree().process_frame
 
-	# Get player (might be child of WorldManager after transition)
+	# Get current scene
+	var root = get_tree().root
+	var current_scene = root.get_child(root.get_child_count() - 1)
+
+	# Get preserved nodes (might be children of WorldManager after transition)
 	var player = get_tree().get_first_node_in_group("player")
+	var hud = get_tree().get_first_node_in_group("hud")
+	var death_screen = get_tree().get_first_node_in_group("death_screen")
 
 	if not player:
 		push_warning("[WorldManager] Player not found in scene!")
 		return
 
-	# Get current scene
-	var root = get_tree().root
-	var current_scene = root.get_child(root.get_child_count() - 1)
+	# Remove duplicate cameras from the new scene (player has its own camera)
+	var scene_cameras = current_scene.find_children("*", "Camera2D", true, false)
+	for cam in scene_cameras:
+		if cam.get_parent() != player:  # Don't remove player's camera
+			print("[WorldManager] Removing duplicate camera: %s" % cam.name)
+			cam.queue_free()
 
-	# If player is child of WorldManager, move it to the new scene
+	# Move preserved nodes from WorldManager to new scene
 	if player.get_parent() == self and current_scene:
 		remove_child(player)
 		current_scene.add_child(player)
+
+	if hud and hud.get_parent() == self and current_scene:
+		remove_child(hud)
+		current_scene.add_child(hud)
+		print("[WorldManager] HUD restored to scene")
+
+	if death_screen and death_screen.get_parent() == self and current_scene:
+		remove_child(death_screen)
+		current_scene.add_child(death_screen)
+		print("[WorldManager] DeathScreen restored to scene")
+
+	# Ensure player's camera is active
+	var player_camera = player.get_node_or_null("PlayerCamera")
+	if player_camera:
+		player_camera.enabled = true
+		player_camera.make_current()
+		print("[WorldManager] Player camera activated")
 
 	# Find spawn point in the new scene
 	var spawn_points = current_scene.find_children("*", "Node2D", true, false)
