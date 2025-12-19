@@ -147,9 +147,12 @@ func _on_body_entered(body: Node2D) -> void:
 	if current_state != State.ACTIVE:
 		return
 
-	# Deal damage
-	if body.has_method("take_damage"):
-		body.take_damage(DAMAGE, self)
+	# Deal damage through HurtboxComponent
+	var hurtbox = body.get_node_or_null("HurtboxComponent")
+	if hurtbox and hurtbox.has_method("take_damage"):
+		var knockback_direction = (body.global_position - global_position).normalized()
+		var knockback = knockback_direction * 200.0  # Knockback force
+		hurtbox.take_damage(DAMAGE, knockback, 0.3)
 		print("[SpikeTrap] Hit player for %d damage" % DAMAGE)
 
 # ============================================================================
