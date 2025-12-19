@@ -253,10 +253,10 @@ func _spawn_wave_coins() -> void:
 # EFFECTS
 # ============================================================================
 
-func _play_spawn_effect(position: Vector2) -> void:
+func _play_spawn_effect(_position: Vector2) -> void:
 	"""Visual effect for enemy spawn"""
 
-	# TODO: Spawn particle effect
+	# TODO: Spawn particle effect at _position
 	# Placeholder: Camera shake
 	var player = get_tree().get_first_node_in_group("player")
 	if player and player.has_node("PlayerCamera"):
