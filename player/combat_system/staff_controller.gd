@@ -166,12 +166,20 @@ func _has_mana() -> bool:
 	if not player:
 		return false
 
-	return player.current_mana >= THROW_COST
+	var mana_component = player.get_node_or_null("ManaComponent")
+	if not mana_component:
+		return false
+
+	return mana_component.current_mana >= THROW_COST
 
 func _consume_mana() -> void:
-	if player and player.has("current_mana"):
-		player.current_mana -= THROW_COST
-		EventBus.player_mana_changed.emit(player.current_mana, player.MAX_MANA)
+	if not player:
+		return
+
+	var mana_component = player.get_node_or_null("ManaComponent")
+	if mana_component:
+		mana_component.current_mana -= THROW_COST
+		EventBus.player_mana_changed.emit(mana_component.current_mana, mana_component.max_mana)
 
 func _show_no_mana_feedback() -> void:
 	if AudioManager:
