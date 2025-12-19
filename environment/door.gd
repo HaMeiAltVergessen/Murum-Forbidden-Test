@@ -1,5 +1,5 @@
 extends StaticBody2D
-## Door - Opens when activated by lever
+## Door - Opens when activated by lever OR transitions to another room
 class_name Door
 
 # ============ DOOR STATES ============
@@ -13,16 +13,29 @@ enum DoorState {
 # ============ REFERENCES ============
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
+@onready var interaction_area: Area2D = $InteractionArea
+@onready var prompt_label: Label = $PromptLabel
 
 # ============ CONFIGURATION ============
+@export var door_id: String = ""
 @export var opening_duration: float = 1.0
 @export var connected_lever: NodePath
 
+# Room Transition Properties
+@export var is_transition_door: bool = false
+@export var target_room: String = ""
+@export var spawn_point: String = "default"
+@export var unlock_on_room_clear: bool = true
+
 # ============ STATE ============
 var current_state: DoorState = DoorState.LOCKED
+var player_in_range: bool = false
 
 
 func _ready() -> void:
+	# Add to doors group
+	add_to_group("doors")
+
 	# Set initial visual
 	_update_visual()
 
@@ -32,20 +45,119 @@ func _ready() -> void:
 		if lever:
 			lever.activated.connect(unlock)
 
-	print("[Door] Initialized at ", global_position)
+	# Setup interaction area for transition doors
+	if is_transition_door and interaction_area:
+		interaction_area.body_entered.connect(_on_body_entered)
+		interaction_area.body_exited.connect(_on_body_exited)
 
+	# Hide prompt initially
+	if prompt_label:
+		prompt_label.visible = false
+
+	# Check if should start unlocked
+	if is_transition_door and not unlock_on_room_clear:
+		unlock()
+
+	print("[Door] Initialized at %v (transition: %s)" % [global_position, is_transition_door])
+
+
+# ============ INPUT ============
+func _input(event: InputEvent) -> void:
+	if not player_in_range or not is_transition_door:
+		return
+
+	if event.is_action_pressed("interact"):
+		attempt_use()
+
+func attempt_use() -> void:
+	"""Attempts to use transition door"""
+	if is_locked():
+		_show_locked_message()
+		return
+
+	# Trigger room transition
+	_transition_to_target_room()
+
+func _transition_to_target_room() -> void:
+	"""Transitions to target room"""
+	if target_room.is_empty():
+		push_error("[Door] No target room set!")
+		return
+
+	print("[Door] Transitioning to room: %s" % target_room)
+	WorldManager.transition_to_room(target_room, spawn_point)
+
+func _show_locked_message() -> void:
+	"""Shows locked door message"""
+	if not is_transition_door:
+		return
+
+	if prompt_label:
+		prompt_label.text = "Locked - Clear room first"
+
+# ============ PLAYER DETECTION ============
+func _on_body_entered(body: Node2D) -> void:
+	if body.is_in_group("player"):
+		player_in_range = true
+
+		if prompt_label:
+			prompt_label.visible = true
+			_update_prompt_text()
+
+func _on_body_exited(body: Node2D) -> void:
+	if body.is_in_group("player"):
+		player_in_range = false
+
+		if prompt_label:
+			prompt_label.visible = false
+
+func _update_prompt_text() -> void:
+	"""Updates interaction prompt"""
+	if not prompt_label:
+		return
+
+	if is_locked():
+		prompt_label.text = "Locked"
+	else:
+		prompt_label.text = "Press E to Enter"
+
+# ============ ROOM CLEAR UNLOCK ============
+func try_unlock_on_clear(_room_id: String) -> void:
+	"""Called by WorldManager when room is cleared"""
+	if unlock_on_room_clear and is_locked():
+		unlock()
 
 # ============ STATE MANAGEMENT ============
+func lock() -> void:
+	"""Locks the door"""
+	if current_state == DoorState.LOCKED:
+		return
+
+	current_state = DoorState.LOCKED
+	print("[Door] Locked")
+
+	# Update visual
+	_update_visual()
+	if player_in_range:
+		_update_prompt_text()
+
 func unlock() -> void:
-	"""Unlocks the door (called by lever)"""
+	"""Unlocks the door (called by lever or room clear)"""
 	if current_state != DoorState.LOCKED:
 		return
 
 	current_state = DoorState.CLOSED
 	print("[Door] Unlocked")
 
-	# Immediately start opening
-	open()
+	# For lever doors, immediately open
+	# For transition doors, just unlock (player must interact)
+	if not is_transition_door:
+		open()
+	else:
+		# Update visual for unlocked state
+		_update_visual()
+		if player_in_range:
+			_update_prompt_text()
 
 
 func open() -> void:

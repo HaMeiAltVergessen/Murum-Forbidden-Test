@@ -142,6 +142,39 @@ signal show_notification(message: String, duration: float)
 ## Emitted when enemy is killed
 signal enemy_killed(enemy: Node, killer: Node)
 
+# ============ WORLD/ROOM SIGNALS ============
+## Emitted when checkpoint is set
+signal checkpoint_set(checkpoint_id: String, position: Vector2)
+
+## Emitted when room is cleared
+signal room_cleared(room_id: String)
+
+## Emitted when door is unlocked
+signal door_unlocked(door_id: String)
+
+## Emitted when world is unlocked
+signal world_unlocked(world_id: String)
+
+## Emitted when boss is defeated
+signal boss_defeated(boss_id: String)
+
+# ============ WAVE SYSTEM SIGNALS ============
+## Emitted when wave spawner starts
+signal wave_spawner_started
+
+## Emitted when new wave starts
+signal wave_started(wave_index: int, total_waves: int)
+
+## Emitted when wave is completed
+signal wave_completed(wave_index: int, total_waves: int)
+
+## Emitted when all waves are completed
+signal all_waves_completed
+
+# ============ PLAYER SIGNALS ============
+## Emitted when player has insufficient mana
+signal mana_insufficient
+
 
 func _ready() -> void:
 	print("[EventBus] Initialized")
