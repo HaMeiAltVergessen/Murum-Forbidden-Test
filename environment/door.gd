@@ -182,12 +182,12 @@ func open() -> void:
 
 func _animate_opening() -> void:
 	"""Animates door opening"""
-	# Fade out and move up
+	# Fade to semi-transparent and move up slightly
 	if sprite:
 		var tween: Tween = create_tween()
 		tween.set_parallel(true)
-		tween.tween_property(sprite, "modulate:a", 0.0, opening_duration)
-		tween.tween_property(sprite, "position:y", sprite.position.y - 64, opening_duration)
+		tween.tween_property(sprite, "modulate:a", 0.3, opening_duration)  # Semi-transparent
+		tween.tween_property(sprite, "position:y", sprite.position.y - 32, opening_duration)
 
 	# Disable collision after animation starts
 	await get_tree().create_timer(0.1).timeout
@@ -204,7 +204,7 @@ func _animate_opening() -> void:
 	# Emit signal
 	EventBus.door_state_changed.emit(self, "open")
 
-	print("[Door] Fully opened")
+	print("[Door] Fully opened - player can pass through")
 
 
 # ============ VISUAL ============
@@ -221,7 +221,7 @@ func _update_visual() -> void:
 		DoorState.OPENING:
 			pass  # Animation handles this
 		DoorState.OPEN:
-			sprite.modulate = Color(0.8, 0.6, 0.3, 0)  # Transparent
+			sprite.modulate = Color(0.5, 0.8, 0.5, 0.3)  # Green-ish semi-transparent (passable)
 
 
 # ============ GETTERS ============
