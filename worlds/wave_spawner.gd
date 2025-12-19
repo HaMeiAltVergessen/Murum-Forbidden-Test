@@ -272,7 +272,7 @@ func _play_completion_effect() -> void:
 
 	# Audio
 	if AudioManager:
-		AudioManager.play_sfx("ui/waves_complete", Vector2.ZERO, 0.0)
+		AudioManager.play_sfx("ui/waves_complete", 0.0)
 
 	# Notification
 	EventBus.show_notification.emit("All Waves Cleared!", 3.0)

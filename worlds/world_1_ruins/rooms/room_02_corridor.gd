@@ -163,4 +163,4 @@ func _play_clear_effect() -> void:
 
 	# Audio
 	if AudioManager:
-		AudioManager.play_sfx("ui/room_clear", Vector2.ZERO, 0.0)
+		AudioManager.play_sfx("ui/room_clear", 0.0)
