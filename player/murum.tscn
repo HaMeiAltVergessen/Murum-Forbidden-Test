@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://b1k5wfkqxc8yx"]
+[gd_scene load_steps=11 format=3 uid="uid://b1k5wfkqxc8yx"]
 
 [ext_resource type="Script" path="res://player/murum.gd" id="1_murum"]
 [ext_resource type="Script" path="res://player/movement_controller.gd" id="2_movement"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="7_hurtbox"]
 [ext_resource type="Script" path="res://player/player_camera.gd" id="8_camera"]
 [ext_resource type="Texture2D" uid="uid://jg4v3jkvbw1b" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Wizard/wizard-sheet.png" id="9_wizard"]
+[ext_resource type="Script" path="res://player/combat_system/staff_controller.gd" id="10_staff"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 radius = 16.0
@@ -66,6 +67,9 @@ damage = 10
 [node name="HurtboxComponent" parent="." instance=ExtResource("7_hurtbox")]
 collision_layer = 8
 collision_mask = 96
+
+[node name="StaffController" type="Node" parent="."]
+script = ExtResource("10_staff")
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 script = ExtResource("8_camera")
