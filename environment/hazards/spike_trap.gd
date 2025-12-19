@@ -25,7 +25,8 @@ var state_timer: float = 0.0
 # REFERENCES
 # ============================================================================
 
-@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
+@onready var sprite: Node = get_node_or_null("AnimatedSprite2D")
+@onready var visual: Node = get_node_or_null("Visual")
 @onready var hitbox: Area2D = $HitboxComponent
 @onready var warning_zone: Area2D = $WarningZone
 
@@ -157,18 +158,19 @@ func _on_body_entered(body: Node2D) -> void:
 
 func _update_visual() -> void:
 	"""Updates sprite based on state"""
-	if not sprite:
+	var display_node = visual if visual else sprite
+	if not display_node:
 		return
 
 	match current_state:
 		State.INACTIVE:
-			sprite.modulate = Color.WHITE
+			display_node.modulate = Color.WHITE
 
 		State.WARNING:
-			sprite.modulate = Color(1.5, 1.0, 0.5)  # Orange
+			display_node.modulate = Color(1.5, 1.0, 0.5)  # Orange
 
 		State.ACTIVE:
-			sprite.modulate = Color(1.5, 0.5, 0.5)  # Red
+			display_node.modulate = Color(1.5, 0.5, 0.5)  # Red
 
 func _play_warning_effect() -> void:
 	"""Visual warning effect"""

@@ -23,7 +23,8 @@ var player_in_range: bool = false
 # REFERENCES
 # ============================================================================
 
-@onready var sprite: Sprite2D = $Sprite2D
+@onready var sprite: Node = get_node_or_null("Sprite2D")
+@onready var handle: Node = get_node_or_null("Handle")
 @onready var interaction_area: Area2D = $InteractionArea
 @onready var prompt: Label = $PromptLabel
 
@@ -169,21 +170,26 @@ func _on_body_exited(body: Node2D) -> void:
 
 func _update_visual() -> void:
 	"""Updates lever visual based on state"""
-	if not sprite:
+	var display_node = handle if handle else sprite
+	if not display_node:
 		return
 
 	if is_active:
-		sprite.rotation_degrees = 45  # Lever down
-		sprite.modulate = Color(0.5, 1.0, 0.5)  # Green
+		display_node.rotation = 0.785398  # 45 degrees (lever down)
+		display_node.modulate = Color(0.5, 1.0, 0.5)  # Green
 	else:
-		sprite.rotation_degrees = -45  # Lever up
-		sprite.modulate = Color.WHITE
+		display_node.rotation = -0.785398  # -45 degrees (lever up)
+		display_node.modulate = Color.WHITE
 
 func _play_toggle_effect() -> void:
 	"""Visual toggle effect"""
+	var display_node = handle if handle else sprite
+	if not display_node:
+		return
+
 	var tween = create_tween()
-	tween.tween_property(sprite, "scale", Vector2(1.2, 1.2), 0.1)
-	tween.tween_property(sprite, "scale", Vector2(1.0, 1.0), 0.1)
+	tween.tween_property(display_node, "scale", Vector2(1.2, 1.2), 0.1)
+	tween.tween_property(display_node, "scale", Vector2(1.0, 1.0), 0.1)
 
 func _show_cannot_toggle_message() -> void:
 	"""Shows message when lever cannot be toggled off"""
