@@ -34,6 +34,10 @@ var activated_levers: Array[Lever] = []  # Track which levers have been activate
 
 
 func _ready() -> void:
+	print("[Door] _ready() called at %v" % global_position)
+	print("[Door] is_transition_door: %s, required_levers: %d" % [is_transition_door, required_levers.size()])
+	print("[Door] interaction_area exists: %s" % (interaction_area != null))
+
 	# Add to doors group
 	add_to_group("doors")
 
@@ -51,9 +55,19 @@ func _ready() -> void:
 
 	# Setup interaction area for transition doors
 	if is_transition_door and interaction_area:
+		print("[Door] Setting up InteractionArea...")
+		print("[Door] InteractionArea collision_layer: %d, mask: %d" % [interaction_area.collision_layer, interaction_area.collision_mask])
+
 		interaction_area.body_entered.connect(_on_body_entered)
 		interaction_area.body_exited.connect(_on_body_exited)
-		print("[Door] Interaction area signals connected - layer: %d, mask: %d, monitoring: %s" % [interaction_area.collision_layer, interaction_area.collision_mask, interaction_area.monitoring])
+		print("[Door] Interaction area signals connected - monitoring: %s, monitorable: %s" % [interaction_area.monitoring, interaction_area.monitorable])
+
+		# Check if InteractionArea has a CollisionShape
+		var shapes = interaction_area.get_children()
+		print("[Door] InteractionArea children count: %d" % shapes.size())
+		for child in shapes:
+			if child is CollisionShape2D:
+				print("[Door] Found CollisionShape2D - disabled: %s, shape: %s" % [child.disabled, child.shape])
 	else:
 		if not is_transition_door:
 			print("[Door] Not a transition door - skipping interaction setup")
@@ -63,9 +77,12 @@ func _ready() -> void:
 	# Hide prompt initially
 	if prompt_label:
 		prompt_label.visible = false
+	else:
+		print("[Door] PromptLabel not found!")
 
 	# If no levers required, start unlocked
 	if required_levers.is_empty() and not unlock_on_room_clear:
+		print("[Door] No levers required, unlocking immediately")
 		unlock()
 
 	print("[Door] Initialized at %v (transition: %s, levers required: %d)" % [global_position, is_transition_door, required_levers.size()])
