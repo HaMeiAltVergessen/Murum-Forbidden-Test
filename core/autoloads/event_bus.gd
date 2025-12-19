@@ -171,6 +171,10 @@ signal wave_completed(wave_index: int, total_waves: int)
 ## Emitted when all waves are completed
 signal all_waves_completed
 
+# ============ PLAYER SIGNALS ============
+## Emitted when player has insufficient mana
+signal mana_insufficient
+
 
 func _ready() -> void:
 	print("[EventBus] Initialized")
