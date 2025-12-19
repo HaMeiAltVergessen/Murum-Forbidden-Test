@@ -110,10 +110,19 @@ func _execute_transition(room_id: String) -> void:
 	# 1. Fade out
 	await _fade_out(0.5)
 
-	# 2. Unload current scene
+	# 2. Save player reference before unloading
+	var player = get_tree().get_first_node_in_group("player")
+	var player_parent = null
+	if player:
+		player_parent = player.get_parent()
+		# Reparent player to WorldManager to keep it alive
+		player_parent.remove_child(player)
+		add_child(player)
+
+	# 3. Unload current scene
 	_unload_current_scene()
 
-	# 3. Load new scene
+	# 4. Load new scene
 	var scene_path = _get_room_path(room_id)
 	await _load_scene(scene_path)
 
@@ -190,23 +199,42 @@ func _spawn_player_at_point(spawn_point_name: String) -> void:
 	# Wait for scene to be ready
 	await get_tree().process_frame
 
-	# Get player
+	# Get player (might be child of WorldManager after transition)
 	var player = get_tree().get_first_node_in_group("player")
 
 	if not player:
 		push_warning("[WorldManager] Player not found in scene!")
 		return
 
-	# Find spawn point (simplified - just use player's current position for now)
-	# In full version, this would search for named SpawnPoint nodes
+	# Get current scene
+	var root = get_tree().root
+	var current_scene = root.get_child(root.get_child_count() - 1)
 
-	# If we have pending player data with position, use that
+	# If player is child of WorldManager, move it to the new scene
+	if player.get_parent() == self and current_scene:
+		remove_child(player)
+		current_scene.add_child(player)
+
+	# Find spawn point in the new scene
+	var spawn_points = current_scene.find_children("*", "Node2D", true, false)
+	var spawn_position = Vector2(200, 600)  # Default position
+
+	for node in spawn_points:
+		if node.name == spawn_point_name or (spawn_point_name == "default" and node.name == "Default"):
+			spawn_position = node.global_position
+			print("[WorldManager] Found spawn point: %s at %v" % [node.name, spawn_position])
+			break
+
+	# Position player at spawn point
+	player.global_position = spawn_position
+
+	# If we have pending player data with position, use that instead
 	if not pending_player_data.is_empty() and pending_player_data.has("position"):
 		var pos = pending_player_data["position"]
 		player.global_position = Vector2(pos["x"], pos["y"])
 		print("[WorldManager] Player spawned at saved position: %v" % player.global_position)
 	else:
-		print("[WorldManager] Player spawned at default position: %v" % player.global_position)
+		print("[WorldManager] Player spawned at spawn point: %v" % player.global_position)
 
 func _restore_player_data() -> void:
 	"""Restores player state from pending data (after save load)"""

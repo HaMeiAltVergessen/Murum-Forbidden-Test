@@ -119,6 +119,29 @@ func _on_caught() -> void:
 # ============================================================================
 
 func _on_area_entered(area: Area2D) -> void:
+	# Check if we hit a HurtboxComponent
+	if area is HurtboxComponent:
+		var enemy = area.owner
+		if not enemy or not enemy.is_in_group("enemies"):
+			return
+
+		if _is_enemy_on_cooldown(enemy):
+			return
+
+		# Calculate knockback direction
+		var knockback_direction = (enemy.global_position - global_position).normalized()
+		var knockback_force = knockback_direction * 400.0  # Strong knockback
+
+		# Deal damage with knockback through HurtboxComponent
+		area.take_damage(damage, knockback_force, 0.2)
+
+		print("[StaffProjectile] Hit enemy: %s with knockback" % enemy.name)
+
+		_add_hit_enemy(enemy)
+		_play_hit_effect(enemy.global_position)
+		return
+
+	# Fallback for enemies without HurtboxComponent
 	if not area.owner or not area.owner.is_in_group("enemies"):
 		return
 
