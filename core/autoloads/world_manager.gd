@@ -174,7 +174,11 @@ func _load_scene(scene_path: String) -> void:
 
 func _get_room_path(room_id: String) -> String:
 	"""Returns scene path for room"""
-	return ROOM_PATH % room_id
+	# If room_id already contains path separators, it's a full path
+	if "/" in room_id:
+		return "res://%s.tscn" % room_id
+	else:
+		return ROOM_PATH % room_id
 
 # ============================================================================
 # PLAYER SPAWNING
