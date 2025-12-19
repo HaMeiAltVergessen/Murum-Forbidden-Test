@@ -94,7 +94,7 @@ func _throw_staff() -> void:
 	active_staff.staff_caught.connect(_on_staff_caught)
 
 	if AudioManager:
-		AudioManager.play_sfx("player/staff_throw", player.global_position, 0.1)
+		AudioManager.play_sfx_at_position("player/staff_throw", player.global_position, 0.1)
 
 	staff_thrown.emit()
 	_disable_melee_attack()
@@ -124,7 +124,7 @@ func _on_staff_start_return() -> void:
 	current_state = State.RETURNING
 
 	if AudioManager:
-		AudioManager.play_sfx("player/staff_return", player.global_position, 0.08)
+		AudioManager.play_sfx_at_position("player/staff_return", player.global_position, 0.08)
 
 	staff_returning.emit()
 
@@ -142,7 +142,7 @@ func _on_staff_caught() -> void:
 		active_staff = null
 
 	if AudioManager:
-		AudioManager.play_sfx("player/staff_catch", player.global_position, 0.12)
+		AudioManager.play_sfx_at_position("player/staff_catch", player.global_position, 0.12)
 
 	staff_caught.emit()
 	_enable_melee_attack()
@@ -175,7 +175,7 @@ func _consume_mana() -> void:
 
 func _show_no_mana_feedback() -> void:
 	if AudioManager:
-		AudioManager.play_sfx("ui/error", player.global_position, 0.1)
+		AudioManager.play_sfx_at_position("ui/error", player.global_position, 0.1)
 
 	EventBus.mana_insufficient.emit()
 

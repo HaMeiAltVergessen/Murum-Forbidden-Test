@@ -170,14 +170,14 @@ func _update_hit_cooldowns(delta: float) -> void:
 
 func _play_hit_effect(position: Vector2) -> void:
 	if AudioManager:
-		AudioManager.play_sfx("combat/staff_hit", position, 0.15)
+		AudioManager.play_sfx_at_position("combat/staff_hit", position, 0.15)
 
 	if owner_player and owner_player.has_node("PlayerCamera"):
 		owner_player.get_node("PlayerCamera").add_trauma(0.15)
 
 func _play_wall_impact_effect() -> void:
 	if AudioManager:
-		AudioManager.play_sfx("combat/staff_wall_hit", global_position, 0.12)
+		AudioManager.play_sfx_at_position("combat/staff_wall_hit", global_position, 0.12)
 
 	if owner_player and owner_player.has_node("PlayerCamera"):
 		owner_player.get_node("PlayerCamera").add_trauma(0.1)
