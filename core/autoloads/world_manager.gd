@@ -258,7 +258,18 @@ func _spawn_player_at_point(spawn_point_name: String) -> void:
 	if player_camera:
 		player_camera.enabled = true
 		player_camera.make_current()
-		print("[WorldManager] Player camera activated")
+
+		# Clear any camera limits so camera can always follow player
+		if player_camera.has_method("clear_room_bounds"):
+			player_camera.clear_room_bounds()
+		else:
+			# Manually clear limits if method doesn't exist
+			player_camera.limit_left = -10000000
+			player_camera.limit_top = -10000000
+			player_camera.limit_right = 10000000
+			player_camera.limit_bottom = 10000000
+
+		print("[WorldManager] Player camera activated and limits cleared")
 
 	# Find spawn point in the new scene
 	var spawn_points = current_scene.find_children("*", "Node2D", true, false)

@@ -53,6 +53,12 @@ func _ready() -> void:
 	if is_transition_door and interaction_area:
 		interaction_area.body_entered.connect(_on_body_entered)
 		interaction_area.body_exited.connect(_on_body_exited)
+		print("[Door] Interaction area signals connected - layer: %d, mask: %d, monitoring: %s" % [interaction_area.collision_layer, interaction_area.collision_mask, interaction_area.monitoring])
+	else:
+		if not is_transition_door:
+			print("[Door] Not a transition door - skipping interaction setup")
+		if not interaction_area:
+			push_warning("[Door] InteractionArea not found!")
 
 	# Hide prompt initially
 	if prompt_label:
