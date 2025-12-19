@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://dq7m4n8x3vspt"]
+[gd_scene load_steps=8 format=3 uid="uid://dq7m4n8x3vspt"]
 
 [ext_resource type="Script" path="res://worlds/world_1_ruins/rooms/room_03_arena.gd" id="1_room03"]
 [ext_resource type="Script" path="res://worlds/wave_spawner.gd" id="2_wave_spawner"]
@@ -8,6 +8,9 @@
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1600, 80)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_platform"]
+size = Vector2(256, 32)
 
 [node name="Room03Arena" type="Node2D"]
 script = ExtResource("1_room03")
@@ -42,7 +45,7 @@ color = Color(0.3, 0.25, 0.25, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Platform1"]
 position = Vector2(128, 16)
-shape = RectangleShape2D.new()
+shape = SubResource("RectangleShape2D_platform")
 
 [node name="Platform2" type="StaticBody2D" parent="."]
 position = Vector2(944, 600)
@@ -54,7 +57,7 @@ color = Color(0.3, 0.25, 0.25, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Platform2"]
 position = Vector2(128, 16)
-shape = RectangleShape2D.new()
+shape = SubResource("RectangleShape2D_platform")
 
 [node name="WaveSpawner" type="Node" parent="."]
 script = ExtResource("2_wave_spawner")
