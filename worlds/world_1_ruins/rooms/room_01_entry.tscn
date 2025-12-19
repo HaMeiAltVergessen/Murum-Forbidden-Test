@@ -49,11 +49,3 @@ position = Vector2(1180, 600)
 
 [node name="Lever" parent="Environment" instance=ExtResource("4_lever")]
 position = Vector2(900, 600)
-
-[node name="PlayerCamera" type="Camera2D" parent="."]
-position = Vector2(640, 360)
-limit_left = 0
-limit_top = 0
-limit_right = 1280
-limit_bottom = 720
-position_smoothing_enabled = true
