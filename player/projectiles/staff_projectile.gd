@@ -82,7 +82,7 @@ func _process_flying_out(delta: float) -> void:
 		_start_return()
 
 func _process_returning(delta: float) -> void:
-	if not owner_player:
+	if not owner_player or not is_instance_valid(owner_player):
 		queue_free()
 		return
 
