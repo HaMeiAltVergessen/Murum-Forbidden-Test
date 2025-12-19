@@ -26,7 +26,7 @@ func activate() -> void:
 
 	# Connect lever to door
 	if lever and door:
-		lever.activated.connect(door.unlock)
+		lever.lever_activated.connect(_on_lever_activated)
 		print("[TestRoom] Lever connected to Door")
 
 	# Setup player spawn
@@ -44,3 +44,10 @@ func activate() -> void:
 func deactivate() -> void:
 	"""Deactivates the room"""
 	print("[TestRoom] Room deactivated")
+
+
+func _on_lever_activated(_lever: Lever) -> void:
+	"""Called when lever is activated"""
+	if door:
+		door.unlock()
+		print("[TestRoom] Door unlocked by lever")
