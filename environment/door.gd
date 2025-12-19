@@ -67,10 +67,14 @@ func _ready() -> void:
 
 # ============ INPUT ============
 func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("interact"):
+		print("[Door] E pressed - player_in_range: %s, is_transition: %s, state: %s" % [player_in_range, is_transition_door, DoorState.keys()[current_state]])
+
 	if not player_in_range or not is_transition_door:
 		return
 
 	if event.is_action_pressed("interact"):
+		print("[Door] Attempting to use door")
 		attempt_use()
 
 func attempt_use() -> void:
@@ -101,8 +105,11 @@ func _show_locked_message() -> void:
 
 # ============ PLAYER DETECTION ============
 func _on_body_entered(body: Node2D) -> void:
+	print("[Door] Body entered interaction area: %s (groups: %s)" % [body.name, body.get_groups()])
+
 	if body.is_in_group("player"):
 		player_in_range = true
+		print("[Door] Player in range, state: %s, is_transition: %s" % [DoorState.keys()[current_state], is_transition_door])
 
 		if prompt_label:
 			prompt_label.visible = true
@@ -111,6 +118,7 @@ func _on_body_entered(body: Node2D) -> void:
 func _on_body_exited(body: Node2D) -> void:
 	if body.is_in_group("player"):
 		player_in_range = false
+		print("[Door] Player left range")
 
 		if prompt_label:
 			prompt_label.visible = false
