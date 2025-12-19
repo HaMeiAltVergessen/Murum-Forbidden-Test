@@ -8,7 +8,7 @@ class_name MovementController
 
 # ============ MOVEMENT CONFIGURATION ============
 @export var move_speed: float = 300.0
-@export var jump_velocity: float = -400.0
+@export var jump_velocity: float = -800.0  # Doubled from -400.0
 @export var gravity: float = 980.0
 
 # ============ JUMP CONFIGURATION ============
