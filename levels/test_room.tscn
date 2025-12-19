@@ -152,6 +152,9 @@ position = Vector2(1500, 450)
 
 [node name="Door" parent="Environment" instance=ExtResource("6_door_scene")]
 position = Vector2(1700, 900)
+is_transition_door = true
+target_room = "room_01_entry"
+spawn_point = "default"
 
 [node name="HUD" parent="." instance=ExtResource("7_hud_scene")]
 
