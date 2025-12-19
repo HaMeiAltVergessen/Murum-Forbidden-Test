@@ -198,4 +198,4 @@ func _play_arena_complete_effects() -> void:
 
 	# Audio
 	if AudioManager:
-		AudioManager.play_sfx("ui/arena_complete", Vector2.ZERO, 0.0)
+		AudioManager.play_sfx("ui/arena_complete", 0.0)
