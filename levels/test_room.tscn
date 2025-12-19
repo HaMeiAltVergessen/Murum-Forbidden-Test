@@ -155,6 +155,7 @@ position = Vector2(1700, 900)
 is_transition_door = true
 target_room = "worlds/world_1_ruins/rooms/room_01_entry"
 spawn_point = "default"
+required_levers = Array[NodePath]([NodePath("../Lever")])
 
 [node name="HUD" parent="." instance=ExtResource("7_hud_scene")]
 

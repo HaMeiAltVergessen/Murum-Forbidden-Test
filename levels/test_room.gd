@@ -24,30 +24,21 @@ func activate() -> void:
 	# Register room with GameManager
 	GameManager.register_room(self)
 
-	# Connect lever to door
-	if lever and door:
-		lever.lever_activated.connect(_on_lever_activated)
-		print("[TestRoom] Lever connected to Door")
+	# Lever connects to door automatically via door's required_levers
 
 	# Setup player spawn
 	if player and player_spawn:
 		player.global_position = player_spawn.global_position
 		GameManager.register_player(player, player_spawn.global_position)
 
-	# Set camera bounds
-	if player and player.player_camera:
-		var bounds: Rect2 = Rect2(Vector2.ZERO, room_size)
-		player.player_camera.set_room_bounds(bounds)
-		print("[TestRoom] Camera bounds set to ", bounds)
+	# Clear camera bounds so camera always follows player
+	if player:
+		var player_camera = player.get_node_or_null("PlayerCamera")
+		if player_camera and player_camera.has_method("clear_room_bounds"):
+			player_camera.clear_room_bounds()
+			print("[TestRoom] Camera limits cleared - free following")
 
 
 func deactivate() -> void:
 	"""Deactivates the room"""
 	print("[TestRoom] Room deactivated")
-
-
-func _on_lever_activated(_lever: Lever) -> void:
-	"""Called when lever is activated"""
-	if door:
-		door.unlock()
-		print("[TestRoom] Door unlocked by lever")
