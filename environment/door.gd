@@ -19,7 +19,7 @@ enum DoorState {
 # ============ CONFIGURATION ============
 @export var door_id: String = ""
 @export var opening_duration: float = 1.0
-@export var connected_lever: NodePath
+@export var required_levers: Array[NodePath] = []  # Array of levers required to open
 
 # Room Transition Properties
 @export var is_transition_door: bool = false
@@ -30,6 +30,7 @@ enum DoorState {
 # ============ STATE ============
 var current_state: DoorState = DoorState.LOCKED
 var player_in_range: bool = false
+var activated_levers: Array[Lever] = []  # Track which levers have been activated
 
 
 func _ready() -> void:
@@ -39,11 +40,14 @@ func _ready() -> void:
 	# Set initial visual
 	_update_visual()
 
-	# Connect to lever if specified
-	if connected_lever:
-		var lever: Lever = get_node_or_null(connected_lever) as Lever
+	# Connect to all required levers
+	for lever_path in required_levers:
+		var lever: Lever = get_node_or_null(lever_path) as Lever
 		if lever:
-			lever.activated.connect(unlock)
+			lever.lever_activated.connect(_on_lever_activated)
+			print("[Door] Connected to lever: %s" % lever.name)
+		else:
+			push_warning("[Door] Could not find lever at path: %s" % lever_path)
 
 	# Setup interaction area for transition doors
 	if is_transition_door and interaction_area:
@@ -54,11 +58,11 @@ func _ready() -> void:
 	if prompt_label:
 		prompt_label.visible = false
 
-	# Check if should start unlocked
-	if is_transition_door and not unlock_on_room_clear:
+	# If no levers required, start unlocked
+	if required_levers.is_empty() and not unlock_on_room_clear:
 		unlock()
 
-	print("[Door] Initialized at %v (transition: %s)" % [global_position, is_transition_door])
+	print("[Door] Initialized at %v (transition: %s, levers required: %d)" % [global_position, is_transition_door, required_levers.size()])
 
 
 # ============ INPUT ============
@@ -121,6 +125,19 @@ func _update_prompt_text() -> void:
 	else:
 		prompt_label.text = "Press E to Enter"
 
+# ============ LEVER SYSTEM ============
+func _on_lever_activated(lever: Lever) -> void:
+	"""Called when a connected lever is activated"""
+	if lever in activated_levers:
+		return  # Already activated
+
+	activated_levers.append(lever)
+	print("[Door] Lever activated: %s (%d/%d)" % [lever.name, activated_levers.size(), required_levers.size()])
+
+	# Check if all required levers are activated
+	if activated_levers.size() >= required_levers.size():
+		unlock()
+
 # ============ ROOM CLEAR UNLOCK ============
 func try_unlock_on_clear(_room_id: String) -> void:
 	"""Called by WorldManager when room is cleared"""
@@ -149,15 +166,12 @@ func unlock() -> void:
 	current_state = DoorState.CLOSED
 	print("[Door] Unlocked")
 
-	# For lever doors, immediately open
-	# For transition doors, just unlock (player must interact)
-	if not is_transition_door:
-		open()
-	else:
-		# Update visual for unlocked state
-		_update_visual()
-		if player_in_range:
-			_update_prompt_text()
+	# Always open the door when unlocked (makes it passable)
+	open()
+
+	# Update prompt if player is in range
+	if player_in_range:
+		_update_prompt_text()
 
 
 func open() -> void:

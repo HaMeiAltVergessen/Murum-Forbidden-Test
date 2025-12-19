@@ -56,6 +56,8 @@ func _ready() -> void:
 	add_to_group("staff_projectiles")
 
 	print("[StaffProjectile] Spawned, direction: %v" % direction)
+	print("[StaffProjectile] Collision layer: %d, mask: %d" % [collision_layer, collision_mask])
+	print("[StaffProjectile] Monitoring: %s, Monitorable: %s" % [monitoring, monitorable])
 
 # ============================================================================
 # MOVEMENT
@@ -166,6 +168,8 @@ func _on_area_entered(area: Area2D) -> void:
 	_play_hit_effect(area.owner.global_position)
 
 func _on_body_entered(body: Node2D) -> void:
+	print("[StaffProjectile] Body entered: %s (class: %s, groups: %s)" % [body.name, body.get_class(), body.get_groups()])
+
 	if body is TileMap or body is StaticBody2D:
 		print("[StaffProjectile] Hit wall")
 
