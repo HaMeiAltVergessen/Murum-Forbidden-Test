@@ -193,12 +193,12 @@ func _show_no_mana_feedback() -> void:
 
 func _disable_melee_attack() -> void:
 	var combat_system = player.get_node_or_null("CombatSystem")
-	if combat_system and combat_system.has("melee_enabled"):
+	if combat_system and "melee_enabled" in combat_system:
 		combat_system.melee_enabled = false
 
 func _enable_melee_attack() -> void:
 	var combat_system = player.get_node_or_null("CombatSystem")
-	if combat_system and combat_system.has("melee_enabled"):
+	if combat_system and "melee_enabled" in combat_system:
 		combat_system.melee_enabled = true
 
 # ============================================================================
