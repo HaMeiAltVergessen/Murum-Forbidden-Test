@@ -81,6 +81,14 @@ func _on_damage_received(damage: int, knockback: Vector2, hitstun: float) -> voi
 	"""Called when hurtbox receives damage"""
 	take_damage(damage)
 
+	# Apply knockback
+	if knockback.length() > 0:
+		velocity = knockback
+
+	# Apply hitstun if provided
+	if hitstun > 0:
+		stun(hitstun)
+
 func take_damage(amount: int, _attacker: Node = null) -> void:
 	"""Takes damage"""
 
