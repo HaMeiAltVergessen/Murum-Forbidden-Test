@@ -10,6 +10,8 @@
 [ext_resource type="Script" path="res://player/player_camera.gd" id="8_camera"]
 [ext_resource type="Texture2D" uid="uid://jg4v3jkvbw1b" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Wizard/wizard-sheet.png" id="9_wizard"]
 [ext_resource type="Script" path="res://player/combat_system/staff_controller.gd" id="10_staff"]
+[ext_resource type="Script" path="res://player/combat_system/launcher_system.gd" id="11_launcher"]
+[ext_resource type="Script" path="res://player/combat_system/air_combo_system.gd" id="12_air_combo"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 radius = 16.0
@@ -71,6 +73,22 @@ collision_mask = 96
 
 [node name="StaffController" type="Node" parent="."]
 script = ExtResource("10_staff")
+
+[node name="LauncherSystem" type="Node" parent="."]
+script = ExtResource("11_launcher")
+launch_force = 600.0
+launch_horizontal_force = 100.0
+launcher_mana_cost = 15
+launcher_damage = 20
+launcher_cooldown = 2.0
+
+[node name="AirComboSystem" type="Node" parent="."]
+script = ExtResource("12_air_combo")
+air_attack_damage = 15
+juggle_force = 400.0
+max_air_combo = 10
+slam_damage_multiplier = 2.0
+slam_force = 800.0
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 offset = Vector2(0, -150)
