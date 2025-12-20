@@ -33,6 +33,9 @@ var cooldown_remaining: float = 0.0
 
 var parry_active: bool = false
 
+# Visual shield
+var shield_visual: Node2D = null
+
 # ============================================================================
 # SIGNALS
 # ============================================================================
@@ -65,6 +68,9 @@ func _ready() -> void:
 	# Connect to hurtbox for attack detection
 	if hurtbox:
 		hurtbox.area_entered.connect(_on_attack_detected)
+
+	# Create shield visual
+	_create_shield_visual()
 
 	print("[ParrySystem] Initialized - Window: %.2fs, Cooldown: %.2fs" % [PARRY_WINDOW_DURATION, PARRY_COOLDOWN_DURATION])
 
@@ -144,6 +150,9 @@ func _process_anticipation(delta: float) -> void:
 		state_timer = PARRY_WINDOW_DURATION
 		parry_active = true
 
+		# Show blue shield
+		_show_shield()
+
 		parry_window_opened.emit()
 		EventBus.parry_window_opened.emit()
 		print("[ParrySystem] Parry window OPEN (%.2fs)" % PARRY_WINDOW_DURATION)
@@ -195,6 +204,9 @@ func _handle_perfect_parry(enemy: Node) -> void:
 
 	print("[ParrySystem] PERFECT PARRY on %s" % enemy.name)
 
+	# Hide shield
+	_hide_shield()
+
 	# Reset state
 	current_state = State.IDLE
 	parry_active = false
@@ -245,6 +257,9 @@ func _handle_failed_parry() -> void:
 
 	print("[ParrySystem] Parry FAILED (timeout)")
 
+	# Hide shield
+	_hide_shield()
+
 	# Reset state
 	parry_active = false
 
@@ -275,14 +290,14 @@ func _handle_failed_parry() -> void:
 
 func _play_parry_anticipation() -> void:
 	"""Visual feedback for parry startup"""
-	# Optional: Flash player sprite
+	# Flash player sprite blue
 	if not player:
 		return
 
 	if player.has_node("Sprite2D"):
 		var sprite = player.get_node("Sprite2D")
 		var tween = create_tween()
-		tween.tween_property(sprite, "modulate", Color(0.8, 0.8, 1.2), 0.05)
+		tween.tween_property(sprite, "modulate", Color(0.5, 0.8, 2.0), 0.05)  # Blue flash
 		tween.tween_property(sprite, "modulate", Color.WHITE, 0.05)
 
 
@@ -355,6 +370,72 @@ func get_state_name() -> String:
 		State.PARRY_WINDOW: return "PARRY_WINDOW"
 		State.COOLDOWN: return "COOLDOWN"
 		_: return "UNKNOWN"
+
+
+# ============================================================================
+# SHIELD VISUAL
+# ============================================================================
+
+func _create_shield_visual() -> void:
+	"""Creates the blue shield/sphere visual"""
+	if not player:
+		return
+
+	# Create shield container
+	shield_visual = Node2D.new()
+	shield_visual.name = "ParryShield"
+	player.add_child(shield_visual)
+
+	# Create multiple circles for sphere effect
+	for i in range(3):
+		var circle = _create_circle_sprite(60 + i * 15, 0.3 - i * 0.08)
+		shield_visual.add_child(circle)
+
+	# Start hidden
+	shield_visual.visible = false
+	shield_visual.modulate.a = 0.0
+
+
+func _create_circle_sprite(radius: float, alpha: float) -> Node2D:
+	"""Creates a circular sprite using a Polygon2D"""
+	var circle_node = Node2D.new()
+	var polygon = Polygon2D.new()
+
+	# Create circle points
+	var points: PackedVector2Array = []
+	var num_points = 32
+	for i in range(num_points):
+		var angle = (i / float(num_points)) * TAU
+		points.append(Vector2(cos(angle), sin(angle)) * radius)
+
+	polygon.polygon = points
+	polygon.color = Color(0.3, 0.6, 1.0, alpha)  # Blue with transparency
+
+	circle_node.add_child(polygon)
+	return circle_node
+
+
+func _show_shield() -> void:
+	"""Shows the shield with fade-in effect"""
+	if not shield_visual:
+		return
+
+	shield_visual.visible = true
+
+	var tween = create_tween()
+	tween.tween_property(shield_visual, "modulate:a", 0.8, 0.1)
+	tween.parallel().tween_property(shield_visual, "scale", Vector2(1.1, 1.1), 0.1)
+
+
+func _hide_shield() -> void:
+	"""Hides the shield with fade-out effect"""
+	if not shield_visual:
+		return
+
+	var tween = create_tween()
+	tween.tween_property(shield_visual, "modulate:a", 0.0, 0.15)
+	tween.parallel().tween_property(shield_visual, "scale", Vector2(1.0, 1.0), 0.15)
+	tween.tween_callback(func(): shield_visual.visible = false)
 
 
 # ============================================================================

@@ -70,7 +70,6 @@ func calculate_damage(base_damage: int, attacker: Node, target: Node) -> int:
 	"""
 	var final_damage: float = base_damage
 	var had_combo: bool = false
-	var is_finisher: bool = false
 
 	# Apply combo multiplier only for player attacks
 	if attacker and attacker.is_in_group("player"):
@@ -240,7 +239,7 @@ func _apply_finisher_knockback(attacker: Node, target: Node) -> void:
 
 	print("[CombatManager] Finisher knockback applied")
 
-func _play_finisher_effects(attacker: Node, target: Node) -> void:
+func _play_finisher_effects(attacker: Node, _target: Node) -> void:
 	"""Plays enhanced VFX/SFX for finisher"""
 
 	# Enhanced hitstop
@@ -253,7 +252,7 @@ func _play_finisher_effects(attacker: Node, target: Node) -> void:
 			camera.add_trauma(FINISHER_CAMERA_TRAUMA)
 
 	# Enhanced SFX (placeholder - will use proper sound when available)
-	AudioManager.play_sfx("attack_3", target.global_position, 0.0, FINISHER_SFX_PITCH)
+	# AudioManager.play_sfx("attack_3", ...) - Removed due to crashes
 
 	print("[CombatManager] Finisher effects played")
 
@@ -304,7 +303,7 @@ func _update_combat_state(delta: float) -> void:
 
 
 # ============ EVENT HANDLERS ============
-func _on_hit_registered(attacker: Node, target: Node, damage: int) -> void:
+func _on_hit_registered(attacker: Node, _target: Node, _damage: int) -> void:
 	"""Called when any hit is registered via EventBus."""
 	# Register combat action
 	register_combat_action()
@@ -315,7 +314,7 @@ func _on_hit_registered(attacker: Node, target: Node, damage: int) -> void:
 		trigger_hitstop()
 
 
-func _on_player_damaged(damage: int, source: Node) -> void:
+func _on_player_damaged(_damage: int, _source: Node) -> void:
 	"""Called when player takes damage - breaks combo."""
 	break_combo()
 
