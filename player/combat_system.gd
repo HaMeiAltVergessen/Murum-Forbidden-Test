@@ -172,7 +172,12 @@ func _create_combo_tracker() -> void:
 	combo_tracker.name = "ComboTracker"
 	add_child(combo_tracker)
 
-	print("[CombatSystem] ComboTracker created")
+	# Connect to combo signals for visual feedback via EventBus
+	EventBus.combo_increased.connect(_on_combo_increased)
+	EventBus.combo_finisher_executed.connect(_on_finisher_executed)
+	combo_tracker.combo_milestone_reached.connect(_on_combo_milestone)
+
+	print("[CombatSystem] ComboTracker created with flash effects")
 
 
 # ============ RESONANCE SYSTEM ============
@@ -285,3 +290,60 @@ func can_attack() -> bool:
 func get_current_combo() -> int:
 	"""Returns the current combo number (0-3)"""
 	return current_combo
+
+
+# ============ COMBO VISUAL FEEDBACK ============
+func _on_combo_increased(new_count: int, _multiplier: float) -> void:
+	"""Called when combo increases - flash player with blue tint"""
+	var flash_color = _get_combo_flash_color(new_count)
+	_flash_player(flash_color, 0.1)
+
+func _on_combo_milestone(count: int) -> void:
+	"""Called when combo milestone reached - bigger flash"""
+	var flash_color = _get_milestone_flash_color(count)
+	_flash_player(flash_color, 0.2)
+	print("[CombatSystem] Combo milestone flash: %d hits!" % count)
+
+func _on_finisher_executed(combo_count: int) -> void:
+	"""Called when finisher executed - brightest flash"""
+	var flash_color = Color(0.5, 1.0, 2.0, 1.0)  # Bright cyan
+	_flash_player(flash_color, 0.15)
+	print("[CombatSystem] Finisher flash at combo %d!" % combo_count)
+
+func _get_combo_flash_color(combo_count: int) -> Color:
+	"""Returns blue spectrum color based on combo count"""
+	if combo_count < 5:
+		return Color(0.7, 0.9, 1.3, 1.0)  # Light blue
+	elif combo_count < 10:
+		return Color(0.5, 0.7, 1.5, 1.0)  # Blue
+	elif combo_count < 20:
+		return Color(0.3, 0.5, 1.7, 1.0)  # Dark blue
+	else:
+		return Color(0.4, 0.8, 2.0, 1.0)  # Bright cyan
+
+func _get_milestone_flash_color(milestone: int) -> Color:
+	"""Returns special blue color for milestone"""
+	match milestone:
+		5:
+			return Color(0.6, 1.0, 1.5, 1.0)   # Sky blue
+		10:
+			return Color(0.4, 0.8, 1.8, 1.0)   # Ocean blue
+		25:
+			return Color(0.3, 0.6, 2.0, 1.0)   # Deep blue
+		50:
+			return Color(0.5, 1.0, 2.2, 1.0)   # Electric blue
+		100:
+			return Color(0.4, 1.2, 2.5, 1.0)   # Ultra cyan
+		_:
+			return Color(0.5, 0.8, 1.8, 1.0)   # Default blue
+
+func _flash_player(flash_color: Color, duration: float) -> void:
+	"""Flashes player sprite with given color"""
+	var sprite = player.get_node_or_null("Sprite2D")
+	if not sprite:
+		return
+
+	# Create flash tween
+	var tween = create_tween()
+	tween.tween_property(sprite, "modulate", flash_color, 0.05)
+	tween.tween_property(sprite, "modulate", Color.WHITE, duration)
