@@ -81,7 +81,6 @@ func calculate_damage(base_damage: int, attacker: Node, target: Node) -> int:
 			# Check for finisher
 			var combo_tracker = attacker.get_node_or_null("CombatSystem/ComboTracker")
 			if combo_tracker and combo_tracker.is_finisher_hit():
-				is_finisher = true
 				var finisher_mult = combo_tracker.get_finisher_multiplier()
 				final_damage *= finisher_mult
 
