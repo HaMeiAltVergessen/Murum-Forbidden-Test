@@ -14,6 +14,7 @@ class_name MovementController
 # ============ JUMP CONFIGURATION ============
 @export var coyote_time: float = 0.1
 @export var jump_buffer_time: float = 0.15
+@export var max_jumps: int = 2  # Allows double jump
 
 # ============ DASH CONFIGURATION ============
 @export var dash_distance: float = 250.0
@@ -24,6 +25,7 @@ class_name MovementController
 # ============ STATE ============
 var coyote_timer: float = 0.0
 var jump_buffer_timer: float = 0.0
+var jumps_used: int = 0  # Track number of jumps used
 var is_dashing: bool = false
 var dash_direction: Vector2 = Vector2.ZERO
 var dash_timer: float = 0.0
@@ -181,17 +183,25 @@ func _process_gravity(delta: float) -> void:
 # ============ JUMP SYSTEM ============
 func _process_jump() -> void:
 	"""Handles jump input with coyote time and jump buffering"""
+	# Reset jumps when on floor
+	if player.is_on_floor():
+		jumps_used = 0
+
 	# Can't jump while crouching
 	if is_crouching:
 		return
 
 	# Check for jump input
 	if Input.is_action_just_pressed("jump"):
-		jump_buffer_timer = jump_buffer_time
-
-	# Attempt jump if conditions are met
-	if jump_buffer_timer > 0 and (player.is_on_floor() or coyote_timer > 0):
-		_perform_jump()
+		# First jump: use coyote time and jump buffer
+		if jumps_used == 0:
+			jump_buffer_timer = jump_buffer_time
+			# Attempt jump if conditions are met
+			if player.is_on_floor() or coyote_timer > 0:
+				_perform_jump()
+		# Double jump: can jump in air if jumps remaining
+		elif jumps_used < max_jumps:
+			_perform_jump()
 
 
 func _perform_jump() -> void:
@@ -199,6 +209,10 @@ func _perform_jump() -> void:
 	player.velocity.y = jump_velocity
 	jump_buffer_timer = 0.0
 	coyote_timer = 0.0
+	jumps_used += 1
+
+	if jumps_used == 2:
+		print("[Movement] Double jump!")
 	# AudioManager.play_sfx("jump")  # Uncomment when audio added
 
 
