@@ -7,6 +7,11 @@ class_name ComboTracker
 @export var enabled: bool = true
 @export var max_combo_display: int = 999  # Maximum combo to display
 
+# ============ FINISHER CONFIGURATION ============
+const FINISHER_HIT_INDEX: int = 3  # Every 3rd hit
+const FINISHER_DAMAGE_MULTIPLIER: float = 1.5  # ×1.5 base damage
+const FINISHER_COMBO_BONUS: float = 1.2  # Extra combo multiplier
+
 # ============ STATE ============
 var current_combo: int = 0
 var combo_multiplier: float = 1.0
@@ -22,6 +27,8 @@ signal combo_updated(count: int, multiplier: float, time_remaining: float)
 signal combo_started(count: int)
 signal combo_ended(final_count: int)
 signal combo_milestone_reached(count: int)  # For special combo milestones
+signal combo_finisher_ready  # Next hit will be finisher
+signal combo_finisher_executed(damage: int)  # Finisher was executed
 
 # ============ COMBO MILESTONES ============
 const MILESTONE_THRESHOLDS: Array[int] = [5, 10, 25, 50, 100]
@@ -67,6 +74,12 @@ func _on_combo_increased(new_count: int, multiplier: float) -> void:
 
 	# Check for milestones
 	_check_milestone(new_count)
+
+	# Check if next hit will be finisher
+	if (new_count + 1) % FINISHER_HIT_INDEX == 0:
+		combo_finisher_ready.emit()
+		EventBus.combo_finisher_ready.emit()
+		print("[ComboTracker] Next hit is FINISHER!")
 
 	# Emit signals
 	if was_inactive:
@@ -201,6 +214,25 @@ func force_break_combo() -> void:
 	if CombatManager:
 		CombatManager.break_combo()
 
+
+# ============ FINISHER DETECTION ============
+func is_finisher_hit() -> bool:
+	"""Returns true if current hit is a finisher"""
+	return current_combo > 0 and current_combo % FINISHER_HIT_INDEX == 0
+
+func get_finisher_multiplier() -> float:
+	"""Returns damage multiplier for finisher"""
+	if is_finisher_hit():
+		return FINISHER_DAMAGE_MULTIPLIER * FINISHER_COMBO_BONUS
+	return 1.0
+
+func execute_finisher(damage: int) -> void:
+	"""Called when finisher is executed"""
+	print("[ComboTracker] Finisher executed at combo %d (damage: %d)" % [current_combo, damage])
+
+	# Emit signals
+	combo_finisher_executed.emit(damage)
+	EventBus.combo_finisher_executed.emit(current_combo)
 
 # ============ DEBUG ============
 func get_debug_info() -> Dictionary:

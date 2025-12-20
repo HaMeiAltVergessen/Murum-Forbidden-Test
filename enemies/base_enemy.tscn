@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dmqxgb7cyujwa" path="res://components/hitbox_component.tscn" id="4_hitbox"]
 [ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="5_hurtbox"]
 [ext_resource type="Texture2D" uid="uid://d2vjm1flfq7ko" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Slime/slime-sheet.png" id="6_slime"]
+[ext_resource type="Script" path="res://core/components/knockback_component.gd" id="7_knockback"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_detection"]
 radius = 300.0
@@ -51,6 +52,9 @@ damage = 10
 [node name="HurtboxComponent" parent="." instance=ExtResource("5_hurtbox")]
 collision_layer = 64
 collision_mask = 4
+
+[node name="KnockbackComponent" type="Node" parent="."]
+script = ExtResource("7_knockback")
 
 [node name="DetectionArea" type="Area2D" parent="."]
 collision_layer = 0
