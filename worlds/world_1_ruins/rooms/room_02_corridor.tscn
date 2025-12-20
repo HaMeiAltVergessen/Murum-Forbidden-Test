@@ -57,9 +57,18 @@ position = Vector2(1000, 600)
 
 [node name="DoorToRoom01" parent="Doors" instance=ExtResource("5_door")]
 position = Vector2(100, 600)
+is_transition_door = true
+target_room = "worlds/world_1_ruins/rooms/room_01_entry"
+spawn_point = "FromRoom02"
+unlock_on_room_clear = false
 
 [node name="DoorToRoom03" parent="Doors" instance=ExtResource("5_door")]
 position = Vector2(1180, 600)
+is_transition_door = true
+target_room = "worlds/world_1_ruins/rooms/room_03_arena"
+spawn_point = "FromRoom02"
+unlock_on_room_clear = false
+required_levers = Array[NodePath]([NodePath("../../Environment/Lever")])
 
 [node name="SpawnPoints" type="Node2D" parent="."]
 

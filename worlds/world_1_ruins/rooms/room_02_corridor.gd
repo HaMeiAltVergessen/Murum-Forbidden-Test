@@ -45,10 +45,6 @@ func _ready() -> void:
 	else:
 		_setup_room()
 
-	# Connect lever to door
-	if lever and door_to_room_03:
-		lever.connected_door_ids = [door_to_room_03.door_id]
-
 	print("[Room02] Initialized (enemies: %d, cleared: %s)" % [
 		initial_enemy_count,
 		is_cleared
@@ -60,18 +56,12 @@ func _setup_doors() -> void:
 	# Door to Room 01 (entry)
 	if door_to_room_01:
 		door_to_room_01.door_id = "room_02_door_to_room_01"
-		door_to_room_01.is_transition_door = true
-		door_to_room_01.target_room = "room_01_entry"
-		door_to_room_01.spawn_point = "from_room_02"
-		door_to_room_01.unlock_on_room_clear = false
+		# Already configured in scene file
 
 	# Door to Room 03 (exit) - locked by lever
 	if door_to_room_03:
 		door_to_room_03.door_id = "room_02_door_to_room_03"
-		door_to_room_03.is_transition_door = true
-		door_to_room_03.target_room = "room_03_arena"
-		door_to_room_03.spawn_point = "from_room_02"
-		door_to_room_03.unlock_on_room_clear = false
+		# Already configured in scene file with required_levers
 
 func _setup_room() -> void:
 	"""Sets up room for first playthrough"""
