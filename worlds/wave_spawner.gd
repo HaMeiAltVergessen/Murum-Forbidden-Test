@@ -101,14 +101,17 @@ func _start_next_wave() -> void:
 
 	current_wave_index += 1
 
+	print("[WaveSpawner] _start_next_wave called, index now: %d, total waves: %d" % [current_wave_index, waves.size()])
+
 	if current_wave_index >= waves.size():
 		# All waves complete
+		print("[WaveSpawner] All waves completed! Calling _on_all_waves_completed()")
 		_on_all_waves_completed()
 		return
 
 	var wave = waves[current_wave_index]
 
-	print("[WaveSpawner] Starting wave %d/%d" % [current_wave_index + 1, waves.size()])
+	print("[WaveSpawner] Starting wave %d/%d with %d enemies" % [current_wave_index + 1, waves.size(), wave.enemies.size()])
 
 	# Emit signal
 	wave_started.emit(current_wave_index, waves.size())
@@ -181,7 +184,7 @@ func _on_wave_cleared() -> void:
 
 	var wave = waves[current_wave_index]
 
-	print("[WaveSpawner] Wave %d cleared!" % (current_wave_index + 1))
+	print("[WaveSpawner] Wave %d/%d cleared!" % [current_wave_index + 1, waves.size()])
 
 	# Emit signal
 	wave_completed.emit(current_wave_index, waves.size())
@@ -192,9 +195,11 @@ func _on_wave_cleared() -> void:
 		_spawn_wave_coins()
 
 	# Delay before next wave
+	print("[WaveSpawner] Waiting %.1fs before next wave..." % wave.delay_after)
 	await get_tree().create_timer(wave.delay_after).timeout
 
 	# Start next wave
+	print("[WaveSpawner] Delay complete, starting next wave...")
 	_start_next_wave()
 
 func _on_all_waves_completed() -> void:
