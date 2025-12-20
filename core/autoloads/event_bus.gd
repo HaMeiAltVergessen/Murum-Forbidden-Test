@@ -50,6 +50,12 @@ signal damage_calculated(final_damage: int, had_combo: bool)
 ## Emitted when hitstop effect triggers
 signal hitstop_triggered(duration: float)
 
+## Emitted when next hit will be a finisher
+signal combo_finisher_ready()
+
+## Emitted when a combo finisher is executed
+signal combo_finisher_executed(combo_count: int)
+
 ## Emitted when resonance value changes
 signal resonance_changed(current: float, maximum: float, percentage: float)
 

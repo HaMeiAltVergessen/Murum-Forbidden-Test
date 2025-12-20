@@ -9,6 +9,7 @@ class_name BaseEnemy
 @onready var detection_area: Area2D = $DetectionArea
 @onready var health_component: HealthComponent = $HealthComponent
 @onready var ai_controller: Node = $AIController
+@onready var knockback_component: KnockbackComponent = $KnockbackComponent
 
 # ============ STATS ============
 @export var max_health: int = 40
@@ -57,6 +58,10 @@ func _connect_signals() -> void:
 	if detection_area:
 		detection_area.body_entered.connect(_on_detection_body_entered)
 		detection_area.body_exited.connect(_on_detection_body_exited)
+
+	if knockback_component:
+		knockback_component.knockback_started.connect(_on_knockback_started)
+		knockback_component.knockback_ended.connect(_on_knockback_ended)
 
 
 func _setup_detection_area() -> void:
@@ -272,3 +277,30 @@ func _remove_stun_visual() -> void:
 	"""Removes stun visual feedback"""
 	if sprite:
 		sprite.modulate = Color.WHITE
+
+
+# ============ KNOCKBACK HANDLERS ============
+func _on_knockback_started(direction: Vector2, force: float) -> void:
+	"""Called when enemy is knocked back"""
+
+	# Disable AI during knockback
+	if ai_controller:
+		ai_controller.set_process(false)
+
+	# Visual feedback (brief flash)
+	if sprite:
+		var tween = create_tween()
+		tween.tween_property(sprite, "modulate", Color(1.5, 1.5, 1.5), 0.1)
+		tween.tween_property(sprite, "modulate", Color.WHITE, 0.2)
+
+	print("[%s] Knockback started: %v @ %.0f" % [name, direction, force])
+
+
+func _on_knockback_ended() -> void:
+	"""Called when knockback ends"""
+
+	# Re-enable AI
+	if ai_controller:
+		ai_controller.set_process(true)
+
+	print("[%s] Knockback ended" % name)

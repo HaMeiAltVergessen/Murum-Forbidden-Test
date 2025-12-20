@@ -12,6 +12,14 @@ extends Node
 @export var hitstop_duration_heavy: float = 0.12  # Heavy hit freeze
 @export var hitstop_combo_threshold: int = 10  # Combo count for heavy hitstop
 
+# ============ FINISHER CONFIGURATION ============
+const FINISHER_HITSTOP_DURATION: float = 0.15  # 3× normal hitstop
+const FINISHER_KNOCKBACK_FORCE: float = 300.0  # Pixels
+const FINISHER_KNOCKBACK_DURATION: float = 0.3  # Seconds
+const FINISHER_CAMERA_TRAUMA: float = 0.35  # vs normal 0.15
+const FINISHER_VFX_SCALE: float = 1.8  # Bigger particles
+const FINISHER_SFX_PITCH: float = 0.85  # Lower pitch = heavier
+
 # ============ COMBO STATE ============
 var combo_count: int = 0
 var combo_timer: float = 0.0
@@ -62,6 +70,7 @@ func calculate_damage(base_damage: int, attacker: Node, target: Node) -> int:
 	"""
 	var final_damage: float = base_damage
 	var had_combo: bool = false
+	var is_finisher: bool = false
 
 	# Apply combo multiplier only for player attacks
 	if attacker and attacker.is_in_group("player"):
@@ -70,12 +79,36 @@ func calculate_damage(base_damage: int, attacker: Node, target: Node) -> int:
 			final_damage *= combo_multiplier
 			had_combo = true
 
-			print("[CombatManager] Damage: %d × %.2f = %.1f (Combo: %d)" % [
-				base_damage,
-				combo_multiplier,
-				final_damage,
-				combo_count
-			])
+			# Check for finisher
+			var combo_tracker = attacker.get_node_or_null("CombatSystem/ComboTracker")
+			if combo_tracker and combo_tracker.is_finisher_hit():
+				is_finisher = true
+				var finisher_mult = combo_tracker.get_finisher_multiplier()
+				final_damage *= finisher_mult
+
+				# Apply finisher knockback to target
+				_apply_finisher_knockback(attacker, target)
+
+				# Enhanced effects
+				_play_finisher_effects(attacker, target)
+
+				# Execute finisher
+				combo_tracker.execute_finisher(int(round(final_damage)))
+
+				print("[CombatManager] FINISHER! Damage: %d × %.2f × %.2f = %.1f (Combo: %d)" % [
+					base_damage,
+					combo_multiplier,
+					finisher_mult,
+					final_damage,
+					combo_count
+				])
+			else:
+				print("[CombatManager] Damage: %d × %.2f = %.1f (Combo: %d)" % [
+					base_damage,
+					combo_multiplier,
+					final_damage,
+					combo_count
+				])
 
 		# Apply resonance mode damage bonus
 		var resonance = attacker.get_node_or_null("CombatSystem/ResonanceSystem")
@@ -187,6 +220,42 @@ func trigger_hitstop(duration: float = -1.0) -> void:
 	hitstop_triggered.emit(hitstop_duration)
 
 	print("[CombatManager] Hitstop: %.3fs" % hitstop_duration)
+
+
+# ============ FINISHER EFFECTS ============
+func _apply_finisher_knockback(attacker: Node, target: Node) -> void:
+	"""Applies knockback to target on finisher"""
+
+	# Get knockback component
+	var knockback = target.get_node_or_null("KnockbackComponent")
+	if not knockback:
+		print("[CombatManager] Target has no KnockbackComponent")
+		return
+
+	# Calculate knockback direction (away from attacker)
+	var direction = (target.global_position - attacker.global_position).normalized()
+
+	# Apply knockback
+	knockback.apply_knockback(direction, FINISHER_KNOCKBACK_FORCE, FINISHER_KNOCKBACK_DURATION)
+
+	print("[CombatManager] Finisher knockback applied")
+
+func _play_finisher_effects(attacker: Node, target: Node) -> void:
+	"""Plays enhanced VFX/SFX for finisher"""
+
+	# Enhanced hitstop
+	GlobalTimeEffects.hit_stop(FINISHER_HITSTOP_DURATION)
+
+	# Enhanced camera shake
+	if attacker.has_node("PlayerCamera"):
+		var camera = attacker.get_node("PlayerCamera")
+		if camera.has_method("add_trauma"):
+			camera.add_trauma(FINISHER_CAMERA_TRAUMA)
+
+	# Enhanced SFX (placeholder - will use proper sound when available)
+	AudioManager.play_sfx("attack_3", target.global_position, 0.0, FINISHER_SFX_PITCH)
+
+	print("[CombatManager] Finisher effects played")
 
 
 # ============ COMBAT STATE MANAGEMENT ============
