@@ -10,6 +10,7 @@ class_name Murum
 @onready var hurtbox: HurtboxComponent = $HurtboxComponent
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var player_camera: PlayerCamera = $PlayerCamera
+@onready var dodge_roll_system: DodgeRollSystem = $DodgeRollSystem
 
 # ============ STATE ============
 var is_dead: bool = false
@@ -40,6 +41,11 @@ func _connect_signals() -> void:
 	# Hurtbox signals
 	if hurtbox:
 		hurtbox.damage_received.connect(_on_damage_received)
+
+	# Dodge signals
+	if dodge_roll_system:
+		dodge_roll_system.dodge_started.connect(_on_dodge_started)
+		dodge_roll_system.dodge_completed.connect(_on_dodge_completed)
 
 
 func _register_with_game_manager() -> void:
@@ -99,6 +105,18 @@ func _on_health_depleted() -> void:
 	EventBus.player_died.emit()
 
 	print("[Murum] Player died")
+
+
+func _on_dodge_started(_direction: Vector2) -> void:
+	"""Handles dodge roll start - disables combat"""
+	if combat_system:
+		combat_system.set_combat_enabled(false)
+
+
+func _on_dodge_completed() -> void:
+	"""Handles dodge roll completion - re-enables combat"""
+	if combat_system:
+		combat_system.set_combat_enabled(true)
 
 
 # ============ VISUAL FEEDBACK ============

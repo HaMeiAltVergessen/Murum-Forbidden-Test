@@ -203,6 +203,13 @@ signal air_combo_ended(final_count: int)
 ## Emitted when slam finisher is executed
 signal slam_executed(enemy: Node, damage: int)
 
+# ============ DODGE ROLL SIGNALS ============
+## Emitted when dodge roll starts
+signal dodge_started(direction: Vector2)
+
+## Emitted when dodge roll completes
+signal dodge_completed
+
 
 func _ready() -> void:
 	print("[EventBus] Initialized")

@@ -25,6 +25,9 @@ var attack_timer: float = 0.0
 # ============ ATTACK QUEUE ============
 var attack_queued: bool = false
 
+# ============ COMBAT CONTROL ============
+var combat_enabled: bool = true
+
 
 func _ready() -> void:
 	if not hitbox:
@@ -62,6 +65,10 @@ func _input(event: InputEvent) -> void:
 # ============ ATTACK SYSTEM ============
 func _request_attack() -> void:
 	"""Requests an attack (queues it if currently attacking)"""
+	# Check if combat is enabled
+	if not combat_enabled:
+		return
+
 	if is_attacking:
 		attack_queued = true
 		return
@@ -284,7 +291,13 @@ func _animate_staff_attack(attack_num: int) -> void:
 # ============ GETTERS ============
 func can_attack() -> bool:
 	"""Returns true if player can perform an attack"""
-	return not is_attacking or attack_queued == false
+	return combat_enabled and (not is_attacking or attack_queued == false)
+
+
+func set_combat_enabled(enabled: bool) -> void:
+	"""Enables/disables combat (for dodge, etc.)"""
+	combat_enabled = enabled
+	print("[CombatSystem] Combat %s" % ("enabled" if enabled else "disabled"))
 
 
 func get_current_combo() -> int:
