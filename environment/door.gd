@@ -58,9 +58,14 @@ func _ready() -> void:
 		print("[Door] Setting up InteractionArea...")
 		print("[Door] InteractionArea collision_layer: %d, mask: %d" % [interaction_area.collision_layer, interaction_area.collision_mask])
 
+		# Connect signals but keep InteractionArea disabled initially
 		interaction_area.body_entered.connect(_on_body_entered)
 		interaction_area.body_exited.connect(_on_body_exited)
-		print("[Door] Interaction area signals connected - monitoring: %s, monitorable: %s" % [interaction_area.monitoring, interaction_area.monitorable])
+
+		# Disable InteractionArea initially - only enable when door opens
+		interaction_area.monitoring = false
+		interaction_area.monitorable = false
+		print("[Door] InteractionArea disabled - will enable when door opens")
 
 		# Check if InteractionArea has a CollisionShape
 		var shapes = interaction_area.get_children()
@@ -245,6 +250,12 @@ func _animate_opening() -> void:
 	# Set to open state
 	current_state = DoorState.OPEN
 	_update_visual()
+
+	# Enable InteractionArea now that door is open
+	if is_transition_door and interaction_area:
+		interaction_area.monitoring = true
+		interaction_area.monitorable = true
+		print("[Door] InteractionArea enabled - door now interactable")
 
 	# Emit signal
 	EventBus.door_state_changed.emit(self, "open")

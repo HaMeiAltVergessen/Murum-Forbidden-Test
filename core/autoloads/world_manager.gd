@@ -36,6 +36,7 @@ var pending_spawn_point: String = ""
 # Transition State
 var is_transitioning: bool = false
 var fade_overlay: ColorRect
+var current_scene_instance: Node = null  # Track current scene for reliable unloading
 
 # ============================================================================
 # SIGNALS
@@ -55,6 +56,15 @@ signal transition_completed
 func _ready() -> void:
 	# Create fade overlay for transitions
 	_create_fade_overlay()
+
+	# Find and track the initial scene (loaded from project.godot)
+	await get_tree().process_frame  # Wait for initial scene to be ready
+	var root = get_tree().root
+	for child in root.get_children():
+		if child != self and not child.name in ["GameManager", "EventBus", "AudioManager", "CombatManager", "GlobalTimeEffects", "SaveManager", "WorldManager"]:
+			current_scene_instance = child
+			print("[WorldManager] Initial scene tracked: %s" % child.name)
+			break
 
 	print("[WorldManager] Initialized")
 	print("[WorldManager] Current: %s/%s" % [current_world, current_room])
@@ -172,12 +182,23 @@ func _execute_transition(room_id: String) -> void:
 
 func _unload_current_scene() -> void:
 	"""Unloads current game scene"""
-	var root = get_tree().root
-	var current_scene = root.get_child(root.get_child_count() - 1)
-
-	if current_scene and current_scene != self:
-		current_scene.queue_free()
-		await current_scene.tree_exited
+	# If we have a tracked scene instance, use that
+	if current_scene_instance and is_instance_valid(current_scene_instance):
+		print("[WorldManager] Unloading tracked scene: %s" % current_scene_instance.name)
+		current_scene_instance.queue_free()
+		await current_scene_instance.tree_exited
+		current_scene_instance = null
+	else:
+		# Fallback: find scene by looking for non-autoload children
+		var root = get_tree().root
+		for child in root.get_children():
+			# Skip autoloads (they're all before index 7 based on project.godot)
+			# and skip WorldManager itself
+			if child != self and not child.name in ["GameManager", "EventBus", "AudioManager", "CombatManager", "GlobalTimeEffects", "SaveManager", "WorldManager"]:
+				print("[WorldManager] Unloading scene (fallback): %s" % child.name)
+				child.queue_free()
+				await child.tree_exited
+				break
 
 	# Wait a frame for cleanup
 	await get_tree().process_frame
@@ -196,6 +217,10 @@ func _load_scene(scene_path: String) -> void:
 
 	var instance = scene.instantiate()
 	get_tree().root.add_child(instance)
+
+	# Track this scene for reliable unloading later
+	current_scene_instance = instance
+	print("[WorldManager] Scene loaded and tracked: %s" % instance.name)
 
 	# Wait for scene to be ready
 	await get_tree().process_frame
