@@ -181,6 +181,28 @@ signal all_waves_completed
 ## Emitted when player has insufficient mana
 signal mana_insufficient
 
+# ============ AERIAL COMBAT SIGNALS ============
+## Emitted when launcher attack is activated
+signal launcher_activated()
+
+## Emitted when an enemy is launched into the air
+signal enemy_launched(enemy: Node)
+
+## Emitted when an enemy enters juggle state
+signal enemy_juggled(enemy: Node)
+
+## Emitted when air combo starts
+signal air_combo_started(enemy: Node)
+
+## Emitted when air hit is registered
+signal air_hit_registered(count: int, enemy: Node)
+
+## Emitted when air combo ends
+signal air_combo_ended(final_count: int)
+
+## Emitted when slam finisher is executed
+signal slam_executed(enemy: Node, damage: int)
+
 
 func _ready() -> void:
 	print("[EventBus] Initialized")

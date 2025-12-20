@@ -26,9 +26,17 @@ var target_player: CharacterBody2D = null
 var is_stunned: bool = false
 var stun_duration: float = 0.0
 
+# ============ JUGGLE STATE ============
+var is_juggled: bool = false
+var juggle_gravity_scale: float = 0.6  # Reduced gravity while juggled
+
 # ============ STUN SIGNALS ============
 signal stunned(duration: float)
 signal stun_ended
+
+# ============ JUGGLE SIGNALS ============
+signal juggle_started()
+signal juggle_ended()
 
 
 func _ready() -> void:
@@ -80,9 +88,14 @@ func _physics_process(_delta: float) -> void:
 	if is_dead:
 		return
 
-	# Apply gravity
+	# Apply gravity (reduced if juggled)
 	if not is_on_floor():
-		velocity.y += 980.0 * _delta
+		var gravity_multiplier: float = juggle_gravity_scale if is_juggled else 1.0
+		velocity.y += 980.0 * _delta * gravity_multiplier
+
+	# Check if juggled enemy landed
+	if is_juggled and is_on_floor():
+		_end_juggle()
 
 	move_and_slide()
 
@@ -299,8 +312,68 @@ func _on_knockback_started(direction: Vector2, force: float) -> void:
 func _on_knockback_ended() -> void:
 	"""Called when knockback ends"""
 
-	# Re-enable AI
-	if ai_controller:
+	# Re-enable AI (unless juggled)
+	if ai_controller and not is_juggled:
 		ai_controller.set_process(true)
 
 	print("[%s] Knockback ended" % name)
+
+
+# ============ JUGGLE SYSTEM ============
+func enter_juggle_state() -> void:
+	"""Enters juggle state (launched in air)"""
+	if is_juggled:
+		return  # Already juggled
+
+	is_juggled = true
+
+	# Disable AI while juggled
+	if ai_controller:
+		ai_controller.set_process(false)
+
+	# Visual feedback
+	_apply_juggle_visual()
+
+	# Emit signal
+	juggle_started.emit()
+	EventBus.emit_signal("enemy_juggled", self)
+
+	print("[%s] Entered juggle state" % name)
+
+
+func _end_juggle() -> void:
+	"""Ends juggle state (landed on ground)"""
+	if not is_juggled:
+		return
+
+	is_juggled = false
+
+	# Re-enable AI
+	if ai_controller and not is_stunned:
+		ai_controller.set_process(true)
+
+	# Remove visual feedback
+	_remove_juggle_visual()
+
+	# Brief stun on landing
+	stun(0.5)
+
+	# Emit signal
+	juggle_ended.emit()
+
+	print("[%s] Juggle ended" % name)
+
+
+func _apply_juggle_visual() -> void:
+	"""Applies visual feedback for juggle state"""
+	if sprite:
+		# Slightly transparent while juggled
+		var tween = create_tween()
+		tween.tween_property(sprite, "modulate:a", 0.8, 0.1)
+
+
+func _remove_juggle_visual() -> void:
+	"""Removes juggle visual feedback"""
+	if sprite:
+		var tween = create_tween()
+		tween.tween_property(sprite, "modulate:a", 1.0, 0.1)
