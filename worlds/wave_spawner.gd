@@ -53,7 +53,7 @@ signal enemy_spawned(enemy: Node, wave_index: int)
 
 func _ready() -> void:
 	# Connect to EventBus
-	EventBus.enemy_killed.connect(_on_enemy_killed)
+	EventBus.enemy_died.connect(_on_enemy_died)
 
 	# Auto-start if enabled
 	if auto_start:
@@ -157,8 +157,8 @@ func _spawn_wave(wave: Wave) -> void:
 # WAVE COMPLETION
 # ============================================================================
 
-func _on_enemy_killed(enemy: Node, _killer: Node) -> void:
-	"""Called when any enemy is killed"""
+func _on_enemy_died(enemy: Node, _position: Vector2) -> void:
+	"""Called when any enemy dies"""
 
 	if not is_active:
 		return
@@ -170,7 +170,7 @@ func _on_enemy_killed(enemy: Node, _killer: Node) -> void:
 	# Remove from tracking
 	spawned_enemies.erase(enemy)
 
-	print("[WaveSpawner] Enemy killed, remaining: %d" % spawned_enemies.size())
+	print("[WaveSpawner] Enemy died, remaining: %d" % spawned_enemies.size())
 
 	# Check if wave clear
 	if spawned_enemies.is_empty():

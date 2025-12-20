@@ -87,8 +87,17 @@ func respawn_player() -> void:
 		push_error("[GameManager] Cannot respawn: No player registered")
 		return
 
+	# Determine spawn position (use checkpoint if available, else initial spawn)
+	var spawn_pos: Vector2
+	if WorldManager.last_checkpoint_position != Vector2.ZERO:
+		spawn_pos = WorldManager.last_checkpoint_position
+		print("[GameManager] Respawning at checkpoint: ", spawn_pos)
+	else:
+		spawn_pos = player_spawn_position
+		print("[GameManager] Respawning at initial spawn: ", spawn_pos)
+
 	# Reset player state
-	player.global_position = player_spawn_position
+	player.global_position = spawn_pos
 
 	# Reset player health/mana via components
 	if player.has_node("HealthComponent"):
