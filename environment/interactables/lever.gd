@@ -140,7 +140,7 @@ func _find_door_by_id(door_id: String) -> Node:
 	var doors = get_tree().get_nodes_in_group("doors")
 
 	for door in doors:
-		if door.has("door_id") and door.door_id == door_id:
+		if "door_id" in door and door.door_id == door_id:
 			return door
 
 	return null
