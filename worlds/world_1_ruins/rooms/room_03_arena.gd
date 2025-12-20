@@ -137,16 +137,21 @@ func _configure_waves() -> void:
 	var wave3 = WaveSpawner.Wave.new()
 	wave3.delay_before = 2.0
 	wave3.delay_after = 3.0
+
+	# Calculate center position for Geist
+	var geist_pos = Vector2(
+		(wave_spawn_1.global_position.x + wave_spawn_2.global_position.x) / 2,
+		wave_spawn_1.global_position.y
+	)
+
 	wave3.add_enemy(UNTOTE_SCENE, wave_spawn_1.global_position)
 	wave3.add_enemy(UNTOTE_SCENE, wave_spawn_2.global_position)
 	wave3.add_enemy(UNTOTE_SCENE, wave_spawn_3.global_position)
-	wave3.add_enemy(GEIST_SCENE, Vector2(
-		(wave_spawn_1.global_position.x + wave_spawn_2.global_position.x) / 2,
-		wave_spawn_1.global_position.y
-	))
+	wave3.add_enemy(GEIST_SCENE, geist_pos)
 	wave_spawner.add_wave(wave3)
 
 	print("[Room03] Configured 3 waves")
+	print("[Room03] Wave 3 positions: ", wave_spawn_1.global_position, ", ", wave_spawn_2.global_position, ", ", wave_spawn_3.global_position, ", Geist: ", geist_pos)
 
 # ============================================================================
 # ARENA COMPLETION

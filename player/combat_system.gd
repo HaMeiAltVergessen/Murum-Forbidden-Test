@@ -160,7 +160,10 @@ func _activate_hitbox() -> void:
 	# Position hitbox based on facing direction
 	if movement_controller:
 		var facing: int = movement_controller.get_facing_direction()
+		# Scale and position the hitbox based on facing
 		hitbox.scale.x = abs(hitbox.scale.x) * facing
+		# Also flip the position.x to match facing direction
+		hitbox.position.x = abs(hitbox.position.x) * facing
 
 
 func _deactivate_hitbox() -> void:
