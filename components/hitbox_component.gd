@@ -48,8 +48,11 @@ func _deal_damage_to(hurtbox: HurtboxComponent) -> void:
 	if hurtbox.global_position != global_position:
 		knockback_dir = (hurtbox.global_position - global_position).normalized()
 
-	# Deal damage
-	hurtbox.take_damage(damage, knockback_dir * knockback_force, hitstun_duration)
+	# Get the actual attacker (owner, not immediate parent)
+	var attacker: Node = owner if owner else get_parent()
+
+	# Deal damage (pass attacker for parry system)
+	hurtbox.take_damage(damage, knockback_dir * knockback_force, hitstun_duration, attacker)
 
 	# Spawn hit effect
 	if spawn_hit_effect:

@@ -81,6 +81,12 @@ func register_player(player_node: CharacterBody2D, spawn_pos: Vector2) -> void:
 	print("[GameManager] Player registered at position: ", spawn_pos)
 
 
+func update_spawn_position(new_pos: Vector2) -> void:
+	"""Updates the spawn position (called when entering a new room)"""
+	player_spawn_position = new_pos
+	print("[GameManager] Spawn position updated to: ", new_pos)
+
+
 func respawn_player() -> void:
 	"""Respawns the player at the last spawn point"""
 	if not player:

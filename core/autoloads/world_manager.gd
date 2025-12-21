@@ -317,6 +317,11 @@ func _spawn_player_at_point(spawn_point_name: String) -> void:
 	else:
 		print("[WorldManager] Player spawned at spawn point: %v" % player.global_position)
 
+	# Update GameManager spawn position for respawning
+	# This ensures that if player dies, they respawn at room entrance
+	GameManager.update_spawn_position(player.global_position)
+	print("[WorldManager] Updated respawn point to room entrance: %v" % player.global_position)
+
 func _restore_player_data() -> void:
 	"""Restores player state from pending data (after save load)"""
 

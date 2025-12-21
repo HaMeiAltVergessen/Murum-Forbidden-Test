@@ -28,7 +28,7 @@ func _ready() -> void:
 
 
 # ============ DAMAGE RECEPTION ============
-func take_damage(damage: int, knockback: Vector2, hitstun: float) -> bool:
+func take_damage(damage: int, knockback: Vector2, hitstun: float, attacker: Node = null) -> bool:
 	"""
 	Receives damage from a hitbox.
 	Returns true if damage was applied.
@@ -38,7 +38,8 @@ func take_damage(damage: int, knockback: Vector2, hitstun: float) -> bool:
 
 	# Check if player is parrying (Parry System handles the attack)
 	if _is_parrying():
-		print("[HurtboxComponent] Parry active - damage blocked by ParrySystem")
+		print("[HurtboxComponent] PERFECT PARRY! Triggering instant kill on attacker!")
+		_handle_perfect_parry(attacker)
 		return false
 
 	# Emit damage signal
@@ -114,3 +115,20 @@ func _is_parrying() -> bool:
 		return parry_system.is_parrying()
 
 	return false
+
+
+func _handle_perfect_parry(attacker: Node) -> void:
+	"""Handles perfect parry - kills attacker and triggers effects"""
+	if not attacker:
+		print("[HurtboxComponent] No attacker to parry!")
+		return
+
+	# Get ParrySystem
+	var parry_system = owner.get_node_or_null("CombatSystem/ParrySystem")
+	if not parry_system:
+		return
+
+	# Trigger perfect parry in ParrySystem
+	if parry_system.has_method("_handle_perfect_parry"):
+		parry_system._handle_perfect_parry(attacker)
+		print("[HurtboxComponent] Perfect parry triggered on %s!" % attacker.name)
