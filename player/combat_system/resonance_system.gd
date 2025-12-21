@@ -111,7 +111,9 @@ func add_resonance(amount: float) -> void:
 		print("[ResonanceSystem] RESONANCE FULL!")
 		activate_mode()  # Auto-activate
 
-	print("[ResonanceSystem] +%.2f resonance (%.1f/%.1f)" % [amount, current_resonance, max_resonance])
+	# Only print for significant gains (not every small decay)
+	if amount > 1.0:
+		print("[ResonanceSystem] +%.2f resonance (%.1f/%.1f)" % [amount, current_resonance, max_resonance])
 
 
 func remove_resonance(amount: float) -> void:
@@ -133,7 +135,9 @@ func remove_resonance(amount: float) -> void:
 		resonance_depleted.emit()
 		print("[ResonanceSystem] Resonance depleted")
 
-	print("[ResonanceSystem] -%.2f resonance (%.1f/%.1f)" % [amount, current_resonance, max_resonance])
+	# Only print for significant losses (not every small decay)
+	if amount > 1.0:
+		print("[ResonanceSystem] -%.2f resonance (%.1f/%.1f)" % [amount, current_resonance, max_resonance])
 
 
 func set_resonance(amount: float) -> void:

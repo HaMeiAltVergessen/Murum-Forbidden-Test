@@ -22,6 +22,7 @@ var state_time: float = 0.0
 # ============ CONFIGURATION ============
 @export var idle_duration: float = 2.0
 @export var attack_cooldown: float = 1.5
+@export var min_distance: float = 60.0  # Stop moving when closer than this
 
 # ============ ATTACK TIMING ============
 @export var windup_duration: float = 0.5  # Telegraph duration
@@ -108,6 +109,15 @@ func _process_chase(_delta: float) -> void:
 	# Check if in attack range and cooldown ready
 	if distance <= enemy.attack_range and attack_timer <= 0:
 		_change_state(State.ATTACK_WINDUP)
+		return
+
+	# Stop if too close (don't run into player)
+	if distance < min_distance:
+		enemy.velocity.x = 0
+		# Still face the player
+		var direction: Vector2 = enemy.get_direction_to_player()
+		if enemy.sprite and direction.x != 0:
+			enemy.sprite.flip_h = direction.x < 0
 		return
 
 	# Move toward player
@@ -210,9 +220,17 @@ func _start_attack_windup() -> void:
 	# Play windup sound
 	AudioManager.play_sfx("enemy_attack_windup", 0.1)
 
-	# TODO: Play windup animation when available
-	# if enemy.sprite:
-	#     enemy.sprite.play("attack_windup")
+	# Windup animation: Pull back and grow slightly
+	if enemy.sprite:
+		var tween = create_tween()
+		tween.set_parallel(true)
+		# Pull back (offset position)
+		var pull_direction = -1 if enemy.sprite.flip_h else 1
+		tween.tween_property(enemy.sprite, "position:x", pull_direction * -8, windup_duration * 0.6)
+		# Grow slightly (charge up)
+		tween.tween_property(enemy.sprite, "scale", Vector2(1.15, 1.15), windup_duration * 0.6)
+		# Flash color (charging)
+		tween.tween_property(enemy.sprite, "modulate", Color(1.3, 0.9, 0.9), windup_duration * 0.5)
 
 
 func _activate_attack_hitbox() -> void:
@@ -228,9 +246,17 @@ func _activate_attack_hitbox() -> void:
 	# Play attack sound
 	AudioManager.play_sfx("enemy_attack", 0.15)
 
-	# TODO: Play attack animation when available
-	# if enemy.sprite:
-	#     enemy.sprite.play("attack_strike")
+	# Strike animation: Lunge forward
+	if enemy.sprite:
+		var tween = create_tween()
+		tween.set_parallel(true)
+		# Lunge forward (offset position)
+		var lunge_direction = 1 if enemy.sprite.flip_h else -1
+		tween.tween_property(enemy.sprite, "position:x", lunge_direction * -12, strike_duration)
+		# Shrink back to normal
+		tween.tween_property(enemy.sprite, "scale", Vector2(1.0, 1.0), strike_duration)
+		# Flash bright (impact)
+		tween.tween_property(enemy.sprite, "modulate", Color(1.5, 1.2, 1.2), strike_duration * 0.3)
 
 
 func _deactivate_attack_hitbox() -> void:
@@ -242,9 +268,16 @@ func _deactivate_attack_hitbox() -> void:
 		enemy.hitbox.deactivate()
 		attack_hitbox_active = false
 
-	# TODO: Play recovery animation when available
-	# if enemy.sprite:
-	#     enemy.sprite.play("attack_recovery")
+	# Recovery animation: Return to neutral position
+	if enemy.sprite:
+		var tween = create_tween()
+		tween.set_parallel(true)
+		# Return to center position
+		tween.tween_property(enemy.sprite, "position:x", 0.0, recovery_duration)
+		# Return to normal size
+		tween.tween_property(enemy.sprite, "scale", Vector2(1.0, 1.0), recovery_duration)
+		# Return to normal color
+		tween.tween_property(enemy.sprite, "modulate", Color.WHITE, recovery_duration)
 
 
 func cancel_attack() -> void:

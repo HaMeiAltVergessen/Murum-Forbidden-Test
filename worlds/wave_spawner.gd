@@ -163,11 +163,17 @@ func _spawn_wave(wave: Wave) -> void:
 func _on_enemy_died(enemy: Node, _position: Vector2) -> void:
 	"""Called when any enemy dies"""
 
+	print("[WaveSpawner] _on_enemy_died called for: %s (active: %s)" % [enemy.name, is_active])
+
 	if not is_active:
+		print("[WaveSpawner] Ignoring - spawner not active")
 		return
 
 	# Check if enemy was from this spawner
 	if enemy not in spawned_enemies:
+		print("[WaveSpawner] Ignoring - enemy not in spawned_enemies (tracked: %d)" % spawned_enemies.size())
+		for tracked_enemy in spawned_enemies:
+			print("  - Tracked: %s" % tracked_enemy.name)
 		return
 
 	# Remove from tracking
