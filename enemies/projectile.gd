@@ -36,6 +36,8 @@ func _ready() -> void:
 	if hitbox:
 		if hitbox.has_method("set_damage"):
 			hitbox.set_damage(damage)
+		if hitbox.has_method("activate"):
+			hitbox.activate()
 		hitbox.set_meta("projectile_owner", shooter)
 
 	# Setup lifetime

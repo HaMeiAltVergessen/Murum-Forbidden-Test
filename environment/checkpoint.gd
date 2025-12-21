@@ -14,7 +14,7 @@ class_name Checkpoint
 # REFERENCES
 # ============================================================================
 
-@onready var sprite: Sprite2D = $Sprite2D
+@onready var sprite: Sprite2D = $Sprite2D if has_node("Sprite2D") else null
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 
 # ============================================================================
