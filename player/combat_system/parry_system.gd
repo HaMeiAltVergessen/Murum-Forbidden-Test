@@ -8,7 +8,7 @@ class_name ParrySystem
 # ============================================================================
 
 # TESTING VALUES (großzügig für Testing)
-const PARRY_WINDOW_DURATION: float = 0.4  # 24 frames @ 60 FPS
+const PARRY_WINDOW_DURATION: float = 0.8  # 48 frames @ 60 FPS (doubled)
 const PARRY_ANTICIPATION: float = 0.1  # Startup delay
 
 # Production values (später):
@@ -223,10 +223,14 @@ func _handle_perfect_parry(enemy: Node) -> void:
 	# Cancel enemy attack (no damage)
 	# This is handled by not calling player.take_damage()
 
-	# Stun enemy
-	if enemy.has_method("stun"):
-		enemy.stun(STUN_DURATION)
-		print("[ParrySystem] Enemy stunned for %.2fs" % STUN_DURATION)
+	# INSTANT KILL on perfect parry!
+	if enemy.has_method("die"):
+		enemy.die()
+		print("[ParrySystem] Enemy INSTANTLY KILLED by perfect parry!")
+	elif enemy.has_method("take_damage"):
+		# Fallback: deal massive damage to ensure death
+		enemy.take_damage(9999, Vector2.ZERO, 0.0)
+		print("[ParrySystem] Enemy dealt 9999 damage (instant kill)!")
 
 	# Time slow effect
 	GlobalTimeEffects.slow_motion(TIME_SLOW_SCALE, TIME_SLOW_DURATION)
