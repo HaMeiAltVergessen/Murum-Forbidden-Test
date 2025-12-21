@@ -15,7 +15,7 @@ class_name BaseEnemy
 @export var max_health: int = 40
 @export var move_speed: float = 100.0
 @export var attack_damage: int = 10
-@export var attack_range: float = 50.0
+@export var attack_range: float = 70.0  # Must be > min_distance (60.0) to allow attacks
 @export var detection_range: float = 300.0
 
 # ============ STATE ============

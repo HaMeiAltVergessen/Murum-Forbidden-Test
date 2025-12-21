@@ -132,7 +132,7 @@ func die() -> void:
 	print("[Geist] Died at %v" % global_position)
 
 	died.emit()
-	EventBus.enemy_killed.emit(self, null)
+	EventBus.enemy_died.emit(self, global_position)  # Fixed: was enemy_killed
 
 	# Unregister from combat
 	CombatManager.unregister_enemy(self)
