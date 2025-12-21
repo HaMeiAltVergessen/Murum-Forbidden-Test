@@ -98,11 +98,12 @@ func _update_visual() -> void:
 
 func _play_activation_effect() -> void:
 	"""Visual effect for activation"""
-	var tween = create_tween()
-	tween.tween_property(sprite, "scale", Vector2(1.3, 1.3), 0.2)
-	tween.tween_property(sprite, "scale", Vector2(1.0, 1.0), 0.2)
+	if sprite:
+		var tween = create_tween()
+		tween.tween_property(sprite, "scale", Vector2(1.3, 1.3), 0.2)
+		tween.tween_property(sprite, "scale", Vector2(1.0, 1.0), 0.2)
 
-	# Screen flash
+	# Camera shake
 	var player = get_tree().get_first_node_in_group("player")
 	if player and player.has_node("PlayerCamera"):
-		player.get_node("PlayerCamera").flash(Color(0.5, 1.0, 0.5, 0.3), 0.3)
+		player.get_node("PlayerCamera").add_trauma(0.2)

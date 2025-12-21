@@ -383,7 +383,7 @@ func get_state_name() -> String:
 # ============================================================================
 
 func _create_shield_visual() -> void:
-	"""Creates the blue shield/sphere visual"""
+	"""Creates the blue shield/sphere visual like Super Smash Bros"""
 	if not player:
 		return
 
@@ -391,34 +391,42 @@ func _create_shield_visual() -> void:
 	shield_visual = Node2D.new()
 	shield_visual.name = "ParryShield"
 	player.add_child(shield_visual)
+	shield_visual.z_index = 10  # Draw on top
 
-	# Create multiple circles for sphere effect
-	for i in range(3):
-		var circle = _create_circle_sprite(60 + i * 15, 0.5 - i * 0.1)
-		shield_visual.add_child(circle)
+	# Create main shield sphere (large blue circle) - 50% transparency
+	var main_sphere = _create_circle_sprite(70.0, 0.5)
+	shield_visual.add_child(main_sphere)
+
+	# Create inner glow (slightly smaller, brighter)
+	var inner_glow = _create_circle_sprite(65.0, 0.3)
+	inner_glow.modulate = Color(0.7, 0.9, 1.0, 1.0)  # Lighter blue
+	shield_visual.add_child(inner_glow)
+
+	# Create outer rim (larger, more transparent)
+	var outer_rim = _create_circle_sprite(75.0, 0.25)
+	outer_rim.modulate = Color(0.5, 0.8, 1.0, 1.0)  # Electric blue
+	shield_visual.add_child(outer_rim)
 
 	# Start hidden
 	shield_visual.visible = false
 	shield_visual.modulate.a = 0.0
 
 
-func _create_circle_sprite(radius: float, alpha: float) -> Node2D:
+func _create_circle_sprite(radius: float, alpha: float) -> Polygon2D:
 	"""Creates a circular sprite using a Polygon2D"""
-	var circle_node = Node2D.new()
 	var polygon = Polygon2D.new()
 
-	# Create circle points
+	# Create circle points (more points = smoother circle)
 	var points: PackedVector2Array = []
-	var num_points = 32
+	var num_points = 48  # Increased for smoother circle
 	for i in range(num_points):
 		var angle = (i / float(num_points)) * TAU
 		points.append(Vector2(cos(angle), sin(angle)) * radius)
 
 	polygon.polygon = points
-	polygon.color = Color(0.3, 0.6, 1.0, alpha)  # Blue with transparency
+	polygon.color = Color(0.3, 0.6, 1.0, alpha)  # Blue with custom transparency
 
-	circle_node.add_child(polygon)
-	return circle_node
+	return polygon
 
 
 func _show_shield() -> void:
