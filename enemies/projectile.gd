@@ -100,30 +100,69 @@ func _hit_player(player: Node) -> void:
 
 	print("[Projectile] Hit player: %s" % player.name)
 
-	# Check if player is parrying
+	# Check if player is blocking or parrying
 	var parry_system = player.get_node_or_null("CombatSystem/ParrySystem")
-	if parry_system and parry_system.has_method("is_parrying") and parry_system.is_parrying():
-		# PARRIED!
-		_handle_parry(player, parry_system)
-		return
+	if parry_system:
+		# Check if in perfect parry window
+		if parry_system.has_method("is_parrying") and parry_system.is_parrying():
+			# PERFECT PARRY - Reflect projectile!
+			print("[Projectile] PERFECT PARRY - Reflecting!")
+			_reflect_projectile(player, parry_system)
+			return
+		# Check if just blocking (shield visible but not parry window)
+		elif parry_system.has_method("is_blocking") and parry_system.is_blocking():
+			# BLOCKED - Destroy projectile without damage
+			print("[Projectile] BLOCKED - Destroying without damage")
+			_destroy_on_block()
+			return
 
 	# Normal hit - damage applied via hurtbox interaction
 	# The projectile's HitboxComponent will trigger player's HurtboxComponent
 	# We just need to destroy the projectile after hit
 	_destroy_on_hit()
 
-func _handle_parry(player: Node, parry_system: Node) -> void:
-	"""Handles projectile being parried"""
+func _reflect_projectile(player: Node, parry_system: Node) -> void:
+	"""Reflects projectile back to shooter on perfect parry"""
 
-	print("[Projectile] Was parried by %s!" % player.name)
+	print("[Projectile] Reflecting back to shooter!")
 
 	# Trigger perfect parry in ParrySystem
 	if parry_system.has_method("_handle_perfect_parry") and shooter:
-		# This will stun the shooter, add resonance, etc.
+		# This will stun the shooter, add resonance, slow-mo, etc.
 		parry_system._handle_perfect_parry(shooter)
 
 	# Spawn parry effect
 	_spawn_parry_effect()
+
+	# Reverse direction - send it back to shooter
+	if shooter:
+		var new_direction = (shooter.global_position - global_position).normalized()
+		direction = new_direction
+		print("[Projectile] New direction: %v, speed increased!" % direction)
+
+		# Increase speed for dramatic effect
+		speed *= 1.5
+
+		# Change visual to indicate reflection (make it brighter/different color)
+		if sprite:
+			sprite.modulate = Color(1.5, 1.5, 0.5, 1.0)  # Bright yellow
+
+		# Make it damage enemies now instead of player
+		# Swap collision layers/masks
+		if hitbox:
+			hitbox.collision_mask = 16  # Hit enemies instead of player
+	else:
+		# No shooter to reflect to, just destroy
+		queue_free()
+
+
+func _destroy_on_block() -> void:
+	"""Destroys projectile when blocked (not parried)"""
+
+	print("[Projectile] Blocked by shield, destroying")
+
+	# Spawn block effect
+	_spawn_parry_effect()  # Reuse parry effect for now
 
 	# Destroy projectile
 	queue_free()
