@@ -69,8 +69,8 @@ func _ready() -> void:
 	if hurtbox:
 		hurtbox.area_entered.connect(_on_attack_detected)
 
-	# Create shield visual
-	_create_shield_visual()
+	# DON'T create shield here - will be created lazily on first use
+	# This is because player might not be fully initialized yet
 
 	print("[ParrySystem] Initialized - Window: %.2fs, Cooldown: %.2fs" % [PARRY_WINDOW_DURATION, PARRY_COOLDOWN_DURATION])
 
@@ -386,11 +386,19 @@ func get_state_name() -> String:
 
 func _create_shield_visual() -> void:
 	"""Creates the blue shield/sphere visual like Super Smash Bros"""
+	# Ensure we have player reference
+	if not player:
+		player = owner as CharacterBody2D
+
+	# If still null, try to get from scene tree
+	if not player:
+		player = get_tree().get_first_node_in_group("player") as CharacterBody2D
+
 	if not player:
 		print("[ParrySystem] ERROR: Cannot create shield - player is null!")
 		return
 
-	print("[ParrySystem] Creating shield visual...")
+	print("[ParrySystem] Creating shield visual for player: %s" % player.name)
 
 	# Create shield container
 	shield_visual = Node2D.new()
@@ -441,8 +449,14 @@ func _create_circle_sprite(radius: float, alpha: float) -> Polygon2D:
 
 func _show_shield() -> void:
 	"""Shows the shield with scale animation"""
+	# Lazy creation - create shield on first use if it doesn't exist
 	if not shield_visual:
-		print("[ParrySystem] ERROR: Cannot show shield - shield_visual is null!")
+		print("[ParrySystem] Shield doesn't exist yet - creating now...")
+		_create_shield_visual()
+
+	# Double-check after creation attempt
+	if not shield_visual:
+		print("[ParrySystem] ERROR: Failed to create shield - player might be null!")
 		return
 
 	print("[ParrySystem] Showing shield! visible=true, scaling up...")
