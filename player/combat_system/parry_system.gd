@@ -365,6 +365,11 @@ func is_parrying() -> bool:
 	return current_state == State.PARRY_WINDOW
 
 
+func is_blocking() -> bool:
+	"""Returns true if shield is up (blocking but not necessarily parrying)"""
+	return shield_visual != null and shield_visual.visible
+
+
 func get_cooldown_remaining() -> float:
 	"""Returns remaining cooldown time"""
 	return cooldown_remaining
