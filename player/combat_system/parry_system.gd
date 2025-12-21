@@ -81,10 +81,12 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("block"):
+		print("[ParrySystem] Block button PRESSED - showing shield...")
 		# Show shield immediately when block button is pressed
 		_show_shield()
 		attempt_parry()
 	elif event.is_action_released("block"):
+		print("[ParrySystem] Block button RELEASED - hiding shield...")
 		# Hide shield when block button is released
 		if current_state != State.PARRY_WINDOW:
 			_hide_shield()
@@ -385,7 +387,10 @@ func get_state_name() -> String:
 func _create_shield_visual() -> void:
 	"""Creates the blue shield/sphere visual like Super Smash Bros"""
 	if not player:
+		print("[ParrySystem] ERROR: Cannot create shield - player is null!")
 		return
+
+	print("[ParrySystem] Creating shield visual...")
 
 	# Create shield container
 	shield_visual = Node2D.new()
@@ -396,20 +401,25 @@ func _create_shield_visual() -> void:
 	# Create main shield sphere (large blue circle) - 50% transparency
 	var main_sphere = _create_circle_sprite(70.0, 0.5)
 	shield_visual.add_child(main_sphere)
+	print("[ParrySystem] Added main sphere (70px, 50% alpha)")
 
 	# Create inner glow (slightly smaller, brighter)
 	var inner_glow = _create_circle_sprite(65.0, 0.3)
 	inner_glow.modulate = Color(0.7, 0.9, 1.0, 1.0)  # Lighter blue
 	shield_visual.add_child(inner_glow)
+	print("[ParrySystem] Added inner glow (65px, 30% alpha)")
 
 	# Create outer rim (larger, more transparent)
 	var outer_rim = _create_circle_sprite(75.0, 0.25)
 	outer_rim.modulate = Color(0.5, 0.8, 1.0, 1.0)  # Electric blue
 	shield_visual.add_child(outer_rim)
+	print("[ParrySystem] Added outer rim (75px, 25% alpha)")
 
-	# Start hidden
+	# Start hidden (but ready to show)
 	shield_visual.visible = false
-	shield_visual.modulate.a = 0.0
+	# Don't set modulate.a to 0 - keep it at 1.0 so polygons show correctly
+
+	print("[ParrySystem] Shield visual created successfully! (hidden by default)")
 
 
 func _create_circle_sprite(radius: float, alpha: float) -> Polygon2D:
@@ -430,25 +440,27 @@ func _create_circle_sprite(radius: float, alpha: float) -> Polygon2D:
 
 
 func _show_shield() -> void:
-	"""Shows the shield with fade-in effect"""
+	"""Shows the shield with scale animation"""
 	if not shield_visual:
+		print("[ParrySystem] ERROR: Cannot show shield - shield_visual is null!")
 		return
 
+	print("[ParrySystem] Showing shield! visible=true, scaling up...")
 	shield_visual.visible = true
+	shield_visual.scale = Vector2(0.8, 0.8)  # Start slightly smaller
 
 	var tween = create_tween()
-	tween.tween_property(shield_visual, "modulate:a", 1.0, 0.1)
-	tween.parallel().tween_property(shield_visual, "scale", Vector2(1.1, 1.1), 0.1)
+	tween.tween_property(shield_visual, "scale", Vector2(1.0, 1.0), 0.15)
 
 
 func _hide_shield() -> void:
-	"""Hides the shield with fade-out effect"""
+	"""Hides the shield with scale-out effect"""
 	if not shield_visual:
 		return
 
+	print("[ParrySystem] Hiding shield! scaling down...")
 	var tween = create_tween()
-	tween.tween_property(shield_visual, "modulate:a", 0.0, 0.15)
-	tween.parallel().tween_property(shield_visual, "scale", Vector2(1.0, 1.0), 0.15)
+	tween.tween_property(shield_visual, "scale", Vector2(0.8, 0.8), 0.1)
 	tween.tween_callback(func(): shield_visual.visible = false)
 
 
