@@ -388,7 +388,7 @@ func _create_shield_visual() -> void:
 
 	# Create multiple circles for sphere effect
 	for i in range(3):
-		var circle = _create_circle_sprite(60 + i * 15, 0.3 - i * 0.08)
+		var circle = _create_circle_sprite(60 + i * 15, 0.5 - i * 0.1)
 		shield_visual.add_child(circle)
 
 	# Start hidden
@@ -423,7 +423,7 @@ func _show_shield() -> void:
 	shield_visual.visible = true
 
 	var tween = create_tween()
-	tween.tween_property(shield_visual, "modulate:a", 0.8, 0.1)
+	tween.tween_property(shield_visual, "modulate:a", 1.0, 0.1)
 	tween.parallel().tween_property(shield_visual, "scale", Vector2(1.1, 1.1), 0.1)
 
 

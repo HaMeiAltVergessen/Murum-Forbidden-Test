@@ -276,10 +276,10 @@ func _play_spawn_effect(_position: Vector2) -> void:
 func _play_completion_effect() -> void:
 	"""Visual effect for all waves complete"""
 
-	# Screen flash
+	# Camera shake for completion effect
 	var player = get_tree().get_first_node_in_group("player")
 	if player and player.has_node("PlayerCamera"):
-		player.get_node("PlayerCamera").flash(Color(1.0, 1.0, 0.5, 0.5), 0.5)
+		player.get_node("PlayerCamera").add_trauma(0.3)
 
 	# Audio
 	if AudioManager:
