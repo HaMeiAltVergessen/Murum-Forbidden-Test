@@ -10,6 +10,7 @@ class_name CombatSystem
 @onready var resonance_system: ResonanceSystem = null  # Will create dynamically
 @onready var parry_system: ParrySystem = null  # Will create dynamically
 @onready var staff_sprite: Node2D = null  # Will create dynamically
+@onready var staff_top: ColorRect = null  # Staff tip for color changes
 
 # ============ ATTACK CONFIGURATION ============
 @export var attack_damages: Array[int] = [10, 12, 15]  # Damage for attacks 1, 2, 3
@@ -105,6 +106,12 @@ func _perform_attack() -> void:
 
 	# Emit signal
 	EventBus.player_attacked.emit(current_combo)
+
+	# Update staff tip color (Black → White progression)
+	_update_staff_tip_color(current_combo)
+
+	# Animate player
+	_animate_player_attack(current_combo)
 
 	# Animate staff
 	_animate_staff_attack(current_combo)
@@ -255,11 +262,12 @@ func _create_staff_visual() -> void:
 	staff_sprite.add_child(handle)
 
 	# Staff top (purple/magic) - Bigger and more visible
-	var top: ColorRect = ColorRect.new()
-	top.size = Vector2(20, 20)  # 20x20 instead of 12x12
-	top.position = Vector2(25, -50)  # At the top of the staff
-	top.color = Color(0.7, 0.3, 1, 1)
-	staff_sprite.add_child(top)
+	staff_top = ColorRect.new()
+	staff_top.name = "StaffTip"
+	staff_top.size = Vector2(20, 20)  # 20x20 instead of 12x12
+	staff_top.position = Vector2(25, -50)  # At the top of the staff
+	staff_top.color = Color(0.7, 0.3, 1, 1)  # Initial purple
+	staff_sprite.add_child(staff_top)
 
 	# Staff is now ALWAYS visible!
 	staff_sprite.visible = true
@@ -289,6 +297,58 @@ func _animate_staff_attack(attack_num: int) -> void:
 	await tween.finished
 	var return_tween: Tween = create_tween()
 	return_tween.tween_property(staff_sprite, "rotation", 0.0, 0.1)
+
+
+func _animate_player_attack(attack_num: int) -> void:
+	"""Animates player sprite during attack"""
+	var sprite = player.get_node_or_null("Sprite2D")
+	if not sprite:
+		return
+
+	var tween = create_tween()
+	tween.set_parallel(true)
+
+	match attack_num:
+		1:  # Quick jab - small forward movement
+			tween.tween_property(sprite, "position:x", 5, attack_durations[0] * 0.4)
+			tween.tween_property(sprite, "scale", Vector2(1.05, 0.95), attack_durations[0] * 0.4)
+			tween.chain().tween_property(sprite, "position:x", 0, attack_durations[0] * 0.6)
+			tween.parallel().tween_property(sprite, "scale", Vector2(1.0, 1.0), attack_durations[0] * 0.6)
+		2:  # Medium swing - arc motion
+			tween.tween_property(sprite, "position:y", -8, attack_durations[1] * 0.3)
+			tween.tween_property(sprite, "scale", Vector2(1.1, 0.9), attack_durations[1] * 0.3)
+			tween.chain().tween_property(sprite, "position:y", 0, attack_durations[1] * 0.7)
+			tween.parallel().tween_property(sprite, "scale", Vector2(1.0, 1.0), attack_durations[1] * 0.7)
+		3:  # Heavy slam - big windup and strike
+			tween.tween_property(sprite, "position:x", -3, attack_durations[2] * 0.2)
+			tween.tween_property(sprite, "position:y", -10, attack_durations[2] * 0.2)
+			tween.tween_property(sprite, "scale", Vector2(1.15, 0.85), attack_durations[2] * 0.2)
+			tween.chain().tween_property(sprite, "position:x", 8, attack_durations[2] * 0.4)
+			tween.parallel().tween_property(sprite, "position:y", 0, attack_durations[2] * 0.4)
+			tween.parallel().tween_property(sprite, "scale", Vector2(0.95, 1.05), attack_durations[2] * 0.4)
+			tween.chain().tween_property(sprite, "position:x", 0, attack_durations[2] * 0.4)
+			tween.parallel().tween_property(sprite, "scale", Vector2(1.0, 1.0), attack_durations[2] * 0.4)
+
+
+func _update_staff_tip_color(attack_num: int) -> void:
+	"""Updates staff tip color based on attack in combo (Black → White)"""
+	if not staff_top:
+		return
+
+	var tip_color: Color
+	match attack_num:
+		1:  # Black/Dark gray (start of combo)
+			tip_color = Color(0.2, 0.15, 0.25, 1.0)  # Dark purple-black
+		2:  # Medium gray
+			tip_color = Color(0.5, 0.45, 0.6, 1.0)  # Medium purple-gray
+		3:  # White/Bright (end of combo)
+			tip_color = Color(1.0, 0.95, 1.0, 1.0)  # Bright white-purple
+		_:
+			tip_color = Color(0.7, 0.3, 1.0, 1.0)  # Default purple
+
+	# Animate color change
+	var tween = create_tween()
+	tween.tween_property(staff_top, "color", tip_color, 0.1)
 
 
 # ============ GETTERS ============
