@@ -196,10 +196,10 @@ func _activate_checkpoint() -> void:
 func _play_arena_complete_effects() -> void:
 	"""Visual/audio effects for arena completion"""
 
-	# Screen flash
+	# Camera shake for arena completion
 	var player = get_tree().get_first_node_in_group("player")
 	if player and player.has_node("PlayerCamera"):
-		player.get_node("PlayerCamera").flash(Color(1.0, 0.8, 0.5, 0.6), 0.5)
+		player.get_node("PlayerCamera").add_trauma(0.4)
 
 	# Audio
 	if AudioManager:

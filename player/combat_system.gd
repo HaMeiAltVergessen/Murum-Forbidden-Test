@@ -309,25 +309,31 @@ func _animate_player_attack(attack_num: int) -> void:
 	tween.set_parallel(true)
 
 	match attack_num:
-		1:  # Quick jab - small forward movement
-			tween.tween_property(sprite, "position:x", 5, attack_durations[0] * 0.4)
-			tween.tween_property(sprite, "scale", Vector2(1.05, 0.95), attack_durations[0] * 0.4)
+		1:  # Quick jab - forward thrust
+			tween.tween_property(sprite, "position:x", 15, attack_durations[0] * 0.4)
+			tween.tween_property(sprite, "scale", Vector2(1.15, 0.85), attack_durations[0] * 0.4)
 			tween.chain().tween_property(sprite, "position:x", 0, attack_durations[0] * 0.6)
 			tween.parallel().tween_property(sprite, "scale", Vector2(1.0, 1.0), attack_durations[0] * 0.6)
-		2:  # Medium swing - arc motion
-			tween.tween_property(sprite, "position:y", -8, attack_durations[1] * 0.3)
-			tween.tween_property(sprite, "scale", Vector2(1.1, 0.9), attack_durations[1] * 0.3)
+		2:  # Medium swing - upward arc
+			tween.tween_property(sprite, "position:y", -20, attack_durations[1] * 0.3)
+			tween.tween_property(sprite, "position:x", 10, attack_durations[1] * 0.3)
+			tween.tween_property(sprite, "scale", Vector2(1.2, 0.8), attack_durations[1] * 0.3)
 			tween.chain().tween_property(sprite, "position:y", 0, attack_durations[1] * 0.7)
+			tween.parallel().tween_property(sprite, "position:x", 0, attack_durations[1] * 0.7)
 			tween.parallel().tween_property(sprite, "scale", Vector2(1.0, 1.0), attack_durations[1] * 0.7)
 		3:  # Heavy slam - big windup and strike
-			tween.tween_property(sprite, "position:x", -3, attack_durations[2] * 0.2)
-			tween.tween_property(sprite, "position:y", -10, attack_durations[2] * 0.2)
-			tween.tween_property(sprite, "scale", Vector2(1.15, 0.85), attack_durations[2] * 0.2)
-			tween.chain().tween_property(sprite, "position:x", 8, attack_durations[2] * 0.4)
-			tween.parallel().tween_property(sprite, "position:y", 0, attack_durations[2] * 0.4)
-			tween.parallel().tween_property(sprite, "scale", Vector2(0.95, 1.05), attack_durations[2] * 0.4)
-			tween.chain().tween_property(sprite, "position:x", 0, attack_durations[2] * 0.4)
-			tween.parallel().tween_property(sprite, "scale", Vector2(1.0, 1.0), attack_durations[2] * 0.4)
+			# Windup (pull back and up)
+			tween.tween_property(sprite, "position:x", -12, attack_durations[2] * 0.2)
+			tween.tween_property(sprite, "position:y", -25, attack_durations[2] * 0.2)
+			tween.tween_property(sprite, "scale", Vector2(1.3, 0.7), attack_durations[2] * 0.2)
+			# Strike (forward slam)
+			tween.chain().tween_property(sprite, "position:x", 20, attack_durations[2] * 0.3)
+			tween.parallel().tween_property(sprite, "position:y", 5, attack_durations[2] * 0.3)
+			tween.parallel().tween_property(sprite, "scale", Vector2(0.85, 1.15), attack_durations[2] * 0.3)
+			# Recovery
+			tween.chain().tween_property(sprite, "position:x", 0, attack_durations[2] * 0.5)
+			tween.parallel().tween_property(sprite, "position:y", 0, attack_durations[2] * 0.5)
+			tween.parallel().tween_property(sprite, "scale", Vector2(1.0, 1.0), attack_durations[2] * 0.5)
 
 
 func _update_staff_tip_color(attack_num: int) -> void:

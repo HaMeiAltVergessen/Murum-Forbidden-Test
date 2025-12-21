@@ -23,7 +23,7 @@ shape = SubResource("CircleShape2D_projectile_collision")
 
 [node name="HitboxComponent" type="Area2D" parent="."]
 collision_layer = 4
-collision_mask = 2
+collision_mask = 8
 script = ExtResource("2_hitbox")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]

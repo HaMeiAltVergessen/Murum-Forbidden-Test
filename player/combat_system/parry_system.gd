@@ -16,8 +16,8 @@ const PARRY_ANTICIPATION: float = 0.1  # Startup delay
 
 const PARRY_COOLDOWN_DURATION: float = 0.8  # Nach Failed Parry
 const STUN_DURATION: float = 0.8  # Enemy stun auf Perfect Parry
-const TIME_SLOW_SCALE: float = 0.3  # 30% speed
-const TIME_SLOW_DURATION: float = 0.2  # Slow duration
+const TIME_SLOW_SCALE: float = 0.2  # 20% speed (80% slow)
+const TIME_SLOW_DURATION: float = 0.35  # Slow duration
 
 const RESONANCE_GAIN_ON_PARRY: float = 12.5  # 2× normal hit
 
@@ -81,7 +81,13 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("block"):
+		# Show shield immediately when block button is pressed
+		_show_shield()
 		attempt_parry()
+	elif event.is_action_released("block"):
+		# Hide shield when block button is released
+		if current_state != State.PARRY_WINDOW:
+			_hide_shield()
 
 
 func attempt_parry() -> void:
