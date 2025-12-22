@@ -70,6 +70,9 @@ func _ready() -> void:
 	# Setup collision areas
 	_setup_collision_areas()
 
+	# Setup visual indicators
+	_setup_visual_indicators()
+
 	# Connect area signals
 	parry_area.area_entered.connect(_on_parry_area_entered)
 	block_area.area_entered.connect(_on_block_area_entered)
@@ -105,6 +108,33 @@ func _setup_collision_areas() -> void:
 	# Parry higher priority (disable/enable logic)
 	block_area.monitoring = false
 	parry_area.monitoring = false
+
+func _setup_visual_indicators() -> void:
+	"""Sets up visual circle polygons for indicators"""
+
+	# Block Indicator (Blue, 50% transparent, 50px radius)
+	if block_indicator:
+		var block_points = _create_circle_points(BLOCK_RADIUS, 48)
+		block_indicator.polygon = block_points
+		block_indicator.color = Color(0.3, 0.6, 1.0, 0.5)  # Blue, 50% alpha
+		block_indicator.position = BLOCK_OFFSET  # Match block area position
+		block_indicator.z_index = -1  # Behind player
+
+	# Parry Indicator (Light blue/cyan, 45px radius)
+	if parry_indicator:
+		var parry_points = _create_circle_points(PARRY_RADIUS, 48)
+		parry_indicator.polygon = parry_points
+		parry_indicator.color = Color(0.5, 1.0, 1.0, 0.6)  # Light cyan, 60% alpha
+		parry_indicator.position = PARRY_OFFSET  # Match parry area position
+		parry_indicator.z_index = 0  # Above block
+
+func _create_circle_points(radius: float, num_points: int) -> PackedVector2Array:
+	"""Creates a circle polygon with given radius and number of points"""
+	var points: PackedVector2Array = []
+	for i in range(num_points):
+		var angle = (i / float(num_points)) * TAU
+		points.append(Vector2(cos(angle), sin(angle)) * radius)
+	return points
 
 # ============================================================================
 # INPUT
@@ -308,16 +338,14 @@ func _show_block_indicators() -> void:
 
 	if block_indicator:
 		block_indicator.visible = true
-		block_indicator.modulate = Color(0.5, 0.5, 1.0, 0.3)  # Blue, transparent
 
 	if parry_indicator:
 		parry_indicator.visible = true
-		parry_indicator.modulate = Color(1.0, 1.0, 0.5, 0.5)  # Yellow, semi-transparent
 
-		# Pulse animation
+		# Pulse animation on parry indicator
 		var tween = create_tween().set_loops()
-		tween.tween_property(parry_indicator, "modulate:a", 0.3, 0.3)
-		tween.tween_property(parry_indicator, "modulate:a", 0.6, 0.3)
+		tween.tween_property(parry_indicator, "modulate:a", 0.4, 0.3)
+		tween.tween_property(parry_indicator, "modulate:a", 0.8, 0.3)
 
 func _hide_block_indicators() -> void:
 	"""Hides visual indicators"""
