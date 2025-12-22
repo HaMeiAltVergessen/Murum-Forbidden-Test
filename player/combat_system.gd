@@ -8,7 +8,7 @@ class_name CombatSystem
 @onready var movement_controller: MovementController = player.get_node_or_null("MovementController")
 @onready var combo_tracker: ComboTracker = null  # Will create dynamically
 @onready var resonance_system: ResonanceSystem = null  # Will create dynamically
-@onready var parry_system: ParrySystem = null  # Will create dynamically
+@onready var parry_block_system: ParryBlockSystem = null  # Will create from scene
 @onready var staff_sprite: Node2D = null  # Will create dynamically
 @onready var staff_top: ColorRect = null  # Staff tip for color changes
 
@@ -45,8 +45,8 @@ func _ready() -> void:
 	# Create resonance system
 	_create_resonance_system()
 
-	# Create parry system
-	_create_parry_system()
+	# Create parry/block system
+	_create_parry_block_system()
 
 	# Create staff visual
 	_create_staff_visual()
@@ -215,22 +215,30 @@ func _on_resonance_full() -> void:
 	print("[CombatSystem] Resonance full! (Mode activation in Commit 003)")
 
 
-# ============ PARRY SYSTEM ============
-func _create_parry_system() -> void:
-	"""Creates the parry system component."""
-	parry_system = ParrySystem.new()
-	parry_system.name = "ParrySystem"
-	add_child(parry_system)
+# ============ PARRY/BLOCK SYSTEM ============
+func _create_parry_block_system() -> void:
+	"""Creates the spatial parry/block system component."""
+	# Load the ParryBlockSystem scene
+	var parry_block_scene = preload("res://player/combat_system/parry_block_system.tscn")
+	parry_block_system = parry_block_scene.instantiate()
+	parry_block_system.name = "ParryBlockSystem"
+	add_child(parry_block_system)
 
-	# Connect to parry signals (optional)
-	parry_system.perfect_parry.connect(_on_perfect_parry)
+	# Connect to parry signals
+	parry_block_system.perfect_parry_executed.connect(_on_perfect_parry)
+	parry_block_system.normal_block_executed.connect(_on_normal_block)
 
-	print("[CombatSystem] ParrySystem created")
+	print("[CombatSystem] ParryBlockSystem created (spatial detection)")
 
 
 func _on_perfect_parry(enemy: Node) -> void:
 	"""Called when a perfect parry is executed."""
 	print("[CombatSystem] Perfect parry on %s!" % enemy.name)
+
+
+func _on_normal_block(enemy: Node) -> void:
+	"""Called when a normal block is executed."""
+	print("[CombatSystem] Normal block on %s!" % enemy.name)
 
 
 # ============ STAFF VISUAL ============

@@ -100,60 +100,23 @@ func _hit_player(player: Node) -> void:
 
 	print("[Projectile] Hit player: %s" % player.name)
 
-	# Check if player is blocking or parrying
-	var parry_system = player.get_node_or_null("CombatSystem/ParrySystem")
-	if parry_system:
-		# Check if in perfect parry window
-		if parry_system.has_method("is_parrying") and parry_system.is_parrying():
-			# PERFECT PARRY - Reflect projectile!
-			print("[Projectile] PERFECT PARRY - Reflecting!")
-			_reflect_projectile(player, parry_system)
-			return
-		# Check if just blocking (shield visible but not parry window)
-		elif parry_system.has_method("is_blocking") and parry_system.is_blocking():
-			# BLOCKED - Destroy projectile without damage
-			print("[Projectile] BLOCKED - Destroying without damage")
-			_destroy_on_block()
-			return
+	# Check if player is blocking (spatial system)
+	var parry_block_system = player.get_node_or_null("CombatSystem/ParryBlockSystem")
+	if parry_block_system and parry_block_system.has_method("is_blocking") and parry_block_system.is_blocking():
+		# Player is blocking - projectile is blocked (no perfect parry for projectiles in spatial system)
+		# Spatial parry system works with melee attacks via collision areas
+		print("[Projectile] BLOCKED - Destroying without damage")
+		_destroy_on_block()
+		return
 
 	# Normal hit - damage applied via hurtbox interaction
 	# The projectile's HitboxComponent will trigger player's HurtboxComponent
 	# We just need to destroy the projectile after hit
 	_destroy_on_hit()
 
-func _reflect_projectile(player: Node, parry_system: Node) -> void:
-	"""Reflects projectile back to shooter on perfect parry"""
-
-	print("[Projectile] Reflecting back to shooter!")
-
-	# Trigger perfect parry in ParrySystem
-	if parry_system.has_method("_handle_perfect_parry") and shooter:
-		# This will stun the shooter, add resonance, slow-mo, etc.
-		parry_system._handle_perfect_parry(shooter)
-
-	# Spawn parry effect
-	_spawn_parry_effect()
-
-	# Reverse direction - send it back to shooter
-	if shooter:
-		var new_direction = (shooter.global_position - global_position).normalized()
-		direction = new_direction
-		print("[Projectile] New direction: %v, speed increased!" % direction)
-
-		# Increase speed for dramatic effect
-		speed *= 1.5
-
-		# Change visual to indicate reflection (make it brighter/different color)
-		if sprite:
-			sprite.modulate = Color(1.5, 1.5, 0.5, 1.0)  # Bright yellow
-
-		# Make it damage enemies now instead of player
-		# Swap collision layers/masks
-		if hitbox:
-			hitbox.collision_mask = 16  # Hit enemies instead of player
-	else:
-		# No shooter to reflect to, just destroy
-		queue_free()
+# Note: Projectile reflection removed in spatial parry system (Commit 014)
+# Spatial system focuses on melee attacks with positioning-based parry/block
+# Projectiles are simply blocked when RMB is held
 
 
 func _destroy_on_block() -> void:

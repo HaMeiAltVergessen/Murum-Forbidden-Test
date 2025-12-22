@@ -25,7 +25,7 @@ var state_time: float = 0.0
 @export var min_distance: float = 60.0  # Stop moving when closer than this
 
 # ============ ATTACK TIMING ============
-@export var windup_duration: float = 0.5  # Telegraph duration
+@export var windup_duration: float = 0.6  # Telegraph duration (extended for spatial parry system)
 @export var strike_duration: float = 0.2  # Hitbox active time
 @export var recovery_duration: float = 0.3  # Post-attack recovery
 

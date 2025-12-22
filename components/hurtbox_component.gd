@@ -36,11 +36,8 @@ func take_damage(damage: int, knockback: Vector2, hitstun: float, attacker: Node
 	if is_invulnerable:
 		return false
 
-	# Check if player is parrying (Parry System handles the attack)
-	if _is_parrying():
-		print("[HurtboxComponent] PERFECT PARRY! Triggering instant kill on attacker!")
-		_handle_perfect_parry(attacker)
-		return false
+	# Note: Parry/block detection is now handled by ParryBlockSystem (spatial collision)
+	# Perfect parry and block effects are applied automatically via collision detection
 
 	# Emit damage signal
 	damage_received.emit(damage, knockback, hitstun)
@@ -102,33 +99,5 @@ func _flash_damage_red(entity: Node) -> void:
 	tween.tween_property(sprite, "modulate", Color.WHITE, 0.2)  # Fade back to normal
 
 
-# ============ PARRY CHECK ============
-func _is_parrying() -> bool:
-	"""Checks if ParrySystem is active and parrying"""
-	# Check if owner has ParrySystem
-	var parry_system = owner.get_node_or_null("CombatSystem/ParrySystem")
-	if not parry_system:
-		return false
-
-	# Check if parrying
-	if parry_system.has_method("is_parrying"):
-		return parry_system.is_parrying()
-
-	return false
-
-
-func _handle_perfect_parry(attacker: Node) -> void:
-	"""Handles perfect parry - kills attacker and triggers effects"""
-	if not attacker:
-		print("[HurtboxComponent] No attacker to parry!")
-		return
-
-	# Get ParrySystem
-	var parry_system = owner.get_node_or_null("CombatSystem/ParrySystem")
-	if not parry_system:
-		return
-
-	# Trigger perfect parry in ParrySystem
-	if parry_system.has_method("_handle_perfect_parry"):
-		parry_system._handle_perfect_parry(attacker)
-		print("[HurtboxComponent] Perfect parry triggered on %s!" % attacker.name)
+# Note: Parry/block logic removed in favor of ParryBlockSystem (Commit 014)
+# Spatial parry system handles detection via collision areas automatically
