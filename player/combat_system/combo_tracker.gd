@@ -12,11 +12,21 @@ const FINISHER_HIT_INDEX: int = 3  # Every 3rd hit
 const FINISHER_DAMAGE_MULTIPLIER: float = 1.5  # ×1.5 base damage
 const FINISHER_COMBO_BONUS: float = 1.2  # Extra combo multiplier
 
+# ============ LEAP ENDER CONFIGURATION ============
+const LEAP_INPUT_WINDOW: float = 0.5  # Window after 3rd hit to input leap ender
+const LEAP_DAMAGE_MULTIPLIER: float = 1.3  # ×1.3 base damage (less than normal finisher)
+const DIRECTION_HOLD_THRESHOLD: float = 0.1  # Min direction magnitude
+
 # ============ STATE ============
 var current_combo: int = 0
 var combo_multiplier: float = 1.0
 var time_remaining: float = 0.0
 var is_active: bool = false
+
+# ============ LEAP ENDER STATE ============
+var leap_input_timer: float = 0.0
+var is_leap_available: bool = false
+var held_direction: Vector2 = Vector2.ZERO
 
 # ============ VISUAL FEEDBACK ============
 var combo_color: Color = Color.WHITE
@@ -29,6 +39,8 @@ signal combo_ended(final_count: int)
 signal combo_milestone_reached(count: int)  # For special combo milestones
 signal combo_finisher_ready  # Next hit will be finisher
 signal combo_finisher_executed(damage: int)  # Finisher was executed
+signal leap_ender_available  # After 3rd hit, leap ender can be triggered
+signal leap_ender_triggered(direction: Vector2)  # Leap ender was triggered
 
 # ============ COMBO MILESTONES ============
 const MILESTONE_THRESHOLDS: Array[int] = [5, 10, 25, 50, 100]
@@ -61,6 +73,14 @@ func _process(delta: float) -> void:
 		# Update visual intensity based on combo
 		_update_visual_feedback()
 
+	# Update leap ender window timer
+	if is_leap_available:
+		leap_input_timer -= delta
+
+		if leap_input_timer <= 0.0:
+			is_leap_available = false
+			print("[ComboTracker] Leap Ender window expired")
+
 
 # ============ COMBO TRACKING ============
 func _on_combo_increased(new_count: int, multiplier: float) -> void:
@@ -80,6 +100,10 @@ func _on_combo_increased(new_count: int, multiplier: float) -> void:
 		combo_finisher_ready.emit()
 		EventBus.combo_finisher_ready.emit()
 		print("[ComboTracker] Next hit is FINISHER!")
+
+	# Check if this hit WAS a finisher (3rd hit landed) - enable leap ender window
+	if new_count % FINISHER_HIT_INDEX == 0:
+		_enable_leap_ender_window()
 
 	# Emit signals
 	if was_inactive:
@@ -233,6 +257,60 @@ func execute_finisher(damage: int) -> void:
 	# Emit signals
 	combo_finisher_executed.emit(damage)
 	EventBus.combo_finisher_executed.emit(current_combo)
+
+
+# ============ LEAP ENDER DETECTION ============
+func _enable_leap_ender_window() -> void:
+	"""Opens window for leap ender input after 3rd hit"""
+	is_leap_available = true
+	leap_input_timer = LEAP_INPUT_WINDOW
+
+	leap_ender_available.emit()
+	EventBus.leap_ender_available.emit()
+	print("[ComboTracker] Leap Ender available! (hold direction + attack)")
+
+
+func check_leap_ender_input() -> bool:
+	"""Checks if leap ender input is valid (returns true if can execute)"""
+
+	if not is_leap_available:
+		return false
+
+	# Check if direction held
+	held_direction = _get_held_direction()
+
+	if held_direction.length() < DIRECTION_HOLD_THRESHOLD:
+		return false  # No direction held
+
+	return true
+
+
+func _get_held_direction() -> Vector2:
+	"""Returns currently held direction input"""
+	var direction = Vector2(
+		Input.get_axis("move_left", "move_right"),
+		Input.get_axis("move_up", "move_down")
+	).normalized()
+
+	return direction
+
+
+func consume_leap_ender() -> Vector2:
+	"""Consumes leap ender opportunity, returns held direction"""
+	is_leap_available = false
+
+	var direction = held_direction
+	leap_ender_triggered.emit(direction)
+	EventBus.leap_ender_triggered.emit(direction)
+
+	print("[ComboTracker] Leap Ender consumed! Direction: %v" % direction)
+
+	return direction
+
+
+func get_leap_damage_multiplier() -> float:
+	"""Returns damage multiplier for leap ender"""
+	return LEAP_DAMAGE_MULTIPLIER
 
 # ============ DEBUG ============
 func get_debug_info() -> Dictionary:

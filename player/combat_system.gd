@@ -9,6 +9,7 @@ class_name CombatSystem
 @onready var combo_tracker: ComboTracker = null  # Will create dynamically
 @onready var resonance_system: ResonanceSystem = null  # Will create dynamically
 @onready var parry_block_system: ParryBlockSystem = null  # Will create from scene
+@onready var leap_ender_system: LeapEnderSystem = null  # Will create dynamically
 @onready var staff_sprite: Node2D = null  # Will create dynamically
 @onready var staff_top: ColorRect = null  # Staff tip for color changes
 
@@ -47,6 +48,9 @@ func _ready() -> void:
 
 	# Create parry/block system
 	_create_parry_block_system()
+
+	# Create leap ender system
+	_create_leap_ender_system()
 
 	# Create staff visual
 	_create_staff_visual()
@@ -239,6 +243,30 @@ func _on_perfect_parry(enemy: Node) -> void:
 func _on_normal_block(enemy: Node) -> void:
 	"""Called when a normal block is executed."""
 	print("[CombatSystem] Normal block on %s!" % enemy.name)
+
+
+# ============ LEAP ENDER SYSTEM ============
+func _create_leap_ender_system() -> void:
+	"""Creates the leap ender system component."""
+	leap_ender_system = LeapEnderSystem.new()
+	leap_ender_system.name = "LeapEnderSystem"
+	add_child(leap_ender_system)
+
+	# Connect to leap ender signals (optional)
+	leap_ender_system.leap_ender_started.connect(_on_leap_ender_started)
+	leap_ender_system.leap_ender_completed.connect(_on_leap_ender_completed)
+
+	print("[CombatSystem] LeapEnderSystem created")
+
+
+func _on_leap_ender_started(direction: Vector2) -> void:
+	"""Called when leap ender starts."""
+	print("[CombatSystem] Leap ender started! Direction: %v" % direction)
+
+
+func _on_leap_ender_completed() -> void:
+	"""Called when leap ender completes."""
+	print("[CombatSystem] Leap ender completed!")
 
 
 # ============ STAFF VISUAL ============

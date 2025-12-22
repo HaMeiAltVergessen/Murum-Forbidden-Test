@@ -56,6 +56,18 @@ signal combo_finisher_ready()
 ## Emitted when a combo finisher is executed
 signal combo_finisher_executed(combo_count: int)
 
+## Emitted when leap ender becomes available (after 3rd hit)
+signal leap_ender_available()
+
+## Emitted when leap ender is triggered
+signal leap_ender_triggered(direction: Vector2)
+
+## Emitted when leap ender is started
+signal leap_ender_started(direction: Vector2)
+
+## Emitted when leap ender is completed
+signal leap_ender_completed()
+
 ## Emitted when resonance value changes
 signal resonance_changed(current: float, maximum: float, percentage: float)
 
