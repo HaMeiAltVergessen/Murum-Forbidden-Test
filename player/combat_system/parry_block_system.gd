@@ -50,8 +50,8 @@ var cooldown_timer: float = 0.0
 @onready var parry_collision: CollisionShape2D = $ParryArea/ParryCollision
 
 # Visual indicators (optional, für debug)
-@onready var parry_indicator: Sprite2D = $ParryIndicator
-@onready var block_indicator: Sprite2D = $BlockIndicator
+@onready var parry_indicator: Polygon2D = $ParryIndicator
+@onready var block_indicator: Polygon2D = $BlockIndicator
 
 # ============================================================================
 # SIGNALS
