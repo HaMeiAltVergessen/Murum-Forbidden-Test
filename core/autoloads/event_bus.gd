@@ -209,6 +209,9 @@ signal air_combo_ended(final_count: int)
 ## Emitted when slam finisher is executed
 signal slam_executed(enemy: Node, damage: int)
 
+## Emitted when Ende der Schwerkraft is executed
+signal ende_schwerkraft_executed(enemy: Node)
+
 # ============ DODGE ROLL SIGNALS ============
 ## Emitted when dodge roll starts
 signal dodge_started(direction: Vector2)

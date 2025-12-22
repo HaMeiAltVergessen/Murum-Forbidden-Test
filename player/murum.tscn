@@ -13,6 +13,7 @@
 [ext_resource type="Script" path="res://player/combat_system/launcher_system.gd" id="11_launcher"]
 [ext_resource type="Script" path="res://player/combat_system/air_combo_system.gd" id="12_air_combo"]
 [ext_resource type="Script" path="res://player/dodge_roll_system.gd" id="13_dodge"]
+[ext_resource type="Script" path="res://player/combat_system/ende_schwerkraft.gd" id="14_ende_schwerkraft"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 radius = 16.0
@@ -90,6 +91,9 @@ juggle_force = 400.0
 max_air_combo = 10
 slam_damage_multiplier = 2.0
 slam_force = 800.0
+
+[node name="EndeSchwerkraft" type="Node" parent="."]
+script = ExtResource("14_ende_schwerkraft")
 
 [node name="DodgeRollSystem" type="Node" parent="."]
 script = ExtResource("13_dodge")

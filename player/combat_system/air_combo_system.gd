@@ -48,6 +48,10 @@ func _ready() -> void:
 	# Connect to launcher events
 	_connect_launcher_events()
 
+	# Connect to Ende der Schwerkraft
+	if EventBus.has_signal("ende_schwerkraft_executed"):
+		EventBus.ende_schwerkraft_executed.connect(_on_ende_schwerkraft)
+
 	print("[AirComboSystem] Initialized")
 
 
@@ -104,6 +108,23 @@ func _on_enemy_launched(enemy: BaseEnemy) -> void:
 	# Emit signal
 	air_combo_started.emit(enemy)
 	EventBus.emit_signal("air_combo_started", enemy)  # Will add to EventBus
+
+
+func _on_ende_schwerkraft(enemy: Node) -> void:
+	"""Called when Ende der Schwerkraft launches enemy"""
+	print("[AirComboSystem] Ready for air combo after Ende der Schwerkraft")
+
+	# Set juggle target for immediate air combo
+	juggled_enemy = enemy
+
+	# Reset counter for fresh air combo
+	current_air_combo = 0
+	air_combo_timer = AIR_COMBO_WINDOW
+
+	# Emit signal
+	air_combo_started.emit(enemy)
+	if EventBus:
+		EventBus.emit_signal("air_combo_started", enemy)
 
 
 # ============ AIR ATTACK EXECUTION ============
