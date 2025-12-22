@@ -74,24 +74,18 @@ signal resonance_mode_deactivated()
 ## Emitted when resonance mode timer updates (countdown)
 signal resonance_mode_timer_updated(time_remaining: float)
 
-# ============ PARRY SIGNALS ============
-## Emitted when parry attempt starts
+# ============ PARRY/BLOCK SIGNALS (Spatial System) ============
+## Emitted when parry/block attempt starts (RMB pressed)
 signal parry_started()
 
-## Emitted when parry window opens (active parry frame)
-signal parry_window_opened()
+## Emitted when perfect parry succeeds (enemy in parry ring)
+signal perfect_parry_executed(enemy: Node)
 
-## Emitted when perfect parry succeeds
-signal perfect_parry(enemy: Node)
+## Emitted when normal block succeeds (enemy in block sphere)
+signal normal_block_executed(enemy: Node)
 
-## Emitted when parry fails (timeout)
-signal parry_failed()
-
-## Emitted when parry cooldown starts
-signal parry_cooldown_started(duration: float)
-
-## Emitted when parry cooldown updates
-signal parry_cooldown_updated(time_remaining: float)
+## Emitted when attack is blocked (for damage mitigation)
+signal attack_blocked(enemy: Node, damage_reduction: float)
 
 ## Emitted when enemy is stunned
 signal enemy_stunned(enemy: Node, duration: float)

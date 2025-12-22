@@ -29,16 +29,12 @@ func _ready() -> void:
 	EventBus.resonance_mode_deactivated.connect(_on_resonance_mode_deactivated)
 	EventBus.resonance_mode_timer_updated.connect(_on_resonance_mode_timer_updated)
 
-	# Connect parry signals
-	EventBus.parry_window_opened.connect(_on_parry_window_opened)
-	EventBus.parry_failed.connect(_on_parry_ended)
-	EventBus.perfect_parry.connect(_on_parry_ended)
+	# Connect parry signals (spatial system - no window indicator needed)
+	EventBus.perfect_parry_executed.connect(_on_perfect_parry)
+	EventBus.normal_block_executed.connect(_on_normal_block)
 
 	# Create heart icons
 	_create_hearts()
-
-	# Create parry indicator
-	_create_parry_indicator()
 
 	# Hide interaction prompt initially
 	if interaction_prompt:
@@ -88,66 +84,37 @@ func _update_hearts(current_hp: int) -> void:
 				heart_rect.color = Color(0.3, 0.3, 0.3, 1)
 
 
-# ============ PARRY INDICATOR ============
-func _create_parry_indicator() -> void:
-	"""Creates the JETZT! parry timing indicator"""
-	parry_indicator = Label.new()
-	parry_indicator.name = "ParryIndicator"
-	parry_indicator.text = "JETZT!"
-	parry_indicator.add_theme_font_size_override("font_size", 48)
-	parry_indicator.add_theme_color_override("font_color", Color(1.0, 1.0, 0.0, 1.0))  # Yellow
-	parry_indicator.add_theme_color_override("font_outline_color", Color(0.0, 0.0, 0.0, 1.0))
-	parry_indicator.add_theme_constant_override("outline_size", 4)
+# ============ PARRY/BLOCK FEEDBACK ============
+func _on_perfect_parry(_enemy: Node) -> void:
+	"""Shows brief flash for perfect parry"""
+	# Screen flash for perfect parry (yellow)
+	var flash = ColorRect.new()
+	flash.color = Color(1.0, 1.0, 0.3, 0.3)
+	flash.anchor_right = 1.0
+	flash.anchor_bottom = 1.0
+	add_child(flash)
 
-	# Center on screen
-	parry_indicator.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	parry_indicator.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	parry_indicator.anchor_left = 0.5
-	parry_indicator.anchor_right = 0.5
-	parry_indicator.anchor_top = 0.3
-	parry_indicator.anchor_bottom = 0.3
-	parry_indicator.offset_left = -100
-	parry_indicator.offset_right = 100
-	parry_indicator.offset_top = -30
-	parry_indicator.offset_bottom = 30
-
-	# Start hidden
-	parry_indicator.visible = false
-	parry_indicator.modulate.a = 0.0
-
-	add_child(parry_indicator)
-	print("[HUD] Parry indicator created")
-
-
-func _on_parry_window_opened() -> void:
-	"""Shows JETZT! indicator when parry window opens"""
-	if not parry_indicator:
-		return
-
-	print("[HUD] Showing JETZT! indicator")
-	parry_indicator.visible = true
-
-	# Fade in with scale animation
 	var tween = create_tween()
-	tween.set_parallel(true)
-	tween.tween_property(parry_indicator, "modulate:a", 1.0, 0.1)
-	tween.tween_property(parry_indicator, "scale", Vector2(1.2, 1.2), 0.1)
+	tween.tween_property(flash, "modulate:a", 0.0, 0.2)
+	tween.tween_callback(flash.queue_free)
 
-	# Pulse animation
-	tween.chain().tween_property(parry_indicator, "scale", Vector2(1.0, 1.0), 0.2)
+	print("[HUD] Perfect parry flash!")
 
 
-func _on_parry_ended(_enemy: Node = null) -> void:
-	"""Hides JETZT! indicator when parry window ends"""
-	if not parry_indicator:
-		return
+func _on_normal_block(_enemy: Node) -> void:
+	"""Shows brief flash for normal block"""
+	# Screen flash for block (blue, less intense)
+	var flash = ColorRect.new()
+	flash.color = Color(0.3, 0.5, 1.0, 0.2)
+	flash.anchor_right = 1.0
+	flash.anchor_bottom = 1.0
+	add_child(flash)
 
-	print("[HUD] Hiding JETZT! indicator")
-
-	# Fade out
 	var tween = create_tween()
-	tween.tween_property(parry_indicator, "modulate:a", 0.0, 0.15)
-	tween.tween_callback(func(): parry_indicator.visible = false)
+	tween.tween_property(flash, "modulate:a", 0.0, 0.15)
+	tween.tween_callback(flash.queue_free)
+
+	print("[HUD] Normal block flash!")
 
 
 # ============ SIGNAL HANDLERS ============

@@ -11,6 +11,10 @@ var current_health: int
 var is_invulnerable: bool = false
 var invulnerability_timer: Timer
 
+# Block mitigation state
+var block_active: bool = false
+var block_reduction: float = 0.0
+
 # ============ SIGNALS ============
 signal health_changed(new_health: int, max_health: int)
 signal damage_taken(damage: int)
@@ -28,6 +32,12 @@ func _ready() -> void:
 	invulnerability_timer.timeout.connect(_on_invulnerability_timeout)
 	add_child(invulnerability_timer)
 
+	# Connect to block signal
+	EventBus.attack_blocked.connect(_on_attack_blocked)
+
+	# Connect to perfect parry signal (grants brief invulnerability)
+	EventBus.perfect_parry_executed.connect(_on_perfect_parry)
+
 	# Emit initial health
 	health_changed.emit(current_health, max_health)
 
@@ -40,10 +50,16 @@ func take_damage(damage: int) -> bool:
 	if is_invulnerable or current_health <= 0:
 		return false
 
-	current_health = max(0, current_health - damage)
+	# Apply block damage reduction if active
+	var final_damage = damage
+	if block_active:
+		final_damage = int(damage * (1.0 - block_reduction))
+		print("[HealthComponent] Blocked! Reduced damage: %d → %d (%.0f%% reduction)" % [damage, final_damage, block_reduction * 100])
+
+	current_health = max(0, current_health - final_damage)
 
 	# Emit signals
-	damage_taken.emit(damage)
+	damage_taken.emit(final_damage)
 	health_changed.emit(current_health, max_health)
 
 	# Start invulnerability
@@ -98,3 +114,26 @@ func get_health_percentage() -> float:
 func is_alive() -> bool:
 	"""Returns true if entity has health remaining"""
 	return current_health > 0
+
+
+# ============ BLOCK HANDLING ============
+func _on_attack_blocked(enemy: Node, reduction: float) -> void:
+	"""Called when player blocks an attack"""
+	block_active = true
+	block_reduction = reduction
+
+	# Clear after brief window (next frame)
+	await get_tree().create_timer(0.05).timeout
+	block_active = false
+	block_reduction = 0.0
+
+
+func _on_perfect_parry(enemy: Node) -> void:
+	"""Called when perfect parry is executed - grants brief invulnerability"""
+	# Perfect parry grants brief invulnerability to prevent damage
+	is_invulnerable = true
+	print("[HealthComponent] Perfect parry invulnerability activated!")
+
+	# Clear after very brief window
+	await get_tree().create_timer(0.1).timeout
+	is_invulnerable = false
