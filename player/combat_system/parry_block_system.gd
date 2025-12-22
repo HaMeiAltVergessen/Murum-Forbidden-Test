@@ -489,6 +489,11 @@ func _hide_block_indicators() -> void:
 func _spawn_parry_flash() -> void:
 	"""Spawns parry flash VFX (same as Commit 004)"""
 
+	# Check player reference
+	if not player:
+		print("[ParryBlockSystem] Cannot spawn parry flash - player reference is null")
+		return
+
 	# Check if scene exists
 	if not ResourceLoader.exists("res://vfx/particles/parry_flash.tscn"):
 		print("[ParryBlockSystem] Parry flash VFX not found, skipping")
@@ -506,6 +511,11 @@ func _spawn_parry_flash() -> void:
 
 func _spawn_block_effect() -> void:
 	"""Spawns block effect (smaller, different from parry)"""
+
+	# Check player reference
+	if not player:
+		print("[ParryBlockSystem] Cannot spawn block effect - player reference is null")
+		return
 
 	# Check if scene exists
 	if not ResourceLoader.exists("res://vfx/particles/block_effect.tscn"):

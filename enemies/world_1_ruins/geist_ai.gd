@@ -1,20 +1,19 @@
 extends Node
 class_name GeistAI
 
-## AI Controller for Geist (Ranged Kiter)
-## Maintains preferred distance and fires projectiles
+## AI Controller for Geist (Melee Aggressor)
+## Always chases player and attacks when in melee range
 
 # ============================================================================
 # CONSTANTS
 # ============================================================================
 
 const DETECTION_RANGE: float = 400.0
-const PREFERRED_DISTANCE: float = 200.0
-const MIN_DISTANCE: float = 150.0
-const MAX_DISTANCE: float = 300.0
-const ATTACK_RANGE: float = 350.0
-const ATTACK_COOLDOWN: float = 2.5
-const CHARGE_DURATION: float = 0.6
+const ATTACK_RANGE: float = 80.0  # Melee range (will be extended by sprite stretch)
+const ATTACK_WINDUP: float = 0.3  # Wind-up before attack
+const ATTACK_DURATION: float = 0.2  # Active attack hitbox
+const ATTACK_RECOVERY: float = 0.2  # Recovery after attack
+const ATTACK_COOLDOWN: float = 1.5  # Cooldown between attacks
 
 # ============================================================================
 # STATE
@@ -22,16 +21,16 @@ const CHARGE_DURATION: float = 0.6
 
 enum State {
 	IDLE,
-	APPROACH,
-	KITE,
-	ATTACK_CHARGE,
-	ATTACK_SHOOT,
+	CHASE,
+	ATTACK_WINDUP,
+	ATTACK_ACTIVE,
+	ATTACK_RECOVERY,
 	ATTACK_COOLDOWN
 }
 
 var current_state: State = State.IDLE
 var attack_cooldown_remaining: float = 0.0
-var charge_progress: float = 0.0
+var attack_timer: float = 0.0  # Timer for attack phases
 
 # ============================================================================
 # REFERENCES
@@ -75,14 +74,14 @@ func _process(delta: float) -> void:
 	match current_state:
 		State.IDLE:
 			_process_idle(delta)
-		State.APPROACH:
-			_process_approach(delta)
-		State.KITE:
-			_process_kite(delta)
-		State.ATTACK_CHARGE:
-			_process_attack_charge(delta)
-		State.ATTACK_SHOOT:
-			_process_attack_shoot(delta)
+		State.CHASE:
+			_process_chase(delta)
+		State.ATTACK_WINDUP:
+			_process_attack_windup(delta)
+		State.ATTACK_ACTIVE:
+			_process_attack_active(delta)
+		State.ATTACK_RECOVERY:
+			_process_attack_recovery(delta)
 		State.ATTACK_COOLDOWN:
 			_process_attack_cooldown(delta)
 
@@ -100,32 +99,18 @@ func _process_idle(delta: float) -> void:
 		owner_enemy.velocity = Vector2.ZERO
 		return
 
-	# Determine state based on distance
-	if distance < MIN_DISTANCE:
-		# Too close, kite away
-		current_state = State.KITE
-		print("[GeistAI] Player too close (%.0fpx), kiting" % distance)
-	elif distance > MAX_DISTANCE:
-		# Too far, approach
-		current_state = State.APPROACH
-		print("[GeistAI] Player too far (%.0fpx), approaching" % distance)
-	elif can_attack():
-		# In range and can attack
-		current_state = State.ATTACK_CHARGE
-		_start_charging()
-	else:
-		# In range but on cooldown
-		owner_enemy.velocity = Vector2.ZERO
+	# Always chase player (melee aggressor behavior)
+	current_state = State.CHASE
+	print("[GeistAI] Player detected, chasing")
 
-func _process_approach(delta: float) -> void:
-	"""Moves closer to player"""
+func _process_chase(delta: float) -> void:
+	"""Chases player aggressively"""
 
 	var distance = owner_enemy.global_position.distance_to(player.global_position)
 
-	# Check if in range now
-	if distance <= PREFERRED_DISTANCE:
-		current_state = State.IDLE
-		owner_enemy.velocity = Vector2.ZERO
+	# Check if in attack range
+	if distance <= ATTACK_RANGE and can_attack():
+		_start_attack()
 		return
 
 	# Move toward player
@@ -136,87 +121,88 @@ func _process_approach(delta: float) -> void:
 	# Face player
 	_face_direction(direction)
 
-func _process_kite(delta: float) -> void:
-	"""Moves away from player (kiting)"""
+func _process_attack_windup(delta: float) -> void:
+	"""Wind-up before attack - telegraphing"""
 
-	var distance = owner_enemy.global_position.distance_to(player.global_position)
+	attack_timer += delta
 
-	# Check if safe distance reached
-	if distance >= PREFERRED_DISTANCE:
-		current_state = State.IDLE
-		owner_enemy.velocity = Vector2.ZERO
-		return
-
-	# Move away from player
-	var direction = (owner_enemy.global_position - player.global_position).normalized()
-	owner_enemy.velocity = direction * owner_enemy.MOVE_SPEED
-	owner_enemy.move_and_slide()
-
-	# Face player (still look at target while backing away)
-	var look_direction = (player.global_position - owner_enemy.global_position).normalized()
-	_face_direction(look_direction)
-
-func _process_attack_charge(delta: float) -> void:
-	"""Charging attack"""
-
-	charge_progress += delta
-
-	# Update glow intensity
-	var intensity = charge_progress / CHARGE_DURATION
+	# Visual feedback - glow intensity increases
+	var intensity = attack_timer / ATTACK_WINDUP
 	if owner_enemy.animated_sprite:
 		owner_enemy.animated_sprite.modulate = Color(
 			1.0 + intensity * 0.5,
 			1.0 + intensity * 0.5,
-			1.5,
-			0.7
+			1.0,
+			0.7 + intensity * 0.3
 		)
 
-	# Stay in place while charging
+	# Stay in place while winding up
 	owner_enemy.velocity = Vector2.ZERO
 
 	# Face player
 	var direction = (player.global_position - owner_enemy.global_position).normalized()
 	_face_direction(direction)
 
-	# Check if charge complete
-	if charge_progress >= CHARGE_DURATION:
-		_shoot_projectile()
+	# Check if windup complete
+	if attack_timer >= ATTACK_WINDUP:
+		_activate_attack()
 
-func _process_attack_shoot(delta: float) -> void:
-	"""Projectile shot, brief pause"""
+func _process_attack_active(delta: float) -> void:
+	"""Active attack phase - hitbox is active"""
 
-	# This state is brief, immediately go to cooldown
-	current_state = State.ATTACK_COOLDOWN
-	attack_cooldown_remaining = ATTACK_COOLDOWN
+	attack_timer += delta
 
-	print("[GeistAI] Entering cooldown (%.1fs)" % ATTACK_COOLDOWN)
+	# Stretch sprite horizontally for extended reach
+	if owner_enemy.animated_sprite:
+		owner_enemy.animated_sprite.scale.x = 2.0  # 2x stretch for more range
+		owner_enemy.animated_sprite.scale.y = 1.0
+
+	# Move slightly forward during attack
+	var direction = (player.global_position - owner_enemy.global_position).normalized()
+	owner_enemy.velocity = direction * (owner_enemy.MOVE_SPEED * 1.5)
+	owner_enemy.move_and_slide()
+
+	# Enable hitbox
+	if owner_enemy.hitbox:
+		owner_enemy.hitbox.monitoring = true
+
+	# Check if attack complete
+	if attack_timer >= ATTACK_DURATION:
+		_end_attack()
+
+func _process_attack_recovery(delta: float) -> void:
+	"""Recovery phase after attack"""
+
+	attack_timer += delta
+
+	# Reset sprite scale gradually
+	if owner_enemy.animated_sprite:
+		var t = attack_timer / ATTACK_RECOVERY
+		owner_enemy.animated_sprite.scale.x = lerp(2.0, 1.0, t)
+		owner_enemy.animated_sprite.scale.y = 1.0
+
+	# Slow down
+	owner_enemy.velocity = owner_enemy.velocity * 0.9
+
+	# Check if recovery complete
+	if attack_timer >= ATTACK_RECOVERY:
+		_enter_cooldown()
 
 func _process_attack_cooldown(delta: float) -> void:
-	"""Waiting for cooldown - can still move"""
+	"""Waiting for cooldown - continue chasing"""
 
 	var distance = owner_enemy.global_position.distance_to(player.global_position)
 
-	# Still maintain distance during cooldown
-	if distance < MIN_DISTANCE:
-		# Too close, kite
-		var direction = (owner_enemy.global_position - player.global_position).normalized()
-		owner_enemy.velocity = direction * owner_enemy.MOVE_SPEED
-		owner_enemy.move_and_slide()
-		_face_direction(-direction)
-	elif distance > MAX_DISTANCE:
-		# Too far, approach
-		var direction = (player.global_position - owner_enemy.global_position).normalized()
-		owner_enemy.velocity = direction * owner_enemy.MOVE_SPEED
-		owner_enemy.move_and_slide()
-		_face_direction(direction)
-	else:
-		# In range, stay put
-		owner_enemy.velocity = Vector2.ZERO
+	# Continue chasing even during cooldown
+	var direction = (player.global_position - owner_enemy.global_position).normalized()
+	owner_enemy.velocity = direction * owner_enemy.MOVE_SPEED
+	owner_enemy.move_and_slide()
+	_face_direction(direction)
 
 	# Check if cooldown done
 	if attack_cooldown_remaining <= 0.0:
-		current_state = State.IDLE
-		print("[GeistAI] Cooldown finished, returning to IDLE")
+		current_state = State.CHASE
+		print("[GeistAI] Cooldown finished, resuming chase")
 
 # ============================================================================
 # ATTACK LOGIC
@@ -224,64 +210,67 @@ func _process_attack_cooldown(delta: float) -> void:
 
 func can_attack() -> bool:
 	"""Returns true if can attack"""
-	if attack_cooldown_remaining > 0.0:
-		return false
+	return attack_cooldown_remaining <= 0.0
 
-	var distance = owner_enemy.global_position.distance_to(player.global_position)
-	if distance > ATTACK_RANGE:
-		return false
+func _start_attack() -> void:
+	"""Starts melee attack"""
 
-	return true
+	print("[GeistAI] Starting melee attack!")
 
-func _start_charging() -> void:
-	"""Starts attack charge"""
-	charge_progress = 0.0
+	current_state = State.ATTACK_WINDUP
+	attack_timer = 0.0
 
 	# Animation
 	if owner_enemy.animated_sprite and owner_enemy.animated_sprite.has_method("play"):
-		owner_enemy.animated_sprite.play("attack_charge")
+		owner_enemy.animated_sprite.play("attack")
 
-	# Audio
-	AudioManager.play_sfx("enemies/geist_charge", 0.1)
+	# Audio (wind-up sound)
+	AudioManager.play_sfx("enemies/geist_attack_windup", 0.12)
 
-	print("[GeistAI] Charging attack (%.1fs)" % CHARGE_DURATION)
+func _activate_attack() -> void:
+	"""Activates the attack hitbox"""
 
-func _shoot_projectile() -> void:
-	"""Fires projectile"""
+	print("[GeistAI] Attack active!")
 
-	print("[GeistAI] Shooting projectile!")
+	current_state = State.ATTACK_ACTIVE
+	attack_timer = 0.0
+
+	# Reset glow, brighten for active attack
+	if owner_enemy.animated_sprite:
+		owner_enemy.animated_sprite.modulate = Color(1.5, 1.5, 1.5, 1.0)
+
+	# Audio (attack swing)
+	AudioManager.play_sfx("enemies/geist_attack", 0.15)
+
+func _end_attack() -> void:
+	"""Ends active attack phase"""
+
+	print("[GeistAI] Attack ending, entering recovery")
+
+	current_state = State.ATTACK_RECOVERY
+	attack_timer = 0.0
+
+	# Disable hitbox
+	if owner_enemy.hitbox:
+		owner_enemy.hitbox.monitoring = false
 
 	# Reset glow
 	if owner_enemy.animated_sprite:
 		owner_enemy.animated_sprite.modulate = Color(1.0, 1.0, 1.0, 0.7)
 
-	# Calculate direction to player
-	var direction = (player.global_position - owner_enemy.global_position).normalized()
+func _enter_cooldown() -> void:
+	"""Enters attack cooldown"""
 
-	# Spawn projectile
-	var projectile_scene = load("res://enemies/projectile.tscn")
-	if not projectile_scene:
-		print("[GeistAI] ERROR: Could not load projectile scene!")
-		current_state = State.IDLE
-		return
+	print("[GeistAI] Entering cooldown (%.1fs)" % ATTACK_COOLDOWN)
 
-	var projectile = projectile_scene.instantiate()
+	current_state = State.ATTACK_COOLDOWN
+	attack_cooldown_remaining = ATTACK_COOLDOWN
+	attack_timer = 0.0
 
-	# Setup projectile
-	projectile.global_position = owner_enemy.global_position
-	projectile.direction = direction
-	projectile.speed = 250.0
-	projectile.damage = owner_enemy.DAMAGE
-	projectile.shooter = owner_enemy
-
-	# Add to scene tree
-	get_tree().root.add_child(projectile)
-
-	# Audio
-	AudioManager.play_sfx("enemies/geist_shoot", 0.15)
-
-	# State transition
-	current_state = State.ATTACK_SHOOT
+	# Ensure sprite is fully reset
+	if owner_enemy.animated_sprite:
+		owner_enemy.animated_sprite.scale = Vector2.ONE
+		owner_enemy.animated_sprite.modulate = Color(1.0, 1.0, 1.0, 0.7)
 
 # ============================================================================
 # UTILITY
@@ -294,22 +283,27 @@ func _face_direction(direction: Vector2) -> void:
 
 func cancel_attack() -> void:
 	"""Cancels current attack (called by stun)"""
-	if current_state in [State.ATTACK_CHARGE, State.ATTACK_SHOOT]:
+	if current_state in [State.ATTACK_WINDUP, State.ATTACK_ACTIVE, State.ATTACK_RECOVERY]:
 		print("[GeistAI] Attack canceled (stun)")
 		current_state = State.IDLE
-		charge_progress = 0.0
+		attack_timer = 0.0
 
-		# Reset glow
+		# Disable hitbox
+		if owner_enemy.hitbox:
+			owner_enemy.hitbox.monitoring = false
+
+		# Reset sprite
 		if owner_enemy.animated_sprite:
+			owner_enemy.animated_sprite.scale = Vector2.ONE
 			owner_enemy.animated_sprite.modulate = Color(1.0, 1.0, 1.0, 0.7)
 
 func get_state_name() -> String:
 	"""Returns state name (debug)"""
 	match current_state:
 		State.IDLE: return "IDLE"
-		State.APPROACH: return "APPROACH"
-		State.KITE: return "KITE"
-		State.ATTACK_CHARGE: return "ATTACK_CHARGE"
-		State.ATTACK_SHOOT: return "ATTACK_SHOOT"
+		State.CHASE: return "CHASE"
+		State.ATTACK_WINDUP: return "ATTACK_WINDUP"
+		State.ATTACK_ACTIVE: return "ATTACK_ACTIVE"
+		State.ATTACK_RECOVERY: return "ATTACK_RECOVERY"
 		State.ATTACK_COOLDOWN: return "ATTACK_COOLDOWN"
 		_: return "UNKNOWN"
