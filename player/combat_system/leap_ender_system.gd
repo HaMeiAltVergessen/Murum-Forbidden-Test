@@ -348,6 +348,9 @@ func _hit_enemy(enemy: Node) -> void:
 
 	print("[LeapEnderSystem] Hit enemy: %s (damage: %d, knockback: %.0f)" % [enemy.name, damage, LEAP_KNOCKBACK_FORCE])
 
+	# Teleport to nearest enemy after successful hit
+	_teleport_to_nearest_enemy(enemy)
+
 func _calculate_leap_damage() -> int:
 	"""Calculates leap ender damage"""
 
@@ -393,6 +396,62 @@ func _spawn_hit_effect(hit_position: Vector2) -> void:
 	await get_tree().create_timer(1.0).timeout
 	if vfx:
 		vfx.queue_free()
+
+func _teleport_to_nearest_enemy(current_enemy: Node) -> void:
+	"""Teleports player to nearest enemy after successful hit"""
+
+	if not player:
+		return
+
+	# Get all enemies
+	var all_enemies = get_tree().get_nodes_in_group("enemies")
+
+	var nearest_enemy: Node = null
+	var nearest_distance: float = INF
+
+	# Find nearest enemy (excluding current one)
+	for enemy in all_enemies:
+		if enemy == current_enemy:
+			continue  # Skip the enemy we just hit
+
+		if not is_instance_valid(enemy):
+			continue  # Skip invalid/dead enemies
+
+		# Check if enemy is alive
+		if enemy.has_method("is_alive") and not enemy.is_alive():
+			continue
+
+		var distance = player.global_position.distance_to(enemy.global_position)
+
+		if distance < nearest_distance:
+			nearest_distance = distance
+			nearest_enemy = enemy
+
+	# Teleport to nearest enemy
+	if nearest_enemy:
+		var teleport_offset = 60.0  # 60px away from enemy
+		var direction = (player.global_position - nearest_enemy.global_position).normalized()
+		var teleport_pos = nearest_enemy.global_position + (direction * teleport_offset)
+
+		print("[LeapEnderSystem] Teleporting to nearest enemy: %s (distance: %.0f)" % [nearest_enemy.name, nearest_distance])
+
+		# Spawn teleport VFX at old position
+		_spawn_hit_effect(player.global_position)
+
+		# Teleport
+		player.global_position = teleport_pos
+
+		# Spawn teleport VFX at new position
+		_spawn_hit_effect(teleport_pos)
+
+		# Audio feedback
+		AudioManager.play_sfx("player_leap_attack", 0.12)
+
+		# Small camera shake
+		if player.has_node("PlayerCamera"):
+			player.get_node("PlayerCamera").add_trauma(0.15)
+	else:
+		print("[LeapEnderSystem] No other enemies found for teleport")
 
 func _on_leap_available() -> void:
 	"""Called when leap ender becomes available"""
