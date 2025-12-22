@@ -2,26 +2,26 @@ extends Node2D
 class_name ParryBlockSystem
 
 ## Timing + Spatial Parry/Block system
-## - Block: Hold RMB = invulnerable + mana drain
-## - Parry: Press RMB timing window + enemy in parry ring (50-70px)
+## - Parry: First 1 second after RMB press = Perfect Parry (enemy dies)
+## - Block: After 1 second = Normal Block (costs mana on hit, based on attack category)
+## - Player is invulnerable during both parry and block
 
 # ============================================================================
 # CONSTANTS
 # ============================================================================
 
-# Block (innere sphere)
-const BLOCK_RADIUS: float = 50.0
+# Block Sphere (only one collision area now)
+const BLOCK_RADIUS: float = 70.0  # Single sphere for both parry and block
 const BLOCK_OFFSET: Vector2 = Vector2.ZERO  # Centered on player
 
-# Parry (äußere sphere - parry ring ist zwischen 50-70px)
-const PARRY_RADIUS: float = 70.0
-const PARRY_OFFSET: Vector2 = Vector2.ZERO  # Auch zentriert, konzentrisch
-
 # Parry Timing
-const PARRY_WINDOW_DURATION: float = 60.0  # 60s timing window für Testing
+const PARRY_WINDOW_DURATION: float = 1.0  # 1 second timing window für Parry
 
-# Block Mana Cost
-const BLOCK_MANA_PER_SECOND: float = 10.0  # 10 Mana pro Sekunde
+# Block Mana Cost Categories (only on hit, not continuous)
+enum BlockCategory { LIGHT, NORMAL, HEAVY }
+const MANA_COST_LIGHT: float = 5.0
+const MANA_COST_NORMAL: float = 15.0
+const MANA_COST_HEAVY: float = 30.0
 
 # Rewards (unchanged from Commit 004)
 const STUN_DURATION: float = 0.8
@@ -52,11 +52,7 @@ var player: CharacterBody2D = null  # Will be set in _ready()
 @onready var block_area: Area2D = $BlockArea
 @onready var block_collision: CollisionShape2D = $BlockArea/BlockCollision
 
-@onready var parry_area: Area2D = $ParryArea
-@onready var parry_collision: CollisionShape2D = $ParryArea/ParryCollision
-
-# Visual indicators (optional, für debug)
-@onready var parry_indicator: Polygon2D = $ParryIndicator
+# Visual indicator
 @onready var block_indicator: Polygon2D = $BlockIndicator
 
 # ============================================================================
@@ -89,66 +85,45 @@ func _ready() -> void:
 	else:
 		print("[ParryBlockSystem] Player reference set: %s" % player.name)
 
-	# Setup collision areas
-	_setup_collision_areas()
+	# Setup collision area (only one now)
+	_setup_collision_area()
 
-	# Setup visual indicators
-	_setup_visual_indicators()
+	# Setup visual indicator
+	_setup_visual_indicator()
 
-	# Connect area signals
-	parry_area.area_entered.connect(_on_parry_area_entered)
+	# Connect area signal (only block area now)
 	block_area.area_entered.connect(_on_block_area_entered)
 
-	# Hide indicators by default
-	if parry_indicator:
-		parry_indicator.visible = false
+	# Hide indicator by default
 	if block_indicator:
 		block_indicator.visible = false
 
-	print("[ParryBlockSystem] Initialized (timing + spatial detection)")
+	print("[ParryBlockSystem] Initialized (timing-based parry/block)")
 
-func _setup_collision_areas() -> void:
-	"""Sets up collision shapes and positions"""
+func _setup_collision_area() -> void:
+	"""Sets up collision shape and position"""
 
-	# Block Area (größer, centered)
+	# Block Area (single sphere for both parry and block)
 	if block_collision and block_collision.shape is CircleShape2D:
 		block_collision.shape.radius = BLOCK_RADIUS
 	block_area.position = BLOCK_OFFSET
-
-	# Parry Area (kleiner, offset forward)
-	if parry_collision and parry_collision.shape is CircleShape2D:
-		parry_collision.shape.radius = PARRY_RADIUS
-	parry_area.position = PARRY_OFFSET
 
 	# Collision layers
 	block_area.collision_layer = 0
 	block_area.collision_mask = 4  # Enemy hitbox layer
 
-	parry_area.collision_layer = 0
-	parry_area.collision_mask = 4
-
-	# Parry higher priority (disable/enable logic)
+	# Disabled by default
 	block_area.monitoring = false
-	parry_area.monitoring = false
 
-func _setup_visual_indicators() -> void:
-	"""Sets up visual circle polygons for indicators"""
+func _setup_visual_indicator() -> void:
+	"""Sets up visual circle polygon for block indicator"""
 
-	# Block Indicator (Blue, 50% transparent, 50px radius)
+	# Block/Parry Indicator (changes color based on state)
 	if block_indicator:
 		var block_points = _create_circle_points(BLOCK_RADIUS, 48)
 		block_indicator.polygon = block_points
-		block_indicator.color = Color(0.3, 0.6, 1.0, 0.5)  # Blue, 50% alpha
-		block_indicator.position = BLOCK_OFFSET  # Match block area position
-		block_indicator.z_index = -1  # Behind player
-
-	# Parry Indicator (Gold, 45px radius)
-	if parry_indicator:
-		var parry_points = _create_circle_points(PARRY_RADIUS, 48)
-		parry_indicator.polygon = parry_points
-		parry_indicator.color = Color(1.0, 0.84, 0.0, 0.6)  # Gold, 60% alpha
-		parry_indicator.position = PARRY_OFFSET  # Match parry area position
-		parry_indicator.z_index = 0  # Above block
+		block_indicator.position = BLOCK_OFFSET
+		block_indicator.z_index = 0
 
 func _create_circle_points(radius: float, num_points: int) -> PackedVector2Array:
 	"""Creates a circle polygon with given radius and number of points"""
@@ -190,14 +165,13 @@ func _start_blocking() -> void:
 	current_state = State.PARRY_WINDOW
 	parry_window_timer = PARRY_WINDOW_DURATION
 
-	# Enable collision detection (both areas for detection)
-	parry_area.monitoring = true
+	# Enable collision detection
 	block_area.monitoring = true
 
 	# Enable invulnerability immediately
 	_set_player_invulnerable(true)
 
-	# Visual feedback (make parry ring glow brighter during window)
+	# Visual feedback (gold pulsing during parry window)
 	_show_parry_window_indicators()
 
 	# Emit signal
@@ -225,14 +199,13 @@ func _stop_blocking() -> void:
 	current_state = State.IDLE
 
 	# Disable collision detection
-	parry_area.monitoring = false
 	block_area.monitoring = false
 
 	# Disable invulnerability
 	_set_player_invulnerable(false)
 
 	# Hide visual feedback
-	_hide_block_indicators()
+	_hide_indicators()
 
 	# Emit signal
 	parry_ended.emit()
@@ -241,24 +214,18 @@ func _stop_blocking() -> void:
 # COLLISION DETECTION
 # ============================================================================
 
-func _on_parry_area_entered(area: Area2D) -> void:
-	"""Called when enemy attack enters PARRY area (outer ring 50-70px)"""
+func _on_block_area_entered(area: Area2D) -> void:
+	"""Called when enemy attack enters block sphere (0-70px)"""
 
-	print("[ParryBlockSystem] Parry area entered: %s (owner: %s)" % [area.name, area.owner.name if area.owner else "null"])
+	print("[ParryBlockSystem] Block area entered: %s (state: %s)" % [area.name, "PARRY_WINDOW" if current_state == State.PARRY_WINDOW else "BLOCKING"])
 
-	# Only process during parry window for perfect parry
-	if current_state != State.PARRY_WINDOW:
-		print("[ParryBlockSystem] Not in parry window, ignoring for parry")
+	# Safety check
+	if current_state == State.IDLE:
 		return
 
 	# Check if enemy hitbox
 	if not _is_enemy_hitbox(area):
 		print("[ParryBlockSystem] Not enemy hitbox, ignoring")
-		return
-
-	# Check if ALSO in block area (too close for parry)
-	if _is_in_block_area(area):
-		print("[ParryBlockSystem] Also in block area (too close), no parry")
 		return
 
 	# Get target (enemy or projectile)
@@ -267,58 +234,50 @@ func _on_parry_area_entered(area: Area2D) -> void:
 		print("[ParryBlockSystem] No owner, ignoring")
 		return
 
-	# PERFECT PARRY! Target is in parry ring (50-70px) during timing window
-	# Check if it's an enemy directly
-	if target.is_in_group("enemies"):
-		print("[ParryBlockSystem] *** PERFECT PARRY *** on enemy: %s (in parry ring during window)" % target.name)
-		_execute_perfect_parry(target)
-		return
+	# ========== PARRY WINDOW (first 1 second after RMB press) ==========
+	if current_state == State.PARRY_WINDOW:
+		# Perfect Parry!
 
-	# Check if it's a projectile - we can parry projectiles!
-	if _is_projectile(target):
-		print("[ParryBlockSystem] *** PERFECT PARRY *** on projectile: %s" % target.name)
-		_parry_projectile(target)
-		return
+		# Check if it's an enemy
+		if target.is_in_group("enemies"):
+			print("[ParryBlockSystem] *** PERFECT PARRY *** on enemy: %s (within timing window)" % target.name)
+			_execute_perfect_parry(target)
+			return
 
-	print("[ParryBlockSystem] Owner not enemy or projectile, ignoring")
+		# Check if it's a projectile
+		if _is_projectile(target):
+			print("[ParryBlockSystem] *** PERFECT PARRY *** on projectile: %s" % target.name)
+			_parry_projectile(target)
+			return
 
-func _on_block_area_entered(area: Area2D) -> void:
-	"""Called when enemy attack enters BLOCK area (inner sphere 0-50px)"""
+	# ========== NORMAL BLOCK (after 1 second) ==========
+	elif current_state == State.BLOCKING:
+		# Normal block - drain mana based on attack category
 
-	# Player is invulnerable during blocking, so attacks are automatically blocked
-	# We just need to log it and provide feedback
+		# Determine attack category (currently all enemies do Light damage)
+		var category: BlockCategory = BlockCategory.LIGHT
 
-	if current_state == State.IDLE:
-		return  # Not blocking, shouldn't happen but safety check
+		# Get mana cost for this category
+		var mana_cost: float = _get_mana_cost_for_category(category)
 
-	# Check if enemy hitbox
-	if not _is_enemy_hitbox(area):
-		return
+		print("[ParryBlockSystem] Normal block against %s (Category: %s, Mana cost: %.1f)" % [target.name, "LIGHT", mana_cost])
 
-	var target = area.owner
-	if not target:
-		return
+		# Drain mana
+		_drain_mana_on_hit(mana_cost)
 
-	# Log blocked attack (player is invulnerable, no damage taken)
-	print("[ParryBlockSystem] Attack blocked (player invulnerable) from: %s" % target.name)
+		# Spawn block VFX for feedback
+		_spawn_block_effect()
 
-	# Spawn block VFX for feedback
-	_spawn_block_effect()
+		# Audio feedback
+		AudioManager.play_sfx("combat_block", 0.12)
 
-	# Audio feedback
-	AudioManager.play_sfx("combat_block", 0.12)
+		# Emit signal
+		normal_block_executed.emit(target)
+		EventBus.attack_blocked.emit(target, 1.0)  # 100% damage reduction (invulnerable)
 
 func _is_enemy_hitbox(area: Area2D) -> bool:
 	"""Checks if area is enemy hitbox"""
 	return area.is_in_group("hitbox") or area.name.contains("Hitbox")
-
-func _is_in_parry_area(area: Area2D) -> bool:
-	"""Checks if area overlaps parry zone"""
-	return parry_area.overlaps_area(area)
-
-func _is_in_block_area(area: Area2D) -> bool:
-	"""Checks if area overlaps block zone"""
-	return block_area.overlaps_area(area)
 
 func _is_projectile(node: Node) -> bool:
 	"""Checks if node is a projectile"""
@@ -329,6 +288,17 @@ func _is_projectile(node: Node) -> bool:
 	if node.get_class() == "Projectile":
 		return true
 	return false
+
+func _get_mana_cost_for_category(category: BlockCategory) -> float:
+	"""Returns mana cost for given attack category"""
+	match category:
+		BlockCategory.LIGHT:
+			return MANA_COST_LIGHT
+		BlockCategory.NORMAL:
+			return MANA_COST_NORMAL
+		BlockCategory.HEAVY:
+			return MANA_COST_HEAVY
+	return MANA_COST_LIGHT  # Default to light
 
 # ============================================================================
 # PERFECT PARRY
@@ -445,10 +415,6 @@ func _process(delta: float) -> void:
 			# Parry window expired, transition to normal blocking
 			_transition_to_blocking()
 
-	# Drain mana during blocking
-	if current_state == State.BLOCKING:
-		_drain_mana(delta)
-
 # ============================================================================
 # HELPER FUNCTIONS
 # ============================================================================
@@ -467,8 +433,8 @@ func _set_player_invulnerable(invulnerable: bool) -> void:
 	health.is_invulnerable = invulnerable
 	print("[ParryBlockSystem] Player invulnerability set to: %s (current value: %s)" % [invulnerable, health.is_invulnerable])
 
-func _drain_mana(delta: float) -> void:
-	"""Drains mana during blocking"""
+func _drain_mana_on_hit(cost: float) -> void:
+	"""Drains mana when blocking an attack"""
 	if not player:
 		print("[ParryBlockSystem] ERROR: Cannot drain mana - player is null!")
 		return
@@ -478,62 +444,56 @@ func _drain_mana(delta: float) -> void:
 		return
 
 	var mana = player.get_node("ManaComponent")
-	var drain_amount = BLOCK_MANA_PER_SECOND * delta
 
-	print("[ParryBlockSystem] Draining mana: %.2f (current: %.1f)" % [drain_amount, mana.current_mana])
+	print("[ParryBlockSystem] Draining mana on hit: %.1f (current: %.1f)" % [cost, mana.current_mana])
 
-	# Try to drain mana
+	# Drain mana
 	if mana.current_mana > 0:
-		mana.current_mana = max(0, mana.current_mana - drain_amount)
+		mana.current_mana = max(0, mana.current_mana - cost)
 		mana.mana_changed.emit(mana.current_mana, mana.max_mana)
 		print("[ParryBlockSystem] Mana after drain: %.1f" % mana.current_mana)
 	else:
-		# Out of mana, force stop blocking
-		print("[ParryBlockSystem] Out of mana, stopping block")
-		_stop_blocking()
+		# No mana left, but we're invulnerable so no damage taken
+		# Just log it
+		print("[ParryBlockSystem] Out of mana, block still works (invulnerable) but no mana to drain")
 
 # ============================================================================
 # VISUAL INDICATORS
 # ============================================================================
 
 func _show_parry_window_indicators() -> void:
-	"""Shows indicators during parry window (brighter, pulsing)"""
+	"""Shows indicator during parry window (gold, pulsing)"""
 
 	if block_indicator:
 		block_indicator.visible = true
+		# Gold color for parry window
+		block_indicator.color = Color(1.0, 0.84, 0.0, 0.5)  # Gold
 
-	if parry_indicator:
-		parry_indicator.visible = true
 		# Bright pulsing animation during parry window
 		var tween = create_tween().set_loops()
-		tween.tween_property(parry_indicator, "modulate:a", 0.9, 0.1)
-		tween.tween_property(parry_indicator, "modulate:a", 1.0, 0.1)
+		tween.tween_property(block_indicator, "modulate:a", 0.9, 0.15)
+		tween.tween_property(block_indicator, "modulate:a", 1.0, 0.15)
 
 func _show_block_indicators() -> void:
-	"""Shows visual indicators for normal blocking (dimmer)"""
+	"""Shows visual indicator for normal blocking (blue, dimmer)"""
 
 	if block_indicator:
 		block_indicator.visible = true
+		# Blue color for normal block
+		block_indicator.color = Color(0.3, 0.5, 1.0, 0.3)  # Blue, dimmer
 
-	if parry_indicator:
-		parry_indicator.visible = true
-		parry_indicator.modulate.a = 0.4  # Dimmer during normal block
-
-func _hide_block_indicators() -> void:
-	"""Hides visual indicators"""
+func _hide_indicators() -> void:
+	"""Hides visual indicator"""
 
 	if block_indicator:
 		block_indicator.visible = false
-
-	if parry_indicator:
-		parry_indicator.visible = false
 
 # ============================================================================
 # EFFECTS
 # ============================================================================
 
 func _spawn_parry_flash() -> void:
-	"""Spawns parry flash VFX (same as Commit 004)"""
+	"""Spawns parry flash VFX"""
 
 	# Check player reference
 	if not player:
@@ -548,7 +508,7 @@ func _spawn_parry_flash() -> void:
 	var flash_scene = preload("res://vfx/particles/parry_flash.tscn")
 	var flash = flash_scene.instantiate()
 	get_tree().root.add_child(flash)
-	flash.global_position = player.global_position + parry_area.position
+	flash.global_position = player.global_position + block_area.position
 
 	# Auto-cleanup
 	await get_tree().create_timer(1.0).timeout

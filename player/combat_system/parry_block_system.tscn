@@ -1,12 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://cjx7m5n8vwq2p"]
+[gd_scene load_steps=2 format=3 uid="uid://cjx7m5n8vwq2p"]
 
 [ext_resource type="Script" path="res://player/combat_system/parry_block_system.gd" id="1_parry_block"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_block"]
-radius = 50.0
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_parry"]
-radius = 45.0
+radius = 70.0
 
 [node name="ParryBlockSystem" type="Node2D"]
 script = ExtResource("1_parry_block")
@@ -19,22 +16,7 @@ monitoring = false
 [node name="BlockCollision" type="CollisionShape2D" parent="BlockArea"]
 shape = SubResource("CircleShape2D_block")
 
-[node name="ParryArea" type="Area2D" parent="."]
-position = Vector2(15, 0)
-collision_layer = 0
-collision_mask = 4
-monitoring = false
-
-[node name="ParryCollision" type="CollisionShape2D" parent="ParryArea"]
-shape = SubResource("CircleShape2D_parry")
-
 [node name="BlockIndicator" type="Polygon2D" parent="."]
 visible = false
 color = Color(0.3, 0.6, 1, 0.3)
-polygon = PackedVector2Array()
-
-[node name="ParryIndicator" type="Polygon2D" parent="."]
-position = Vector2(15, 0)
-visible = false
-color = Color(1, 1, 0.5, 0.5)
 polygon = PackedVector2Array()
