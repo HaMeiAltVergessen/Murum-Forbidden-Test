@@ -18,7 +18,8 @@ const BLOCK_OFFSET: Vector2 = Vector2.ZERO  # Centered on player
 const PARRY_WINDOW_DURATION: float = 0.3  # 0.3 second timing window für Parry
 
 # Block Mana Cost
-const BLOCK_MANA_PER_SECOND: float = 1.0  # Continuous mana drain while blocking
+const BLOCK_MANA_DRAIN_INTERVAL: float = 1.5  # Sekunden zwischen Mana-Drain
+const BLOCK_MANA_DRAIN_AMOUNT: float = 1.0    # Mana-Menge pro Drain
 enum BlockCategory { LIGHT, NORMAL, HEAVY }
 const MANA_COST_LIGHT: float = 5.0   # Additional cost on hit (Light attack)
 const MANA_COST_NORMAL: float = 15.0  # Additional cost on hit (Normal attack)
@@ -43,6 +44,7 @@ enum State { IDLE, PARRY_WINDOW, BLOCKING }
 var current_state: State = State.IDLE
 var cooldown_timer: float = 0.0
 var parry_window_timer: float = 0.0  # Timing window für Parry
+var mana_drain_timer: float = 0.0    # Timer für interval-based mana drain
 var last_mana_warning_time: float = 0.0  # Throttle for "out of mana" message
 
 # ============================================================================
@@ -209,6 +211,9 @@ func _stop_blocking() -> void:
 	print("[ParryBlockSystem] Blocking ended")
 
 	current_state = State.IDLE
+
+	# Reset mana drain timer
+	mana_drain_timer = 0.0
 
 	# Disable collision detection
 	block_area.monitoring = false
@@ -498,32 +503,32 @@ func _drain_mana_on_hit(cost: float) -> void:
 		print("[ParryBlockSystem] Out of mana, block still works (invulnerable) but no mana to drain")
 
 func _drain_mana_continuous(delta: float) -> void:
-	"""Drains mana continuously during blocking (1 per second)"""
+	"""Drains mana at intervals during blocking (1 mana every 1.5 seconds)"""
 	if not player:
 		return
 
 	if not player.has_node("ManaComponent"):
 		return
 
-	var mana = player.get_node("ManaComponent")
-	var drain_amount = BLOCK_MANA_PER_SECOND * delta
+	# Update drain timer
+	mana_drain_timer += delta
 
-	# Drain mana
-	if mana.current_mana > 0:
-		var old_mana = mana.current_mana
-		mana.current_mana = max(0, mana.current_mana - drain_amount)
-		mana.mana_changed.emit(mana.current_mana, mana.max_mana)
+	# Check if interval passed
+	if mana_drain_timer >= BLOCK_MANA_DRAIN_INTERVAL:
+		mana_drain_timer = 0.0  # Reset timer
 
-		# Only print every 0.5 seconds to avoid spam
-		if int(old_mana * 2) != int(mana.current_mana * 2):
-			print("[ParryBlockSystem] Continuous mana drain: %.1f -> %.1f (%.2f/s)" % [old_mana, mana.current_mana, BLOCK_MANA_PER_SECOND])
-	else:
-		# Out of mana but still blocking (invulnerable)
-		# Only print once per second to avoid spam
-		var current_time = Time.get_ticks_msec() / 1000.0
-		if current_time - last_mana_warning_time > 1.0:
+		var mana = player.get_node("ManaComponent")
+
+		# Drain mana
+		if mana.current_mana > 0:
+			var old_mana = mana.current_mana
+			mana.current_mana = max(0, mana.current_mana - BLOCK_MANA_DRAIN_AMOUNT)
+			mana.mana_changed.emit(mana.current_mana, mana.max_mana)
+
+			print("[ParryBlockSystem] Mana drain: %.1f -> %.1f (every %.1fs)" % [old_mana, mana.current_mana, BLOCK_MANA_DRAIN_INTERVAL])
+		else:
+			# Out of mana but still blocking (invulnerable)
 			print("[ParryBlockSystem] Out of mana, block still works (invulnerable)")
-			last_mana_warning_time = current_time
 
 # ============================================================================
 # VISUAL INDICATORS
