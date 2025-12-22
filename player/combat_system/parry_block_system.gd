@@ -43,6 +43,7 @@ enum State { IDLE, PARRY_WINDOW, BLOCKING }
 var current_state: State = State.IDLE
 var cooldown_timer: float = 0.0
 var parry_window_timer: float = 0.0  # Timing window für Parry
+var last_mana_warning_time: float = 0.0  # Throttle for "out of mana" message
 
 # ============================================================================
 # REFERENCES
@@ -117,7 +118,7 @@ func _setup_collision_area() -> void:
 
 	# Collision layers
 	block_area.collision_layer = 0
-	block_area.collision_mask = 4  # Enemy hitbox layer
+	block_area.collision_mask = 32  # Enemy hitbox layer (Layer 6)
 
 	# Disabled by default
 	block_area.monitoring = false
@@ -515,7 +516,11 @@ func _drain_mana_continuous(delta: float) -> void:
 			print("[ParryBlockSystem] Continuous mana drain: %.1f -> %.1f (%.2f/s)" % [old_mana, mana.current_mana, BLOCK_MANA_PER_SECOND])
 	else:
 		# Out of mana but still blocking (invulnerable)
-		print("[ParryBlockSystem] Out of mana, block still works (invulnerable)")
+		# Only print once per second to avoid spam
+		var current_time = Time.get_ticks_msec() / 1000.0
+		if current_time - last_mana_warning_time > 1.0:
+			print("[ParryBlockSystem] Out of mana, block still works (invulnerable)")
+			last_mana_warning_time = current_time
 
 # ============================================================================
 # VISUAL INDICATORS
