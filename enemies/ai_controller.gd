@@ -9,7 +9,8 @@ enum State {
 	CHASE,
 	ATTACK_WINDUP,  # Telegraph before attack
 	ATTACK_STRIKE,  # Actual attack with hitbox
-	RECOVERY        # After attack cooldown
+	RECOVERY,       # After attack recovery
+	ATTACK_COOLDOWN # Cooldown while continuing to chase
 }
 
 # ============ REFERENCES ============
@@ -70,6 +71,8 @@ func _process(delta: float) -> void:
 			_process_attack_strike(delta)
 		State.RECOVERY:
 			_process_recovery(delta)
+		State.ATTACK_COOLDOWN:
+			_process_attack_cooldown(delta)
 
 
 # ============ STATE: IDLE ============
@@ -120,7 +123,7 @@ func _process_chase(_delta: float) -> void:
 			enemy.sprite.flip_h = direction.x < 0
 		return
 
-	# Chase player
+	# Always chase player (even if on cooldown)
 	var direction: Vector2 = enemy.get_direction_to_player()
 	enemy.velocity.x = direction.x * enemy.move_speed
 
@@ -165,7 +168,40 @@ func _process_recovery(_delta: float) -> void:
 	if state_time >= recovery_duration:
 		# Start attack cooldown
 		attack_timer = attack_cooldown
-		_change_state(State.CHASE)  # Go back to CHASE instead of IDLE
+		_change_state(State.ATTACK_COOLDOWN)  # Enter cooldown state
+
+
+# ============ STATE: ATTACK_COOLDOWN ============
+func _process_attack_cooldown(_delta: float) -> void:
+	"""Cooldown after attack - continue chasing player"""
+	# Check if player lost
+	if not enemy.has_target():
+		_change_state(State.IDLE)
+		return
+
+	var distance: float = enemy.get_distance_to_player()
+
+	# Continue chasing even during cooldown (aggressive like Geist)
+	# Stop if too close (within min_distance)
+	if distance < min_distance:
+		enemy.velocity.x = 0
+		# Still face the player
+		var direction: Vector2 = enemy.get_direction_to_player()
+		if enemy.sprite and direction.x != 0:
+			enemy.sprite.flip_h = direction.x < 0
+	else:
+		# Move toward player
+		var direction: Vector2 = enemy.get_direction_to_player()
+		enemy.velocity.x = direction.x * enemy.move_speed
+
+		# Flip sprite based on direction
+		if enemy.sprite and direction.x != 0:
+			enemy.sprite.flip_h = direction.x < 0
+
+	# Check if cooldown complete
+	if attack_timer <= 0.0:
+		_change_state(State.CHASE)
+		print("[AIController] %s cooldown finished, resuming chase" % enemy.name)
 
 
 # ============ STATE MANAGEMENT ============
@@ -213,6 +249,7 @@ func _state_to_string(state: State) -> String:
 		State.ATTACK_WINDUP: return "ATTACK_WINDUP"
 		State.ATTACK_STRIKE: return "ATTACK_STRIKE"
 		State.RECOVERY: return "RECOVERY"
+		State.ATTACK_COOLDOWN: return "ATTACK_COOLDOWN"
 	return "UNKNOWN"
 
 
