@@ -10,6 +10,7 @@ class_name GeistAI
 
 const DETECTION_RANGE: float = 400.0
 const ATTACK_RANGE: float = 80.0  # Melee range (will be extended by sprite stretch)
+const MIN_DISTANCE: float = 60.0  # Stop moving when closer than this
 const ATTACK_WINDUP: float = 0.3  # Wind-up before attack
 const ATTACK_DURATION: float = 0.2  # Active attack hitbox
 const ATTACK_RECOVERY: float = 0.2  # Recovery after attack
@@ -111,6 +112,14 @@ func _process_chase(delta: float) -> void:
 	# Check if in attack range
 	if distance <= ATTACK_RANGE and can_attack():
 		_start_attack()
+		return
+
+	# Stop if too close (within min_distance) - prevents running into player
+	if distance < MIN_DISTANCE:
+		owner_enemy.velocity = Vector2.ZERO
+		# Still face the player
+		var direction = (player.global_position - owner_enemy.global_position).normalized()
+		_face_direction(direction)
 		return
 
 	# Move toward player

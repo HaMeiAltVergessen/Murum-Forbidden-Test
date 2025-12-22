@@ -18,7 +18,7 @@ const PARRY_RADIUS: float = 70.0
 const PARRY_OFFSET: Vector2 = Vector2.ZERO  # Auch zentriert, konzentrisch
 
 # Parry Timing
-const PARRY_WINDOW_DURATION: float = 0.15  # 150ms timing window nach RMB-Druck
+const PARRY_WINDOW_DURATION: float = 60.0  # 60s timing window für Testing
 
 # Block Mana Cost
 const BLOCK_MANA_PER_SECOND: float = 10.0  # 10 Mana pro Sekunde
@@ -439,23 +439,38 @@ func _process(delta: float) -> void:
 
 func _set_player_invulnerable(invulnerable: bool) -> void:
 	"""Sets player invulnerability state"""
-	if player and player.has_node("HealthComponent"):
-		var health = player.get_node("HealthComponent")
-		health.is_invulnerable = invulnerable
-		print("[ParryBlockSystem] Player invulnerability: %s" % invulnerable)
+	if not player:
+		print("[ParryBlockSystem] ERROR: Cannot set invulnerability - player is null!")
+		return
+
+	if not player.has_node("HealthComponent"):
+		print("[ParryBlockSystem] ERROR: Cannot set invulnerability - HealthComponent not found!")
+		return
+
+	var health = player.get_node("HealthComponent")
+	health.is_invulnerable = invulnerable
+	print("[ParryBlockSystem] Player invulnerability set to: %s (current value: %s)" % [invulnerable, health.is_invulnerable])
 
 func _drain_mana(delta: float) -> void:
 	"""Drains mana during blocking"""
-	if not player or not player.has_node("ManaComponent"):
+	if not player:
+		print("[ParryBlockSystem] ERROR: Cannot drain mana - player is null!")
+		return
+
+	if not player.has_node("ManaComponent"):
+		print("[ParryBlockSystem] ERROR: Cannot drain mana - ManaComponent not found!")
 		return
 
 	var mana = player.get_node("ManaComponent")
 	var drain_amount = BLOCK_MANA_PER_SECOND * delta
 
+	print("[ParryBlockSystem] Draining mana: %.2f (current: %.1f)" % [drain_amount, mana.current_mana])
+
 	# Try to drain mana
 	if mana.current_mana > 0:
 		mana.current_mana = max(0, mana.current_mana - drain_amount)
 		mana.mana_changed.emit(mana.current_mana, mana.max_mana)
+		print("[ParryBlockSystem] Mana after drain: %.1f" % mana.current_mana)
 	else:
 		# Out of mana, force stop blocking
 		print("[ParryBlockSystem] Out of mana, stopping block")
