@@ -47,7 +47,7 @@ var parry_window_timer: float = 0.0  # Timing window für Parry
 # REFERENCES
 # ============================================================================
 
-@onready var player: CharacterBody2D = owner
+var player: CharacterBody2D = null  # Will be set in _ready()
 
 @onready var block_area: Area2D = $BlockArea
 @onready var block_collision: CollisionShape2D = $BlockArea/BlockCollision
@@ -73,6 +73,22 @@ signal parry_ended    # RMB released
 # ============================================================================
 
 func _ready() -> void:
+	# Get player reference (via parent CombatSystem)
+	var combat_system = get_parent()
+	if combat_system:
+		player = combat_system.owner as CharacterBody2D
+		if not player:
+			print("[ParryBlockSystem] WARNING: Could not get player from combat_system.owner")
+
+	# Fallback: Try owner directly
+	if not player:
+		player = owner as CharacterBody2D
+
+	if not player:
+		print("[ParryBlockSystem] ERROR: Could not find player reference!")
+	else:
+		print("[ParryBlockSystem] Player reference set: %s" % player.name)
+
 	# Setup collision areas
 	_setup_collision_areas()
 
@@ -89,7 +105,7 @@ func _ready() -> void:
 	if block_indicator:
 		block_indicator.visible = false
 
-	print("[ParryBlockSystem] Initialized (spatial detection)")
+	print("[ParryBlockSystem] Initialized (timing + spatial detection)")
 
 func _setup_collision_areas() -> void:
 	"""Sets up collision shapes and positions"""
