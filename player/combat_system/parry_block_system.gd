@@ -15,7 +15,7 @@ const BLOCK_RADIUS: float = 70.0  # Single sphere for both parry and block
 const BLOCK_OFFSET: Vector2 = Vector2.ZERO  # Centered on player
 
 # Parry Timing
-const PARRY_WINDOW_DURATION: float = 1.0  # 1 second timing window für Parry
+const PARRY_WINDOW_DURATION: float = 0.3  # 0.3 second timing window für Parry
 
 # Block Mana Cost
 const BLOCK_MANA_PER_SECOND: float = 1.0  # Continuous mana drain while blocking
@@ -230,10 +230,15 @@ func _on_block_area_entered(area: Area2D) -> void:
 	"""Called when enemy attack enters block sphere (0-70px)"""
 
 	print("[ParryBlockSystem] ===== AREA_ENTERED SIGNAL FIRED =====")
-	print("[ParryBlockSystem] Area: %s" % area.name)
-	print("[ParryBlockSystem] Area owner: %s" % (area.owner.name if area.owner else "null"))
-	print("[ParryBlockSystem] Area groups: %s" % area.get_groups())
-	print("[ParryBlockSystem] Current state: %s" % ("PARRY_WINDOW" if current_state == State.PARRY_WINDOW else ("BLOCKING" if current_state == State.BLOCKING else "IDLE")))
+	print("[ParryBlockSystem] Area: ", area.name)
+	print("[ParryBlockSystem] Area owner: ", area.owner.name if area.owner else "null")
+	print("[ParryBlockSystem] Area groups: ", area.get_groups())
+	var state_name = "IDLE"
+	if current_state == State.PARRY_WINDOW:
+		state_name = "PARRY_WINDOW"
+	elif current_state == State.BLOCKING:
+		state_name = "BLOCKING"
+	print("[ParryBlockSystem] Current state: ", state_name)
 
 	# Safety check
 	if current_state == State.IDLE:
@@ -242,7 +247,7 @@ func _on_block_area_entered(area: Area2D) -> void:
 
 	# Check if enemy hitbox
 	if not _is_enemy_hitbox(area):
-		print("[ParryBlockSystem] Not enemy hitbox, ignoring (name: %s, groups: %s)" % [area.name, area.get_groups()])
+		print("[ParryBlockSystem] Not enemy hitbox, ignoring (name: ", area.name, ", groups: ", area.get_groups(), ")")
 		return
 
 	# Get target (enemy or projectile)
@@ -257,13 +262,13 @@ func _on_block_area_entered(area: Area2D) -> void:
 
 		# Check if it's an enemy
 		if target.is_in_group("enemies"):
-			print("[ParryBlockSystem] *** PERFECT PARRY *** on enemy: %s (within timing window)" % target.name)
+			print("[ParryBlockSystem] *** PERFECT PARRY *** on enemy: ", target.name, " (within timing window)")
 			_execute_perfect_parry(target)
 			return
 
 		# Check if it's a projectile
 		if _is_projectile(target):
-			print("[ParryBlockSystem] *** PERFECT PARRY *** on projectile: %s" % target.name)
+			print("[ParryBlockSystem] *** PERFECT PARRY *** on projectile: ", target.name)
 			_parry_projectile(target)
 			return
 
@@ -277,7 +282,7 @@ func _on_block_area_entered(area: Area2D) -> void:
 		# Get mana cost for this category
 		var mana_cost: float = _get_mana_cost_for_category(category)
 
-		print("[ParryBlockSystem] Normal block against %s (Category: %s, Mana cost: %.1f)" % [target.name, "LIGHT", mana_cost])
+		print("[ParryBlockSystem] Normal block against ", target.name, " (Category: LIGHT, Mana cost: ", mana_cost, ")")
 
 		# Drain mana
 		_drain_mana_on_hit(mana_cost)
@@ -324,17 +329,14 @@ func _get_mana_cost_for_category(category: BlockCategory) -> float:
 func _execute_perfect_parry(enemy: Node) -> void:
 	"""Executes perfect parry with full rewards"""
 
-	print("[ParryBlockSystem] PERFECT PARRY on %s" % enemy.name)
+	print("[ParryBlockSystem] PERFECT PARRY on ", enemy.name)
 
-	# TESTING: Kill enemy instantly on perfect parry
-	if enemy.has_method("die"):
-		enemy.die()
-	elif enemy.has_method("take_damage"):
-		enemy.take_damage(999999, player)  # Massive damage to ensure death
-	elif enemy.has_method("queue_free"):
-		enemy.queue_free()
-
-	print("[ParryBlockSystem] Enemy killed by perfect parry!")
+	# Stun enemy for 1 second
+	if enemy.has_method("stun"):
+		enemy.stun(1.0)
+		print("[ParryBlockSystem] Enemy stunned for 1.0 seconds!")
+	else:
+		print("[ParryBlockSystem] WARNING: Enemy has no stun() method")
 
 	# Time slow effect
 	GlobalTimeEffects.slow_motion(TIME_SLOW_SCALE, TIME_SLOW_DURATION)
@@ -367,7 +369,7 @@ func _execute_perfect_parry(enemy: Node) -> void:
 func _parry_projectile(projectile: Node) -> void:
 	"""Parries a projectile - destroys it and gives parry rewards"""
 
-	print("[ParryBlockSystem] PROJECTILE PARRIED: %s" % projectile.name)
+	print("[ParryBlockSystem] PROJECTILE PARRIED: ", projectile.name)
 
 	# Destroy projectile
 	if projectile.has_method("queue_free"):
@@ -381,11 +383,12 @@ func _parry_projectile(projectile: Node) -> void:
 		shooter = projectile.get("owner_enemy")
 
 	if shooter and shooter.is_in_group("enemies"):
-		print("[ParryBlockSystem] Stunning shooter: %s" % shooter.name)
-		if shooter.has_method("die"):
-			shooter.die()  # TESTING: Kill shooter
-		elif shooter.has_method("stun"):
-			shooter.stun(STUN_DURATION)
+		print("[ParryBlockSystem] Stunning shooter: ", shooter.name)
+		if shooter.has_method("stun"):
+			shooter.stun(1.0)  # Stun for 1 second
+			print("[ParryBlockSystem] Shooter stunned for 1.0 seconds!")
+		else:
+			print("[ParryBlockSystem] WARNING: Shooter has no stun() method")
 
 	# Same rewards as perfect parry
 	# Time slow effect
@@ -432,9 +435,9 @@ func _process(delta: float) -> void:
 		# DEBUG: Check for overlapping areas during parry window
 		var overlapping = block_area.get_overlapping_areas()
 		if overlapping.size() > 0:
-			print("[ParryBlockSystem] PARRY WINDOW - Overlapping areas (%d):" % overlapping.size())
+			print("[ParryBlockSystem] PARRY WINDOW - Overlapping areas (", overlapping.size(), "):")
 			for area in overlapping:
-				print("  - %s (owner: %s, groups: %s)" % [area.name, area.owner.name if area.owner else "null", area.get_groups()])
+				print("  - ", area.name, " (owner: ", area.owner.name if area.owner else "null", ", groups: ", area.get_groups(), ")")
 
 		if parry_window_timer <= 0.0:
 			# Parry window expired, transition to normal blocking
@@ -448,9 +451,9 @@ func _process(delta: float) -> void:
 		# DEBUG: Check for overlapping areas during blocking
 		var overlapping = block_area.get_overlapping_areas()
 		if overlapping.size() > 0:
-			print("[ParryBlockSystem] BLOCKING - Overlapping areas (%d):" % overlapping.size())
+			print("[ParryBlockSystem] BLOCKING - Overlapping areas (", overlapping.size(), "):")
 			for area in overlapping:
-				print("  - %s (owner: %s, groups: %s)" % [area.name, area.owner.name if area.owner else "null", area.get_groups()])
+				print("  - ", area.name, " (owner: ", area.owner.name if area.owner else "null", ", groups: ", area.get_groups(), ")")
 
 # ============================================================================
 # HELPER FUNCTIONS
