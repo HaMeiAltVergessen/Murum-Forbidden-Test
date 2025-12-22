@@ -120,11 +120,11 @@ func _setup_visual_indicators() -> void:
 		block_indicator.position = BLOCK_OFFSET  # Match block area position
 		block_indicator.z_index = -1  # Behind player
 
-	# Parry Indicator (Light blue/cyan, 45px radius)
+	# Parry Indicator (Gold, 45px radius)
 	if parry_indicator:
 		var parry_points = _create_circle_points(PARRY_RADIUS, 48)
 		parry_indicator.polygon = parry_points
-		parry_indicator.color = Color(0.5, 1.0, 1.0, 0.6)  # Light cyan, 60% alpha
+		parry_indicator.color = Color(1.0, 0.84, 0.0, 0.6)  # Gold, 60% alpha
 		parry_indicator.position = PARRY_OFFSET  # Match parry area position
 		parry_indicator.z_index = 0  # Above block
 
@@ -204,17 +204,26 @@ func _stop_blocking() -> void:
 func _on_parry_area_entered(area: Area2D) -> void:
 	"""Called when enemy attack enters PARRY area"""
 
+	print("[ParryBlockSystem] Parry area entered: %s (owner: %s)" % [area.name, area.owner.name if area.owner else "null"])
+
 	# Only process during blocking
 	if current_state != State.BLOCKING:
+		print("[ParryBlockSystem] Not blocking, ignoring")
 		return
 
 	# Check if enemy hitbox
 	if not _is_enemy_hitbox(area):
+		print("[ParryBlockSystem] Not enemy hitbox, ignoring")
 		return
 
 	# Get enemy
 	var enemy = area.owner
-	if not enemy or not enemy.is_in_group("enemies"):
+	if not enemy:
+		print("[ParryBlockSystem] No owner, ignoring")
+		return
+
+	if not enemy.is_in_group("enemies"):
+		print("[ParryBlockSystem] Owner not in 'enemies' group, ignoring")
 		return
 
 	# PERFECT PARRY!
@@ -223,22 +232,31 @@ func _on_parry_area_entered(area: Area2D) -> void:
 func _on_block_area_entered(area: Area2D) -> void:
 	"""Called when enemy attack enters BLOCK area (but not parry)"""
 
+	print("[ParryBlockSystem] Block area entered: %s (owner: %s)" % [area.name, area.owner.name if area.owner else "null"])
+
 	# Only process during blocking
 	if current_state != State.BLOCKING:
+		print("[ParryBlockSystem] Not blocking, ignoring")
 		return
 
 	# Check if enemy hitbox
 	if not _is_enemy_hitbox(area):
+		print("[ParryBlockSystem] Not enemy hitbox, ignoring")
 		return
 
 	# Check if attack is ALSO in parry area (priority check)
 	if _is_in_parry_area(area):
-		# Will be handled by parry detection
+		print("[ParryBlockSystem] Also in parry area, will be handled by parry")
 		return
 
 	# Get enemy
 	var enemy = area.owner
-	if not enemy or not enemy.is_in_group("enemies"):
+	if not enemy:
+		print("[ParryBlockSystem] No owner, ignoring")
+		return
+
+	if not enemy.is_in_group("enemies"):
+		print("[ParryBlockSystem] Owner not in 'enemies' group, ignoring")
 		return
 
 	# NORMAL BLOCK
@@ -261,9 +279,15 @@ func _execute_perfect_parry(enemy: Node) -> void:
 
 	print("[ParryBlockSystem] PERFECT PARRY on %s" % enemy.name)
 
-	# Apply stun to enemy
-	if enemy.has_method("stun"):
-		enemy.stun(STUN_DURATION)
+	# TESTING: Kill enemy instantly on perfect parry
+	if enemy.has_method("die"):
+		enemy.die()
+	elif enemy.has_method("take_damage"):
+		enemy.take_damage(999999, player)  # Massive damage to ensure death
+	elif enemy.has_method("queue_free"):
+		enemy.queue_free()
+
+	print("[ParryBlockSystem] Enemy killed by perfect parry!")
 
 	# Time slow effect
 	GlobalTimeEffects.slow_motion(TIME_SLOW_SCALE, TIME_SLOW_DURATION)

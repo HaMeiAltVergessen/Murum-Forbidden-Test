@@ -66,6 +66,21 @@ func _setup_references() -> void:
 		combo_tracker = combat_system.get_node_or_null("ComboTracker")
 		hitbox = combat_system.get_node_or_null("HitboxComponent")
 
+		# Get player reference from combat system's owner
+		player = combat_system.owner as CharacterBody2D
+
+		if not player:
+			print("[LeapEnderSystem] WARNING: Could not get player from combat_system.owner")
+
+	# Fallback: Try owner directly
+	if not player:
+		player = owner as CharacterBody2D
+
+	if not player:
+		print("[LeapEnderSystem] ERROR: Could not find player reference!")
+	else:
+		print("[LeapEnderSystem] Player reference set: %s" % player.name)
+
 	# Connect to combo tracker
 	if combo_tracker:
 		combo_tracker.leap_ender_available.connect(_on_leap_available)
