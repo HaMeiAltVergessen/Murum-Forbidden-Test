@@ -333,7 +333,7 @@ func _calculate_leap_damage() -> int:
 # EFFECTS
 # ============================================================================
 
-func _spawn_hit_effect(position: Vector2) -> void:
+func _spawn_hit_effect(hit_position: Vector2) -> void:
 	"""Spawns hit VFX"""
 
 	# Check if VFX scene exists
@@ -345,7 +345,7 @@ func _spawn_hit_effect(position: Vector2) -> void:
 	var vfx = vfx_scene.instantiate()
 
 	get_tree().root.add_child(vfx)
-	vfx.global_position = position
+	vfx.global_position = hit_position
 
 	# Auto-cleanup
 	await get_tree().create_timer(1.0).timeout
