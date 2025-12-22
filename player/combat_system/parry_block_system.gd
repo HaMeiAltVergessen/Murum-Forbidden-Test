@@ -17,11 +17,12 @@ const BLOCK_OFFSET: Vector2 = Vector2.ZERO  # Centered on player
 # Parry Timing
 const PARRY_WINDOW_DURATION: float = 1.0  # 1 second timing window für Parry
 
-# Block Mana Cost Categories (only on hit, not continuous)
+# Block Mana Cost
+const BLOCK_MANA_PER_SECOND: float = 1.0  # Continuous mana drain while blocking
 enum BlockCategory { LIGHT, NORMAL, HEAVY }
-const MANA_COST_LIGHT: float = 5.0
-const MANA_COST_NORMAL: float = 15.0
-const MANA_COST_HEAVY: float = 30.0
+const MANA_COST_LIGHT: float = 5.0   # Additional cost on hit (Light attack)
+const MANA_COST_NORMAL: float = 15.0  # Additional cost on hit (Normal attack)
+const MANA_COST_HEAVY: float = 30.0   # Additional cost on hit (Heavy attack)
 
 # Rewards (unchanged from Commit 004)
 const STUN_DURATION: float = 0.8
@@ -92,13 +93,19 @@ func _ready() -> void:
 	_setup_visual_indicator()
 
 	# Connect area signal (only block area now)
-	block_area.area_entered.connect(_on_block_area_entered)
+	if block_area.area_entered.connect(_on_block_area_entered) == OK:
+		print("[ParryBlockSystem] area_entered signal connected successfully")
+	else:
+		print("[ParryBlockSystem] ERROR: Failed to connect area_entered signal!")
 
 	# Hide indicator by default
 	if block_indicator:
 		block_indicator.visible = false
 
 	print("[ParryBlockSystem] Initialized (timing-based parry/block)")
+	print("[ParryBlockSystem] BlockArea node: %s" % block_area)
+	print("[ParryBlockSystem] BlockCollision node: %s" % block_collision)
+	print("[ParryBlockSystem] Initial monitoring: %s" % block_area.monitoring)
 
 func _setup_collision_area() -> void:
 	"""Sets up collision shape and position"""
@@ -159,7 +166,7 @@ func _start_blocking() -> void:
 		print("[ParryBlockSystem] Cooldown active, cannot block")
 		return
 
-	print("[ParryBlockSystem] Parry window started (%.2fs)" % PARRY_WINDOW_DURATION)
+	print("[ParryBlockSystem] ===== PARRY WINDOW STARTED (%.2fs) =====" % PARRY_WINDOW_DURATION)
 
 	# Enter PARRY_WINDOW state
 	current_state = State.PARRY_WINDOW
@@ -167,6 +174,9 @@ func _start_blocking() -> void:
 
 	# Enable collision detection
 	block_area.monitoring = true
+	print("[ParryBlockSystem] BlockArea monitoring enabled: %s" % block_area.monitoring)
+	print("[ParryBlockSystem] BlockArea collision_layer: %d, collision_mask: %d" % [block_area.collision_layer, block_area.collision_mask])
+	print("[ParryBlockSystem] BlockArea radius: %.1f" % block_collision.shape.radius)
 
 	# Enable invulnerability immediately
 	_set_player_invulnerable(true)
@@ -181,7 +191,8 @@ func _start_blocking() -> void:
 func _transition_to_blocking() -> void:
 	"""Transitions from parry window to normal blocking"""
 
-	print("[ParryBlockSystem] Parry window expired, now blocking")
+	print("[ParryBlockSystem] ===== PARRY WINDOW EXPIRED -> BLOCKING STATE =====")
+	print("[ParryBlockSystem] BlockArea still monitoring: %s" % block_area.monitoring)
 
 	current_state = State.BLOCKING
 
@@ -217,15 +228,20 @@ func _stop_blocking() -> void:
 func _on_block_area_entered(area: Area2D) -> void:
 	"""Called when enemy attack enters block sphere (0-70px)"""
 
-	print("[ParryBlockSystem] Block area entered: %s (state: %s)" % [area.name, "PARRY_WINDOW" if current_state == State.PARRY_WINDOW else "BLOCKING"])
+	print("[ParryBlockSystem] ===== AREA_ENTERED SIGNAL FIRED =====")
+	print("[ParryBlockSystem] Area: %s" % area.name)
+	print("[ParryBlockSystem] Area owner: %s" % (area.owner.name if area.owner else "null"))
+	print("[ParryBlockSystem] Area groups: %s" % area.get_groups())
+	print("[ParryBlockSystem] Current state: %s" % ("PARRY_WINDOW" if current_state == State.PARRY_WINDOW else ("BLOCKING" if current_state == State.BLOCKING else "IDLE")))
 
 	# Safety check
 	if current_state == State.IDLE:
+		print("[ParryBlockSystem] State is IDLE, ignoring")
 		return
 
 	# Check if enemy hitbox
 	if not _is_enemy_hitbox(area):
-		print("[ParryBlockSystem] Not enemy hitbox, ignoring")
+		print("[ParryBlockSystem] Not enemy hitbox, ignoring (name: %s, groups: %s)" % [area.name, area.get_groups()])
 		return
 
 	# Get target (enemy or projectile)
@@ -411,9 +427,29 @@ func _process(delta: float) -> void:
 	# Handle parry window timer
 	if current_state == State.PARRY_WINDOW:
 		parry_window_timer -= delta
+
+		# DEBUG: Check for overlapping areas during parry window
+		var overlapping = block_area.get_overlapping_areas()
+		if overlapping.size() > 0:
+			print("[ParryBlockSystem] PARRY WINDOW - Overlapping areas (%d):" % overlapping.size())
+			for area in overlapping:
+				print("  - %s (owner: %s, groups: %s)" % [area.name, area.owner.name if area.owner else "null", area.get_groups()])
+
 		if parry_window_timer <= 0.0:
 			# Parry window expired, transition to normal blocking
 			_transition_to_blocking()
+
+	# Handle blocking state - continuous mana drain
+	elif current_state == State.BLOCKING:
+		# Drain mana continuously (1 per second)
+		_drain_mana_continuous(delta)
+
+		# DEBUG: Check for overlapping areas during blocking
+		var overlapping = block_area.get_overlapping_areas()
+		if overlapping.size() > 0:
+			print("[ParryBlockSystem] BLOCKING - Overlapping areas (%d):" % overlapping.size())
+			for area in overlapping:
+				print("  - %s (owner: %s, groups: %s)" % [area.name, area.owner.name if area.owner else "null", area.get_groups()])
 
 # ============================================================================
 # HELPER FUNCTIONS
@@ -456,6 +492,30 @@ func _drain_mana_on_hit(cost: float) -> void:
 		# No mana left, but we're invulnerable so no damage taken
 		# Just log it
 		print("[ParryBlockSystem] Out of mana, block still works (invulnerable) but no mana to drain")
+
+func _drain_mana_continuous(delta: float) -> void:
+	"""Drains mana continuously during blocking (1 per second)"""
+	if not player:
+		return
+
+	if not player.has_node("ManaComponent"):
+		return
+
+	var mana = player.get_node("ManaComponent")
+	var drain_amount = BLOCK_MANA_PER_SECOND * delta
+
+	# Drain mana
+	if mana.current_mana > 0:
+		var old_mana = mana.current_mana
+		mana.current_mana = max(0, mana.current_mana - drain_amount)
+		mana.mana_changed.emit(mana.current_mana, mana.max_mana)
+
+		# Only print every 0.5 seconds to avoid spam
+		if int(old_mana * 2) != int(mana.current_mana * 2):
+			print("[ParryBlockSystem] Continuous mana drain: %.1f -> %.1f (%.2f/s)" % [old_mana, mana.current_mana, BLOCK_MANA_PER_SECOND])
+	else:
+		# Out of mana but still blocking (invulnerable)
+		print("[ParryBlockSystem] Out of mana, block still works (invulnerable)")
 
 # ============================================================================
 # VISUAL INDICATORS
