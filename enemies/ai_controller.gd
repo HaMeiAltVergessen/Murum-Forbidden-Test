@@ -111,7 +111,16 @@ func _process_chase(_delta: float) -> void:
 		_change_state(State.ATTACK_WINDUP)
 		return
 
-	# ALWAYS chase player aggressively (no stopping when too close)
+	# Stop if too close (within min_distance) - prevents running into player
+	if distance < min_distance:
+		enemy.velocity.x = 0
+		# Still face the player
+		var direction: Vector2 = enemy.get_direction_to_player()
+		if enemy.sprite and direction.x != 0:
+			enemy.sprite.flip_h = direction.x < 0
+		return
+
+	# Chase player
 	var direction: Vector2 = enemy.get_direction_to_player()
 	enemy.velocity.x = direction.x * enemy.move_speed
 
