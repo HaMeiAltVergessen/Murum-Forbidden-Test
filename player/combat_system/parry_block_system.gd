@@ -7,13 +7,13 @@ class_name ParryBlockSystem
 # CONSTANTS
 # ============================================================================
 
-# Block (größere sphere)
+# Block (innere sphere)
 const BLOCK_RADIUS: float = 50.0
 const BLOCK_OFFSET: Vector2 = Vector2.ZERO  # Centered on player
 
-# Parry (kleinerer ring, vor player)
-const PARRY_RADIUS: float = 45.0
-const PARRY_OFFSET: Vector2 = Vector2(15.0, 0)  # 15px forward from player center
+# Parry (äußerer ring um block herum)
+const PARRY_RADIUS: float = 70.0  # Größer als block für äußeren ring
+const PARRY_OFFSET: Vector2 = Vector2.ZERO  # Auch zentriert, konzentrisch
 
 # Rewards (unchanged from Commit 004)
 const STUN_DURATION: float = 0.8
@@ -216,18 +216,25 @@ func _on_parry_area_entered(area: Area2D) -> void:
 		print("[ParryBlockSystem] Not enemy hitbox, ignoring")
 		return
 
-	# Get enemy
-	var enemy = area.owner
-	if not enemy:
+	# Get target (enemy or projectile)
+	var target = area.owner
+	if not target:
 		print("[ParryBlockSystem] No owner, ignoring")
 		return
 
-	if not enemy.is_in_group("enemies"):
-		print("[ParryBlockSystem] Owner not in 'enemies' group, ignoring")
+	# Check if it's an enemy directly
+	if target.is_in_group("enemies"):
+		print("[ParryBlockSystem] PERFECT PARRY on enemy: %s" % target.name)
+		_execute_perfect_parry(target)
 		return
 
-	# PERFECT PARRY!
-	_execute_perfect_parry(enemy)
+	# Check if it's a projectile - we can parry projectiles!
+	if _is_projectile(target):
+		print("[ParryBlockSystem] PERFECT PARRY on projectile: %s" % target.name)
+		_parry_projectile(target)
+		return
+
+	print("[ParryBlockSystem] Owner not enemy or projectile, ignoring")
 
 func _on_block_area_entered(area: Area2D) -> void:
 	"""Called when enemy attack enters BLOCK area (but not parry)"""
@@ -249,18 +256,25 @@ func _on_block_area_entered(area: Area2D) -> void:
 		print("[ParryBlockSystem] Also in parry area, will be handled by parry")
 		return
 
-	# Get enemy
-	var enemy = area.owner
-	if not enemy:
+	# Get target (enemy or projectile)
+	var target = area.owner
+	if not target:
 		print("[ParryBlockSystem] No owner, ignoring")
 		return
 
-	if not enemy.is_in_group("enemies"):
-		print("[ParryBlockSystem] Owner not in 'enemies' group, ignoring")
+	# Handle enemy directly
+	if target.is_in_group("enemies"):
+		print("[ParryBlockSystem] NORMAL BLOCK on enemy: %s" % target.name)
+		_execute_normal_block(target)
 		return
 
-	# NORMAL BLOCK
-	_execute_normal_block(enemy)
+	# Handle projectile - destroy but with less rewards
+	if _is_projectile(target):
+		print("[ParryBlockSystem] NORMAL BLOCK on projectile: %s" % target.name)
+		_block_projectile(target)
+		return
+
+	print("[ParryBlockSystem] Owner not enemy or projectile, ignoring")
 
 func _is_enemy_hitbox(area: Area2D) -> bool:
 	"""Checks if area is enemy hitbox"""
@@ -269,6 +283,16 @@ func _is_enemy_hitbox(area: Area2D) -> bool:
 func _is_in_parry_area(area: Area2D) -> bool:
 	"""Checks if area overlaps parry zone"""
 	return parry_area.overlaps_area(area)
+
+func _is_projectile(node: Node) -> bool:
+	"""Checks if node is a projectile"""
+	if node.is_in_group("projectiles"):
+		return true
+	if "Projectile" in node.name:
+		return true
+	if node.get_class() == "Projectile":
+		return true
+	return false
 
 # ============================================================================
 # PERFECT PARRY
@@ -317,6 +341,59 @@ func _execute_perfect_parry(enemy: Node) -> void:
 	perfect_parry_executed.emit(enemy)
 	EventBus.perfect_parry_executed.emit(enemy)
 
+func _parry_projectile(projectile: Node) -> void:
+	"""Parries a projectile - destroys it and gives parry rewards"""
+
+	print("[ParryBlockSystem] PROJECTILE PARRIED: %s" % projectile.name)
+
+	# Destroy projectile
+	if projectile.has_method("queue_free"):
+		projectile.queue_free()
+
+	# Try to find and stun the shooter
+	var shooter = null
+	if projectile.has("shooter"):
+		shooter = projectile.get("shooter")
+	elif projectile.has("owner_enemy"):
+		shooter = projectile.get("owner_enemy")
+
+	if shooter and shooter.is_in_group("enemies"):
+		print("[ParryBlockSystem] Stunning shooter: %s" % shooter.name)
+		if shooter.has_method("die"):
+			shooter.die()  # TESTING: Kill shooter
+		elif shooter.has_method("stun"):
+			shooter.stun(STUN_DURATION)
+
+	# Same rewards as perfect parry
+	# Time slow effect
+	GlobalTimeEffects.slow_motion(TIME_SLOW_SCALE, TIME_SLOW_DURATION)
+
+	# Resonance gain
+	var resonance = player.get_node_or_null("CombatSystem/ResonanceSystem")
+	if resonance and resonance.has_method("add_resonance"):
+		resonance.add_resonance(RESONANCE_GAIN_ON_PARRY)
+
+	# Spawn parry flash VFX
+	_spawn_parry_flash()
+
+	# Audio
+	AudioManager.play_sfx("player_parry_success", 0.15)
+
+	# Camera shake
+	if player.has_node("PlayerCamera"):
+		player.get_node("PlayerCamera").add_trauma(0.25)
+
+	# Hitstop
+	GlobalTimeEffects.hit_stop(0.15)
+
+	# Set cooldown
+	cooldown_timer = PARRY_COOLDOWN
+
+	# Emit signals (use projectile as target if no shooter found)
+	var parry_target = shooter if shooter else projectile
+	perfect_parry_executed.emit(parry_target)
+	EventBus.perfect_parry_executed.emit(parry_target)
+
 # ============================================================================
 # NORMAL BLOCK
 # ============================================================================
@@ -344,6 +421,31 @@ func _execute_normal_block(enemy: Node) -> void:
 
 	# Emit signal
 	normal_block_executed.emit(enemy)
+
+func _block_projectile(projectile: Node) -> void:
+	"""Blocks a projectile - destroys it with reduced rewards"""
+
+	print("[ParryBlockSystem] PROJECTILE BLOCKED: %s" % projectile.name)
+
+	# Destroy projectile
+	if projectile.has_method("queue_free"):
+		projectile.queue_free()
+
+	# Reduced rewards compared to parry
+	# Spawn block effect
+	_spawn_block_effect()
+
+	# Audio (different from parry)
+	AudioManager.play_sfx("combat_block", 0.12)
+
+	# Brief hitstop (shorter than parry)
+	GlobalTimeEffects.hit_stop(0.05)
+
+	# Set cooldown (shorter than parry)
+	cooldown_timer = BLOCK_COOLDOWN
+
+	# Emit signal
+	normal_block_executed.emit(projectile)
 
 # ============================================================================
 # COOLDOWN
