@@ -102,8 +102,9 @@ func respawn_player() -> void:
 		spawn_pos = player_spawn_position
 		print("[GameManager] Respawning at initial spawn: ", spawn_pos)
 
-	# Reset player state
-	player.global_position = spawn_pos
+	# Call player's respawn method (handles is_dead flag and controls)
+	if player.has_method("respawn"):
+		player.respawn(spawn_pos)
 
 	# Reset player health/mana via components
 	if player.has_node("HealthComponent"):

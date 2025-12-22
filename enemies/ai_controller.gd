@@ -98,7 +98,7 @@ func _process_patrol(_delta: float) -> void:
 
 # ============ STATE: CHASE ============
 func _process_chase(_delta: float) -> void:
-	"""Enemy moves toward player"""
+	"""Enemy moves toward player aggressively"""
 	# Check if player lost
 	if not enemy.has_target():
 		_change_state(State.IDLE)
@@ -111,16 +111,7 @@ func _process_chase(_delta: float) -> void:
 		_change_state(State.ATTACK_WINDUP)
 		return
 
-	# Stop if too close (don't run into player)
-	if distance < min_distance:
-		enemy.velocity.x = 0
-		# Still face the player
-		var direction: Vector2 = enemy.get_direction_to_player()
-		if enemy.sprite and direction.x != 0:
-			enemy.sprite.flip_h = direction.x < 0
-		return
-
-	# Move toward player
+	# ALWAYS chase player aggressively (no stopping when too close)
 	var direction: Vector2 = enemy.get_direction_to_player()
 	enemy.velocity.x = direction.x * enemy.move_speed
 
@@ -153,15 +144,19 @@ func _process_attack_strike(_delta: float) -> void:
 
 # ============ STATE: RECOVERY ============
 func _process_recovery(_delta: float) -> void:
-	"""Enemy recovers after attack"""
-	# Stop movement
-	enemy.velocity.x = 0
+	"""Enemy recovers after attack while continuing to chase"""
+	# Continue chasing even during recovery (aggressive behavior)
+	if enemy.has_target():
+		var direction: Vector2 = enemy.get_direction_to_player()
+		enemy.velocity.x = direction.x * enemy.move_speed * 0.5  # Half speed during recovery
+	else:
+		enemy.velocity.x = 0
 
 	# Check if recovery complete
 	if state_time >= recovery_duration:
 		# Start attack cooldown
 		attack_timer = attack_cooldown
-		_change_state(State.IDLE)
+		_change_state(State.CHASE)  # Go back to CHASE instead of IDLE
 
 
 # ============ STATE MANAGEMENT ============
@@ -246,17 +241,21 @@ func _activate_attack_hitbox() -> void:
 	# Play attack sound
 	AudioManager.play_sfx("enemy_attack", 0.15)
 
-	# Strike animation: Lunge forward
+	# Strike animation: Lunge forward with 2x horizontal stretch
 	if enemy.sprite:
 		var tween = create_tween()
 		tween.set_parallel(true)
 		# Lunge forward (offset position)
 		var lunge_direction = 1 if enemy.sprite.flip_h else -1
-		tween.tween_property(enemy.sprite, "position:x", lunge_direction * -12, strike_duration)
-		# Shrink back to normal
-		tween.tween_property(enemy.sprite, "scale", Vector2(1.0, 1.0), strike_duration)
+		tween.tween_property(enemy.sprite, "position:x", lunge_direction * -15, strike_duration)
+		# STRETCH 2x horizontally for extended range (like Geist)
+		tween.tween_property(enemy.sprite, "scale", Vector2(2.0, 1.0), strike_duration * 0.5)
 		# Flash bright (impact)
 		tween.tween_property(enemy.sprite, "modulate", Color(1.5, 1.2, 1.2), strike_duration * 0.3)
+
+	# Move forward during attack for extra reach
+	var direction: Vector2 = enemy.get_direction_to_player()
+	enemy.velocity.x = direction.x * enemy.move_speed * 1.5
 
 
 func _deactivate_attack_hitbox() -> void:
