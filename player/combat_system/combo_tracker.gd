@@ -287,9 +287,10 @@ func check_leap_ender_input() -> bool:
 
 func _get_held_direction() -> Vector2:
 	"""Returns currently held direction input"""
+	# Only use horizontal direction for leap ender (left/right)
 	var direction = Vector2(
 		Input.get_axis("move_left", "move_right"),
-		Input.get_axis("move_up", "move_down")
+		0.0  # Vertical movement not used for leap
 	).normalized()
 
 	return direction

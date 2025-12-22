@@ -101,6 +101,14 @@ func _start_leap_ender() -> void:
 
 	print("[LeapEnderSystem] Executing leap ender")
 
+	# Ensure player reference is valid
+	if not player:
+		player = owner as CharacterBody2D
+
+	if not player:
+		print("[LeapEnderSystem] ERROR: Player reference is null!")
+		return
+
 	# Get direction from combo tracker
 	leap_direction = combo_tracker.consume_leap_ender()
 	leap_start_position = player.global_position
@@ -122,6 +130,10 @@ func _start_leap_ender() -> void:
 
 func _play_wind_up_animation() -> void:
 	"""Plays wind-up animation"""
+
+	# Ensure player reference
+	if not player:
+		return
 
 	# Visual: Pull back sprite
 	var sprite = player.get_node_or_null("Sprite2D")
@@ -153,8 +165,13 @@ func _process_wind_up(delta: float) -> void:
 
 	state_timer -= delta
 
-	# Lock movement during wind-up
-	player.velocity = Vector2.ZERO
+	# Ensure player reference
+	if not player:
+		player = owner as CharacterBody2D
+
+	if player:
+		# Lock movement during wind-up
+		player.velocity = Vector2.ZERO
 
 	if state_timer <= 0.0:
 		_enter_leap()
@@ -164,9 +181,14 @@ func _process_leaping(delta: float) -> void:
 
 	state_timer -= delta
 
-	# Move forward
-	player.velocity = leap_direction * LEAP_SPEED
-	player.move_and_slide()
+	# Ensure player reference
+	if not player:
+		player = owner as CharacterBody2D
+
+	if player:
+		# Move forward
+		player.velocity = leap_direction * LEAP_SPEED
+		player.move_and_slide()
 
 	# Check for hits (continuous during leap)
 	_check_leap_hits()
@@ -179,10 +201,15 @@ func _process_recovery(delta: float) -> void:
 
 	state_timer -= delta
 
-	# Slow down
-	var slow_factor = state_timer / LEAP_RECOVERY_DURATION
-	player.velocity = leap_direction * LEAP_SPEED * slow_factor * 0.3
-	player.move_and_slide()
+	# Ensure player reference
+	if not player:
+		player = owner as CharacterBody2D
+
+	if player:
+		# Slow down
+		var slow_factor = state_timer / LEAP_RECOVERY_DURATION
+		player.velocity = leap_direction * LEAP_SPEED * slow_factor * 0.3
+		player.move_and_slide()
 
 	if state_timer <= 0.0:
 		_complete_leap()
