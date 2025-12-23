@@ -157,6 +157,15 @@ func _process_horizontal_movement() -> void:
 	if is_crouching:
 		current_speed *= crouch_speed_multiplier
 
+	# Apply combat speed reduction (attacking or blocking reduces speed to 20%)
+	var combat_system = player.get_node_or_null("CombatSystem")
+	if combat_system and combat_system.is_attacking:
+		current_speed *= 0.2
+
+	var parry_block = player.get_node_or_null("CombatSystem/ParryBlockSystem")
+	if parry_block and parry_block.has_method("is_blocking") and parry_block.is_blocking():
+		current_speed *= 0.2
+
 	# Apply resonance mode speed bonus
 	var resonance = player.get_node_or_null("CombatSystem/ResonanceSystem")
 	if resonance and resonance.is_mode_active():
