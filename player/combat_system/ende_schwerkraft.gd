@@ -50,9 +50,19 @@ func _process(delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	print("[EndeSchwerkraft DEBUG] _input called, event: %s" % event)
+
 	if event.is_action_pressed("light_attack"):
+		print("[EndeSchwerkraft DEBUG] light_attack pressed")
+
 		if Input.is_action_pressed("jump"):
+			print("[EndeSchwerkraft DEBUG] jump is also pressed - attempting execute")
 			_try_execute()
+
+			# Consume the event to prevent combat system from processing it
+			get_viewport().set_input_as_handled()
+		else:
+			print("[EndeSchwerkraft DEBUG] jump NOT pressed")
 
 # ============================================================================
 # EXECUTION
@@ -61,19 +71,26 @@ func _input(event: InputEvent) -> void:
 func _try_execute() -> void:
 	"""Attempts to execute Ende der Schwerkraft"""
 
+	print("[EndeSchwerkraft DEBUG] _try_execute called")
+
 	if is_executing:
+		print("[EndeSchwerkraft DEBUG] Already executing - abort")
 		return
 
 	if cooldown_timer > 0.0:
+		print("[EndeSchwerkraft DEBUG] On cooldown (%.2fs remaining) - abort" % cooldown_timer)
 		return
 
 	if not player.is_on_floor():
+		print("[EndeSchwerkraft DEBUG] Not on floor - abort")
 		return
 
 	var target = _find_target()
 	if not target:
+		print("[EndeSchwerkraft DEBUG] No target found - abort")
 		return
 
+	print("[EndeSchwerkraft DEBUG] All conditions met - executing!")
 	_execute(target)
 
 
@@ -81,12 +98,16 @@ func _find_target() -> Node:
 	"""Finds enemy in front of player"""
 
 	var enemies = get_tree().get_nodes_in_group("enemies")
+	print("[EndeSchwerkraft DEBUG] Found %d enemies in scene" % enemies.size())
+
 	var sprite = player.get_node_or_null("Sprite2D")
 	var facing = 1
 
 	# Determine facing direction
 	if sprite:
 		facing = -1 if sprite.flip_h else 1
+
+	print("[EndeSchwerkraft DEBUG] Player facing: %s" % ("left" if facing == -1 else "right"))
 
 	var best_enemy = null
 	var best_distance = DETECTION_RANGE
@@ -98,7 +119,14 @@ func _find_target() -> Node:
 		var to_enemy = enemy.global_position - player.global_position
 		var dist = to_enemy.length()
 
+		print("[EndeSchwerkraft DEBUG] Enemy %s: distance=%.1f, direction=%s" % [
+			enemy.name,
+			dist,
+			"left" if to_enemy.x < 0 else "right"
+		])
+
 		if dist > DETECTION_RANGE:
+			print("[EndeSchwerkraft DEBUG]   -> Too far (>%.1f)" % DETECTION_RANGE)
 			continue
 
 		# Check if in front
@@ -106,6 +134,14 @@ func _find_target() -> Node:
 			if dist < best_distance:
 				best_distance = dist
 				best_enemy = enemy
+				print("[EndeSchwerkraft DEBUG]   -> New best target!")
+		else:
+			print("[EndeSchwerkraft DEBUG]   -> Behind player")
+
+	if best_enemy:
+		print("[EndeSchwerkraft DEBUG] Selected target: %s (%.1fpx)" % [best_enemy.name, best_distance])
+	else:
+		print("[EndeSchwerkraft DEBUG] No valid target found")
 
 	return best_enemy
 

@@ -8,12 +8,12 @@ class_name ComboTracker
 @export var max_combo_display: int = 999  # Maximum combo to display
 
 # ============ FINISHER CONFIGURATION ============
-const FINISHER_HIT_INDEX: int = 3  # Every 3rd hit
+const FINISHER_HIT_INDEX: int = 4  # Every 4th hit
 const FINISHER_DAMAGE_MULTIPLIER: float = 1.5  # ×1.5 base damage
 const FINISHER_COMBO_BONUS: float = 1.2  # Extra combo multiplier
 
 # ============ LEAP ENDER CONFIGURATION ============
-const LEAP_INPUT_WINDOW: float = 0.5  # Window after 3rd hit to input leap ender
+const LEAP_INPUT_WINDOW: float = 0.5  # Window after 4th hit to input leap ender
 const LEAP_DAMAGE_MULTIPLIER: float = 1.3  # ×1.3 base damage (less than normal finisher)
 const DIRECTION_HOLD_THRESHOLD: float = 0.1  # Min direction magnitude
 
@@ -39,7 +39,7 @@ signal combo_ended(final_count: int)
 signal combo_milestone_reached(count: int)  # For special combo milestones
 signal combo_finisher_ready  # Next hit will be finisher
 signal combo_finisher_executed(damage: int)  # Finisher was executed
-signal leap_ender_available  # After 3rd hit, leap ender can be triggered
+signal leap_ender_available  # After 4th hit, leap ender can be triggered
 signal leap_ender_triggered(direction: Vector2)  # Leap ender was triggered
 
 # ============ COMBO MILESTONES ============
@@ -101,7 +101,7 @@ func _on_combo_increased(new_count: int, multiplier: float) -> void:
 		EventBus.combo_finisher_ready.emit()
 		print("[ComboTracker] Next hit is FINISHER!")
 
-	# Check if this hit WAS a finisher (3rd hit landed) - enable leap ender window
+	# Check if this hit WAS a finisher (4th hit landed) - enable leap ender window
 	if new_count % FINISHER_HIT_INDEX == 0:
 		_enable_leap_ender_window()
 
@@ -261,7 +261,7 @@ func execute_finisher(damage: int) -> void:
 
 # ============ LEAP ENDER DETECTION ============
 func _enable_leap_ender_window() -> void:
-	"""Opens window for leap ender input after 3rd hit"""
+	"""Opens window for leap ender input after 4th hit"""
 	is_leap_available = true
 	leap_input_timer = LEAP_INPUT_WINDOW
 
