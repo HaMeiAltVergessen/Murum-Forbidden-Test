@@ -86,32 +86,22 @@ func _try_execute() -> void:
 		print("[EndeSchwerkraft DEBUG] Not on floor - abort")
 		return
 
-	var target = _find_target()
-	if not target:
-		print("[EndeSchwerkraft DEBUG] No target found - abort")
+	var targets = _find_targets()
+	if targets.is_empty():
+		print("[EndeSchwerkraft DEBUG] No targets found - abort")
 		return
 
-	print("[EndeSchwerkraft DEBUG] All conditions met - executing!")
-	_execute(target)
+	print("[EndeSchwerkraft DEBUG] All conditions met - executing with %d targets!" % targets.size())
+	_execute(targets)
 
 
-func _find_target() -> Node:
-	"""Finds enemy in front of player"""
+func _find_targets() -> Array:
+	"""Finds ALL enemies within detection range around player"""
 
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	print("[EndeSchwerkraft DEBUG] Found %d enemies in scene" % enemies.size())
 
-	var sprite = player.get_node_or_null("Sprite2D")
-	var facing = 1
-
-	# Determine facing direction
-	if sprite:
-		facing = -1 if sprite.flip_h else 1
-
-	print("[EndeSchwerkraft DEBUG] Player facing: %s" % ("left" if facing == -1 else "right"))
-
-	var best_enemy = null
-	var best_distance = DETECTION_RANGE
+	var targets = []
 
 	for enemy in enemies:
 		if not is_instance_valid(enemy):
@@ -120,40 +110,31 @@ func _find_target() -> Node:
 		var to_enemy = enemy.global_position - player.global_position
 		var dist = to_enemy.length()
 
-		print("[EndeSchwerkraft DEBUG] Enemy %s: distance=%.1f, direction=%s" % [
+		print("[EndeSchwerkraft DEBUG] Enemy %s: distance=%.1f" % [
 			enemy.name,
-			dist,
-			"left" if to_enemy.x < 0 else "right"
+			dist
 		])
 
 		if dist > DETECTION_RANGE:
 			print("[EndeSchwerkraft DEBUG]   -> Too far (>%.1f)" % DETECTION_RANGE)
 			continue
 
-		# Check if in front
-		if to_enemy.x * facing > 0:
-			if dist < best_distance:
-				best_distance = dist
-				best_enemy = enemy
-				print("[EndeSchwerkraft DEBUG]   -> New best target!")
-		else:
-			print("[EndeSchwerkraft DEBUG]   -> Behind player")
+		# Add to targets list (all enemies in range, regardless of direction)
+		targets.append(enemy)
+		print("[EndeSchwerkraft DEBUG]   -> Added to launch targets!")
 
-	if best_enemy:
-		print("[EndeSchwerkraft DEBUG] Selected target: %s (%.1fpx)" % [best_enemy.name, best_distance])
-	else:
-		print("[EndeSchwerkraft DEBUG] No valid target found")
+	print("[EndeSchwerkraft DEBUG] Selected %d targets for launch" % targets.size())
 
-	return best_enemy
+	return targets
 
 # ============================================================================
 # LAUNCHER
 # ============================================================================
 
-func _execute(enemy: Node) -> void:
-	"""Executes upward launcher"""
+func _execute(enemies: Array) -> void:
+	"""Executes upward launcher on all targets"""
 
-	print("[EndeSchwerkraft] Launching enemy: %s" % enemy.name)
+	print("[EndeSchwerkraft] Launching %d enemies" % enemies.size())
 
 	is_executing = true
 	cooldown_timer = COOLDOWN
@@ -172,85 +153,102 @@ func _execute(enemy: Node) -> void:
 	# Wait for hit frame
 	await get_tree().create_timer(0.15).timeout
 
-	# Apply launch
-	_launch_both(enemy)
+	# Apply launch to ALL enemies at once
+	_launch_all(enemies)
 
 	# Complete
 	await get_tree().create_timer(ANIMATION_DURATION - 0.15).timeout
 	is_executing = false
 
 
-func _launch_both(enemy: Node) -> void:
-	"""Launches both player and enemy upward"""
+func _launch_all(enemies: Array) -> void:
+	"""Launches player and ALL enemies upward simultaneously"""
 
-	# Launch enemy
-	if enemy is CharacterBody2D:
-		enemy.velocity.y = LAUNCH_VELOCITY
+	print("[EndeSchwerkraft] Launching player + %d enemies" % enemies.size())
 
-	# Set juggled state (if from Commit 012)
-	if enemy.has_method("set_juggled_state"):
-		enemy.set_juggled_state(true)
+	# Launch ALL enemies FIRST (before player)
+	for enemy in enemies:
+		if not is_instance_valid(enemy):
+			continue
 
-	# Damage enemy
-	if enemy.has_method("take_damage"):
-		enemy.take_damage(LAUNCH_DAMAGE, player)
-	elif enemy.has_node("HealthComponent"):
-		var health = enemy.get_node("HealthComponent")
-		if health.has_method("take_damage"):
-			health.take_damage(LAUNCH_DAMAGE)
+		# Launch enemy with exact same velocity as player
+		if enemy is CharacterBody2D:
+			enemy.velocity.y = LAUNCH_VELOCITY
 
-	# Launch player
+		# Set juggled state
+		if enemy.has_method("set_juggled_state"):
+			enemy.set_juggled_state(true)
+
+		# Damage enemy
+		if enemy.has_method("take_damage"):
+			enemy.take_damage(LAUNCH_DAMAGE, player)
+		elif enemy.has_node("HealthComponent"):
+			var health = enemy.get_node("HealthComponent")
+			if health.has_method("take_damage"):
+				health.take_damage(LAUNCH_DAMAGE)
+
+		# VFX for each enemy
+		_spawn_launch_effect(enemy.global_position)
+
+		print("[EndeSchwerkraft]   -> Launched %s" % enemy.name)
+
+	# Launch player with EXACT SAME VELOCITY
 	player.velocity.y = LAUNCH_VELOCITY
-
-	# VFX
-	_spawn_launch_effect(enemy.global_position)
 
 	# Camera shake
 	if player.has_node("PlayerCamera"):
 		var camera = player.get_node("PlayerCamera")
 		if camera.has_method("add_trauma"):
-			camera.add_trauma(0.2)
+			camera.add_trauma(0.3)
 
 	# Hitstop
 	if GlobalTimeEffects and GlobalTimeEffects.has_method("hit_stop"):
 		GlobalTimeEffects.hit_stop(0.08)
 
-	# Start hover phase
-	_start_hover_phase(enemy)
+	# Start hover phase for ALL enemies
+	_start_hover_phase(enemies)
 
-	# Emit signal
-	ende_schwerkraft_executed.emit(enemy)
-	if EventBus:
-		EventBus.ende_schwerkraft_executed.emit(enemy)
+	# Emit signal for first enemy only (for air combo targeting)
+	if enemies.size() > 0:
+		var primary_target = enemies[0]
+		ende_schwerkraft_executed.emit(primary_target)
+		if EventBus:
+			EventBus.ende_schwerkraft_executed.emit(primary_target)
 
-	print("[EndeSchwerkraft] Both launched upward, hover phase started")
+	print("[EndeSchwerkraft] All launched upward, hover phase started")
 
 # ============================================================================
 # HOVER PHASE
 # ============================================================================
 
-func _start_hover_phase(enemy: Node) -> void:
-	"""Both hover for 1.5s after launch"""
+func _start_hover_phase(enemies: Array) -> void:
+	"""All enemies + player hover for 1.5s after launch"""
 
 	hover_active = true
 
 	# Store original gravity scales
 	var player_gravity_scale = player.get("gravity_scale") if player.get("gravity_scale") != null else 1.0
-	var enemy_gravity_scale = 1.0
-	if enemy.get("gravity_scale") != null:
-		enemy_gravity_scale = enemy.gravity_scale
+	var enemy_gravity_scales = {}
 
-	# Suspend gravity
+	# Store each enemy's original gravity and suspend it
+	for enemy in enemies:
+		if not is_instance_valid(enemy):
+			continue
+
+		if enemy.get("gravity_scale") != null:
+			enemy_gravity_scales[enemy] = enemy.gravity_scale
+			enemy.gravity_scale = HOVER_GRAVITY_SCALE
+
+	# Suspend player gravity
 	if player.get("gravity_scale") != null:
 		player.set("gravity_scale", HOVER_GRAVITY_SCALE)
-
-	if enemy.get("gravity_scale") != null:
-		enemy.gravity_scale = HOVER_GRAVITY_SCALE
 
 	# Visual: slight glow
 	var sprite = player.get_node_or_null("Sprite2D")
 	if sprite:
 		sprite.modulate = Color(1.2, 1.2, 1.5)
+
+	print("[EndeSchwerkraft] Hover phase started for player + %d enemies" % enemies.size())
 
 	# Wait hover duration
 	await get_tree().create_timer(HOVER_DURATION).timeout
@@ -259,12 +257,14 @@ func _start_hover_phase(enemy: Node) -> void:
 	if not is_instance_valid(player):
 		return
 
-	# Restore gravity
+	# Restore player gravity
 	if player.get("gravity_scale") != null:
 		player.set("gravity_scale", player_gravity_scale)
 
-	if is_instance_valid(enemy) and enemy.get("gravity_scale") != null:
-		enemy.gravity_scale = enemy_gravity_scale
+	# Restore all enemies' gravity
+	for enemy in enemy_gravity_scales:
+		if is_instance_valid(enemy) and enemy.get("gravity_scale") != null:
+			enemy.gravity_scale = enemy_gravity_scales[enemy]
 
 	if sprite and is_instance_valid(sprite):
 		sprite.modulate = Color.WHITE

@@ -18,18 +18,18 @@ const MIN_HEIGHT_FOR_AIR_ATTACK: float = 50.0  # Minimum height to perform air a
 var current_air_combo: int = 0
 var air_combo_timer: float = 0.0
 var is_airborne: bool = false
-var juggled_enemy: BaseEnemy = null  # Currently juggled enemy
+var juggled_enemy: Node = null  # Currently juggled enemy (changed from BaseEnemy to Node)
 
 # ============ REFERENCES ============
 var player: CharacterBody2D = null
 var combat_system: Node = null
 
 # ============ SIGNALS ============
-signal air_combo_started(enemy: BaseEnemy)
-signal air_hit_registered(count: int, enemy: BaseEnemy)
+signal air_combo_started(enemy: Node)
+signal air_hit_registered(count: int, enemy: Node)
 signal air_combo_ended(final_count: int)
 signal slam_finisher_ready()
-signal slam_executed(enemy: BaseEnemy, damage: int)
+signal slam_executed(enemy: Node, damage: int)
 
 
 func _ready() -> void:
@@ -94,7 +94,7 @@ func _update_airborne_state() -> void:
 	is_airborne = not player.is_on_floor()
 
 
-func _on_enemy_launched(enemy: BaseEnemy) -> void:
+func _on_enemy_launched(enemy: Node) -> void:
 	"""Called when launcher system launches an enemy"""
 	print("[AirComboSystem] Enemy launched, starting air combo tracking")
 
@@ -156,7 +156,7 @@ func _can_perform_air_attack() -> bool:
 	return true
 
 
-func _is_enemy_in_air_range(enemy: BaseEnemy) -> bool:
+func _is_enemy_in_air_range(enemy: Node) -> bool:
 	"""Checks if enemy is in range for air attack"""
 	const AIR_ATTACK_RANGE: float = 100.0
 
@@ -309,7 +309,7 @@ func get_air_combo_count() -> int:
 	return current_air_combo
 
 
-func get_juggled_enemy() -> BaseEnemy:
+func get_juggled_enemy() -> Node:
 	"""Returns currently juggled enemy"""
 	return juggled_enemy
 
