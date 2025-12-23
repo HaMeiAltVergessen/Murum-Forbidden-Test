@@ -244,7 +244,7 @@ func _start_hover_phase(enemy: Node) -> void:
 	if player.get("gravity_scale") != null:
 		player.set("gravity_scale", HOVER_GRAVITY_SCALE)
 
-	if enemy.has("gravity_scale"):
+	if enemy.get("gravity_scale") != null:
 		enemy.gravity_scale = HOVER_GRAVITY_SCALE
 
 	# Visual: slight glow
@@ -263,7 +263,7 @@ func _start_hover_phase(enemy: Node) -> void:
 	if player.get("gravity_scale") != null:
 		player.set("gravity_scale", player_gravity_scale)
 
-	if is_instance_valid(enemy) and enemy.has("gravity_scale"):
+	if is_instance_valid(enemy) and enemy.get("gravity_scale") != null:
 		enemy.gravity_scale = enemy_gravity_scale
 
 	if sprite and is_instance_valid(sprite):
