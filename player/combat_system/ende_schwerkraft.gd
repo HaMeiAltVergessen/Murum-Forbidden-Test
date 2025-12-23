@@ -226,11 +226,14 @@ func _start_hover_phase(enemies: Array) -> void:
 
 	hover_active = true
 
-	# Store original gravity scales
-	var player_gravity_scale = player.get("gravity_scale") if player.get("gravity_scale") != null else 1.0
-	var enemy_gravity_scales = {}
+	# Disable player gravity via MovementController
+	var movement_controller = player.get_node_or_null("MovementController")
+	if movement_controller:
+		movement_controller.is_hovering = true
+		print("[EndeSchwerkraft] Player gravity disabled via MovementController")
 
-	# Store each enemy's original gravity and suspend it
+	# Store enemy gravity scales and suspend them
+	var enemy_gravity_scales = {}
 	for enemy in enemies:
 		if not is_instance_valid(enemy):
 			continue
@@ -238,10 +241,7 @@ func _start_hover_phase(enemies: Array) -> void:
 		if enemy.get("gravity_scale") != null:
 			enemy_gravity_scales[enemy] = enemy.gravity_scale
 			enemy.gravity_scale = HOVER_GRAVITY_SCALE
-
-	# Suspend player gravity
-	if player.get("gravity_scale") != null:
-		player.set("gravity_scale", HOVER_GRAVITY_SCALE)
+			print("[EndeSchwerkraft]   -> %s gravity suspended" % enemy.name)
 
 	# Visual: slight glow
 	var sprite = player.get_node_or_null("Sprite2D")
@@ -257,14 +257,16 @@ func _start_hover_phase(enemies: Array) -> void:
 	if not is_instance_valid(player):
 		return
 
-	# Restore player gravity
-	if player.get("gravity_scale") != null:
-		player.set("gravity_scale", player_gravity_scale)
+	# Restore player gravity via MovementController
+	if movement_controller and is_instance_valid(movement_controller):
+		movement_controller.is_hovering = false
+		print("[EndeSchwerkraft] Player gravity restored")
 
 	# Restore all enemies' gravity
 	for enemy in enemy_gravity_scales:
 		if is_instance_valid(enemy) and enemy.get("gravity_scale") != null:
 			enemy.gravity_scale = enemy_gravity_scales[enemy]
+			print("[EndeSchwerkraft]   -> %s gravity restored" % enemy.name)
 
 	if sprite and is_instance_valid(sprite):
 		sprite.modulate = Color.WHITE
