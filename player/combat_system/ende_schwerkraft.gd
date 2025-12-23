@@ -55,14 +55,15 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("light_attack"):
 		print("[EndeSchwerkraft DEBUG] light_attack pressed")
 
-		if Input.is_action_pressed("jump"):
-			print("[EndeSchwerkraft DEBUG] jump is also pressed - attempting execute")
+		# Check if W key is physically pressed (KEY_W = 87)
+		if Input.is_physical_key_pressed(KEY_W):
+			print("[EndeSchwerkraft DEBUG] W key is also pressed - attempting execute")
 			_try_execute()
 
 			# Consume the event to prevent combat system from processing it
 			get_viewport().set_input_as_handled()
 		else:
-			print("[EndeSchwerkraft DEBUG] jump NOT pressed")
+			print("[EndeSchwerkraft DEBUG] W key NOT pressed")
 
 # ============================================================================
 # EXECUTION
