@@ -7,7 +7,7 @@ class_name EndeSchwerkraft
 # CONSTANTS
 # ============================================================================
 
-const COOLDOWN: float = 2.0
+const COOLDOWN: float = 4.0
 const LAUNCH_DAMAGE: int = 12
 const LAUNCH_VELOCITY: float = -400.0
 const LAUNCH_HEIGHT: float = 150.0
