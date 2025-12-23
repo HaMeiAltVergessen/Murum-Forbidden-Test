@@ -40,6 +40,9 @@ var normal_collision_height: float = 48.0
 var crouch_collision_height: float = 24.0
 var crouch_speed_multiplier: float = 0.5
 
+# ============ HOVER STATE (for Ende der Schwerkraft) ============
+var is_hovering: bool = false  # When true, gravity is disabled
+
 
 func _ready() -> void:
 	if not player:
@@ -185,6 +188,10 @@ func _process_horizontal_movement() -> void:
 # ============ GRAVITY ============
 func _process_gravity(delta: float) -> void:
 	"""Applies gravity to player"""
+	# Skip gravity if hovering (Ende der Schwerkraft)
+	if is_hovering:
+		return
+
 	if not player.is_on_floor():
 		player.velocity.y += gravity * delta
 
