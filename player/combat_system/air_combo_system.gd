@@ -137,8 +137,8 @@ func _can_perform_air_attack() -> bool:
 	if not is_airborne:
 		return false
 
-	# Must have juggled enemy
-	if not juggled_enemy or juggled_enemy.is_dead:
+	# Must have juggled enemy (and enemy must still be valid/alive)
+	if not juggled_enemy or not is_instance_valid(juggled_enemy):
 		return false
 
 	# Must be within combo window
@@ -230,8 +230,8 @@ func _can_perform_slam() -> bool:
 	if current_air_combo < 3:
 		return false
 
-	# Must have juggled enemy
-	if not juggled_enemy or juggled_enemy.is_dead:
+	# Must have juggled enemy (and enemy must still be valid/alive)
+	if not juggled_enemy or not is_instance_valid(juggled_enemy):
 		return false
 
 	return true
