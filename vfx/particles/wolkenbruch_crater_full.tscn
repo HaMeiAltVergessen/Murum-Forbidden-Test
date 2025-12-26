@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://wolkenbruch_crater_full"]
+
+[ext_resource type="Script" path="res://vfx/particles/wolkenbruch_crater_full.gd" id="1_crater_full_script"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_crater_full"]
+emission_shape = 1
+emission_sphere_radius = 50.0
+particle_flag_disable_z = true
+direction = Vector3(0, -1, 0)
+spread = 180.0
+initial_velocity_min = 300.0
+initial_velocity_max = 400.0
+gravity = Vector3(0, 300, 0)
+scale_min = 1.0
+scale_max = 1.5
+color = Color(1.5, 0.8, 0.3, 1)
+
+[node name="WolkenbruchCraterFull" type="GPUParticles2D"]
+amount = 50
+process_material = SubResource("ParticleProcessMaterial_crater_full")
+texture = null
+lifetime = 0.8
+one_shot = true
+explosiveness = 1.0
+script = ExtResource("1_crater_full_script")

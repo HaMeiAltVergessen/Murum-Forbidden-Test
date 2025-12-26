@@ -219,6 +219,16 @@ signal dodge_started(direction: Vector2)
 ## Emitted when dodge roll completes
 signal dodge_completed
 
+# ============ WOLKENBRUCH EVENTS ============
+## Emitted when Wolkenbruch is activated
+signal wolkenbruch_started(powered: bool)
+
+## Emitted when Wolkenbruch impacts the ground
+signal wolkenbruch_impact(powered: bool)
+
+## Emitted when Wolkenbruch is completed
+signal wolkenbruch_completed
+
 
 func _ready() -> void:
 	print("[EventBus] Initialized")
