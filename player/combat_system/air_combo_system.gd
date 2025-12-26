@@ -72,9 +72,9 @@ func _process(delta: float) -> void:
 	if _can_perform_air_attack() and Input.is_action_just_pressed("light_attack"):
 		_perform_air_attack()
 
-	# Check for slam finisher input (requires both move_down AND attack)
+	# Check for slam finisher input (requires both crouch AND attack)
 	# Air Finisher has priority over Wolkenbruch when air combo count >= 3
-	if _can_perform_slam() and Input.is_action_just_pressed("move_down") and Input.is_action_pressed("light_attack"):
+	if _can_perform_slam() and Input.is_action_just_pressed("crouch") and Input.is_action_pressed("light_attack"):
 		_perform_slam_finisher()
 
 
