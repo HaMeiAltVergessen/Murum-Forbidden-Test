@@ -58,6 +58,7 @@ func _ready() -> void:
 	print("[Wolkenbruch] Initialized")
 
 func _input(event: InputEvent) -> void:
+	# Trigger on move_down press (Attack must also be held)
 	if event.is_action_pressed("move_down"):
 		_try_activate()
 
@@ -67,34 +68,23 @@ func _try_activate() -> void:
 	if current_state != State.IDLE:
 		return
 
-	# Must be airborne
+	# Must be airborne (ONLY requirement)
 	if player.is_on_floor():
 		return
 
-	# Check if other air actions active
-	if _is_other_air_action_active():
+	# Must have Attack pressed
+	if not Input.is_action_pressed("light_attack"):
 		return
+
+	# Give priority to Air Finisher if available (3+ air combo hits)
+	var air_combo = player.get_node_or_null("AirComboSystem")
+	if air_combo and air_combo.has_method("can_slam"):
+		if air_combo.can_slam():
+			print("[Wolkenbruch] Air Finisher has priority, skipping Wolkenbruch")
+			return
 
 	# Activate!
 	_start_wolkenbruch()
-
-func _is_other_air_action_active() -> bool:
-	"""Checks if other air actions are blocking"""
-
-	# Check Air Combo System
-	var air_combo = player.get_node_or_null("AirComboSystem")
-	if air_combo:
-		# Check if attack is also pressed (Air Finisher has priority)
-		if Input.is_action_pressed("light_attack"):
-			return true
-
-	# Check DodgeRollSystem
-	var dodge_system = player.get_node_or_null("DodgeRollSystem")
-	if dodge_system and dodge_system.has_method("is_dodging"):
-		if dodge_system.is_dodging():
-			return true
-
-	return false
 
 # ============================================================================
 # ACTIVATION
@@ -165,9 +155,9 @@ func _physics_process(delta: float) -> void:
 func _process_slamming(delta: float) -> void:
 	"""Processes slamming phase"""
 
-	# Continue downward movement
+	# Continue downward movement (player handles move_and_slide in their own script)
 	player.velocity.y = SLAM_VELOCITY
-	player.move_and_slide()
+	player.velocity.x = 0  # Lock horizontal movement
 
 	# Check ground impact
 	if player.is_on_floor():
