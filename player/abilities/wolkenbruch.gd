@@ -114,11 +114,12 @@ func _check_and_consume_mana() -> bool:
 	"""Checks and consumes mana if available"""
 
 	if not mana_component:
+		print("[Wolkenbruch] WEAKENED (no mana component)")
 		return false
 
-	if mana_component.current_mana >= MANA_COST:
+	# Try to use mana - returns true if successful
+	if mana_component.use_mana(MANA_COST):
 		# Consume mana → Full power
-		mana_component.consume_mana(MANA_COST)
 		print("[Wolkenbruch] POWERED (mana consumed)")
 		return true
 	else:
