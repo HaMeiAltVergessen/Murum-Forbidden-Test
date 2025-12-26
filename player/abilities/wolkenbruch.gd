@@ -58,30 +58,28 @@ func _ready() -> void:
 	print("[Wolkenbruch] Initialized")
 
 func _input(event: InputEvent) -> void:
-	# Trigger on move_down press (Attack must also be held)
-	if event.is_action_pressed("move_down"):
+	# Trigger on crouch (S) press (Attack must also be held)
+	if event.is_action_pressed("crouch"):
 		_try_activate()
 
 func _try_activate() -> void:
 	"""Attempts to activate Wolkenbruch"""
 
+	print("[Wolkenbruch] Try activate called")
+
 	if current_state != State.IDLE:
+		print("[Wolkenbruch] Not in IDLE state")
 		return
 
-	# Must be airborne (ONLY requirement)
+	# Must be airborne (ONLY requirement for Wolkenbruch)
 	if player.is_on_floor():
+		print("[Wolkenbruch] Player is on floor")
 		return
 
 	# Must have Attack pressed
 	if not Input.is_action_pressed("light_attack"):
+		print("[Wolkenbruch] Attack not pressed")
 		return
-
-	# Give priority to Air Finisher if available (3+ air combo hits)
-	var air_combo = player.get_node_or_null("AirComboSystem")
-	if air_combo and air_combo.has_method("can_slam"):
-		if air_combo.can_slam():
-			print("[Wolkenbruch] Air Finisher has priority, skipping Wolkenbruch")
-			return
 
 	# Activate!
 	_start_wolkenbruch()
