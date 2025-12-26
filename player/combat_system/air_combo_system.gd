@@ -72,8 +72,8 @@ func _process(delta: float) -> void:
 	if _can_perform_air_attack() and Input.is_action_just_pressed("light_attack"):
 		_perform_air_attack()
 
-	# Check for slam finisher input
-	if _can_perform_slam() and Input.is_action_just_pressed("crouch"):
+	# Check for slam finisher input (requires both crouch AND attack)
+	if _can_perform_slam() and Input.is_action_just_pressed("crouch") and Input.is_action_pressed("light_attack"):
 		_perform_slam_finisher()
 
 
@@ -225,6 +225,12 @@ func _can_perform_slam() -> bool:
 	# Must be airborne
 	if not is_airborne:
 		return false
+
+	# Check if Wolkenbruch is active (has priority)
+	var wolkenbruch = player.get_node_or_null("Wolkenbruch")
+	if wolkenbruch and wolkenbruch.has_method("is_active"):
+		if wolkenbruch.is_active():
+			return false
 
 	# Must have active air combo (at least 3 hits)
 	if current_air_combo < 3:

@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://wolkenbruch_crater_weak"]
+
+[ext_resource type="Script" path="res://vfx/particles/wolkenbruch_crater_weak.gd" id="1_crater_weak_script"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_crater_weak"]
+emission_shape = 1
+emission_sphere_radius = 50.0
+particle_flag_disable_z = true
+direction = Vector3(0, -1, 0)
+spread = 180.0
+initial_velocity_min = 150.0
+initial_velocity_max = 200.0
+gravity = Vector3(0, 300, 0)
+scale_min = 0.5
+scale_max = 1.0
+color = Color(0.8, 0.8, 0.8, 1)
+
+[node name="WolkenbruchCraterWeak" type="GPUParticles2D"]
+amount = 25
+process_material = SubResource("ParticleProcessMaterial_crater_weak")
+texture = null
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+script = ExtResource("1_crater_weak_script")
