@@ -9,7 +9,7 @@ class_name EndeSchwerkraft
 
 const COOLDOWN: float = 4.0
 const LAUNCH_DAMAGE: int = 12
-const LAUNCH_VELOCITY: float = -800.0  # 4x original height (-400 * 2)
+const LAUNCH_VELOCITY: float = -400.0  # 2x original height
 const LAUNCH_HEIGHT: float = 150.0
 const ANIMATION_DURATION: float = 0.25
 const DETECTION_RANGE: float = 80.0
@@ -47,6 +47,15 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if cooldown_timer > 0.0:
 		cooldown_timer -= delta
+
+	# Kontinuierliche Prüfung: W + LMB beide gedrückt
+	# Funktioniert in beiden Szenarien:
+	# 1. W gedrückt halten → LMB drücken
+	# 2. LMB gedrückt halten → W drücken
+	if not is_executing and cooldown_timer <= 0.0:
+		if Input.is_physical_key_pressed(KEY_W) and Input.is_action_pressed("light_attack"):
+			if player.is_on_floor():
+				_try_execute()
 
 
 func _input(event: InputEvent) -> void:
