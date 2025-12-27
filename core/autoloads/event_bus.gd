@@ -128,6 +128,19 @@ signal machtbruch_released(tier: int, damage: int, radius: float)
 ## Emitted when Machtbruch is cancelled (released too early)
 signal machtbruch_cancelled()
 
+# ============ MACHTSTOSS SYSTEM SIGNALS (Commit 020) ============
+## Emitted when Machtstoß knockback wave is activated
+signal machtstoss_activated(position: Vector2)
+
+## Emitted when Machtstoß hits an enemy
+signal machtstoss_hit_enemy(enemy: Node)
+
+## Emitted when Machtstoß cooldown starts
+signal machtstoss_cooldown_started(duration: float)
+
+## Emitted when Machtstoß cooldown finishes
+signal machtstoss_cooldown_finished()
+
 # ============ ENVIRONMENT SIGNALS ============
 ## Emitted when lever is activated
 signal lever_activated(lever: Node)
