@@ -2,9 +2,10 @@ extends Node
 class_name Machtstoss
 
 ## Machtstoß (Knockback Wave)
-## Press Key 1 to release a knockback wave
+## Press Key 1 to release a directional knockback wave
 ## Pure CC ability - no damage, only knockback
-## Costs 20 mana, 8s cooldown
+## Only affects enemies in facing direction
+## Costs 20 mana, 3s cooldown
 
 # ============================================================================
 # CONSTANTS
@@ -17,7 +18,7 @@ const KNOCKBACK_DURATION: float = 0.6  # How long enemies are pushed
 
 # Resource Costs
 const MANA_COST: int = 20
-const COOLDOWN_DURATION: float = 8.0
+const COOLDOWN_DURATION: float = 3.0  # Reduced from 8.0
 
 # VFX
 const WAVE_EXPANSION_TIME: float = 0.4  # Wave visual expansion
@@ -36,6 +37,7 @@ var cooldown_timer: float = 0.0
 
 var player: CharacterBody2D = null
 var mana_component: Node = null
+var movement_controller: Node = null
 
 # ============================================================================
 # SIGNALS
@@ -63,6 +65,9 @@ func _ready() -> void:
 	if not player:
 		print("[Machtstoß] ERROR: Could not find player reference!")
 		return
+
+	# Get movement controller for facing direction
+	movement_controller = player.get_node_or_null("MovementController")
 
 	# Get mana component
 	mana_component = player.get_node_or_null("ManaComponent")
@@ -183,8 +188,10 @@ func _execute_knockback_wave() -> void:
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	var hit_count = 0
 
-	# Get player's facing direction (1 = right, -1 = left)
-	var player_facing = player.scale.x
+	# Get player's facing direction from MovementController (1 = right, -1 = left)
+	var player_facing = 1  # Default to right
+	if movement_controller and movement_controller.has_method("get_facing_direction"):
+		player_facing = movement_controller.get_facing_direction()
 
 	print("[Machtstoß] Searching for enemies in %.0fpx radius (facing: %s)..." % [
 		KNOCKBACK_RADIUS,
