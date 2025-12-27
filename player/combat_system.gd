@@ -12,6 +12,7 @@ class_name CombatSystem
 @onready var leap_ender_system: LeapEnderSystem = null  # Will create dynamically
 @onready var machtbruch: Machtbruch = null  # Will create dynamically (COMMIT 019)
 @onready var machtstoss: Machtstoss = null  # Will create dynamically (COMMIT 020)
+@onready var urteil: Urteil = null  # Will create dynamically (COMMIT 021)
 @onready var staff_sprite: Node2D = null  # Will create dynamically
 @onready var staff_top: ColorRect = null  # Staff tip for color changes
 
@@ -59,6 +60,9 @@ func _ready() -> void:
 
 	# Create Machtstoß system (COMMIT 020)
 	_create_machtstoss_system()
+
+	# Create Urteil system (COMMIT 021)
+	_create_urteil_system()
 
 	# Create staff visual
 	_create_staff_visual()
@@ -283,6 +287,15 @@ func _create_machtstoss_system() -> void:
 	add_child(machtstoss)
 
 	print("[CombatSystem] Machtstoß created")
+
+
+func _create_urteil_system() -> void:
+	"""Creates the Urteil (Death Mark) system component (COMMIT 021)."""
+	urteil = Urteil.new()
+	urteil.name = "Urteil"
+	add_child(urteil)
+
+	print("[CombatSystem] Urteil der Zerstörung created")
 
 
 func _on_leap_ender_started(direction: Vector2) -> void:

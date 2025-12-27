@@ -141,6 +141,28 @@ signal machtstoss_cooldown_started(duration: float)
 ## Emitted when Machtstoß cooldown finishes
 signal machtstoss_cooldown_finished()
 
+# ============ URTEIL SYSTEM SIGNALS (Commit 021) ============
+## Emitted when Urteil (Death Mark) is activated
+signal urteil_activated(enemy: Node)
+
+## Emitted when death mark is applied to an enemy
+signal urteil_mark_applied(enemy: Node)
+
+## Emitted when death mark expires naturally (not triggered)
+signal urteil_mark_expired(enemy: Node)
+
+## Emitted when marked enemy dies and explosion triggers
+signal urteil_explosion_triggered(position: Vector2, enemy: Node)
+
+## Emitted when an enemy is hit by explosion (pull + damage)
+signal urteil_enemy_hit(enemy: Node, damage: int)
+
+## Emitted when Urteil cooldown starts
+signal urteil_cooldown_started(duration: float)
+
+## Emitted when Urteil cooldown finishes
+signal urteil_cooldown_finished()
+
 # ============ ENVIRONMENT SIGNALS ============
 ## Emitted when lever is activated
 signal lever_activated(lever: Node)
