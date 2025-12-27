@@ -25,7 +25,8 @@ const MAX_BRIGHTNESS: float = 3.0  # Max brightness at level 8
 
 # Physics
 const SLAM_VELOCITY: float = 1500.0
-const ENEMY_PULL_VELOCITY: float = 7500.0  # 5x stronger for testing - pulls enemies down hard
+const ENEMY_PULL_VELOCITY_MAX: float = 3750.0  # Max pull force (halved from 7500)
+const PULL_RADIUS: float = 128.0  # Doubled from 64
 const RECOVERY_DURATION: float = 0.5
 const CAMERA_TRAUMA_PER_LEVEL: float = 0.1
 
@@ -239,9 +240,8 @@ func _consume_charge_mana() -> void:
 
 func _pull_enemies_down() -> void:
 	"""Pulls all nearby enemies down with the player during slam"""
-
-	# Detection radius: double player size (~64 units, roughly 2 player capsules)
-	const PULL_RADIUS: float = 64.0
+	# Radius doubled to 128 units
+	# Pull force scales with distance: closer = stronger
 
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	var pulled_count = 0
@@ -253,17 +253,25 @@ func _pull_enemies_down() -> void:
 		var distance = player.global_position.distance_to(enemy.global_position)
 
 		if distance <= PULL_RADIUS:
-			# Pull enemy down with MASSIVE force (5x player velocity for testing)
+			# Distance-based pull: closer enemies pulled harder
+			# At distance 0: 100% force (3750)
+			# At distance 128 (max): 50% force (1875)
+			var distance_factor = 1.0 - (distance / PULL_RADIUS) * 0.5
+			var pull_velocity = ENEMY_PULL_VELOCITY_MAX * distance_factor
+
+			# Pull enemy down
 			if enemy is CharacterBody2D:
-				enemy.velocity.y = ENEMY_PULL_VELOCITY
+				enemy.velocity.y = pull_velocity
 				pulled_count += 1
-				print("[Wolkenbruch] Pulling %s down HARD (distance: %.1f, velocity: %.0f)" % [enemy.name, distance, ENEMY_PULL_VELOCITY])
+				print("[Wolkenbruch] Pulling %s down (dist: %.1f, force: %.0f, factor: %.2f)" % [
+					enemy.name, distance, pull_velocity, distance_factor
+				])
 
 			# Set juggled state if available
 			if enemy.has_method("set_juggled_state"):
 				enemy.set_juggled_state(true)
 
-	print("[Wolkenbruch] Pulled %d enemies down with player" % pulled_count)
+	print("[Wolkenbruch] Pulled %d enemies down with player (radius: %.0f)" % [pulled_count, PULL_RADIUS])
 
 # ============================================================================
 # PROCESS
@@ -335,13 +343,16 @@ func _on_charge_level_up() -> void:
 func _process_slamming(delta: float) -> void:
 	"""Processes slamming phase"""
 
-	# Continue downward movement
-	player.velocity.y = SLAM_VELOCITY
-	player.velocity.x = 0
-
-	# Check ground impact
+	# Check ground impact BEFORE applying velocity
+	# This prevents glitching through floor
 	if player.is_on_floor():
 		_on_impact()
+		return
+
+	# Continue downward movement
+	# Clamp velocity to prevent glitching through floor
+	player.velocity.y = min(SLAM_VELOCITY, 2000.0)  # Safety cap
+	player.velocity.x = 0
 
 
 func _process_recovery(delta: float) -> void:
