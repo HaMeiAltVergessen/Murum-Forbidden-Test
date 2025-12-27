@@ -84,9 +84,20 @@ func _input(event: InputEvent) -> void:
 	# Activate on Key 1 press OR RT + B (gamepad)
 	if event.is_action_pressed("ability_1"):
 		attempt_activation()
-	# Gamepad: RT + B
-	elif event.is_action_pressed("dodge") and Input.is_action_pressed("gamepad_modifier"):
-		attempt_activation()
+	# Gamepad: RT + B (check both button and analog trigger)
+	elif event.is_action_pressed("dodge"):
+		if _is_rt_pressed():
+			attempt_activation()
+
+func _is_rt_pressed() -> bool:
+	"""Check if RT is pressed (either as button or analog trigger)"""
+	# Button 7 (some controllers)
+	if Input.is_action_pressed("gamepad_modifier"):
+		return true
+	# Axis 5 (analog trigger on Xbox/PS controllers)
+	if Input.get_joy_axis(0, JOY_AXIS_TRIGGER_RIGHT) > 0.5:
+		return true
+	return false
 
 # ============================================================================
 # COOLDOWN
