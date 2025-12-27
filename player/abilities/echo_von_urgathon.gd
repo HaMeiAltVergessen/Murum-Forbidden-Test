@@ -14,7 +14,8 @@ const MANA_RESTORE: int = 9
 
 # Testing mode: Zeit-basiert statt Hit-basiert
 const TESTING_MODE: bool = true  # Auf false setzen für Hit-basierte Mechanik
-const TESTING_INTERVAL: float = 3.0  # Alle 3 Sekunden
+const TESTING_INTERVAL: float = 1.0  # Jede Sekunde
+const TESTING_MANA_FRACTION: float = 0.125  # 1/8 des maximalen Manas
 
 # ============================================================================
 # STATE
@@ -45,9 +46,9 @@ signal mana_restored(amount: int, trigger: String)  # trigger: "hits" oder "time
 
 func _ready() -> void:
 	if TESTING_MODE:
-		print("[EchoVonUrgathon] Initialized in TESTING MODE (every %.1fs)" % TESTING_INTERVAL)
+		print("[EchoVonUrgathon] Initialized in TESTING MODE (every %.1fs → 1/8 max mana)" % TESTING_INTERVAL)
 	else:
-		print("[EchoVonUrgathon] Initialized (every %d hits)" % HITS_REQUIRED)
+		print("[EchoVonUrgathon] Initialized (every %d hits → %d mana)" % [HITS_REQUIRED, MANA_RESTORE])
 
 	print("[EchoVonUrgathon] Unlocked: %s" % is_unlocked)
 
@@ -106,15 +107,24 @@ func _restore_mana(trigger: String) -> void:
 		print("[EchoVonUrgathon] ERROR: No ManaComponent found!")
 		return
 
-	# Mana wiederherstellen
-	mana_component.restore_mana(MANA_RESTORE)
+	# Berechne Mana-Betrag basierend auf Trigger
+	var mana_amount: int
+	if trigger == "timer":
+		# Testing Mode: 1/8 des maximalen Manas
+		mana_amount = int(mana_component.max_mana * TESTING_MANA_FRACTION)
+	else:
+		# Hit-basiert: Fester Betrag
+		mana_amount = MANA_RESTORE
 
-	var trigger_text = "timer (%.1fs)" % TESTING_INTERVAL if trigger == "timer" else "%d hits" % HITS_REQUIRED
-	print("[EchoVonUrgathon] ✓ Restored %d mana (trigger: %s)" % [MANA_RESTORE, trigger_text])
+	# Mana wiederherstellen
+	mana_component.restore_mana(mana_amount)
+
+	var trigger_text = "timer (%.1fs, 1/8 max)" % TESTING_INTERVAL if trigger == "timer" else "%d hits" % HITS_REQUIRED
+	print("[EchoVonUrgathon] ✓ Restored %d mana (trigger: %s)" % [mana_amount, trigger_text])
 
 	# Emit signals
-	mana_restored.emit(MANA_RESTORE, trigger)
-	EventBus.echo_mana_gained.emit(MANA_RESTORE)
+	mana_restored.emit(mana_amount, trigger)
+	EventBus.echo_mana_gained.emit(mana_amount)
 
 	# Visual feedback
 	_spawn_mana_gain_vfx()
