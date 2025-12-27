@@ -262,9 +262,7 @@ func _spawn_wave_vfx() -> void:
 	var wave = wave_scene.instantiate()
 	get_tree().root.add_child(wave)
 	wave.global_position = player.global_position
-
-	if wave.has_property("emitting"):
-		wave.emitting = true
+	wave.emitting = true
 
 	# Auto-cleanup
 	await get_tree().create_timer(2.0).timeout
@@ -284,9 +282,7 @@ func _spawn_hit_vfx(enemy: Node) -> void:
 	var hit = hit_scene.instantiate()
 	get_tree().root.add_child(hit)
 	hit.global_position = enemy.global_position
-
-	if hit.has_property("emitting"):
-		hit.emitting = true
+	hit.emitting = true
 
 	# Auto-cleanup
 	await get_tree().create_timer(1.0).timeout

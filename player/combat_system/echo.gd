@@ -334,9 +334,7 @@ func _spawn_aura_vfx() -> void:
 	var aura_scene = load(vfx_path)
 	aura_vfx = aura_scene.instantiate()
 	player.add_child(aura_vfx)
-
-	if aura_vfx.has_property("emitting"):
-		aura_vfx.emitting = true
+	aura_vfx.emitting = true
 
 	print("[Echo] Aura VFX spawned")
 
@@ -352,9 +350,7 @@ func _spawn_pulse_vfx() -> void:
 	var pulse_scene = load(vfx_path)
 	var pulse = pulse_scene.instantiate()
 	player.add_child(pulse)
-
-	if pulse.has_property("emitting"):
-		pulse.emitting = true
+	pulse.emitting = true
 
 	# Auto-cleanup
 	await get_tree().create_timer(1.0).timeout
@@ -373,9 +369,7 @@ func _spawn_hit_feedback_vfx() -> void:
 	var hit_scene = load(vfx_path)
 	var hit = hit_scene.instantiate()
 	player.add_child(hit)
-
-	if hit.has_property("emitting"):
-		hit.emitting = true
+	hit.emitting = true
 
 	# Auto-cleanup
 	await get_tree().create_timer(0.5).timeout

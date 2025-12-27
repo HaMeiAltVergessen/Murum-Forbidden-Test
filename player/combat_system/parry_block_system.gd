@@ -816,8 +816,7 @@ func _show_rebound_indicator() -> void:
 		var aura_scene = preload("res://vfx/particles/rebound_aura.tscn")
 		rebound_aura = aura_scene.instantiate()
 		player.add_child(rebound_aura)
-		if rebound_aura.has_property("emitting"):
-			rebound_aura.emitting = true
+		rebound_aura.emitting = true
 
 func _hide_rebound_indicator() -> void:
 	"""Hides Rebound Ready indicator"""
@@ -855,8 +854,7 @@ func _spawn_rebound_flash(enemy: Node) -> void:
 		var flash = flash_scene.instantiate()
 		get_tree().root.add_child(flash)
 		flash.global_position = enemy.global_position
-		if flash.has_property("emitting"):
-			flash.emitting = true
+		flash.emitting = true
 
 		# Auto-cleanup
 		await get_tree().create_timer(1.0).timeout
@@ -869,8 +867,7 @@ func _spawn_rebound_flash(enemy: Node) -> void:
 		var lines = lines_scene.instantiate()
 		get_tree().root.add_child(lines)
 		lines.global_position = enemy.global_position
-		if lines.has_property("emitting"):
-			lines.emitting = true
+		lines.emitting = true
 
 		# Auto-cleanup
 		await get_tree().create_timer(0.5).timeout

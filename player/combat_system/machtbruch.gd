@@ -359,9 +359,7 @@ func _spawn_charge_vfx() -> void:
 	var charge_scene = preload("res://vfx/particles/machtbruch_charge.tscn")
 	charge_vfx = charge_scene.instantiate()
 	player.add_child(charge_vfx)
-
-	if charge_vfx.has_property("emitting"):
-		charge_vfx.emitting = true
+	charge_vfx.emitting = true
 
 func _spawn_explosion_vfx(tier: BurstTier) -> void:
 	"""Spawns explosion VFX based on tier"""
@@ -383,9 +381,7 @@ func _spawn_explosion_vfx(tier: BurstTier) -> void:
 	var explosion = explosion_scene.instantiate()
 	get_tree().root.add_child(explosion)
 	explosion.global_position = player.global_position
-
-	if explosion.has_property("emitting"):
-		explosion.emitting = true
+	explosion.emitting = true
 
 	# Auto-cleanup
 	await get_tree().create_timer(2.0).timeout
