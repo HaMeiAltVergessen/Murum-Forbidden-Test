@@ -246,8 +246,7 @@ func _consume_charge_mana() -> void:
 
 func _pull_enemies_down() -> void:
 	"""Pulls all nearby enemies down with the player during slam"""
-	# Radius doubled to 128 units
-	# Pull force scales with distance: closer = stronger
+	# All enemies in radius get pulled with SAME force
 
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	var pulled_count = 0
@@ -259,18 +258,12 @@ func _pull_enemies_down() -> void:
 		var distance = player.global_position.distance_to(enemy.global_position)
 
 		if distance <= PULL_RADIUS:
-			# Distance-based pull: closer enemies pulled harder
-			# At distance 0: 100% force (3750)
-			# At distance 128 (max): 50% force (1875)
-			var distance_factor = 1.0 - (distance / PULL_RADIUS) * 0.5
-			var pull_velocity = ENEMY_PULL_VELOCITY_MAX * distance_factor
-
-			# Pull enemy down
+			# Pull enemy down with FULL force (no distance scaling)
 			if enemy is CharacterBody2D:
-				enemy.velocity.y = pull_velocity
+				enemy.velocity.y = ENEMY_PULL_VELOCITY_MAX
 				pulled_count += 1
-				print("[Wolkenbruch] Pulling %s down (dist: %.1f, force: %.0f, factor: %.2f)" % [
-					enemy.name, distance, pull_velocity, distance_factor
+				print("[Wolkenbruch] Pulling %s down (dist: %.1f, force: %.0f)" % [
+					enemy.name, distance, ENEMY_PULL_VELOCITY_MAX
 				])
 
 			# Set juggled state if available
