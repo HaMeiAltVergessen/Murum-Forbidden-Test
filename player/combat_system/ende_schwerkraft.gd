@@ -64,17 +64,25 @@ func _process(delta: float) -> void:
 	# 1. W gedrückt halten → LMB drücken
 	# 2. LMB gedrückt halten → W drücken
 	if not is_executing and cooldown_timer <= 0.0:
-		if Input.is_physical_key_pressed(KEY_W) and Input.is_action_pressed("light_attack"):
-			if player.is_on_floor():
-				_try_execute()
+		# Keyboard: W + LMB
+		var keyboard_combo = Input.is_physical_key_pressed(KEY_W) and Input.is_action_pressed("light_attack")
+		# Gamepad: Up D-pad + X
+		var gamepad_combo = Input.is_joy_button_pressed(0, JOY_BUTTON_DPAD_UP) and Input.is_action_pressed("light_attack")
+
+		if (keyboard_combo or gamepad_combo) and player.is_on_floor():
+			_try_execute()
 
 
 func _input(event: InputEvent) -> void:
 	# NOTE: Debug logging removed to prevent console spam on every input event
 
 	if event.is_action_pressed("light_attack"):
-		# Check if W key is physically pressed (KEY_W = 87)
-		if Input.is_physical_key_pressed(KEY_W):
+		# Keyboard: Check if W key is physically pressed
+		var keyboard_combo = Input.is_physical_key_pressed(KEY_W)
+		# Gamepad: Check if Up D-pad is pressed
+		var gamepad_combo = Input.is_joy_button_pressed(0, JOY_BUTTON_DPAD_UP)
+
+		if keyboard_combo or gamepad_combo:
 			_try_execute()
 
 			# Consume the event to prevent combat system from processing it

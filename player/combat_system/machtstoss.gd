@@ -81,8 +81,11 @@ func _ready() -> void:
 # ============================================================================
 
 func _input(event: InputEvent) -> void:
-	# Activate on Key 1 press
+	# Activate on Key 1 press OR RT + B (gamepad)
 	if event.is_action_pressed("ability_1"):
+		attempt_activation()
+	# Gamepad: RT + B
+	elif event.is_action_pressed("dodge") and Input.is_action_pressed("gamepad_modifier"):
 		attempt_activation()
 
 # ============================================================================
