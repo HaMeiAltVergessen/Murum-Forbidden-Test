@@ -9,12 +9,12 @@ class_name EndeSchwerkraft
 
 const COOLDOWN: float = 4.0
 const LAUNCH_DAMAGE: int = 12
-const LAUNCH_VELOCITY: float = -566.0  # ~sqrt(2) * -400 for 2x height
+const LAUNCH_VELOCITY: float = -800.0  # 4x original height (-400 * 2)
 const LAUNCH_HEIGHT: float = 150.0
 const ANIMATION_DURATION: float = 0.25
 const DETECTION_RANGE: float = 80.0
-const HOVER_DURATION: float = 1.5
-const HOVER_GRAVITY_SCALE: float = 0.0
+const SLOW_FALL_DURATION: float = 2.0  # Duration of slow falling
+const SLOW_FALL_GRAVITY_SCALE: float = 0.3  # Reduced gravity for slow descent
 
 # ============================================================================
 # STATE
@@ -22,7 +22,7 @@ const HOVER_GRAVITY_SCALE: float = 0.0
 
 var cooldown_timer: float = 0.0
 var is_executing: bool = false
-var hover_active: bool = false
+var slow_fall_active: bool = false
 
 # ============================================================================
 # REFERENCES
@@ -205,8 +205,8 @@ func _launch_all(enemies: Array) -> void:
 	if GlobalTimeEffects and GlobalTimeEffects.has_method("hit_stop"):
 		GlobalTimeEffects.hit_stop(0.08)
 
-	# Start hover phase for ALL enemies
-	_start_hover_phase(enemies)
+	# Start slow fall phase for ALL enemies
+	_start_slow_fall_phase(enemies)
 
 	# Emit signal for first enemy only (for air combo targeting)
 	if enemies.size() > 0:
@@ -215,63 +215,59 @@ func _launch_all(enemies: Array) -> void:
 		if EventBus:
 			EventBus.ende_schwerkraft_executed.emit(primary_target)
 
-	print("[EndeSchwerkraft] All launched upward, hover phase started")
+	print("[EndeSchwerkraft] All launched upward, slow fall phase started")
 
 # ============================================================================
-# HOVER PHASE
+# SLOW FALL PHASE
 # ============================================================================
 
-func _start_hover_phase(enemies: Array) -> void:
-	"""All enemies + player hover for 1.5s after launch"""
+func _start_slow_fall_phase(enemies: Array) -> void:
+	"""All enemies + player fall slowly for duration after launch"""
 
-	hover_active = true
+	slow_fall_active = true
 
-	# Wait for player to ascend before activating hover (0.4s delay)
-	# This allows the launch velocity to take effect first
-	await get_tree().create_timer(0.4).timeout
-
-	# Check if player still exists after delay
-	if not is_instance_valid(player):
-		return
-
-	# Disable player gravity via MovementController
+	# Get player movement controller
 	var movement_controller = player.get_node_or_null("MovementController")
-	if movement_controller:
-		movement_controller.is_hovering = true
-		print("[EndeSchwerkraft] Player gravity disabled via MovementController")
 
-	# Store enemy gravity scales and suspend them (already waited 0.4s above)
+	# Store original gravity scales
+	var original_player_gravity = null
 	var enemy_gravity_scales = {}
+
+	# Reduce player gravity for slow fall (NOT hovering, just slower)
+	if movement_controller and movement_controller.get("gravity") != null:
+		original_player_gravity = movement_controller.gravity
+		# Reduce gravity to 30% for slow fall
+		movement_controller.gravity = original_player_gravity * SLOW_FALL_GRAVITY_SCALE
+		print("[EndeSchwerkraft] Player gravity reduced to %.1f%% for slow fall" % (SLOW_FALL_GRAVITY_SCALE * 100))
+
+	# Reduce enemy gravity for slow fall
 	for enemy in enemies:
 		if not is_instance_valid(enemy):
 			continue
 
 		if enemy.get("gravity_scale") != null:
 			enemy_gravity_scales[enemy] = enemy.gravity_scale
-			enemy.gravity_scale = HOVER_GRAVITY_SCALE
-			# Also zero out enemy velocity.y to ensure hover
-			if enemy is CharacterBody2D:
-				enemy.velocity.y = 0.0
-			print("[EndeSchwerkraft]   -> %s gravity suspended" % enemy.name)
+			enemy.gravity_scale = SLOW_FALL_GRAVITY_SCALE
+			print("[EndeSchwerkraft]   -> %s gravity reduced to %.1f%%" % [enemy.name, SLOW_FALL_GRAVITY_SCALE * 100])
 
-	# Visual: slight glow
+	# Visual: slight glow during slow fall
 	var sprite = player.get_node_or_null("Sprite2D")
 	if sprite:
 		sprite.modulate = Color(1.2, 1.2, 1.5)
 
-	print("[EndeSchwerkraft] Hover phase started for player + %d enemies" % enemies.size())
+	print("[EndeSchwerkraft] Slow fall phase started for player + %d enemies (%.1fs)" % [enemies.size(), SLOW_FALL_DURATION])
 
-	# Wait hover duration
-	await get_tree().create_timer(HOVER_DURATION).timeout
+	# Wait for slow fall duration
+	await get_tree().create_timer(SLOW_FALL_DURATION).timeout
 
 	# Check if player still exists
 	if not is_instance_valid(player):
 		return
 
-	# Restore player gravity via MovementController
-	if movement_controller and is_instance_valid(movement_controller):
-		movement_controller.is_hovering = false
-		print("[EndeSchwerkraft] Player gravity restored")
+	# Restore player gravity
+	if movement_controller and is_instance_valid(movement_controller) and original_player_gravity != null:
+		movement_controller.gravity = original_player_gravity
+		print("[EndeSchwerkraft] Player gravity restored to normal")
 
 	# Restore all enemies' gravity
 	for enemy in enemy_gravity_scales:
@@ -282,9 +278,9 @@ func _start_hover_phase(enemies: Array) -> void:
 	if sprite and is_instance_valid(sprite):
 		sprite.modulate = Color.WHITE
 
-	hover_active = false
+	slow_fall_active = false
 
-	print("[EndeSchwerkraft] Hover ended")
+	print("[EndeSchwerkraft] Slow fall ended")
 
 # ============================================================================
 # COOLDOWN
