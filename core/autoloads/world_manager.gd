@@ -306,6 +306,10 @@ func _spawn_player_at_point(spawn_point_name: String) -> void:
 			print("[WorldManager] Found spawn point: %s at %v" % [node.name, spawn_position])
 			break
 
+	# Safe spawn: reset velocity first to prevent physics conflicts
+	if player is CharacterBody2D:
+		player.velocity = Vector2.ZERO
+
 	# Position player at spawn point
 	player.global_position = spawn_position
 
@@ -454,12 +458,18 @@ func respawn_at_checkpoint() -> void:
 		# Just reset player position in current room
 		var player = get_tree().get_first_node_in_group("player")
 		if player and last_checkpoint_position != Vector2.ZERO:
+			# Safe respawn: reset velocity first
+			if player is CharacterBody2D:
+				player.velocity = Vector2.ZERO
 			player.global_position = last_checkpoint_position
 		return
 
 	# For now, just reset position - full version would parse checkpoint ID
 	var player = get_tree().get_first_node_in_group("player")
 	if player:
+		# Safe respawn: reset velocity first
+		if player is CharacterBody2D:
+			player.velocity = Vector2.ZERO
 		player.global_position = last_checkpoint_position
 
 # ============================================================================
