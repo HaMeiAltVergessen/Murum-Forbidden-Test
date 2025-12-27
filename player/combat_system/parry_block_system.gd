@@ -395,9 +395,9 @@ func _execute_perfect_parry(enemy: Node) -> void:
 	# Audio
 	AudioManager.play_sfx("player_parry_success", 0.15)
 
-	# Camera shake
+	# Camera shake (reduced from 0.25)
 	if player.has_node("PlayerCamera"):
-		player.get_node("PlayerCamera").add_trauma(0.25)
+		player.get_node("PlayerCamera").add_trauma(0.1)
 
 	# Hitstop
 	GlobalTimeEffects.hit_stop(0.15)
@@ -458,9 +458,7 @@ func _parry_projectile(projectile: Node) -> void:
 	# Audio
 	AudioManager.play_sfx("player_parry_success", 0.15)
 
-	# Camera shake
-	if player.has_node("PlayerCamera"):
-		player.get_node("PlayerCamera").add_trauma(0.25)
+	# Camera shake removed (was 0.25 - too much for projectile parry)
 
 	# Hitstop
 	GlobalTimeEffects.hit_stop(0.15)
@@ -556,9 +554,9 @@ func _execute_rebound_counter(enemy: Node) -> void:
 	# Audio
 	AudioManager.play_sfx("combat_rebound_counter", 0.0)
 
-	# Enhanced camera shake
+	# Enhanced camera shake (reduced from 0.35)
 	if player.has_node("PlayerCamera"):
-		player.get_node("PlayerCamera").add_trauma(0.35)
+		player.get_node("PlayerCamera").add_trauma(0.2)
 
 	# Enhanced hitstop
 	GlobalTimeEffects.hit_stop(0.2)
@@ -581,21 +579,9 @@ func _play_rebound_animation(enemy: Node) -> void:
 	if sprite and sprite.sprite_frames.has_animation("rebound_counter"):
 		sprite.play("rebound_counter")
 
-	# Quick dash toward enemy
-	var direction = (enemy.global_position - player.global_position).normalized()
-	var dash_distance = 50.0  # Short dash
-	var original_position = player.global_position
-
-	var tween = create_tween()
-	tween.tween_property(player, "global_position",
-		player.global_position + direction * dash_distance, 0.1)
-
-	# Return to original position (bounce back)
-	await tween.finished
-	await get_tree().create_timer(0.1).timeout
-
-	tween = create_tween()
-	tween.tween_property(player, "global_position", original_position, 0.15)
+	# NOTE: Removed player position teleportation (was causing spawn bugs)
+	# The visual effects (flash, impact lines, damage) provide enough feedback
+	# Moving CharacterBody2D.global_position directly causes physics glitches
 
 # ============================================================================
 # COOLDOWN / UPDATE
