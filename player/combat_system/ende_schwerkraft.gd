@@ -226,13 +226,21 @@ func _start_hover_phase(enemies: Array) -> void:
 
 	hover_active = true
 
+	# Wait for player to ascend before activating hover (0.4s delay)
+	# This allows the launch velocity to take effect first
+	await get_tree().create_timer(0.4).timeout
+
+	# Check if player still exists after delay
+	if not is_instance_valid(player):
+		return
+
 	# Disable player gravity via MovementController
 	var movement_controller = player.get_node_or_null("MovementController")
 	if movement_controller:
 		movement_controller.is_hovering = true
 		print("[EndeSchwerkraft] Player gravity disabled via MovementController")
 
-	# Store enemy gravity scales and suspend them
+	# Store enemy gravity scales and suspend them (already waited 0.4s above)
 	var enemy_gravity_scales = {}
 	for enemy in enemies:
 		if not is_instance_valid(enemy):
@@ -241,6 +249,9 @@ func _start_hover_phase(enemies: Array) -> void:
 		if enemy.get("gravity_scale") != null:
 			enemy_gravity_scales[enemy] = enemy.gravity_scale
 			enemy.gravity_scale = HOVER_GRAVITY_SCALE
+			# Also zero out enemy velocity.y to ensure hover
+			if enemy is CharacterBody2D:
+				enemy.velocity.y = 0.0
 			print("[EndeSchwerkraft]   -> %s gravity suspended" % enemy.name)
 
 	# Visual: slight glow

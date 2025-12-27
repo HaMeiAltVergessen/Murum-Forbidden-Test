@@ -8,7 +8,7 @@ class_name Geist
 # CONSTANTS
 # ============================================================================
 
-const MAX_HP: int = 30
+const MAX_HP: int = 300  # 10x for testing
 const MOVE_SPEED: float = 80.0
 const DAMAGE: int = 15
 
