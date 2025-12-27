@@ -12,11 +12,17 @@ class_name Murum
 @onready var player_camera: PlayerCamera = $PlayerCamera
 @onready var dodge_roll_system: DodgeRollSystem = $DodgeRollSystem
 
+# ============ ABILITIES ============
+var urgathon_will: Node = null
+
 # ============ STATE ============
 var is_dead: bool = false
 
 
 func _ready() -> void:
+	# Initialize abilities
+	_initialize_abilities()
+
 	# Connect component signals
 	_connect_signals()
 
@@ -24,6 +30,20 @@ func _ready() -> void:
 	_register_with_game_manager()
 
 	print("[Murum] Player initialized")
+
+
+func _initialize_abilities() -> void:
+	"""Initializes special abilities that need to be added dynamically"""
+	# Create Urgathon's Will
+	var urgathon_script = load("res://player/abilities/urgathon_will.gd")
+	if urgathon_script:
+		urgathon_will = Node.new()
+		urgathon_will.set_script(urgathon_script)
+		urgathon_will.name = "UrgathonWill"
+		add_child(urgathon_will)
+		print("[Murum] UrgathonWill ability added")
+	else:
+		print("[Murum] ERROR: Could not load UrgathonWill script!")
 
 
 func _connect_signals() -> void:
