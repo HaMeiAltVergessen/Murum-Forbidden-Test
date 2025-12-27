@@ -256,7 +256,10 @@ func _physics_process(delta: float) -> void:
 func _process_charging(delta: float) -> void:
 	"""Processes charging state"""
 
-	charge_time += delta
+	# Use REAL time (unaffected by time_scale) for charging progression
+	# Otherwise with time_scale = 0.2, it would take 40 real seconds to reach 8 seconds
+	var real_delta = delta / Engine.time_scale if Engine.time_scale > 0 else delta
+	charge_time += real_delta
 
 	# Calculate current charge level (1 level per second)
 	var new_level = min(int(charge_time) + 1, CHARGE_LEVELS)
