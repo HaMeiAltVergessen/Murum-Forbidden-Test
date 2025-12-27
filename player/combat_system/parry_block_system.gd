@@ -333,8 +333,9 @@ func _on_block_area_entered(area: Area2D) -> void:
 		AudioManager.play_sfx("combat_block", 0.12)
 
 		# ========== REBOUND RESET (Commit 018) ==========
+		# TESTING: Disabled - only timeout resets counter
 		# Normal block resets parry counter (not perfect)
-		_reset_parry_counter()
+		# _reset_parry_counter()
 
 		# Emit signal
 		normal_block_executed.emit(target)
@@ -561,8 +562,10 @@ func _execute_rebound_counter(enemy: Node) -> void:
 	# Enhanced hitstop
 	GlobalTimeEffects.hit_stop(0.2)
 
+	# TESTING: Disabled - only timeout resets counter
+	# This allows multiple rebounds without re-charging
 	# Reset counter
-	_reset_parry_counter()
+	# _reset_parry_counter()
 
 	# Emit signal
 	rebound_executed.emit(enemy)
@@ -866,8 +869,10 @@ func _spawn_rebound_flash(enemy: Node) -> void:
 
 func _on_player_damaged(amount: int, attacker: Node) -> void:
 	"""Called when player takes damage - resets parry counter"""
-	print("[ParryBlockSystem] Player took damage - resetting parry counter")
-	_reset_parry_counter()
+	# TESTING: Disabled - only timeout resets counter
+	# This allows maintaining counter even after taking damage
+	print("[ParryBlockSystem] Player took damage (counter NOT reset for testing)")
+	# _reset_parry_counter()
 
 # ============================================================================
 # UTILITY
