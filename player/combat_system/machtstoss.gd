@@ -201,7 +201,15 @@ func _apply_knockback(enemy: Node, distance: float) -> void:
 	"""Applies knockback to a single enemy"""
 
 	# Calculate knockback direction (away from player)
-	var direction = (enemy.global_position - player.global_position).normalized()
+	var direction_to_enemy = enemy.global_position - player.global_position
+
+	# CRITICAL: Prevent NaN from normalizing zero vector
+	var direction: Vector2
+	if direction_to_enemy.length_squared() < 0.01:
+		direction = Vector2(1, 0)  # Default to right if at same position
+		print("[Machtstoß] WARNING: Enemy at same position, using default direction")
+	else:
+		direction = direction_to_enemy.normalized()
 
 	print("[Machtstoß] Knocking back %s (dist: %.1f, force: %.0f)" % [enemy.name, distance, KNOCKBACK_FORCE])
 

@@ -354,7 +354,14 @@ func _apply_explosion_effect(enemy: Node, explosion_center: Vector2, distance: f
 	"""Applies pull and damage to a single enemy"""
 
 	# Calculate pull direction (toward explosion center)
-	var direction = (explosion_center - enemy.global_position).normalized()
+	var dir_vec = explosion_center - enemy.global_position
+
+	# CRITICAL: Prevent NaN from normalizing zero vector
+	var direction: Vector2
+	if dir_vec.length_squared() < 0.01:
+		direction = Vector2(0, -1)  # Default to down if at same position
+	else:
+		direction = dir_vec.normalized()
 
 	print("[Urteil] Pulling %s (dist: %.1f, force: %.0f)" % [enemy.name, distance, PULL_FORCE])
 
