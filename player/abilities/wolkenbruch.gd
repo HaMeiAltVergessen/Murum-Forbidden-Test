@@ -25,7 +25,7 @@ const MAX_BRIGHTNESS: float = 3.0  # Max brightness at level 8
 
 # Physics
 const SLAM_VELOCITY: float = 1500.0
-const ENEMY_PULL_VELOCITY_MAX: float = 6000.0  # Strong pull for enemies
+const ENEMY_PULL_VELOCITY_MAX: float = 3000.0  # Halved from 6000 - more reasonable
 const PULL_RADIUS: float = 128.0  # Doubled from 64
 const PLAYER_SLAM_DELAY: float = 0.4  # Delay before player slams down
 const RECOVERY_DURATION: float = 0.5
@@ -342,17 +342,28 @@ func _on_charge_level_up() -> void:
 func _process_slamming(delta: float) -> void:
 	"""Processes slamming phase"""
 
-	# Continue downward movement
-	player.velocity.y = SLAM_VELOCITY
-	player.velocity.x = 0
-
-	# MUST call move_and_slide() to apply velocity and check collisions
-	# Without this, player can glitch through floor!
-	player.move_and_slide()
-
-	# Check ground impact AFTER move_and_slide()
+	# Check if already on floor FIRST
 	if player.is_on_floor():
 		_on_impact()
+		return
+
+	# Apply controlled downward movement
+	# Cap velocity to prevent extreme speeds that cause glitching
+	player.velocity.y = min(SLAM_VELOCITY, 1800.0)  # Safety cap
+	player.velocity.x = 0
+
+	# Store position before move
+	var position_before = player.global_position
+
+	# MUST call move_and_slide() to apply velocity and check collisions
+	player.move_and_slide()
+
+	# Safety check: prevent falling through floor
+	# If player moved down too far in one frame, clamp position
+	var movement = player.global_position - position_before
+	if movement.y > 100.0:  # Moved more than 100 pixels down in one frame
+		print("[Wolkenbruch] WARNING: Large movement detected (%.1f), clamping!" % movement.y)
+		player.global_position.y = position_before.y + 100.0
 
 
 func _process_recovery(delta: float) -> void:
@@ -596,6 +607,19 @@ func _complete_wolkenbruch() -> void:
 
 	# Safety: Ensure darkening is removed
 	_remove_screen_darkening()
+
+	# Safety: Reset velocity to prevent lingering movement
+	player.velocity = Vector2.ZERO
+
+	# Safety: Ensure player position is valid (not NaN or extreme values)
+	if is_nan(player.global_position.x) or is_nan(player.global_position.y):
+		print("[Wolkenbruch] ERROR: Invalid position detected! Resetting to (0,0)")
+		player.global_position = Vector2.ZERO
+
+	# Safety: Disable hover mode if still active
+	if movement_controller and movement_controller.is_hovering:
+		movement_controller.is_hovering = false
+		print("[Wolkenbruch] Force-disabled lingering hover mode")
 
 	print("[Wolkenbruch] Completed")
 
