@@ -87,16 +87,15 @@ func _input(event: InputEvent) -> void:
 	if is_auto_releasing:
 		return
 
-	# Start charging on wolkenbruch_slam (S) press (Attack must also be held)
+	# Start charging when Down pressed (and X is held) OR X pressed (and Down is held)
 	if event.is_action_pressed("wolkenbruch_slam"):
-		_try_start_charge()
-
-	# Gamepad: Down + X (light_attack button)
+		if Input.is_action_pressed("light_attack"):
+			_try_start_charge()
 	elif event.is_action_pressed("light_attack"):
 		if Input.is_action_pressed("wolkenbruch_slam"):
 			_try_start_charge()
 
-	# Release charge when S is released OR attack is released
+	# Release charge when S/Down is released OR attack is released
 	if event.is_action_released("wolkenbruch_slam") or event.is_action_released("light_attack"):
 		if current_state == State.CHARGING:
 			_release_charge()
