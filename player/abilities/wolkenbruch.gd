@@ -31,6 +31,10 @@ const PLAYER_SLAM_DELAY: float = 0.4  # Delay before player slams down
 const RECOVERY_DURATION: float = 0.5
 const CAMERA_TRAUMA_PER_LEVEL: float = 0.1
 
+# Sideways push to prevent floor glitching
+const SIDEWAYS_PUSH_FORCE: float = 1000.0  # Strong horizontal push (2 meters)
+const LANDING_CHECK_RADIUS: float = 80.0  # Check radius for enemies below player
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -272,6 +276,42 @@ func _pull_enemies_down() -> void:
 
 	print("[Wolkenbruch] Pulled %d enemies down with player (radius: %.0f)" % [pulled_count, PULL_RADIUS])
 
+
+func _push_enemies_sideways() -> void:
+	"""Pushes enemies directly below player to the side to prevent floor glitching"""
+
+	var enemies = get_tree().get_nodes_in_group("enemies")
+	var pushed_count = 0
+
+	for enemy in enemies:
+		if not is_instance_valid(enemy):
+			continue
+
+		var distance = player.global_position.distance_to(enemy.global_position)
+
+		# Only push enemies that are close enough and BELOW the player
+		if distance <= LANDING_CHECK_RADIUS:
+			var direction_to_enemy = (enemy.global_position - player.global_position)
+
+			# Check if enemy is below player (vertical check)
+			# Push sideways if enemy is in landing zone
+			if direction_to_enemy.y > -20.0:  # Enemy is at or below player level
+				# Determine push direction (left or right based on horizontal position)
+				var push_direction = sign(direction_to_enemy.x)
+				if push_direction == 0:
+					push_direction = 1  # Default to right if directly under
+
+				# Apply strong horizontal push
+				if enemy is CharacterBody2D:
+					enemy.velocity.x = push_direction * SIDEWAYS_PUSH_FORCE
+					pushed_count += 1
+					print("[Wolkenbruch] Pushing %s sideways (direction: %.0f, force: %.0f)" % [
+						enemy.name, push_direction, SIDEWAYS_PUSH_FORCE
+					])
+
+	if pushed_count > 0:
+		print("[Wolkenbruch] Pushed %d enemies sideways to prevent collision glitch" % pushed_count)
+
 # ============================================================================
 # PROCESS
 # ============================================================================
@@ -346,6 +386,9 @@ func _process_slamming(delta: float) -> void:
 	if player.is_on_floor():
 		_on_impact()
 		return
+
+	# CRITICAL: Push enemies sideways BEFORE they can cause collision glitch
+	_push_enemies_sideways()
 
 	# Apply controlled downward movement
 	# Cap velocity to prevent extreme speeds that cause glitching
