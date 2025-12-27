@@ -7,7 +7,7 @@ class_name EndeSchwerkraft
 # CONSTANTS
 # ============================================================================
 
-const COOLDOWN: float = 4.0
+const COOLDOWN: float = 0.0  # No cooldown - always available when on floor
 const LAUNCH_DAMAGE: int = 12
 const LAUNCH_VELOCITY: float = -400.0  # 2x original height
 const LAUNCH_HEIGHT: float = 150.0

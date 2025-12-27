@@ -25,6 +25,7 @@ const MAX_BRIGHTNESS: float = 3.0  # Max brightness at level 8
 
 # Physics
 const SLAM_VELOCITY: float = 1500.0
+const ENEMY_PULL_VELOCITY: float = 7500.0  # 5x stronger for testing - pulls enemies down hard
 const RECOVERY_DURATION: float = 0.5
 const CAMERA_TRAUMA_PER_LEVEL: float = 0.1
 
@@ -252,11 +253,11 @@ func _pull_enemies_down() -> void:
 		var distance = player.global_position.distance_to(enemy.global_position)
 
 		if distance <= PULL_RADIUS:
-			# Pull enemy down with same velocity as player
+			# Pull enemy down with MASSIVE force (5x player velocity for testing)
 			if enemy is CharacterBody2D:
-				enemy.velocity.y = SLAM_VELOCITY
+				enemy.velocity.y = ENEMY_PULL_VELOCITY
 				pulled_count += 1
-				print("[Wolkenbruch] Pulling %s down (distance: %.1f)" % [enemy.name, distance])
+				print("[Wolkenbruch] Pulling %s down HARD (distance: %.1f, velocity: %.0f)" % [enemy.name, distance, ENEMY_PULL_VELOCITY])
 
 			# Set juggled state if available
 			if enemy.has_method("set_juggled_state"):
