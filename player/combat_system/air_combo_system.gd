@@ -28,8 +28,6 @@ var combat_system: Node = null
 signal air_combo_started(enemy: Node)
 signal air_hit_registered(count: int, enemy: Node)
 signal air_combo_ended(final_count: int)
-signal slam_finisher_ready()
-signal slam_executed(enemy: Node, damage: int)
 
 
 func _ready() -> void:
@@ -71,11 +69,6 @@ func _process(delta: float) -> void:
 	# Check for air attack input
 	if _can_perform_air_attack() and Input.is_action_just_pressed("light_attack"):
 		_perform_air_attack()
-
-	# Check for slam finisher input (requires both wolkenbruch_slam AND attack)
-	# Air Finisher has priority over Wolkenbruch when air combo count >= 3
-	if _can_perform_slam() and Input.is_action_just_pressed("wolkenbruch_slam") and Input.is_action_pressed("light_attack"):
-		_perform_slam_finisher()
 
 
 # ============ LAUNCHER EVENT CONNECTION ============
@@ -203,10 +196,6 @@ func _perform_air_attack() -> void:
 	air_hit_registered.emit(current_air_combo, juggled_enemy)
 	EventBus.emit_signal("air_hit_registered", current_air_combo, juggled_enemy)
 
-	# Check if slam is ready
-	if current_air_combo >= 3:
-		slam_finisher_ready.emit()
-
 
 func _play_air_hit_effect() -> void:
 	"""Plays visual/audio effects for air hit"""
@@ -214,79 +203,6 @@ func _play_air_hit_effect() -> void:
 	AudioManager.play_sfx_at_position("combat/air_hit", player.global_position, 0.4)
 
 	# TODO: Spawn air hit VFX particle
-	# Will be created in later step
-
-
-# ============ SLAM FINISHER ============
-func _can_perform_slam() -> bool:
-	"""Returns true if player can perform slam finisher"""
-	if not enabled:
-		return false
-
-	# Must be airborne
-	if not is_airborne:
-		return false
-
-	# Check if Wolkenbruch is active (has priority)
-	var wolkenbruch = player.get_node_or_null("Wolkenbruch")
-	if wolkenbruch and wolkenbruch.has_method("is_active"):
-		if wolkenbruch.is_active():
-			return false
-
-	# Must have active air combo (at least 3 hits)
-	if current_air_combo < 3:
-		return false
-
-	# Must have juggled enemy (and enemy must still be valid/alive)
-	if not juggled_enemy or not is_instance_valid(juggled_enemy):
-		return false
-
-	return true
-
-
-func _perform_slam_finisher() -> void:
-	"""Performs slam finisher to end air combo"""
-	if not juggled_enemy:
-		return
-
-	print("[AirComboSystem] SLAM FINISHER! (Air combo: %d)" % current_air_combo)
-
-	# Calculate slam damage (base damage × multiplier × air combo)
-	var slam_damage: int = int(air_attack_damage * slam_damage_multiplier * current_air_combo)
-
-	# Calculate slam direction (straight down)
-	var slam_direction: Vector2 = Vector2(0, slam_force)
-
-	# Apply slam knockback
-	if juggled_enemy.has_node("KnockbackComponent"):
-		var knockback: KnockbackComponent = juggled_enemy.get_node("KnockbackComponent")
-		knockback.apply_knockback(slam_direction.normalized(), slam_force, 0.5)
-
-	# Deal massive damage
-	if juggled_enemy.has_node("HealthComponent"):
-		var health: HealthComponent = juggled_enemy.get_node("HealthComponent")
-		health.take_damage(slam_damage)
-
-	# Play slam effect
-	_play_slam_effect()
-
-	# Emit signals
-	slam_executed.emit(juggled_enemy, slam_damage)
-	EventBus.emit_signal("slam_executed", juggled_enemy, slam_damage)
-
-	# Boost player downward for slam
-	player.velocity.y = slam_force
-
-	# End air combo
-	_end_air_combo()
-
-
-func _play_slam_effect() -> void:
-	"""Plays visual/audio effects for slam finisher"""
-	# Play sound
-	AudioManager.play_sfx_at_position("combat/slam", player.global_position, 0.7)
-
-	# TODO: Spawn slam VFX particle
 	# Will be created in later step
 
 
@@ -338,11 +254,6 @@ func get_combo_progress() -> float:
 	return air_combo_timer / AIR_COMBO_WINDOW
 
 
-func can_slam() -> bool:
-	"""Returns true if slam finisher is available"""
-	return _can_perform_slam()
-
-
 # ============ CONTROL ============
 func enable() -> void:
 	"""Enables air combo system"""
@@ -369,6 +280,5 @@ func get_debug_info() -> Dictionary:
 		"enabled": enabled,
 		"air_combo": current_air_combo,
 		"time_remaining": air_combo_timer,
-		"juggled_enemy": juggled_enemy.name if juggled_enemy else "None",
-		"can_slam": can_slam()
+		"juggled_enemy": juggled_enemy.name if juggled_enemy else "None"
 	}

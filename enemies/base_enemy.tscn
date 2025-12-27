@@ -18,7 +18,7 @@ size = Vector2(32, 32)
 collision_layer = 16
 collision_mask = 1
 script = ExtResource("1_base")
-max_health = 40
+max_health = 400
 move_speed = 100.0
 attack_damage = 10
 attack_range = 80.0
@@ -40,7 +40,7 @@ attack_cooldown = 1.0
 
 [node name="HealthComponent" type="Node" parent="."]
 script = ExtResource("3_health")
-max_health = 40
+max_health = 400
 invulnerability_duration = 0.3
 
 [node name="HitboxComponent" parent="." instance=ExtResource("4_hitbox")]
