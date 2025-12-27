@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://b1k5wfkqxc8yx"]
+[gd_scene load_steps=12 format=3 uid="uid://b1k5wfkqxc8yx"]
 
 [ext_resource type="Script" path="res://player/murum.gd" id="1_murum"]
 [ext_resource type="Script" path="res://player/movement_controller.gd" id="2_movement"]
@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://player/combat_system/ende_schwerkraft.gd" id="14_ende_schwerkraft"]
 [ext_resource type="Script" path="res://player/abilities/wolkenbruch.gd" id="15_wolkenbruch"]
 [ext_resource type="Script" path="res://player/abilities/echo_von_urgathon.gd" id="16_echo"]
+[ext_resource type="Script" path="res://player/combat_system/luftgott_system.gd" id="16_luftgott"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 radius = 16.0
@@ -105,6 +106,8 @@ script = ExtResource("15_wolkenbruch")
 
 [node name="EchoVonUrgathon" type="Node" parent="."]
 script = ExtResource("16_echo")
+[node name="LuftgottSystem" type="Node" parent="."]
+script = ExtResource("16_luftgott")
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 offset = Vector2(0, -150)

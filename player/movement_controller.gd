@@ -188,8 +188,10 @@ func _process_horizontal_movement() -> void:
 # ============ GRAVITY ============
 func _process_gravity(delta: float) -> void:
 	"""Applies gravity to player"""
-	# Skip gravity if hovering (Ende der Schwerkraft)
+	# Skip gravity if hovering (Ende der Schwerkraft / Luftgott)
 	if is_hovering:
+		# Keep player suspended at current height (stop vertical movement)
+		player.velocity.y = 0.0
 		return
 
 	if not player.is_on_floor():

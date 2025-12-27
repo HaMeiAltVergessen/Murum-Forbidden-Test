@@ -232,6 +232,18 @@ signal wolkenbruch_completed
 # ============ ECHO VON URGATHON EVENTS ============
 ## Emitted when mana is gained from Echo passive ability
 signal echo_mana_gained(amount: int)
+# ============ LUFTGOTT (AIR RESET) EVENTS ============
+## Emitted when air reset window opens (after air combo ends)
+signal air_reset_window_started()
+
+## Emitted when air reset is activated
+signal air_reset_activated(enemy: Node)
+
+## Emitted when air reset hit is performed
+signal air_reset_hit(count: int, damage: int)
+
+## Emitted when air reset ends
+signal air_reset_ended(total_hits: int)
 
 
 func _ready() -> void:
