@@ -294,7 +294,10 @@ func _create_urgathon_ui() -> void:
 	# Style charge bar (purple gradient)
 	var stylebox = StyleBoxFlat.new()
 	stylebox.bg_color = Color(0.5, 0.0, 0.8, 0.8)  # Purple
-	stylebox.border_width_all = 2
+	stylebox.border_width_left = 2
+	stylebox.border_width_right = 2
+	stylebox.border_width_top = 2
+	stylebox.border_width_bottom = 2
 	stylebox.border_color = Color(0.8, 0.4, 1.0, 1.0)  # Light purple border
 	urgathon_charge_bar.add_theme_stylebox_override("fill", stylebox)
 
