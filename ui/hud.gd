@@ -17,6 +17,12 @@ const HP_PER_HEART: int = 20
 # ============ PARRY INDICATOR ============
 var parry_indicator: Label = null
 
+# ============ ABILITY ICONS ============
+var ability_icons_container: HBoxContainer = null
+var machtstoss_icon: AbilityIcon = null
+var urteil_icon: AbilityIcon = null
+var echo_icon: AbilityIcon = null
+
 
 func _ready() -> void:
 	# Connect to EventBus signals
@@ -33,8 +39,19 @@ func _ready() -> void:
 	EventBus.perfect_parry_executed.connect(_on_perfect_parry)
 	EventBus.normal_block_executed.connect(_on_normal_block)
 
+	# Connect ability cooldown signals
+	EventBus.machtstoss_cooldown_started.connect(_on_machtstoss_cooldown_started)
+	EventBus.machtstoss_cooldown_finished.connect(_on_machtstoss_cooldown_finished)
+	EventBus.urteil_cooldown_started.connect(_on_urteil_cooldown_started)
+	EventBus.urteil_cooldown_finished.connect(_on_urteil_cooldown_finished)
+	EventBus.echo_cooldown_started.connect(_on_echo_cooldown_started)
+	EventBus.echo_cooldown_finished.connect(_on_echo_cooldown_finished)
+
 	# Create heart icons
 	_create_hearts()
+
+	# Create ability icons
+	_create_ability_icons()
 
 	# Hide interaction prompt initially
 	if interaction_prompt:
@@ -168,3 +185,74 @@ func _on_resonance_mode_timer_updated(time_remaining: float) -> void:
 	"""Called when mode timer updates."""
 	if resonance_bar:
 		resonance_bar.update_mode_timer(time_remaining)
+
+
+# ============ ABILITY ICONS SYSTEM ============
+func _create_ability_icons() -> void:
+	"""Creates ability icons container and icons"""
+
+	# Create container (bottom right of screen)
+	ability_icons_container = HBoxContainer.new()
+	ability_icons_container.name = "AbilityIconsContainer"
+	ability_icons_container.add_theme_constant_override("separation", 8)
+
+	# Position at bottom right
+	ability_icons_container.anchor_left = 1.0
+	ability_icons_container.anchor_right = 1.0
+	ability_icons_container.anchor_top = 1.0
+	ability_icons_container.anchor_bottom = 1.0
+	ability_icons_container.offset_left = -220  # 3 icons * 64 + 2 gaps * 8 + margin
+	ability_icons_container.offset_right = -10
+	ability_icons_container.offset_top = -74
+	ability_icons_container.offset_bottom = -10
+
+	add_child(ability_icons_container)
+
+	# Create icons
+	machtstoss_icon = AbilityIcon.new()
+	machtstoss_icon.ability_name = "Machtstoß"
+	machtstoss_icon.keybind = "1"
+	ability_icons_container.add_child(machtstoss_icon)
+
+	urteil_icon = AbilityIcon.new()
+	urteil_icon.ability_name = "Urteil"
+	urteil_icon.keybind = "2"
+	ability_icons_container.add_child(urteil_icon)
+
+	echo_icon = AbilityIcon.new()
+	echo_icon.ability_name = "Echo"
+	echo_icon.keybind = "3"
+	ability_icons_container.add_child(echo_icon)
+
+	print("[HUD] Ability icons created")
+
+
+# ============ ABILITY COOLDOWN HANDLERS ============
+func _on_machtstoss_cooldown_started(duration: float) -> void:
+	if machtstoss_icon:
+		machtstoss_icon.start_cooldown(duration)
+
+
+func _on_machtstoss_cooldown_finished() -> void:
+	# Icon handles this automatically via timer
+	pass
+
+
+func _on_urteil_cooldown_started(duration: float) -> void:
+	if urteil_icon:
+		urteil_icon.start_cooldown(duration)
+
+
+func _on_urteil_cooldown_finished() -> void:
+	# Icon handles this automatically via timer
+	pass
+
+
+func _on_echo_cooldown_started(duration: float) -> void:
+	if echo_icon:
+		echo_icon.start_cooldown(duration)
+
+
+func _on_echo_cooldown_finished() -> void:
+	# Icon handles this automatically via timer
+	pass

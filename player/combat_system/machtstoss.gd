@@ -178,12 +178,18 @@ func _activate() -> void:
 # ============================================================================
 
 func _execute_knockback_wave() -> void:
-	"""Executes the knockback wave - pushes all enemies in radius"""
+	"""Executes the knockback wave - pushes enemies in facing direction"""
 
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	var hit_count = 0
 
-	print("[Machtstoß] Searching for enemies in %.0fpx radius..." % KNOCKBACK_RADIUS)
+	# Get player's facing direction (1 = right, -1 = left)
+	var player_facing = player.scale.x
+
+	print("[Machtstoß] Searching for enemies in %.0fpx radius (facing: %s)..." % [
+		KNOCKBACK_RADIUS,
+		"RIGHT" if player_facing > 0 else "LEFT"
+	])
 
 	for enemy in enemies:
 		if not is_instance_valid(enemy):
@@ -191,11 +197,26 @@ func _execute_knockback_wave() -> void:
 
 		var distance = player.global_position.distance_to(enemy.global_position)
 
-		if distance <= KNOCKBACK_RADIUS:
-			_apply_knockback(enemy, distance)
-			hit_count += 1
+		if distance > KNOCKBACK_RADIUS:
+			continue
 
-	print("[Machtstoß] Hit %d enemies with knockback wave" % hit_count)
+		# CRITICAL: Check if enemy is in facing direction
+		var direction_to_enemy = enemy.global_position - player.global_position
+
+		# If player faces right (1), enemy must be on right (x > 0)
+		# If player faces left (-1), enemy must be on left (x < 0)
+		if player_facing > 0 and direction_to_enemy.x < 0:
+			print("[Machtstoß] Skipping %s (behind player, facing right)" % enemy.name)
+			continue
+		if player_facing < 0 and direction_to_enemy.x > 0:
+			print("[Machtstoß] Skipping %s (behind player, facing left)" % enemy.name)
+			continue
+
+		# Enemy is in front, apply knockback
+		_apply_knockback(enemy, distance)
+		hit_count += 1
+
+	print("[Machtstoß] Hit %d enemies with directional knockback wave" % hit_count)
 
 func _apply_knockback(enemy: Node, distance: float) -> void:
 	"""Applies knockback to a single enemy"""
