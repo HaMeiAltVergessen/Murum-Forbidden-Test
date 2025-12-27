@@ -49,6 +49,9 @@ signal throw_failed(reason: String)
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("staff_throw"):
 		attempt_throw()
+	# Gamepad: RT + X (X = light_attack button)
+	elif event.is_action_pressed("light_attack") and Input.is_action_pressed("gamepad_modifier"):
+		attempt_throw()
 
 # ============================================================================
 # THROW LOGIC

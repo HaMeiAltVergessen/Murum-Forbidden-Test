@@ -98,10 +98,16 @@ func _ready() -> void:
 # ============================================================================
 
 func _input(event: InputEvent) -> void:
-	# Toggle on Key 3 press
+	# Activate on Key 3 press OR RT + A (gamepad)
 	if event.is_action_pressed("ability_3"):
 		if is_active:
 			# Already active - cannot deactivate manually
+			print("[Echo] Already active - wait for duration to expire")
+		else:
+			attempt_activation()
+	# Gamepad: RT + A (A = jump button, button 0)
+	elif event.is_action_pressed("jump") and Input.is_action_pressed("gamepad_modifier"):
+		if is_active:
 			print("[Echo] Already active - wait for duration to expire")
 		else:
 			attempt_activation()

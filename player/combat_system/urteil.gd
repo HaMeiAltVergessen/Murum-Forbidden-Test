@@ -89,9 +89,13 @@ func _ready() -> void:
 # ============================================================================
 
 func _input(event: InputEvent) -> void:
-	# Activate on Key 2 press
+	# Activate on Key 2 press OR RT + Y (gamepad)
 	if event.is_action_pressed("ability_2"):
 		attempt_activation()
+	# Gamepad: RT + Y (Y = button 3)
+	elif event is InputEventJoypadButton:
+		if event.button_index == 3 and event.pressed and Input.is_action_pressed("gamepad_modifier"):
+			attempt_activation()
 
 # ============================================================================
 # TIMERS
