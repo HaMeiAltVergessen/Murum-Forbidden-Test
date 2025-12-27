@@ -25,8 +25,9 @@ const MAX_BRIGHTNESS: float = 3.0  # Max brightness at level 8
 
 # Physics
 const SLAM_VELOCITY: float = 1500.0
-const ENEMY_PULL_VELOCITY_MAX: float = 3750.0  # Max pull force (halved from 7500)
+const ENEMY_PULL_VELOCITY_MAX: float = 6000.0  # Strong pull for enemies
 const PULL_RADIUS: float = 128.0  # Doubled from 64
+const PLAYER_SLAM_DELAY: float = 0.4  # Delay before player slams down
 const RECOVERY_DURATION: float = 0.5
 const CAMERA_TRAUMA_PER_LEVEL: float = 0.1
 
@@ -213,13 +214,18 @@ func _release_charge() -> void:
 	# Enter slamming state
 	current_state = State.SLAMMING
 
-	# PULL ENEMIES DOWN WITH PLAYER
-	# Find all enemies in radius (double player size ~64 units)
+	# PULL ENEMIES DOWN FIRST (before player)
 	_pull_enemies_down()
 
-	# Apply downward velocity to player
-	player.velocity.y = SLAM_VELOCITY
-	player.velocity.x = 0
+	# Wait 0.4 seconds before player slams down
+	# This gives enemies time to start falling first
+	await get_tree().create_timer(PLAYER_SLAM_DELAY).timeout
+
+	# Now apply downward velocity to player
+	if current_state == State.SLAMMING:  # Safety check
+		player.velocity.y = SLAM_VELOCITY
+		player.velocity.x = 0
+		print("[Wolkenbruch] Player now slamming down (delayed by %.1fs)" % PLAYER_SLAM_DELAY)
 
 	# Emit signal
 	wolkenbruch_released.emit(charge_level)
@@ -343,16 +349,17 @@ func _on_charge_level_up() -> void:
 func _process_slamming(delta: float) -> void:
 	"""Processes slamming phase"""
 
-	# Check ground impact BEFORE applying velocity
-	# This prevents glitching through floor
+	# Continue downward movement
+	player.velocity.y = SLAM_VELOCITY
+	player.velocity.x = 0
+
+	# MUST call move_and_slide() to apply velocity and check collisions
+	# Without this, player can glitch through floor!
+	player.move_and_slide()
+
+	# Check ground impact AFTER move_and_slide()
 	if player.is_on_floor():
 		_on_impact()
-		return
-
-	# Continue downward movement
-	# Clamp velocity to prevent glitching through floor
-	player.velocity.y = min(SLAM_VELOCITY, 2000.0)  # Safety cap
-	player.velocity.x = 0
 
 
 func _process_recovery(delta: float) -> void:
