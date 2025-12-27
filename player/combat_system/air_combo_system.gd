@@ -173,7 +173,15 @@ func _perform_air_attack() -> void:
 	air_combo_timer = AIR_COMBO_WINDOW  # Reset timer
 
 	# Calculate juggle direction (upward + toward player)
-	var direction_to_player: Vector2 = (player.global_position - juggled_enemy.global_position).normalized()
+	var dir_vec = player.global_position - juggled_enemy.global_position
+
+	# CRITICAL: Prevent NaN from normalizing zero vector
+	var direction_to_player: Vector2
+	if dir_vec.length_squared() < 0.01:
+		direction_to_player = Vector2(0, -1)  # Default to up if at same position
+	else:
+		direction_to_player = dir_vec.normalized()
+
 	var juggle_direction: Vector2 = Vector2(
 		direction_to_player.x * 100.0,  # Slight horizontal pull
 		-juggle_force  # Upward force

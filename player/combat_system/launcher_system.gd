@@ -161,7 +161,15 @@ func _find_launchable_enemies() -> Array[BaseEnemy]:
 			continue
 
 		# Check if in front of player
-		var direction_to_enemy: Vector2 = (base_enemy.global_position - player.global_position).normalized()
+		var dir_vec = base_enemy.global_position - player.global_position
+
+		# CRITICAL: Prevent NaN from normalizing zero vector
+		var direction_to_enemy: Vector2
+		if dir_vec.length_squared() < 0.01:
+			direction_to_enemy = Vector2(1, 0)  # Default direction
+		else:
+			direction_to_enemy = dir_vec.normalized()
+
 		var player_facing: float = player.scale.x  # 1 = right, -1 = left
 
 		if player_facing > 0 and direction_to_enemy.x < 0:
@@ -182,7 +190,15 @@ func _launch_enemy(enemy: BaseEnemy) -> void:
 	print("[LauncherSystem] Launching enemy: ", enemy.name)
 
 	# Calculate launch direction (up + slightly away from player)
-	var direction_to_enemy: Vector2 = (enemy.global_position - player.global_position).normalized()
+	var dir_vec = enemy.global_position - player.global_position
+
+	# CRITICAL: Prevent NaN from normalizing zero vector
+	var direction_to_enemy: Vector2
+	if dir_vec.length_squared() < 0.01:
+		direction_to_enemy = Vector2(1, 0)  # Default direction
+	else:
+		direction_to_enemy = dir_vec.normalized()
+
 	var launch_direction: Vector2 = Vector2(
 		direction_to_enemy.x * launch_horizontal_force,
 		-launch_force  # Negative = upward

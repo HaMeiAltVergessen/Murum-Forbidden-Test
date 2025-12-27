@@ -140,7 +140,15 @@ func _on_area_entered(area: Area2D) -> void:
 			return
 
 		# Calculate knockback direction
-		var knockback_direction = (enemy.global_position - global_position).normalized()
+		var dir_vec = enemy.global_position - global_position
+
+		# CRITICAL: Prevent NaN from normalizing zero vector
+		var knockback_direction: Vector2
+		if dir_vec.length_squared() < 0.01:
+			knockback_direction = Vector2(1, 0)  # Default direction
+		else:
+			knockback_direction = dir_vec.normalized()
+
 		var knockback_force = knockback_direction * 400.0  # Strong knockback
 
 		# Deal damage with knockback through HurtboxComponent

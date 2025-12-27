@@ -610,7 +610,16 @@ func _apply_aoe_knockback(knockback_force: float, radius: float) -> void:
 
 		if distance <= radius:
 			# Calculate radial direction (away from impact)
-			var radial_direction = (enemy.global_position - player.global_position).normalized()
+			var direction_to_enemy = enemy.global_position - player.global_position
+
+			# CRITICAL: Prevent NaN from normalizing zero vector
+			# If enemy is at exact same position, use default direction
+			var radial_direction: Vector2
+			if direction_to_enemy.length_squared() < 0.01:  # Too close (within 0.1 pixels)
+				radial_direction = Vector2(1, 0)  # Default to right
+				print("[Wolkenbruch] WARNING: Enemy at same position, using default direction")
+			else:
+				radial_direction = direction_to_enemy.normalized()
 
 			# Create knockback direction: slam enemies DOWN and AWAY
 			var direction = Vector2(radial_direction.x, abs(radial_direction.y) + 0.6).normalized()

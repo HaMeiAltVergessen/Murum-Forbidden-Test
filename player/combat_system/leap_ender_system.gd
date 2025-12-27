@@ -327,7 +327,14 @@ func _hit_enemy(enemy: Node) -> void:
 		enemy.take_damage(damage, player)
 
 	# Apply knockback (enhanced)
-	var knockback_dir = (enemy.global_position - player.global_position).normalized()
+	var dir_to_enemy = enemy.global_position - player.global_position
+
+	# CRITICAL: Prevent NaN from normalizing zero vector
+	var knockback_dir: Vector2
+	if dir_to_enemy.length_squared() < 0.01:
+		knockback_dir = Vector2(1, 0)  # Default direction
+	else:
+		knockback_dir = dir_to_enemy.normalized()
 
 	if enemy.has_method("apply_knockback"):
 		enemy.apply_knockback(knockback_dir, LEAP_KNOCKBACK_FORCE, LEAP_KNOCKBACK_DURATION)
@@ -430,7 +437,15 @@ func _teleport_to_nearest_enemy(current_enemy: Node) -> void:
 	# Teleport to nearest enemy
 	if nearest_enemy:
 		var teleport_offset = 60.0  # 60px away from enemy
-		var direction = (player.global_position - nearest_enemy.global_position).normalized()
+		var dir_from_enemy = player.global_position - nearest_enemy.global_position
+
+		# CRITICAL: Prevent NaN from normalizing zero vector
+		var direction: Vector2
+		if dir_from_enemy.length_squared() < 0.01:
+			direction = Vector2(1, 0)  # Default direction if at same position
+		else:
+			direction = dir_from_enemy.normalized()
+
 		var teleport_pos = nearest_enemy.global_position + (direction * teleport_offset)
 
 		print("[LeapEnderSystem] Teleporting to nearest enemy: %s (distance: %.0f)" % [nearest_enemy.name, nearest_distance])
