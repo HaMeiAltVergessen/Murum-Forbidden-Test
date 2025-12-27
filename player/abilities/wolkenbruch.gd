@@ -417,18 +417,19 @@ func _process_slamming(delta: float) -> void:
 		print("[Wolkenbruch] ERROR: NaN position detected AFTER move_and_slide()!")
 		print("[Wolkenbruch] Previous position: (%.1f, %.1f)" % [position_before.x, position_before.y])
 		print("[Wolkenbruch] Velocity was: (%.1f, %.1f)" % [player.velocity.x, player.velocity.y])
-		# Restore previous valid position
-		player.global_position = position_before
+		# Reset velocity instead of teleporting (prevents glitches)
 		player.velocity = Vector2.ZERO
 		_complete_wolkenbruch()
 		return
 
 	# Safety check: prevent falling through floor
-	# If player moved down too far in one frame, clamp position
+	# If player moved down too far in one frame, emergency stop
 	var movement = player.global_position - position_before
 	if movement.y > 100.0:  # Moved more than 100 pixels down in one frame
-		print("[Wolkenbruch] WARNING: Large movement detected (%.1f), clamping!" % movement.y)
-		player.global_position.y = position_before.y + 100.0
+		print("[Wolkenbruch] WARNING: Large movement detected (%.1f), emergency stop!" % movement.y)
+		player.velocity = Vector2.ZERO
+		_complete_wolkenbruch()
+		return
 
 
 func _process_recovery(delta: float) -> void:
@@ -700,17 +701,11 @@ func _complete_wolkenbruch() -> void:
 	# Safety: Ensure player position is valid (not NaN or extreme values)
 	if is_nan(player.global_position.x) or is_nan(player.global_position.y):
 		print("[Wolkenbruch] CRITICAL ERROR: NaN position detected in _complete_wolkenbruch!")
-		print("[Wolkenbruch] This should have been caught earlier. Investigating...")
-
-		# Try to use charging_position as fallback (last known good position)
-		if charging_position != Vector2.ZERO:
-			print("[Wolkenbruch] Restoring to charging_position: (%.1f, %.1f)" % [
-				charging_position.x, charging_position.y
-			])
-			player.global_position = charging_position
-		else:
-			print("[Wolkenbruch] No valid fallback position available, using (0, 0)")
-			player.global_position = Vector2.ZERO
+		print("[Wolkenbruch] This should have been caught earlier.")
+		print("[Wolkenbruch] Reset velocity and let physics engine handle position")
+		# NEVER teleport player - this causes glitches!
+		# Just reset velocity and let physics stabilize
+		player.velocity = Vector2.ZERO
 
 	# Safety: Disable hover mode if still active
 	if movement_controller and movement_controller.is_hovering:
