@@ -112,19 +112,22 @@ func _try_start_charge() -> void:
 		print("[Wolkenbruch] Attack not pressed")
 		return
 
-	# Don't activate if Air-Combo is active
+	# WOLKENBRUCH HAS HIGHEST PRIORITY - Cancel other systems if active
+	# Cancel Air-Combo if active (Wolkenbruch is the finisher)
 	var air_combo_system = player.get_node_or_null("AirComboSystem")
 	if air_combo_system and air_combo_system.has_method("is_in_air_combo"):
 		if air_combo_system.is_in_air_combo():
-			print("[Wolkenbruch] Air-Combo active - cannot charge")
-			return
+			print("[Wolkenbruch] Cancelling Air-Combo to start Wolkenbruch (finisher priority)")
+			if air_combo_system.has_method("force_end_combo"):
+				air_combo_system.force_end_combo()
 
-	# Don't activate if Luftgott is active
+	# Cancel Luftgott if active (Wolkenbruch is the finisher)
 	var luftgott_system = player.get_node_or_null("LuftgottSystem")
 	if luftgott_system and luftgott_system.has_method("is_active"):
 		if luftgott_system.is_active():
-			print("[Wolkenbruch] Luftgott active - cannot charge")
-			return
+			print("[Wolkenbruch] Cancelling Luftgott to start Wolkenbruch (finisher priority)")
+			if luftgott_system.has_method("force_end"):
+				luftgott_system.force_end()
 
 	# Check minimum mana
 	if not _check_minimum_mana():
