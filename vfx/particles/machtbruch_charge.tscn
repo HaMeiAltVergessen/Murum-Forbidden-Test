@@ -1,0 +1,31 @@
+[gd_scene load_steps=3 format=3 uid="uid://machtbruch_charge_001"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_charge"]
+particle_flag_disable_z = true
+emission_shape = 2
+emission_sphere_radius = 40.0
+direction = Vector3(0, -1, 0)
+spread = 180.0
+gravity = Vector3(0, -50, 0)
+initial_velocity_min = 30.0
+initial_velocity_max = 50.0
+angular_velocity_min = -180.0
+angular_velocity_max = 180.0
+orbit_velocity_min = 50.0
+orbit_velocity_max = 100.0
+scale_min = 0.5
+scale_max = 1.0
+color = Color(0.8, 0.3, 1.0, 1)
+hue_variation_min = -0.2
+hue_variation_max = 0.2
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_particle"]
+diffuse_texture = null
+
+[node name="MachtbruchCharge" type="GPUParticles2D"]
+amount = 30
+process_material = SubResource("ParticleProcessMaterial_charge")
+texture = SubResource("CanvasTexture_particle")
+lifetime = 0.8
+preprocess = 0.2
+visibility_rect = Rect2(-100, -100, 200, 200)

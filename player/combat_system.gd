@@ -10,6 +10,7 @@ class_name CombatSystem
 @onready var resonance_system: ResonanceSystem = null  # Will create dynamically
 @onready var parry_block_system: ParryBlockSystem = null  # Will create from scene
 @onready var leap_ender_system: LeapEnderSystem = null  # Will create dynamically
+@onready var machtbruch: Machtbruch = null  # Will create dynamically (COMMIT 019)
 @onready var staff_sprite: Node2D = null  # Will create dynamically
 @onready var staff_top: ColorRect = null  # Staff tip for color changes
 
@@ -51,6 +52,9 @@ func _ready() -> void:
 
 	# Create leap ender system
 	_create_leap_ender_system()
+
+	# Create Machtbruch system (COMMIT 019)
+	_create_machtbruch_system()
 
 	# Create staff visual
 	_create_staff_visual()
@@ -257,6 +261,15 @@ func _create_leap_ender_system() -> void:
 	leap_ender_system.leap_ender_completed.connect(_on_leap_ender_completed)
 
 	print("[CombatSystem] LeapEnderSystem created")
+
+
+func _create_machtbruch_system() -> void:
+	"""Creates the Machtbruch (Resonance Burst) system component (COMMIT 019)."""
+	machtbruch = Machtbruch.new()
+	machtbruch.name = "Machtbruch"
+	add_child(machtbruch)
+
+	print("[CombatSystem] Machtbruch created")
 
 
 func _on_leap_ender_started(direction: Vector2) -> void:

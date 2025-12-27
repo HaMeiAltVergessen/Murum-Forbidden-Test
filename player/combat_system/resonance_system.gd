@@ -140,6 +140,29 @@ func remove_resonance(amount: float) -> void:
 		print("[ResonanceSystem] -%.2f resonance (%.1f/%.1f)" % [amount, current_resonance, max_resonance])
 
 
+func consume_resonance(percent: float) -> float:
+	"""Consumes a percentage of current resonance and returns the amount consumed.
+	Used by abilities like Machtbruch (COMMIT 019)."""
+	if not enabled:
+		return 0.0
+
+	var amount_consumed = current_resonance * percent
+	var old_value = current_resonance
+	current_resonance = max(current_resonance - amount_consumed, 0.0)
+
+	# Reset threshold flags if we dropped below them
+	_reset_thresholds_below(current_resonance)
+
+	# Emit signals
+	_emit_resonance_changed()
+
+	print("[ResonanceSystem] Consumed %.1f%% resonance (%.1f consumed, %.1f remaining)" % [
+		percent * 100, amount_consumed, current_resonance
+	])
+
+	return amount_consumed
+
+
 func set_resonance(amount: float) -> void:
 	"""Sets resonance to a specific value."""
 	var old_value: float = current_resonance

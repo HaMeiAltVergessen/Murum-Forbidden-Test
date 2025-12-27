@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://machtbruch_medium_001"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_medium"]
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 15.0
+direction = Vector3(0, 0, 0)
+spread = 180.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 150.0
+initial_velocity_max = 300.0
+radial_accel_min = 75.0
+radial_accel_max = 150.0
+scale_min = 1.5
+scale_max = 3.0
+color = Color(0.8, 0.3, 1.0, 1)
+hue_variation_min = -0.15
+hue_variation_max = 0.15
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_particle"]
+diffuse_texture = null
+
+[node name="MachtbruchMedium" type="GPUParticles2D"]
+emitting = true
+amount = 50
+process_material = SubResource("ParticleProcessMaterial_medium")
+texture = SubResource("CanvasTexture_particle")
+lifetime = 0.8
+one_shot = true
+explosiveness = 1.0
+randomness = 0.4
+visibility_rect = Rect2(-200, -200, 400, 400)

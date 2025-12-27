@@ -112,6 +112,22 @@ signal rebound_ready()
 ## Emitted when Rebound counter is executed
 signal rebound_executed(enemy: Node)
 
+# ============ MACHTBRUCH SYSTEM SIGNALS (Commit 019) ============
+## Emitted when Machtbruch becomes available (after 3rd combo hit)
+signal machtbruch_available()
+
+## Emitted when Machtbruch charging starts
+signal machtbruch_charge_started()
+
+## Emitted when Machtbruch charge is complete
+signal machtbruch_charge_completed()
+
+## Emitted when Machtbruch burst is released
+signal machtbruch_released(tier: int, damage: int, radius: float)
+
+## Emitted when Machtbruch is cancelled (released too early)
+signal machtbruch_cancelled()
+
 # ============ ENVIRONMENT SIGNALS ============
 ## Emitted when lever is activated
 signal lever_activated(lever: Node)
