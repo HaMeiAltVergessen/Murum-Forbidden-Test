@@ -9,7 +9,7 @@ class_name EndeSchwerkraft
 
 const COOLDOWN: float = 4.0
 const LAUNCH_DAMAGE: int = 12
-const LAUNCH_VELOCITY: float = -400.0
+const LAUNCH_VELOCITY: float = -566.0  # ~sqrt(2) * -400 for 2x height
 const LAUNCH_HEIGHT: float = 150.0
 const ANIMATION_DURATION: float = 0.25
 const DETECTION_RANGE: float = 80.0
