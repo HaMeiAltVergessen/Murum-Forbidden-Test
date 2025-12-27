@@ -15,6 +15,7 @@
 [ext_resource type="Script" path="res://player/dodge_roll_system.gd" id="13_dodge"]
 [ext_resource type="Script" path="res://player/combat_system/ende_schwerkraft.gd" id="14_ende_schwerkraft"]
 [ext_resource type="Script" path="res://player/abilities/wolkenbruch.gd" id="15_wolkenbruch"]
+[ext_resource type="Script" path="res://player/abilities/echo_von_urgathon.gd" id="16_echo"]
 [ext_resource type="Script" path="res://player/combat_system/luftgott_system.gd" id="16_luftgott"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
@@ -103,6 +104,8 @@ script = ExtResource("13_dodge")
 [node name="Wolkenbruch" type="Node" parent="."]
 script = ExtResource("15_wolkenbruch")
 
+[node name="EchoVonUrgathon" type="Node" parent="."]
+script = ExtResource("16_echo")
 [node name="LuftgottSystem" type="Node" parent="."]
 script = ExtResource("16_luftgott")
 

@@ -229,6 +229,9 @@ signal wolkenbruch_impact(powered: bool)
 ## Emitted when Wolkenbruch is completed
 signal wolkenbruch_completed
 
+# ============ ECHO VON URGATHON EVENTS ============
+## Emitted when mana is gained from Echo passive ability
+signal echo_mana_gained(amount: int)
 # ============ LUFTGOTT (AIR RESET) EVENTS ============
 ## Emitted when air reset window opens (after air combo ends)
 signal air_reset_window_started()

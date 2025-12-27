@@ -1,0 +1,152 @@
+extends Node
+class_name EchoVonUrgathon
+
+## Echo von Urgathon - Passive Mana Regeneration
+## Passiver Buff: Alle 3 Hits → 9 Mana zurück
+## Testing Mode: Alle 3 Sekunden → 9 Mana
+
+# ============================================================================
+# CONSTANTS
+# ============================================================================
+
+const HITS_REQUIRED: int = 3
+const MANA_RESTORE: int = 9
+
+# Testing mode: Zeit-basiert statt Hit-basiert
+const TESTING_MODE: bool = true  # Auf false setzen für Hit-basierte Mechanik
+const TESTING_INTERVAL: float = 3.0  # Alle 3 Sekunden
+
+# ============================================================================
+# STATE
+# ============================================================================
+
+var hit_counter: int = 0
+var testing_timer: float = 0.0
+
+# Story flag - für Testing auf true
+@export var is_unlocked: bool = true
+
+# ============================================================================
+# REFERENCES
+# ============================================================================
+
+@onready var player: CharacterBody2D = owner
+@onready var mana_component: ManaComponent = player.get_node("ManaComponent")
+
+# ============================================================================
+# SIGNALS
+# ============================================================================
+
+signal mana_restored(amount: int, trigger: String)  # trigger: "hits" oder "timer"
+
+# ============================================================================
+# INITIALIZATION
+# ============================================================================
+
+func _ready() -> void:
+	if TESTING_MODE:
+		print("[EchoVonUrgathon] Initialized in TESTING MODE (every %.1fs)" % TESTING_INTERVAL)
+	else:
+		print("[EchoVonUrgathon] Initialized (every %d hits)" % HITS_REQUIRED)
+
+	print("[EchoVonUrgathon] Unlocked: %s" % is_unlocked)
+
+	# Connect to hit signal nur wenn nicht im Testing Mode
+	if not TESTING_MODE and EventBus:
+		EventBus.hit_registered.connect(_on_hit_registered)
+
+# ============================================================================
+# UPDATE
+# ============================================================================
+
+func _process(delta: float) -> void:
+	if not is_unlocked:
+		return
+
+	# Testing Mode: Timer-basiert
+	if TESTING_MODE:
+		testing_timer += delta
+
+		if testing_timer >= TESTING_INTERVAL:
+			testing_timer = 0.0
+			_restore_mana("timer")
+
+# ============================================================================
+# HIT DETECTION (nur im normalen Modus)
+# ============================================================================
+
+func _on_hit_registered(attacker: Node, target: Node, damage: int) -> void:
+	"""Called when any hit is registered - nur wenn nicht im Testing Mode"""
+
+	if not is_unlocked:
+		return
+
+	# Nur auf Player-Hits reagieren
+	if attacker != player:
+		return
+
+	# Hit counter erhöhen
+	hit_counter += 1
+
+	print("[EchoVonUrgathon] Hit %d/%d" % [hit_counter, HITS_REQUIRED])
+
+	# Prüfen ob genug Hits
+	if hit_counter >= HITS_REQUIRED:
+		hit_counter = 0
+		_restore_mana("hits")
+
+# ============================================================================
+# MANA RESTORATION
+# ============================================================================
+
+func _restore_mana(trigger: String) -> void:
+	"""Stellt Mana wieder her"""
+
+	if not mana_component:
+		print("[EchoVonUrgathon] ERROR: No ManaComponent found!")
+		return
+
+	# Mana wiederherstellen
+	mana_component.restore_mana(MANA_RESTORE)
+
+	var trigger_text = "timer (%.1fs)" % TESTING_INTERVAL if trigger == "timer" else "%d hits" % HITS_REQUIRED
+	print("[EchoVonUrgathon] ✓ Restored %d mana (trigger: %s)" % [MANA_RESTORE, trigger_text])
+
+	# Emit signals
+	mana_restored.emit(MANA_RESTORE, trigger)
+	EventBus.echo_mana_gained.emit(MANA_RESTORE)
+
+	# Visual feedback
+	_spawn_mana_gain_vfx()
+
+# ============================================================================
+# VISUAL EFFECTS
+# ============================================================================
+
+func _spawn_mana_gain_vfx() -> void:
+	"""Spawns visual effect when mana is restored"""
+
+	# TODO: Add mana restoration particle effect
+	# Könnte grüne Partikel oder Text-Popup sein
+	pass
+
+# ============================================================================
+# UTILITY
+# ============================================================================
+
+func get_hit_progress() -> float:
+	"""Returns progress to next mana restore (0.0 - 1.0)"""
+	if TESTING_MODE:
+		return testing_timer / TESTING_INTERVAL
+	else:
+		return float(hit_counter) / float(HITS_REQUIRED)
+
+func get_hits_remaining() -> int:
+	"""Returns hits remaining until next mana restore"""
+	return HITS_REQUIRED - hit_counter
+
+func reset_counter() -> void:
+	"""Resets hit counter"""
+	hit_counter = 0
+	testing_timer = 0.0
+	print("[EchoVonUrgathon] Counter reset")
