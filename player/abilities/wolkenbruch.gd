@@ -20,7 +20,7 @@ const WEAK_KNOCKBACK: float = 175.0
 const WEAK_KNOCKBACK_DURATION: float = 0.3
 const WEAK_CAMERA_TRAUMA: float = 0.3
 
-const AOE_RADIUS: float = 150.0
+const AOE_RADIUS: float = 200.0  # ~2 Meter Radius
 const SLAM_VELOCITY: float = 1200.0
 const RECOVERY_DURATION: float = 0.4
 
@@ -250,7 +250,11 @@ func _apply_aoe_knockback() -> void:
 
 		if distance <= AOE_RADIUS:
 			# Calculate radial direction (away from impact)
-			var direction = (enemy.global_position - player.global_position).normalized()
+			var radial_direction = (enemy.global_position - player.global_position).normalized()
+
+			# Create knockback direction: slam enemies DOWN and AWAY
+			# Keep horizontal component (outward), add strong downward force
+			var direction = Vector2(radial_direction.x, abs(radial_direction.y) + 0.6).normalized()
 
 			# Apply knockback
 			if enemy.has_node("KnockbackComponent"):
