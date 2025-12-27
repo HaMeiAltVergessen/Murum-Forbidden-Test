@@ -81,6 +81,20 @@ func _try_activate() -> void:
 		print("[Wolkenbruch] Attack not pressed")
 		return
 
+	# Don't activate if Air-Combo is active (Air Slam Finisher has priority)
+	var air_combo_system = player.get_node_or_null("AirComboSystem")
+	if air_combo_system and air_combo_system.has_method("is_in_air_combo"):
+		if air_combo_system.is_in_air_combo():
+			print("[Wolkenbruch] Air-Combo active - Air Slam has priority")
+			return
+
+	# Don't activate if Luftgott is active
+	var luftgott_system = player.get_node_or_null("LuftgottSystem")
+	if luftgott_system and luftgott_system.has_method("is_active"):
+		if luftgott_system.is_active():
+			print("[Wolkenbruch] Luftgott active - cannot use Wolkenbruch")
+			return
+
 	# Activate!
 	_start_wolkenbruch()
 
