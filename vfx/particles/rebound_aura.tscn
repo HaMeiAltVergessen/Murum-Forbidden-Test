@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://rebound_aura_001"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_aura"]
+particle_flag_disable_z = true
+emission_shape = 2
+emission_sphere_radius = 50.0
+direction = Vector3(0, -1, 0)
+spread = 180.0
+gravity = Vector3(0, -20, 0)
+initial_velocity_min = 20.0
+initial_velocity_max = 40.0
+angular_velocity_min = -90.0
+angular_velocity_max = 90.0
+orbit_velocity_min = 0.0
+orbit_velocity_max = 0.0
+scale_min = 0.8
+scale_max = 1.2
+color = Color(1.5, 1.2, 0.4, 1)
+color_ramp = null
+hue_variation_min = -0.1
+hue_variation_max = 0.1
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_star"]
+diffuse_texture = null
+
+[node name="ReboundAura" type="GPUParticles2D"]
+amount = 20
+process_material = SubResource("ParticleProcessMaterial_aura")
+texture = SubResource("CanvasTexture_star")
+lifetime = 1.0
+preprocess = 0.5
+visibility_rect = Rect2(-100, -100, 200, 200)

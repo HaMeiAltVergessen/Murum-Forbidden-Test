@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://cg1yfqr5u0pjd"]
+[gd_scene load_steps=8 format=3 uid="uid://cg1yfqr5u0pjd"]
 
 [ext_resource type="Script" path="res://ui/hud.gd" id="1_hud"]
 [ext_resource type="PackedScene" path="res://ui/hud/combo_display.tscn" id="2_combo_display"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://ui/hud/parry_indicator.tscn" id="4_parry_indicator"]
 [ext_resource type="PackedScene" uid="uid://dx5m8q3v2rnpt" path="res://ui/hud/wave_indicator.tscn" id="5_wave_indicator"]
 [ext_resource type="PackedScene" uid="uid://air_combo_display_ui" path="res://ui/hud/air_combo_display.tscn" id="6_air_combo_display"]
+[ext_resource type="PackedScene" uid="uid://rebound_indicator_001" path="res://ui/hud/rebound_indicator.tscn" id="7_rebound_indicator"]
 
 [node name="HUD" type="CanvasLayer" groups=["hud"]]
 script = ExtResource("1_hud")
@@ -82,3 +83,5 @@ vertical_alignment = 1
 [node name="WaveIndicator" parent="." instance=ExtResource("5_wave_indicator")]
 
 [node name="AirComboDisplay" parent="." instance=ExtResource("6_air_combo_display")]
+
+[node name="ReboundIndicator" parent="." instance=ExtResource("7_rebound_indicator")]

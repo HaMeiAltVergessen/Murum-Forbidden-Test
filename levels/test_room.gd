@@ -16,6 +16,9 @@ func _ready() -> void:
 	# Activate room
 	activate()
 
+	# Spawn additional enemies for Rebound testing (Commit 018)
+	_spawn_additional_enemies()
+
 	print("[TestRoom] Level loaded")
 
 
@@ -42,3 +45,31 @@ func activate() -> void:
 func deactivate() -> void:
 	"""Deactivates the room"""
 	print("[TestRoom] Room deactivated")
+
+
+func _spawn_additional_enemies() -> void:
+	"""Spawns additional enemies for Rebound testing (Commit 018)"""
+	# Original: 4 Untote
+	# Target: 12 Untote (3x)
+	# Need to spawn: 8 more
+
+	var untote_scene = preload("res://enemies/untote.tscn")
+
+	# Spawn positions (spread across the arena)
+	var spawn_positions = [
+		Vector2(400, 800),
+		Vector2(600, 800),
+		Vector2(800, 800),
+		Vector2(1000, 800),
+		Vector2(1200, 800),
+		Vector2(1400, 800),
+		Vector2(1600, 800),
+		Vector2(900, 600),  # One on platform
+	]
+
+	for pos in spawn_positions:
+		var enemy = untote_scene.instantiate()
+		enemy.global_position = pos
+		add_child(enemy)
+
+	print("[TestRoom] Spawned 8 additional Untote for Rebound testing (Total: 12)")

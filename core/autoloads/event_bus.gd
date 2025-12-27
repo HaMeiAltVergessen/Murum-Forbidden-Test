@@ -102,6 +102,16 @@ signal attack_blocked(enemy: Node, damage_reduction: float)
 ## Emitted when enemy is stunned
 signal enemy_stunned(enemy: Node, duration: float)
 
+# ============ REBOUND SYSTEM SIGNALS (Commit 018) ============
+## Emitted when parry counter progresses
+signal rebound_progress(current: int, required: int)
+
+## Emitted when Rebound Ready state is activated (3/3 parrys)
+signal rebound_ready()
+
+## Emitted when Rebound counter is executed
+signal rebound_executed(enemy: Node)
+
 # ============ ENVIRONMENT SIGNALS ============
 ## Emitted when lever is activated
 signal lever_activated(lever: Node)
