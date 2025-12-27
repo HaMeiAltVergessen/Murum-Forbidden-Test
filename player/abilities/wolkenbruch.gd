@@ -211,7 +211,11 @@ func _release_charge() -> void:
 	# Enter slamming state
 	current_state = State.SLAMMING
 
-	# Apply downward velocity
+	# PULL ENEMIES DOWN WITH PLAYER
+	# Find all enemies in radius (double player size ~64 units)
+	_pull_enemies_down()
+
+	# Apply downward velocity to player
 	player.velocity.y = SLAM_VELOCITY
 	player.velocity.x = 0
 
@@ -230,6 +234,35 @@ func _consume_charge_mana() -> void:
 	var mana_cost = charge_level * MANA_COST_PER_LEVEL
 	mana_component.use_mana(mana_cost)
 	print("[Wolkenbruch] Consumed %d mana (Level %d)" % [mana_cost, charge_level])
+
+
+func _pull_enemies_down() -> void:
+	"""Pulls all nearby enemies down with the player during slam"""
+
+	# Detection radius: double player size (~64 units, roughly 2 player capsules)
+	const PULL_RADIUS: float = 64.0
+
+	var enemies = get_tree().get_nodes_in_group("enemies")
+	var pulled_count = 0
+
+	for enemy in enemies:
+		if not is_instance_valid(enemy):
+			continue
+
+		var distance = player.global_position.distance_to(enemy.global_position)
+
+		if distance <= PULL_RADIUS:
+			# Pull enemy down with same velocity as player
+			if enemy is CharacterBody2D:
+				enemy.velocity.y = SLAM_VELOCITY
+				pulled_count += 1
+				print("[Wolkenbruch] Pulling %s down (distance: %.1f)" % [enemy.name, distance])
+
+			# Set juggled state if available
+			if enemy.has_method("set_juggled_state"):
+				enemy.set_juggled_state(true)
+
+	print("[Wolkenbruch] Pulled %d enemies down with player" % pulled_count)
 
 # ============================================================================
 # PROCESS
