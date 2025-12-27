@@ -27,7 +27,7 @@ const UNCONSCIOUS_DURATIONS: Array[float] = [4.0, 14.0, 24.0]
 
 # Use limits
 var use_count: int = 0
-const MAX_USES: int = 3  # Testing value (64 in full game)
+const MAX_USES: int = 4  # 4th use = death/game over
 
 # ============================================================================
 # STATE
@@ -49,6 +49,7 @@ var is_unconscious: bool = false
 var vignette: ColorRect = null
 var charge_bar: ProgressBar = null
 var use_counter_label: Label = null
+var blackscreen: ColorRect = null
 
 # ============================================================================
 # SIGNALS
@@ -77,6 +78,7 @@ func _setup_ui() -> void:
 	if hud:
 		charge_bar = hud.get_node_or_null("UrgathonChargeBar")
 		use_counter_label = hud.get_node_or_null("UrgathonCounter")
+		blackscreen = hud.get_node_or_null("UrgathonBlackscreen")
 
 	if not charge_bar:
 		print("[UrgathonWill] WARNING: Charge bar not found in HUD")
@@ -87,6 +89,11 @@ func _setup_ui() -> void:
 		print("[UrgathonWill] WARNING: Use counter label not found in HUD")
 	else:
 		_update_counter_ui()
+
+	if not blackscreen:
+		print("[UrgathonWill] WARNING: Blackscreen not found in HUD")
+	else:
+		blackscreen.visible = false
 
 # ============================================================================
 # INPUT
@@ -332,18 +339,37 @@ func _enter_unconscious(duration: float) -> void:
 	is_unconscious = true
 	urgathon_unconscious_started.emit(duration)
 
-	# Disable player control
+	# Completely freeze player
 	if player:
+		# Stop all movement
+		player.velocity = Vector2.ZERO
+
+		# Disable physics and input
 		player.set_physics_process(false)
 		player.set_process_input(false)
 
-	# Fade to black (TODO: Implement fade overlay)
-	print("[UrgathonWill] TODO: Fade to black")
-	# var fade = get_node("/root/Game/UI/FadeOverlay")
-	# if fade:
-	# 	fade.fade_to_black(1.0)
+		# Disable MovementController
+		var movement = player.get_node_or_null("MovementController")
+		if movement:
+			movement.set_process(false)
+			movement.set_physics_process(false)
+			print("[UrgathonWill] MovementController disabled")
 
-	# Wait for duration
+	# Fade to black
+	if blackscreen:
+		blackscreen.visible = true
+		blackscreen.mouse_filter = Control.MOUSE_FILTER_STOP  # Block all input
+		blackscreen.z_index = 100  # Ensure on top
+
+		# Fade in (transparent to black)
+		var tween = create_tween()
+		tween.tween_property(blackscreen, "color:a", 1.0, 1.0)
+		await tween.finished
+		print("[UrgathonWill] Faded to black")
+	else:
+		print("[UrgathonWill] WARNING: No blackscreen - skipping fade")
+
+	# Wait for unconscious duration
 	await get_tree().create_timer(duration).timeout
 
 	# Wake up
@@ -353,32 +379,44 @@ func _exit_unconscious() -> void:
 	"""Exits unconscious state"""
 	print("[UrgathonWill] Waking up from unconscious state")
 
+	# Fade from black
+	if blackscreen:
+		# Fade out (black to transparent)
+		var tween = create_tween()
+		tween.tween_property(blackscreen, "color:a", 0.0, 2.0)
+		await tween.finished
+
+		blackscreen.visible = false
+		blackscreen.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Re-allow input
+		print("[UrgathonWill] Faded from black")
+	else:
+		# Wait a bit anyway
+		await get_tree().create_timer(2.0).timeout
+
 	is_unconscious = false
 	urgathon_unconscious_ended.emit()
-
-	# Fade from black (TODO: Implement fade overlay)
-	print("[UrgathonWill] TODO: Fade from black")
-	# var fade = get_node("/root/Game/UI/FadeOverlay")
-	# if fade:
-	# 	await fade.fade_from_black(2.0)
 
 	# Re-enable player control
 	if player:
 		player.set_physics_process(true)
 		player.set_process_input(true)
 
+		# Re-enable MovementController
+		var movement = player.get_node_or_null("MovementController")
+		if movement:
+			movement.set_process(true)
+			movement.set_physics_process(true)
+			print("[UrgathonWill] MovementController re-enabled")
+
 func _trigger_game_over() -> void:
 	"""Triggers game over (4th use)"""
-	print("[UrgathonWill] GAME OVER - Too many uses!")
+	print("[UrgathonWill] GAME OVER - 4th use! Closing game...")
 
 	# Wait a moment
 	await get_tree().create_timer(2.0).timeout
 
-	# Change to game over screen (placeholder)
-	# get_tree().change_scene_to_file("res://ui/screens/game_over.tscn")
-
-	# For now, just reload scene
-	get_tree().reload_current_scene()
+	# Quit the game (as requested)
+	get_tree().quit()
 
 func _update_counter_ui() -> void:
 	"""Updates the use counter UI"""
