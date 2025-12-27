@@ -24,6 +24,10 @@ var cooldown_timer: float = 0.0
 var is_executing: bool = false
 var slow_fall_active: bool = false
 
+# Gravity restoration tracking (must be member vars to prevent loss)
+var original_player_gravity: float = 0.0
+var enemy_gravity_scales: Dictionary = {}
+
 # ============================================================================
 # REFERENCES
 # ============================================================================
@@ -44,6 +48,13 @@ func _ready() -> void:
 	print("[EndeSchwerkraft] Initialized")
 
 
+func _exit_tree() -> void:
+	"""Safety: Restore gravity when node is freed"""
+	if slow_fall_active:
+		print("[EndeSchwerkraft] Emergency gravity restore on node exit")
+		_restore_gravity()
+
+
 func _process(delta: float) -> void:
 	if cooldown_timer > 0.0:
 		cooldown_timer -= delta
@@ -59,20 +70,15 @@ func _process(delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
-	print("[EndeSchwerkraft DEBUG] _input called, event: %s" % event)
+	# NOTE: Debug logging removed to prevent console spam on every input event
 
 	if event.is_action_pressed("light_attack"):
-		print("[EndeSchwerkraft DEBUG] light_attack pressed")
-
 		# Check if W key is physically pressed (KEY_W = 87)
 		if Input.is_physical_key_pressed(KEY_W):
-			print("[EndeSchwerkraft DEBUG] W key is also pressed - attempting execute")
 			_try_execute()
 
 			# Consume the event to prevent combat system from processing it
 			get_viewport().set_input_as_handled()
-		else:
-			print("[EndeSchwerkraft DEBUG] W key NOT pressed")
 
 # ============================================================================
 # EXECUTION
@@ -81,26 +87,20 @@ func _input(event: InputEvent) -> void:
 func _try_execute() -> void:
 	"""Attempts to execute Ende der Schwerkraft"""
 
-	print("[EndeSchwerkraft DEBUG] _try_execute called")
-
 	if is_executing:
-		print("[EndeSchwerkraft DEBUG] Already executing - abort")
 		return
 
 	if cooldown_timer > 0.0:
-		print("[EndeSchwerkraft DEBUG] On cooldown (%.2fs remaining) - abort" % cooldown_timer)
 		return
 
 	if not player.is_on_floor():
-		print("[EndeSchwerkraft DEBUG] Not on floor - abort")
 		return
 
 	var targets = _find_targets()
 	if targets.is_empty():
-		print("[EndeSchwerkraft DEBUG] No targets found - abort")
 		return
 
-	print("[EndeSchwerkraft DEBUG] All conditions met - executing with %d targets!" % targets.size())
+	print("[EndeSchwerkraft] Executing with %d targets" % targets.size())
 	_execute(targets)
 
 
@@ -108,8 +108,6 @@ func _find_targets() -> Array:
 	"""Finds ALL enemies within detection range around player"""
 
 	var enemies = get_tree().get_nodes_in_group("enemies")
-	print("[EndeSchwerkraft DEBUG] Found %d enemies in scene" % enemies.size())
-
 	var targets = []
 
 	for enemy in enemies:
@@ -119,20 +117,11 @@ func _find_targets() -> Array:
 		var to_enemy = enemy.global_position - player.global_position
 		var dist = to_enemy.length()
 
-		print("[EndeSchwerkraft DEBUG] Enemy %s: distance=%.1f" % [
-			enemy.name,
-			dist
-		])
-
 		if dist > DETECTION_RANGE:
-			print("[EndeSchwerkraft DEBUG]   -> Too far (>%.1f)" % DETECTION_RANGE)
 			continue
 
 		# Add to targets list (all enemies in range, regardless of direction)
 		targets.append(enemy)
-		print("[EndeSchwerkraft DEBUG]   -> Added to launch targets!")
-
-	print("[EndeSchwerkraft DEBUG] Selected %d targets for launch" % targets.size())
 
 	return targets
 
@@ -204,11 +193,11 @@ func _launch_all(enemies: Array) -> void:
 	# Launch player with EXACT SAME VELOCITY
 	player.velocity.y = LAUNCH_VELOCITY
 
-	# Camera shake
+	# Camera shake (reduced from 0.3 to 0.15)
 	if player.has_node("PlayerCamera"):
 		var camera = player.get_node("PlayerCamera")
 		if camera.has_method("add_trauma"):
-			camera.add_trauma(0.3)
+			camera.add_trauma(0.15)
 
 	# Hitstop
 	if GlobalTimeEffects and GlobalTimeEffects.has_method("hit_stop"):
@@ -238,12 +227,12 @@ func _start_slow_fall_phase(enemies: Array) -> void:
 	# Get player movement controller
 	var movement_controller = player.get_node_or_null("MovementController")
 
-	# Store original gravity scales
-	var original_player_gravity = null
-	var enemy_gravity_scales = {}
+	# Clear previous gravity scales (in case of overlapping executions)
+	enemy_gravity_scales.clear()
 
 	# Reduce player gravity for slow fall (NOT hovering, just slower)
 	if movement_controller and movement_controller.get("gravity") != null:
+		# Store as member variable to prevent loss
 		original_player_gravity = movement_controller.gravity
 		# Reduce gravity to 30% for slow fall
 		movement_controller.gravity = original_player_gravity * SLOW_FALL_GRAVITY_SCALE
@@ -255,6 +244,7 @@ func _start_slow_fall_phase(enemies: Array) -> void:
 			continue
 
 		if enemy.get("gravity_scale") != null:
+			# Store as member variable to prevent loss
 			enemy_gravity_scales[enemy] = enemy.gravity_scale
 			enemy.gravity_scale = SLOW_FALL_GRAVITY_SCALE
 			print("[EndeSchwerkraft]   -> %s gravity reduced to %.1f%%" % [enemy.name, SLOW_FALL_GRAVITY_SCALE * 100])
@@ -269,20 +259,8 @@ func _start_slow_fall_phase(enemies: Array) -> void:
 	# Wait for slow fall duration
 	await get_tree().create_timer(SLOW_FALL_DURATION).timeout
 
-	# Check if player still exists
-	if not is_instance_valid(player):
-		return
-
-	# Restore player gravity
-	if movement_controller and is_instance_valid(movement_controller) and original_player_gravity != null:
-		movement_controller.gravity = original_player_gravity
-		print("[EndeSchwerkraft] Player gravity restored to normal")
-
-	# Restore all enemies' gravity
-	for enemy in enemy_gravity_scales:
-		if is_instance_valid(enemy) and enemy.get("gravity_scale") != null:
-			enemy.gravity_scale = enemy_gravity_scales[enemy]
-			print("[EndeSchwerkraft]   -> %s gravity restored" % enemy.name)
+	# Restore gravity using helper function (handles edge cases safely)
+	_restore_gravity()
 
 	if sprite and is_instance_valid(sprite):
 		sprite.modulate = Color.WHITE
@@ -290,6 +268,32 @@ func _start_slow_fall_phase(enemies: Array) -> void:
 	slow_fall_active = false
 
 	print("[EndeSchwerkraft] Slow fall ended")
+
+
+func _restore_gravity() -> void:
+	"""Safely restores gravity for player and all affected enemies"""
+
+	# Check if player still exists
+	if not is_instance_valid(player):
+		return
+
+	var movement_controller = player.get_node_or_null("MovementController")
+
+	# Restore player gravity if it was stored
+	if movement_controller and is_instance_valid(movement_controller):
+		if original_player_gravity > 0.0:  # Only restore if we have a valid stored value
+			movement_controller.gravity = original_player_gravity
+			print("[EndeSchwerkraft] Player gravity restored to %.1f" % original_player_gravity)
+			original_player_gravity = 0.0  # Clear stored value
+
+	# Restore all enemies' gravity
+	for enemy in enemy_gravity_scales:
+		if is_instance_valid(enemy) and enemy.get("gravity_scale") != null:
+			enemy.gravity_scale = enemy_gravity_scales[enemy]
+			print("[EndeSchwerkraft]   -> %s gravity restored" % enemy.name)
+
+	# Clear the dictionary
+	enemy_gravity_scales.clear()
 
 # ============================================================================
 # COOLDOWN

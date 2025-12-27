@@ -31,6 +31,9 @@ func activate() -> void:
 
 	# Setup player spawn
 	if player and player_spawn:
+		# Safe spawn: reset velocity first
+		if player is CharacterBody2D:
+			player.velocity = Vector2.ZERO
 		player.global_position = player_spawn.global_position
 		GameManager.register_player(player, player_spawn.global_position)
 
