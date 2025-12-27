@@ -437,6 +437,21 @@ func is_active() -> bool:
 	return current_state in [State.RESET_WINDOW, State.AIR_RESET_ACTIVE]
 
 
+func force_end() -> void:
+	"""Forces Luftgott to end immediately (called when Wolkenbruch overrides)"""
+
+	print("[LuftgottSystem] Force ending Luftgott (overridden by Wolkenbruch)")
+
+	if current_state == State.AIR_RESET_ACTIVE:
+		# End active air reset
+		_end_air_reset()
+	elif current_state == State.RESET_WINDOW:
+		# Just cancel the window
+		current_state = State.IDLE
+		reset_window_timer = 0.0
+		print("[LuftgottSystem] Reset window cancelled")
+
+
 func is_in_reset_window() -> bool:
 	"""Returns true if in reset window"""
 	return current_state == State.RESET_WINDOW
