@@ -163,6 +163,28 @@ signal urteil_cooldown_started(duration: float)
 ## Emitted when Urteil cooldown finishes
 signal urteil_cooldown_finished()
 
+# ============ ECHO SYSTEM SIGNALS (Commit 022) ============
+## Emitted when Echo von Urgathon is activated
+signal echo_activated()
+
+## Emitted when Echo is deactivated (duration expired)
+signal echo_deactivated()
+
+## Emitted when player hits enemy while Echo is active (mana gained)
+signal echo_hit_registered(mana_gained: int)
+
+## Emitted every 2 seconds while Echo is active (visual pulse)
+signal echo_pulse()
+
+## Emitted when Echo duration expires naturally
+signal echo_duration_expired()
+
+## Emitted when Echo cooldown starts
+signal echo_cooldown_started(duration: float)
+
+## Emitted when Echo cooldown finishes
+signal echo_cooldown_finished()
+
 # ============ ENVIRONMENT SIGNALS ============
 ## Emitted when lever is activated
 signal lever_activated(lever: Node)

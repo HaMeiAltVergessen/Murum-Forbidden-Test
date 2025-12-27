@@ -13,6 +13,7 @@ class_name CombatSystem
 @onready var machtbruch: Machtbruch = null  # Will create dynamically (COMMIT 019)
 @onready var machtstoss: Machtstoss = null  # Will create dynamically (COMMIT 020)
 @onready var urteil: Urteil = null  # Will create dynamically (COMMIT 021)
+@onready var echo: Echo = null  # Will create dynamically (COMMIT 022)
 @onready var staff_sprite: Node2D = null  # Will create dynamically
 @onready var staff_top: ColorRect = null  # Staff tip for color changes
 
@@ -63,6 +64,9 @@ func _ready() -> void:
 
 	# Create Urteil system (COMMIT 021)
 	_create_urteil_system()
+
+	# Create Echo system (COMMIT 022)
+	_create_echo_system()
 
 	# Create staff visual
 	_create_staff_visual()
@@ -296,6 +300,15 @@ func _create_urteil_system() -> void:
 	add_child(urteil)
 
 	print("[CombatSystem] Urteil der Zerstörung created")
+
+
+func _create_echo_system() -> void:
+	"""Creates the Echo (Mana Gain Buff) system component (COMMIT 022)."""
+	echo = Echo.new()
+	echo.name = "Echo"
+	add_child(echo)
+
+	print("[CombatSystem] Echo von Urgathon created")
 
 
 func _on_leap_ender_started(direction: Vector2) -> void:
