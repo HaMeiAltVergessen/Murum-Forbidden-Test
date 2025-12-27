@@ -222,6 +222,11 @@ func _launch_all(enemies: Array) -> void:
 func _start_slow_fall_phase(enemies: Array) -> void:
 	"""All enemies + player fall slowly for duration after launch"""
 
+	# CRITICAL: Prevent overlapping executions from corrupting gravity
+	if slow_fall_active:
+		print("[EndeSchwerkraft] WARNING: Slow fall already active, skipping gravity manipulation")
+		return
+
 	slow_fall_active = true
 
 	# Get player movement controller
@@ -232,8 +237,14 @@ func _start_slow_fall_phase(enemies: Array) -> void:
 
 	# Reduce player gravity for slow fall (NOT hovering, just slower)
 	if movement_controller and movement_controller.get("gravity") != null:
-		# Store as member variable to prevent loss
-		original_player_gravity = movement_controller.gravity
+		# CRITICAL: Only store original gravity if not already stored
+		# This prevents exponential reduction from overlapping executions
+		if original_player_gravity == 0.0:
+			original_player_gravity = movement_controller.gravity
+			print("[EndeSchwerkraft] Stored original gravity: %.1f" % original_player_gravity)
+		else:
+			print("[EndeSchwerkraft] Original gravity already stored: %.1f (current: %.1f)" % [original_player_gravity, movement_controller.gravity])
+
 		# Reduce gravity to 30% for slow fall
 		movement_controller.gravity = original_player_gravity * SLOW_FALL_GRAVITY_SCALE
 		print("[EndeSchwerkraft] Player gravity reduced to %.1f%% for slow fall" % (SLOW_FALL_GRAVITY_SCALE * 100))
