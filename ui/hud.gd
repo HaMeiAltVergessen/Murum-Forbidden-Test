@@ -23,6 +23,10 @@ var machtstoss_icon: AbilityIcon = null
 var urteil_icon: AbilityIcon = null
 var echo_icon: AbilityIcon = null
 
+# ============ URGATHON'S WILL ============
+var urgathon_charge_bar: ProgressBar = null
+var urgathon_counter: Label = null
+
 
 func _ready() -> void:
 	# Connect to EventBus signals
@@ -53,9 +57,15 @@ func _ready() -> void:
 	# Create ability icons
 	_create_ability_icons()
 
+	# Create Urgathon UI
+	_create_urgathon_ui()
+
 	# Hide interaction prompt initially
 	if interaction_prompt:
 		interaction_prompt.visible = false
+
+	# Add to hud group
+	add_to_group("hud")
 
 	print("[HUD] Initialized")
 
@@ -256,3 +266,53 @@ func _on_echo_cooldown_started(duration: float) -> void:
 func _on_echo_cooldown_finished() -> void:
 	# Icon handles this automatically via timer
 	pass
+
+
+# ============ URGATHON'S WILL UI ============
+func _create_urgathon_ui() -> void:
+	"""Creates Urgathon's Will UI elements (charge bar and use counter)"""
+
+	# Create charge bar (center-bottom)
+	urgathon_charge_bar = ProgressBar.new()
+	urgathon_charge_bar.name = "UrgathonChargeBar"
+	urgathon_charge_bar.custom_minimum_size = Vector2(300, 30)
+	urgathon_charge_bar.max_value = 100
+	urgathon_charge_bar.value = 0
+	urgathon_charge_bar.show_percentage = false
+	urgathon_charge_bar.visible = false
+
+	# Position center-bottom
+	urgathon_charge_bar.anchor_left = 0.5
+	urgathon_charge_bar.anchor_right = 0.5
+	urgathon_charge_bar.anchor_top = 1.0
+	urgathon_charge_bar.anchor_bottom = 1.0
+	urgathon_charge_bar.offset_left = -150  # Half of width
+	urgathon_charge_bar.offset_right = 150
+	urgathon_charge_bar.offset_top = -50
+	urgathon_charge_bar.offset_bottom = -20
+
+	# Style charge bar (purple gradient)
+	var stylebox = StyleBoxFlat.new()
+	stylebox.bg_color = Color(0.5, 0.0, 0.8, 0.8)  # Purple
+	stylebox.border_width_all = 2
+	stylebox.border_color = Color(0.8, 0.4, 1.0, 1.0)  # Light purple border
+	urgathon_charge_bar.add_theme_stylebox_override("fill", stylebox)
+
+	add_child(urgathon_charge_bar)
+
+	# Create use counter (top-left)
+	urgathon_counter = Label.new()
+	urgathon_counter.name = "UrgathonCounter"
+	urgathon_counter.text = "Urgathon Uses: 0/3"
+	urgathon_counter.add_theme_font_size_override("font_size", 16)
+	urgathon_counter.add_theme_color_override("font_color", Color(0.8, 0.4, 1.0, 1.0))  # Purple
+
+	# Position top-left
+	urgathon_counter.anchor_left = 0.0
+	urgathon_counter.anchor_top = 0.0
+	urgathon_counter.offset_left = 10
+	urgathon_counter.offset_top = 120  # Below other UI
+
+	add_child(urgathon_counter)
+
+	print("[HUD] Urgathon UI created")

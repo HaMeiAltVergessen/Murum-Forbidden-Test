@@ -1,0 +1,369 @@
+extends Node
+class_name UrgathonWill
+
+## Urgathon's Will - Ultimate Ability
+## Hold R to charge (0-3s), release to unleash devastating fullscreen damage
+## Limited uses with increasing unconscious duration penalty
+
+# ============================================================================
+# CONSTANTS - Charging
+# ============================================================================
+
+const CHARGE_DURATION: float = 3.0  # Max charge time
+const TIME_SLOW_SCALE: float = 0.2  # 80% slowdown during charge
+
+# Charge level thresholds (in seconds)
+const LEVEL_THRESHOLDS: Array[float] = [0.0, 1.0, 2.0, 3.0]
+
+# ============================================================================
+# CONSTANTS - Release (Part 2)
+# ============================================================================
+
+const LEVEL_1_DAMAGE: int = 1000
+const LEVEL_2_DAMAGE: int = 2000
+const LEVEL_3_DAMAGE: int = 4000
+
+const UNCONSCIOUS_DURATIONS: Array[float] = [4.0, 14.0, 24.0]
+
+# Use limits
+var use_count: int = 0
+const MAX_USES: int = 3  # Testing value (64 in full game)
+
+# ============================================================================
+# STATE
+# ============================================================================
+
+var is_charging: bool = false
+var charge_timer: float = 0.0
+var charge_level: int = 0  # 0-3 (0 = no charge, 1-3 = release levels)
+
+var is_unconscious: bool = false
+
+# ============================================================================
+# REFERENCES
+# ============================================================================
+
+@onready var player: CharacterBody2D = owner
+
+# UI References (will be created/found)
+var vignette: ColorRect = null
+var charge_bar: ProgressBar = null
+var use_counter_label: Label = null
+
+# ============================================================================
+# SIGNALS
+# ============================================================================
+
+signal urgathon_charge_started()
+signal urgathon_charge_level_changed(level: int)
+signal urgathon_released(level: int)
+signal urgathon_unconscious_started(duration: float)
+signal urgathon_unconscious_ended()
+
+# ============================================================================
+# INITIALIZATION
+# ============================================================================
+
+func _ready() -> void:
+	print("[UrgathonWill] Initialized (Urgathon's Will)")
+
+	# UI elements will be created/found later
+	call_deferred("_setup_ui")
+
+func _setup_ui() -> void:
+	"""Sets up UI references (deferred to ensure UI exists)"""
+	# Try to find UI elements
+	var hud = get_tree().get_first_node_in_group("hud")
+	if hud:
+		charge_bar = hud.get_node_or_null("UrgathonChargeBar")
+		use_counter_label = hud.get_node_or_null("UrgathonCounter")
+
+	if not charge_bar:
+		print("[UrgathonWill] WARNING: Charge bar not found in HUD")
+	else:
+		charge_bar.visible = false
+
+	if not use_counter_label:
+		print("[UrgathonWill] WARNING: Use counter label not found in HUD")
+	else:
+		_update_counter_ui()
+
+# ============================================================================
+# INPUT
+# ============================================================================
+
+func _input(event: InputEvent) -> void:
+	# Don't allow charging while unconscious
+	if is_unconscious:
+		return
+
+	# Start charging
+	if event.is_action_pressed("urgathon_charge"):
+		_start_charge()
+
+	# Release charge
+	if event.is_action_released("urgathon_charge"):
+		_release_charge()
+
+# ============================================================================
+# PROCESS
+# ============================================================================
+
+func _process(delta: float) -> void:
+	if not is_charging:
+		return
+
+	# Use real delta (not affected by time scale)
+	var real_delta = delta / Engine.time_scale
+	charge_timer += real_delta
+
+	# Clamp to max duration
+	if charge_timer > CHARGE_DURATION:
+		charge_timer = CHARGE_DURATION
+
+	# Update charge level
+	var new_level = _calculate_charge_level(charge_timer)
+	if new_level != charge_level:
+		charge_level = new_level
+		urgathon_charge_level_changed.emit(charge_level)
+		print("[UrgathonWill] Charge level: ", charge_level)
+
+	# Update visuals
+	_update_charge_visuals()
+
+# ============================================================================
+# CHARGING
+# ============================================================================
+
+func _start_charge() -> void:
+	"""Starts charging Urgathon's Will"""
+	if is_charging:
+		return
+
+	# Check if uses exhausted
+	if use_count >= MAX_USES:
+		print("[UrgathonWill] No uses remaining!")
+		return
+
+	print("[UrgathonWill] ===== CHARGE STARTED =====")
+
+	is_charging = true
+	charge_timer = 0.0
+	charge_level = 0
+
+	# Slow time
+	Engine.time_scale = TIME_SLOW_SCALE
+
+	# Start looping sound
+	AudioManager.play_sfx_looped("urgathon_charge")
+
+	# Show charge bar
+	if charge_bar:
+		charge_bar.visible = true
+		charge_bar.value = 0
+
+	# Emit signal
+	urgathon_charge_started.emit()
+
+func _calculate_charge_level(time: float) -> int:
+	"""Calculates charge level based on time"""
+	if time >= LEVEL_THRESHOLDS[3]:
+		return 3
+	elif time >= LEVEL_THRESHOLDS[2]:
+		return 2
+	elif time >= LEVEL_THRESHOLDS[1]:
+		return 1
+	else:
+		return 0
+
+func _update_charge_visuals() -> void:
+	"""Updates charge bar and vignette"""
+	var percent = charge_timer / CHARGE_DURATION
+
+	# Update charge bar
+	if charge_bar:
+		charge_bar.value = percent * 100.0
+
+	# Update vignette (if implemented)
+	_update_vignette(percent)
+
+func _update_vignette(percent: float) -> void:
+	"""Updates vignette darkness based on charge percent"""
+	# Vignette implementation depends on your UI setup
+	# This is a placeholder - can be enhanced with shader
+	if vignette:
+		var color = vignette.color
+		color.a = percent * 0.7  # Max 70% opacity
+		vignette.color = color
+
+# ============================================================================
+# RELEASE (Part 2)
+# ============================================================================
+
+func _release_charge() -> void:
+	"""Releases charged energy"""
+	if not is_charging:
+		return
+
+	print("[UrgathonWill] ===== CHARGE RELEASED ===== Level: ", charge_level)
+
+	# Must have at least level 1 charge
+	if charge_level < 1:
+		print("[UrgathonWill] Charge too low - cancelled")
+		_cancel_charge()
+		return
+
+	# Stop charging state
+	is_charging = false
+
+	# Reset time scale
+	Engine.time_scale = 1.0
+
+	# Stop sound
+	AudioManager.stop_sfx_looped("urgathon_charge")
+
+	# Hide charge bar
+	if charge_bar:
+		charge_bar.visible = false
+
+	# Clear vignette
+	_clear_vignette()
+
+	# Execute release
+	_execute_release(charge_level)
+
+func _cancel_charge() -> void:
+	"""Cancels charge without releasing"""
+	is_charging = false
+	Engine.time_scale = 1.0
+	AudioManager.stop_sfx_looped("urgathon_charge")
+
+	if charge_bar:
+		charge_bar.visible = false
+
+	_clear_vignette()
+
+func _clear_vignette() -> void:
+	"""Clears vignette effect"""
+	if vignette:
+		var color = vignette.color
+		color.a = 0.0
+		vignette.color = color
+
+func _execute_release(level: int) -> void:
+	"""Executes the release effect based on charge level"""
+	print("[UrgathonWill] Executing release - Level %d" % level)
+
+	# Increment use count
+	use_count += 1
+	_update_counter_ui()
+
+	# Check if this was the last use
+	if use_count > MAX_USES:
+		print("[UrgathonWill] FINAL USE - Triggering game over")
+		_trigger_game_over()
+		return
+
+	# Calculate damage
+	var damage = 0
+	match level:
+		1: damage = LEVEL_1_DAMAGE
+		2: damage = LEVEL_2_DAMAGE
+		3: damage = LEVEL_3_DAMAGE
+		_: damage = 0
+
+	print("[UrgathonWill] Fullscreen damage: %d" % damage)
+
+	# Deal damage to all enemies
+	_deal_fullscreen_damage(damage)
+
+	# Spawn VFX
+	_spawn_explosion(level)
+
+	# Play release sound
+	AudioManager.play_sfx("urgathon_release")
+
+	# Camera shake
+	if player.has_node("PlayerCamera"):
+		player.get_node("PlayerCamera").add_trauma(1.0)  # Max trauma
+
+	# Enter unconscious state
+	var duration = UNCONSCIOUS_DURATIONS[use_count - 1]
+	_enter_unconscious(duration)
+
+	# Emit signal
+	urgathon_released.emit(level)
+
+func _deal_fullscreen_damage(damage: int) -> void:
+	"""Deals damage to all enemies on screen"""
+	var enemies = get_tree().get_nodes_in_group("enemies")
+
+	print("[UrgathonWill] Damaging %d enemies" % enemies.size())
+
+	for enemy in enemies:
+		if is_instance_valid(enemy) and enemy.has_method("take_damage"):
+			enemy.take_damage(damage, player)
+
+func _spawn_explosion(level: int) -> void:
+	"""Spawns explosion VFX based on level"""
+	# Placeholder - can be enhanced with particle system
+	print("[UrgathonWill] Spawning level %d explosion VFX" % level)
+
+	# Flash screen white
+	if player.has_node("PlayerCamera"):
+		var camera = player.get_node("PlayerCamera")
+		# Screen flash effect would go here
+
+func _enter_unconscious(duration: float) -> void:
+	"""Enters unconscious state for specified duration"""
+	print("[UrgathonWill] Entering unconscious state for %.1fs" % duration)
+
+	is_unconscious = true
+	urgathon_unconscious_started.emit(duration)
+
+	# Disable player control
+	if player:
+		player.set_physics_process(false)
+		player.set_process_input(false)
+
+	# Fade to black (placeholder - needs fade overlay)
+	# await _fade_to_black(1.0)
+
+	# Wait for duration
+	await get_tree().create_timer(duration).timeout
+
+	# Wake up
+	_exit_unconscious()
+
+func _exit_unconscious() -> void:
+	"""Exits unconscious state"""
+	print("[UrgathonWill] Waking up from unconscious state")
+
+	is_unconscious = false
+	urgathon_unconscious_ended.emit()
+
+	# Fade from black (placeholder)
+	# await _fade_from_black(2.0)
+
+	# Re-enable player control
+	if player:
+		player.set_physics_process(true)
+		player.set_process_input(true)
+
+func _trigger_game_over() -> void:
+	"""Triggers game over (4th use)"""
+	print("[UrgathonWill] GAME OVER - Too many uses!")
+
+	# Wait a moment
+	await get_tree().create_timer(2.0).timeout
+
+	# Change to game over screen (placeholder)
+	# get_tree().change_scene_to_file("res://ui/screens/game_over.tscn")
+
+	# For now, just reload scene
+	get_tree().reload_current_scene()
+
+func _update_counter_ui() -> void:
+	"""Updates the use counter UI"""
+	if use_counter_label:
+		use_counter_label.text = "Urgathon Uses: %d/%d" % [use_count, MAX_USES]
