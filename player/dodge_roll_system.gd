@@ -102,9 +102,10 @@ func _start_dodge() -> void:
 	roll_direction = _get_dodge_direction()
 
 	# Disable collision with enemies during dodge (can pass through)
-	# collision_mask 17 (0b10001) → 1 (0b00001) - only terrain
-	player.collision_mask = 1
-	print("[DodgeRollSystem] Enemy collision disabled (can pass through)")
+	# Change player layer from 2 to 32 (layer enemies don't collide with)
+	# Enemies have collision_mask = 3 (layers 1+2), not layer 32
+	player.collision_layer = 32
+	print("[DodgeRollSystem] Player layer changed to 32 (enemies can't collide)")
 
 	# Enter startup state
 	current_state = State.STARTUP
@@ -237,9 +238,9 @@ func _complete_dodge() -> void:
 	cooldown_timer = COOLDOWN_DURATION  # Start cooldown
 
 	# Re-enable collision with enemies after dodge
-	# collision_mask 1 (0b00001) → 17 (0b10001) - terrain + enemies
-	player.collision_mask = 17
-	print("[DodgeRollSystem] Enemy collision re-enabled")
+	# Restore player layer from 32 back to 2 (normal player layer)
+	player.collision_layer = 2
+	print("[DodgeRollSystem] Player layer restored to 2 (normal collision)")
 
 	# Stop movement
 	player.velocity = Vector2.ZERO

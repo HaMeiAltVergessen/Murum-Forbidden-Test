@@ -282,8 +282,9 @@ func _attempt_dash() -> void:
 	dash_cooldown_timer = dash_cooldown
 
 	# Disable collision with enemies during dash (can pass through)
-	# collision_mask 17 (0b10001) → 1 (0b00001) - only terrain
-	player.collision_mask = 1
+	# Change player layer from 2 to 32 (layer enemies don't collide with)
+	# Enemies have collision_mask = 3 (layers 1+2), not layer 32
+	player.collision_layer = 32
 
 	# Cancel vertical velocity
 	player.velocity.y = 0
@@ -301,8 +302,8 @@ func _process_dash(delta: float) -> void:
 		player.velocity.x = 0
 
 		# Re-enable collision with enemies after dash
-		# collision_mask 1 (0b00001) → 17 (0b10001) - terrain + enemies
-		player.collision_mask = 17
+		# Restore player layer from 32 back to 2 (normal player layer)
+		player.collision_layer = 2
 
 		return
 
