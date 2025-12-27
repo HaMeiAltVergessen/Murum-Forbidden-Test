@@ -230,22 +230,7 @@ signal wolkenbruch_impact(powered: bool)
 signal wolkenbruch_completed
 
 # ============ ECHO VON URGATHON EVENTS ============
-## Emitted when Echo von Urgathon is activated
-signal echo_von_urgathon_activated()
-
-## Emitted when Echo von Urgathon is deactivated
-signal echo_von_urgathon_deactivated()
-
-## Emitted when Echo timer updates (countdown)
-signal echo_timer_updated(time_remaining: float)
-
-## Emitted when Echo cooldown updates
-signal echo_cooldown_updated(cooldown_remaining: float)
-
-## Emitted when Echo becomes ready after cooldown
-signal echo_ready()
-
-## Emitted when mana is gained from Echo hit
+## Emitted when mana is gained from Echo passive ability
 signal echo_mana_gained(amount: int)
 
 

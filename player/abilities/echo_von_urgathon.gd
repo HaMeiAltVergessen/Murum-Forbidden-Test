@@ -1,30 +1,29 @@
 extends Node
 class_name EchoVonUrgathon
 
-## Echo von Urgathon - Mana gain on hit ability
-## Toggle buff that restores mana with each hit
-## Synergizes with Resonance Mode for increased mana gain
+## Echo von Urgathon - Passive Mana Regeneration
+## Passiver Buff: Alle 3 Hits → 9 Mana zurück
+## Testing Mode: Alle 3 Sekunden → 9 Mana
 
 # ============================================================================
 # CONSTANTS
 # ============================================================================
 
-const MANA_COST: int = 40
-const DURATION: float = 20.0
-const COOLDOWN: float = 25.0
+const HITS_REQUIRED: int = 3
+const MANA_RESTORE: int = 9
 
-const MANA_PER_HIT_BASE: int = 3
-const MANA_PER_HIT_RESONANCE: int = 5
+# Testing mode: Zeit-basiert statt Hit-basiert
+const TESTING_MODE: bool = true  # Auf false setzen für Hit-basierte Mechanik
+const TESTING_INTERVAL: float = 3.0  # Alle 3 Sekunden
 
 # ============================================================================
 # STATE
 # ============================================================================
 
-var is_active: bool = false
-var time_remaining: float = 0.0
-var cooldown_remaining: float = 0.0
+var hit_counter: int = 0
+var testing_timer: float = 0.0
 
-# Story flag - set to true for testing
+# Story flag - für Testing auf true
 @export var is_unlocked: bool = true
 
 # ============================================================================
@@ -33,284 +32,121 @@ var cooldown_remaining: float = 0.0
 
 @onready var player: CharacterBody2D = owner
 @onready var mana_component: ManaComponent = player.get_node("ManaComponent")
-@onready var resonance_system: ResonanceSystem = player.get_node_or_null("CombatSystem/ResonanceSystem")
-
-# VFX
-var aura_effect: GPUParticles2D = null
 
 # ============================================================================
 # SIGNALS
 # ============================================================================
 
-signal echo_activated()
-signal echo_deactivated()
-signal mana_restored_from_hit(amount: int)
+signal mana_restored(amount: int, trigger: String)  # trigger: "hits" oder "timer"
 
 # ============================================================================
 # INITIALIZATION
 # ============================================================================
 
 func _ready() -> void:
-	print("[EchoVonUrgathon] Initialized (unlocked: %s)" % is_unlocked)
+	if TESTING_MODE:
+		print("[EchoVonUrgathon] Initialized in TESTING MODE (every %.1fs)" % TESTING_INTERVAL)
+	else:
+		print("[EchoVonUrgathon] Initialized (every %d hits)" % HITS_REQUIRED)
 
-	# Connect to hit signal
-	if EventBus:
+	print("[EchoVonUrgathon] Unlocked: %s" % is_unlocked)
+
+	# Connect to hit signal nur wenn nicht im Testing Mode
+	if not TESTING_MODE and EventBus:
 		EventBus.hit_registered.connect(_on_hit_registered)
-
-# ============================================================================
-# INPUT
-# ============================================================================
-
-func _input(event: InputEvent) -> void:
-	if not is_unlocked:
-		return
-
-	# Toggle on key 3 press
-	if event.is_action_pressed("echo_ability"):
-		_toggle_ability()
-
-# ============================================================================
-# TOGGLE MECHANICS
-# ============================================================================
-
-func _toggle_ability() -> void:
-	"""Toggles the Echo ability on/off"""
-
-	# If on cooldown, can't activate
-	if cooldown_remaining > 0.0:
-		print("[EchoVonUrgathon] On cooldown: %.1fs remaining" % cooldown_remaining)
-		_show_cooldown_message()
-		return
-
-	# If active, deactivate
-	if is_active:
-		_deactivate()
-		return
-
-	# Try to activate
-	_try_activate()
-
-func _try_activate() -> void:
-	"""Attempts to activate Echo ability"""
-
-	# Check mana
-	if not mana_component:
-		print("[EchoVonUrgathon] No mana component")
-		return
-
-	if not mana_component.has_mana(MANA_COST):
-		print("[EchoVonUrgathon] Not enough mana (%d required)" % MANA_COST)
-		_show_insufficient_mana_message()
-		return
-
-	# Consume mana
-	if not mana_component.use_mana(MANA_COST):
-		print("[EchoVonUrgathon] Failed to consume mana")
-		return
-
-	# Activate!
-	_activate()
-
-func _activate() -> void:
-	"""Activates Echo ability"""
-
-	is_active = true
-	time_remaining = DURATION
-
-	print("[EchoVonUrgathon] ACTIVATED (duration: %.1fs)" % DURATION)
-
-	# Spawn aura effect
-	_spawn_aura()
-
-	# Emit signals
-	echo_activated.emit()
-	EventBus.echo_von_urgathon_activated.emit()
-
-func _deactivate() -> void:
-	"""Deactivates Echo ability"""
-
-	is_active = false
-	time_remaining = 0.0
-	cooldown_remaining = COOLDOWN
-
-	print("[EchoVonUrgathon] DEACTIVATED (cooldown: %.1fs)" % COOLDOWN)
-
-	# Remove aura effect
-	_remove_aura()
-
-	# Emit signals
-	echo_deactivated.emit()
-	EventBus.echo_von_urgathon_deactivated.emit()
 
 # ============================================================================
 # UPDATE
 # ============================================================================
 
 func _process(delta: float) -> void:
-	# Update duration timer
-	if is_active:
-		time_remaining -= delta
+	if not is_unlocked:
+		return
 
-		# Update HUD
-		EventBus.echo_timer_updated.emit(time_remaining)
+	# Testing Mode: Timer-basiert
+	if TESTING_MODE:
+		testing_timer += delta
 
-		# Check if expired
-		if time_remaining <= 0.0:
-			_deactivate()
-
-	# Update cooldown timer
-	if cooldown_remaining > 0.0:
-		cooldown_remaining -= delta
-
-		# Update HUD
-		EventBus.echo_cooldown_updated.emit(cooldown_remaining)
-
-		if cooldown_remaining <= 0.0:
-			print("[EchoVonUrgathon] Cooldown complete")
-			EventBus.echo_ready.emit()
+		if testing_timer >= TESTING_INTERVAL:
+			testing_timer = 0.0
+			_restore_mana("timer")
 
 # ============================================================================
-# HIT DETECTION
+# HIT DETECTION (nur im normalen Modus)
 # ============================================================================
 
 func _on_hit_registered(attacker: Node, target: Node, damage: int) -> void:
-	"""Called when any hit is registered in the game"""
+	"""Called when any hit is registered - nur wenn nicht im Testing Mode"""
 
-	# Only respond if Echo is active
-	if not is_active:
+	if not is_unlocked:
 		return
 
-	# Only respond if player is the attacker
+	# Nur auf Player-Hits reagieren
 	if attacker != player:
 		return
 
-	# Calculate mana gain based on Resonance Mode
-	var mana_gain: int = _calculate_mana_gain()
+	# Hit counter erhöhen
+	hit_counter += 1
 
-	# Restore mana
-	if mana_component:
-		mana_component.restore_mana(mana_gain)
-		print("[EchoVonUrgathon] Hit! Restored %d mana" % mana_gain)
+	print("[EchoVonUrgathon] Hit %d/%d" % [hit_counter, HITS_REQUIRED])
 
-		# Emit signal
-		mana_restored_from_hit.emit(mana_gain)
-		EventBus.echo_mana_gained.emit(mana_gain)
+	# Prüfen ob genug Hits
+	if hit_counter >= HITS_REQUIRED:
+		hit_counter = 0
+		_restore_mana("hits")
 
-		# Visual feedback
-		_spawn_mana_gain_vfx()
+# ============================================================================
+# MANA RESTORATION
+# ============================================================================
 
-func _calculate_mana_gain() -> int:
-	"""Calculates mana gain based on Resonance Mode status"""
+func _restore_mana(trigger: String) -> void:
+	"""Stellt Mana wieder her"""
 
-	# Check if Resonance Mode is active
-	if resonance_system and resonance_system.is_mode_active():
-		return MANA_PER_HIT_RESONANCE
-	else:
-		return MANA_PER_HIT_BASE
+	if not mana_component:
+		print("[EchoVonUrgathon] ERROR: No ManaComponent found!")
+		return
+
+	# Mana wiederherstellen
+	mana_component.restore_mana(MANA_RESTORE)
+
+	var trigger_text = "timer (%.1fs)" % TESTING_INTERVAL if trigger == "timer" else "%d hits" % HITS_REQUIRED
+	print("[EchoVonUrgathon] ✓ Restored %d mana (trigger: %s)" % [MANA_RESTORE, trigger_text])
+
+	# Emit signals
+	mana_restored.emit(MANA_RESTORE, trigger)
+	EventBus.echo_mana_gained.emit(MANA_RESTORE)
+
+	# Visual feedback
+	_spawn_mana_gain_vfx()
 
 # ============================================================================
 # VISUAL EFFECTS
 # ============================================================================
 
-func _spawn_aura() -> void:
-	"""Spawns green aura effect around player"""
-
-	# Check if aura scene exists
-	var aura_scene_path = "res://vfx/particles/echo_aura.tscn"
-
-	if not ResourceLoader.exists(aura_scene_path):
-		print("[EchoVonUrgathon] Aura VFX not found, creating placeholder")
-		_create_placeholder_aura()
-		return
-
-	var aura_scene = load(aura_scene_path)
-	aura_effect = aura_scene.instantiate()
-
-	player.add_child(aura_effect)
-	aura_effect.position = Vector2.ZERO
-	aura_effect.emitting = true
-
-func _create_placeholder_aura() -> void:
-	"""Creates a simple placeholder aura using GPUParticles2D"""
-
-	aura_effect = GPUParticles2D.new()
-	aura_effect.name = "EchoAuraPlaceholder"
-
-	# Configure particles
-	aura_effect.amount = 32
-	aura_effect.lifetime = 1.0
-	aura_effect.explosiveness = 0.0
-	aura_effect.randomness = 0.5
-	aura_effect.visibility_rect = Rect2(-100, -100, 200, 200)
-
-	# Create process material
-	var material = ParticleProcessMaterial.new()
-	material.particle_flag_disable_z = true
-	material.direction = Vector3(0, -1, 0)
-	material.spread = 180.0
-	material.initial_velocity_min = 20.0
-	material.initial_velocity_max = 40.0
-	material.gravity = Vector3(0, -50, 0)
-	material.scale_min = 2.0
-	material.scale_max = 4.0
-	material.color = Color(0.2, 1.0, 0.3, 0.6)  # Green
-
-	aura_effect.process_material = material
-	aura_effect.emitting = true
-
-	player.add_child(aura_effect)
-
-func _remove_aura() -> void:
-	"""Removes aura effect"""
-
-	if aura_effect:
-		aura_effect.emitting = false
-		await get_tree().create_timer(2.0).timeout
-		if is_instance_valid(aura_effect):
-			aura_effect.queue_free()
-		aura_effect = null
-
 func _spawn_mana_gain_vfx() -> void:
-	"""Spawns small VFX when mana is gained from a hit"""
+	"""Spawns visual effect when mana is restored"""
 
-	# TODO: Add mana gain particle effect
-	# For now, we'll rely on the EventBus signal for UI feedback
-	pass
-
-# ============================================================================
-# UI FEEDBACK
-# ============================================================================
-
-func _show_cooldown_message() -> void:
-	"""Shows UI message when ability is on cooldown"""
-
-	# TODO: Implement UI notification system
-	# EventBus.show_notification.emit("Echo on cooldown: %.1fs" % cooldown_remaining)
-	pass
-
-func _show_insufficient_mana_message() -> void:
-	"""Shows UI message when not enough mana"""
-
-	# TODO: Implement UI notification system
-	# EventBus.show_notification.emit("Not enough mana for Echo")
+	# TODO: Add mana restoration particle effect
+	# Könnte grüne Partikel oder Text-Popup sein
 	pass
 
 # ============================================================================
 # UTILITY
 # ============================================================================
 
-func is_ability_active() -> bool:
-	"""Returns true if Echo is currently active"""
-	return is_active
+func get_hit_progress() -> float:
+	"""Returns progress to next mana restore (0.0 - 1.0)"""
+	if TESTING_MODE:
+		return testing_timer / TESTING_INTERVAL
+	else:
+		return float(hit_counter) / float(HITS_REQUIRED)
 
-func can_activate() -> bool:
-	"""Returns true if can activate Echo"""
-	return is_unlocked and not is_active and cooldown_remaining <= 0.0
+func get_hits_remaining() -> int:
+	"""Returns hits remaining until next mana restore"""
+	return HITS_REQUIRED - hit_counter
 
-func get_time_remaining() -> float:
-	"""Returns remaining active time"""
-	return time_remaining
-
-func get_cooldown_remaining() -> float:
-	"""Returns remaining cooldown time"""
-	return cooldown_remaining
+func reset_counter() -> void:
+	"""Resets hit counter"""
+	hit_counter = 0
+	testing_timer = 0.0
+	print("[EchoVonUrgathon] Counter reset")
