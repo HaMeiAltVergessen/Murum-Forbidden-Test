@@ -36,6 +36,27 @@ const PARRY_COOLDOWN: float = 0.3   # Brief cooldown after perfect parry
 const BLOCK_COOLDOWN: float = 0.1   # Very brief after block
 
 # ============================================================================
+# REBOUND SYSTEM (Commit 018)
+# ============================================================================
+
+# Rebound Parameters
+const PARRY_COUNT_REQUIRED: int = 1       # TESTING: 1 parry (will be 3 after testing)
+const PARRY_TIMEOUT: float = 5.0          # Reset if no parry for 5s
+
+# Counter Damage
+const REBOUND_DAMAGE_MULTIPLIER: float = 1.5
+const REBOUND_BASE_DAMAGE: int = 15       # Base (vs 10 normal attack)
+# Final: 15 × 1.5 = 22.5 → 23 damage
+
+# Resonance Bonus
+const NORMAL_PARRY_RESONANCE: float = 12.5  # Same as RESONANCE_GAIN_ON_PARRY
+const REBOUND_RESONANCE_BONUS: float = 25.0  # Double normal
+
+# Visual/Audio
+const REBOUND_FLASH_DURATION: float = 0.3
+const REBOUND_COUNTER_SPEED: float = 800.0    # Very fast counter-attack
+
+# ============================================================================
 # STATE
 # ============================================================================
 
@@ -46,6 +67,14 @@ var cooldown_timer: float = 0.0
 var parry_window_timer: float = 0.0  # Timing window für Parry
 var mana_drain_timer: float = 0.0    # Timer für interval-based mana drain
 var last_mana_warning_time: float = 0.0  # Throttle for "out of mana" message
+
+# Rebound State (Commit 018)
+var perfect_parry_count: int = 0
+var rebound_ready: bool = false
+var last_parry_time: float = 0.0
+var parry_timeout_timer: float = 0.0
+var rebound_indicator_tween: Tween = null
+var rebound_aura: Node = null
 
 # ============================================================================
 # REFERENCES
@@ -67,6 +96,11 @@ signal parry_started  # RMB pressed
 signal perfect_parry_executed(enemy: Node)
 signal normal_block_executed(enemy: Node)
 signal parry_ended    # RMB released
+
+# Rebound Signals (Commit 018)
+signal rebound_progress(current: int, required: int)
+signal rebound_ready_signal
+signal rebound_executed(enemy: Node)
 
 # ============================================================================
 # INITIALIZATION
@@ -298,6 +332,10 @@ func _on_block_area_entered(area: Area2D) -> void:
 		# Audio feedback
 		AudioManager.play_sfx("combat_block", 0.12)
 
+		# ========== REBOUND RESET (Commit 018) ==========
+		# Normal block resets parry counter (not perfect)
+		_reset_parry_counter()
+
 		# Emit signal
 		normal_block_executed.emit(target)
 		EventBus.attack_blocked.emit(target, 1.0)  # 100% damage reduction (invulnerable)
@@ -346,7 +384,7 @@ func _execute_perfect_parry(enemy: Node) -> void:
 	# Time slow effect
 	GlobalTimeEffects.slow_motion(TIME_SLOW_SCALE, TIME_SLOW_DURATION)
 
-	# Resonance gain
+	# Resonance gain (normal parry amount)
 	var resonance = player.get_node_or_null("CombatSystem/ResonanceSystem")
 	if resonance and resonance.has_method("add_resonance"):
 		resonance.add_resonance(RESONANCE_GAIN_ON_PARRY)
@@ -363,6 +401,16 @@ func _execute_perfect_parry(enemy: Node) -> void:
 
 	# Hitstop
 	GlobalTimeEffects.hit_stop(0.15)
+
+	# ========== REBOUND CHECK (Commit 018) ==========
+	# Check if Rebound ready
+	if rebound_ready:
+		# Execute Rebound Counter
+		print("[ParryBlockSystem] REBOUND READY - Executing counter!")
+		_execute_rebound_counter(enemy)
+	else:
+		# Increment counter
+		_increment_parry_counter()
 
 	# Set cooldown
 	cooldown_timer = PARRY_COOLDOWN
@@ -426,6 +474,130 @@ func _parry_projectile(projectile: Node) -> void:
 	EventBus.perfect_parry_executed.emit(parry_target)
 
 # ============================================================================
+# REBOUND COUNTER TRACKING (Commit 018)
+# ============================================================================
+
+func _increment_parry_counter() -> void:
+	"""Increments perfect parry counter"""
+
+	perfect_parry_count += 1
+	last_parry_time = Time.get_ticks_msec() / 1000.0
+	parry_timeout_timer = PARRY_TIMEOUT
+
+	print("[ParryBlockSystem] Parry counter: %d/%d" % [perfect_parry_count, PARRY_COUNT_REQUIRED])
+
+	# Emit progress
+	rebound_progress.emit(perfect_parry_count, PARRY_COUNT_REQUIRED)
+	EventBus.rebound_progress.emit(perfect_parry_count, PARRY_COUNT_REQUIRED)
+
+	# Check if ready
+	if perfect_parry_count >= PARRY_COUNT_REQUIRED:
+		_activate_rebound_ready()
+
+func _activate_rebound_ready() -> void:
+	"""Activates Rebound Ready state"""
+
+	print("[ParryBlockSystem] ========== REBOUND READY! ==========")
+
+	rebound_ready = true
+
+	# Visual indicator
+	_show_rebound_indicator()
+
+	# Audio cue
+	AudioManager.play_sfx("player_rebound_ready", 0.2)
+
+	# Emit signal
+	rebound_ready_signal.emit()
+	EventBus.rebound_ready.emit()
+
+func _reset_parry_counter() -> void:
+	"""Resets parry counter"""
+
+	if perfect_parry_count > 0:
+		print("[ParryBlockSystem] Parry counter reset")
+
+	perfect_parry_count = 0
+	rebound_ready = false
+
+	# Hide indicator
+	_hide_rebound_indicator()
+
+# ============================================================================
+# REBOUND EXECUTION (Commit 018)
+# ============================================================================
+
+func _execute_rebound_counter(enemy: Node) -> void:
+	"""Executes Rebound auto-counter"""
+
+	print("[ParryBlockSystem] ========== REBOUND COUNTER! ==========")
+
+	# Play counter animation (async)
+	_play_rebound_animation(enemy)
+
+	# Apply enhanced damage
+	var damage = int(REBOUND_BASE_DAMAGE * REBOUND_DAMAGE_MULTIPLIER)
+	print("[ParryBlockSystem] Rebound damage: %d (base: %d × multiplier: %.1f)" % [damage, REBOUND_BASE_DAMAGE, REBOUND_DAMAGE_MULTIPLIER])
+
+	if enemy.has_method("take_damage"):
+		enemy.take_damage(damage, player)
+
+	# Apply enhanced resonance (ADDITIONAL to normal parry resonance)
+	var resonance = player.get_node_or_null("CombatSystem/ResonanceSystem")
+	if resonance and resonance.has_method("add_resonance"):
+		# Add additional resonance (on top of normal parry gain)
+		var additional_resonance = REBOUND_RESONANCE_BONUS - NORMAL_PARRY_RESONANCE
+		resonance.add_resonance(additional_resonance)
+		print("[ParryBlockSystem] Rebound bonus resonance: +%.1f (total: %.1f)" % [additional_resonance, REBOUND_RESONANCE_BONUS])
+
+	# Spawn special VFX
+	_spawn_rebound_flash(enemy)
+
+	# Audio
+	AudioManager.play_sfx("combat_rebound_counter", 0.0)
+
+	# Enhanced camera shake
+	if player.has_node("PlayerCamera"):
+		player.get_node("PlayerCamera").add_trauma(0.35)
+
+	# Enhanced hitstop
+	GlobalTimeEffects.hit_stop(0.2)
+
+	# Reset counter
+	_reset_parry_counter()
+
+	# Emit signal
+	rebound_executed.emit(enemy)
+	EventBus.rebound_executed.emit(enemy)
+
+func _play_rebound_animation(enemy: Node) -> void:
+	"""Plays fast counter-attack animation"""
+
+	if not player or not enemy:
+		return
+
+	# Player animation (if available)
+	var sprite = player.get_node_or_null("AnimatedSprite2D")
+	if sprite and sprite.sprite_frames.has_animation("rebound_counter"):
+		sprite.play("rebound_counter")
+
+	# Quick dash toward enemy
+	var direction = (enemy.global_position - player.global_position).normalized()
+	var dash_distance = 50.0  # Short dash
+	var original_position = player.global_position
+
+	var tween = create_tween()
+	tween.tween_property(player, "global_position",
+		player.global_position + direction * dash_distance, 0.1)
+
+	# Return to original position (bounce back)
+	await tween.finished
+	await get_tree().create_timer(0.1).timeout
+
+	tween = create_tween()
+	tween.tween_property(player, "global_position", original_position, 0.15)
+
+# ============================================================================
 # COOLDOWN / UPDATE
 # ============================================================================
 
@@ -459,6 +631,14 @@ func _process(delta: float) -> void:
 			print("[ParryBlockSystem] BLOCKING - Overlapping areas (", overlapping.size(), "):")
 			for area in overlapping:
 				print("  - ", area.name, " (owner: ", area.owner.name if area.owner else "null", ", groups: ", area.get_groups(), ")")
+
+	# ========== REBOUND TIMEOUT TRACKING (Commit 018) ==========
+	if perfect_parry_count > 0 and not rebound_ready:
+		parry_timeout_timer -= delta
+
+		if parry_timeout_timer <= 0.0:
+			print("[ParryBlockSystem] Parry chain timed out (%.1fs)" % PARRY_TIMEOUT)
+			_reset_parry_counter()
 
 # ============================================================================
 # HELPER FUNCTIONS
@@ -610,6 +790,101 @@ func _spawn_block_effect() -> void:
 	await get_tree().create_timer(0.5).timeout
 	if effect:
 		effect.queue_free()
+
+# ============================================================================
+# REBOUND VISUAL INDICATORS (Commit 018)
+# ============================================================================
+
+func _show_rebound_indicator() -> void:
+	"""Shows visual indicator that Rebound is ready"""
+
+	if not player:
+		return
+
+	# Player glow (golden)
+	var sprite = player.get_node_or_null("AnimatedSprite2D")
+	if not sprite:
+		sprite = player.get_node_or_null("Sprite2D")
+
+	if sprite:
+		rebound_indicator_tween = create_tween().set_loops()
+		rebound_indicator_tween.tween_property(sprite, "modulate", Color(1.5, 1.3, 0.5), 0.4)
+		rebound_indicator_tween.tween_property(sprite, "modulate", Color(1.0, 1.0, 1.0), 0.4)
+
+	# Spawn aura particles (if scene exists)
+	if ResourceLoader.exists("res://vfx/particles/rebound_aura.tscn"):
+		var aura_scene = preload("res://vfx/particles/rebound_aura.tscn")
+		rebound_aura = aura_scene.instantiate()
+		player.add_child(rebound_aura)
+		if rebound_aura.has_property("emitting"):
+			rebound_aura.emitting = true
+
+func _hide_rebound_indicator() -> void:
+	"""Hides Rebound Ready indicator"""
+
+	if not player:
+		return
+
+	# Stop glow
+	if rebound_indicator_tween:
+		rebound_indicator_tween.kill()
+		rebound_indicator_tween = null
+
+	# Remove aura
+	if rebound_aura:
+		rebound_aura.queue_free()
+		rebound_aura = null
+
+	# Reset sprite color
+	var sprite = player.get_node_or_null("AnimatedSprite2D")
+	if not sprite:
+		sprite = player.get_node_or_null("Sprite2D")
+
+	if sprite:
+		sprite.modulate = Color.WHITE
+
+func _spawn_rebound_flash(enemy: Node) -> void:
+	"""Spawns enhanced flash VFX for Rebound"""
+
+	if not enemy:
+		return
+
+	# Enhanced parry flash (golden)
+	if ResourceLoader.exists("res://vfx/particles/rebound_flash.tscn"):
+		var flash_scene = preload("res://vfx/particles/rebound_flash.tscn")
+		var flash = flash_scene.instantiate()
+		get_tree().root.add_child(flash)
+		flash.global_position = enemy.global_position
+		if flash.has_property("emitting"):
+			flash.emitting = true
+
+		# Auto-cleanup
+		await get_tree().create_timer(1.0).timeout
+		if flash:
+			flash.queue_free()
+
+	# Impact lines (speed effect)
+	if ResourceLoader.exists("res://vfx/particles/rebound_impact_lines.tscn"):
+		var lines_scene = preload("res://vfx/particles/rebound_impact_lines.tscn")
+		var lines = lines_scene.instantiate()
+		get_tree().root.add_child(lines)
+		lines.global_position = enemy.global_position
+		if lines.has_property("emitting"):
+			lines.emitting = true
+
+		# Auto-cleanup
+		await get_tree().create_timer(0.5).timeout
+		if lines:
+			lines.queue_free()
+
+# ============================================================================
+# DAMAGE NOTIFICATION (Commit 018)
+# ============================================================================
+
+func _on_player_damaged(amount: int, attacker: Node) -> void:
+	"""Called when player takes damage - resets parry counter"""
+	print("[ParryBlockSystem] Player took damage - resetting parry counter")
+	_reset_parry_counter()
 
 # ============================================================================
 # UTILITY

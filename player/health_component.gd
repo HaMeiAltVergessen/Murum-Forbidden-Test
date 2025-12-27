@@ -62,6 +62,12 @@ func take_damage(damage: int) -> bool:
 	damage_taken.emit(final_damage)
 	health_changed.emit(current_health, max_health)
 
+	# ========== REBOUND RESET (Commit 018) ==========
+	# Notify parry system that player took damage (resets parry counter)
+	var parry_system = owner.get_node_or_null("CombatSystem/ParryBlockSystem")
+	if parry_system and parry_system.has_method("_on_player_damaged"):
+		parry_system._on_player_damaged(final_damage, null)
+
 	# Start invulnerability
 	if invulnerability_duration > 0.0:
 		start_invulnerability()
