@@ -32,8 +32,8 @@ const RECOVERY_DURATION: float = 0.5
 const CAMERA_TRAUMA_PER_LEVEL: float = 0.1
 
 # Sideways push to prevent floor glitching
-const SIDEWAYS_PUSH_FORCE: float = 1000.0  # Strong horizontal push (2 meters)
-const LANDING_CHECK_RADIUS: float = 80.0  # Check radius for enemies below player
+const SIDEWAYS_PUSH_FORCE: float = 1500.0  # Strong horizontal push (2 meters)
+const LANDING_CHECK_RADIUS: float = 200.0  # Large check radius for enemies (must be bigger than impact radius)
 
 # ============================================================================
 # STATE
@@ -282,35 +282,39 @@ func _push_enemies_sideways() -> void:
 
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	var pushed_count = 0
+	var checked_count = 0
 
 	for enemy in enemies:
 		if not is_instance_valid(enemy):
 			continue
 
+		checked_count += 1
 		var distance = player.global_position.distance_to(enemy.global_position)
+		var direction_to_enemy = (enemy.global_position - player.global_position)
 
-		# Only push enemies that are close enough and BELOW the player
+		# Debug: Log each enemy check
 		if distance <= LANDING_CHECK_RADIUS:
-			var direction_to_enemy = (enemy.global_position - player.global_position)
+			print("[Wolkenbruch] Enemy %s in range: dist=%.1f, dx=%.1f, dy=%.1f" % [
+				enemy.name, distance, direction_to_enemy.x, direction_to_enemy.y
+			])
 
-			# Check if enemy is below player (vertical check)
-			# Push sideways if enemy is in landing zone
-			if direction_to_enemy.y > -20.0:  # Enemy is at or below player level
-				# Determine push direction (left or right based on horizontal position)
-				var push_direction = sign(direction_to_enemy.x)
-				if push_direction == 0:
-					push_direction = 1  # Default to right if directly under
+		# Push ALL enemies in landing zone (not just below, also at same level)
+		# This prevents collision from any angle
+		if distance <= LANDING_CHECK_RADIUS and direction_to_enemy.y > -50.0:
+			# Determine push direction (left or right based on horizontal position)
+			var push_direction = sign(direction_to_enemy.x)
+			if push_direction == 0:
+				push_direction = 1  # Default to right if directly under
 
-				# Apply strong horizontal push
-				if enemy is CharacterBody2D:
-					enemy.velocity.x = push_direction * SIDEWAYS_PUSH_FORCE
-					pushed_count += 1
-					print("[Wolkenbruch] Pushing %s sideways (direction: %.0f, force: %.0f)" % [
-						enemy.name, push_direction, SIDEWAYS_PUSH_FORCE
-					])
+			# Apply strong horizontal push
+			if enemy is CharacterBody2D:
+				enemy.velocity.x = push_direction * SIDEWAYS_PUSH_FORCE
+				pushed_count += 1
+				print("[Wolkenbruch] ✓ PUSHED %s sideways (dir: %.0f, force: %.0f)" % [
+					enemy.name, push_direction, SIDEWAYS_PUSH_FORCE
+				])
 
-	if pushed_count > 0:
-		print("[Wolkenbruch] Pushed %d enemies sideways to prevent collision glitch" % pushed_count)
+	print("[Wolkenbruch] Sideways push: checked %d enemies, pushed %d" % [checked_count, pushed_count])
 
 # ============================================================================
 # PROCESS
@@ -397,9 +401,27 @@ func _process_slamming(delta: float) -> void:
 
 	# Store position before move
 	var position_before = player.global_position
+	print("[Wolkenbruch] Before move_and_slide: pos=(%.1f, %.1f), vel=(%.1f, %.1f)" % [
+		position_before.x, position_before.y, player.velocity.x, player.velocity.y
+	])
 
 	# MUST call move_and_slide() to apply velocity and check collisions
 	player.move_and_slide()
+
+	print("[Wolkenbruch] After move_and_slide: pos=(%.1f, %.1f), vel=(%.1f, %.1f)" % [
+		player.global_position.x, player.global_position.y, player.velocity.x, player.velocity.y
+	])
+
+	# CRITICAL: Check for invalid position immediately after move_and_slide
+	if is_nan(player.global_position.x) or is_nan(player.global_position.y):
+		print("[Wolkenbruch] ERROR: NaN position detected AFTER move_and_slide()!")
+		print("[Wolkenbruch] Previous position: (%.1f, %.1f)" % [position_before.x, position_before.y])
+		print("[Wolkenbruch] Velocity was: (%.1f, %.1f)" % [player.velocity.x, player.velocity.y])
+		# Restore previous valid position
+		player.global_position = position_before
+		player.velocity = Vector2.ZERO
+		_complete_wolkenbruch()
+		return
 
 	# Safety check: prevent falling through floor
 	# If player moved down too far in one frame, clamp position
@@ -497,6 +519,10 @@ func _remove_screen_darkening() -> void:
 func _on_impact() -> void:
 	"""Called when slam hits ground"""
 
+	print("[Wolkenbruch] _on_impact called, pos=(%.1f, %.1f)" % [
+		player.global_position.x, player.global_position.y
+	])
+
 	# Calculate stats based on charge level
 	var damage = charge_level * BASE_DAMAGE_PER_LEVEL
 	var knockback = charge_level * BASE_KNOCKBACK_PER_LEVEL
@@ -513,7 +539,16 @@ func _on_impact() -> void:
 
 	# Apply AoE effects
 	_apply_aoe_damage(damage, radius)
+
+	print("[Wolkenbruch] After damage, pos=(%.1f, %.1f)" % [
+		player.global_position.x, player.global_position.y
+	])
+
 	_apply_aoe_knockback(knockback, radius)
+
+	print("[Wolkenbruch] After knockback, pos=(%.1f, %.1f)" % [
+		player.global_position.x, player.global_position.y
+	])
 
 	# Visual effects
 	_spawn_impact_effects(radius)
@@ -528,6 +563,10 @@ func _on_impact() -> void:
 	# Hitstop (stronger with higher charge)
 	var hitstop_duration = 0.1 + (charge_level * 0.05)
 	GlobalTimeEffects.hit_stop(hitstop_duration)
+
+	print("[Wolkenbruch] After hitstop, pos=(%.1f, %.1f)" % [
+		player.global_position.x, player.global_position.y
+	])
 
 	# Emit signal
 	wolkenbruch_impact.emit(charge_level, damage)
@@ -640,6 +679,10 @@ func _spawn_shockwave(radius: float) -> void:
 func _complete_wolkenbruch() -> void:
 	"""Completes Wolkenbruch"""
 
+	print("[Wolkenbruch] _complete_wolkenbruch called, pos=(%.1f, %.1f)" % [
+		player.global_position.x, player.global_position.y
+	])
+
 	current_state = State.IDLE
 	charge_time = 0.0
 	charge_level = 0
@@ -656,15 +699,27 @@ func _complete_wolkenbruch() -> void:
 
 	# Safety: Ensure player position is valid (not NaN or extreme values)
 	if is_nan(player.global_position.x) or is_nan(player.global_position.y):
-		print("[Wolkenbruch] ERROR: Invalid position detected! Resetting to (0,0)")
-		player.global_position = Vector2.ZERO
+		print("[Wolkenbruch] CRITICAL ERROR: NaN position detected in _complete_wolkenbruch!")
+		print("[Wolkenbruch] This should have been caught earlier. Investigating...")
+
+		# Try to use charging_position as fallback (last known good position)
+		if charging_position != Vector2.ZERO:
+			print("[Wolkenbruch] Restoring to charging_position: (%.1f, %.1f)" % [
+				charging_position.x, charging_position.y
+			])
+			player.global_position = charging_position
+		else:
+			print("[Wolkenbruch] No valid fallback position available, using (0, 0)")
+			player.global_position = Vector2.ZERO
 
 	# Safety: Disable hover mode if still active
 	if movement_controller and movement_controller.is_hovering:
 		movement_controller.is_hovering = false
 		print("[Wolkenbruch] Force-disabled lingering hover mode")
 
-	print("[Wolkenbruch] Completed")
+	print("[Wolkenbruch] Completed at pos=(%.1f, %.1f)" % [
+		player.global_position.x, player.global_position.y
+	])
 
 	wolkenbruch_completed.emit()
 	EventBus.wolkenbruch_completed.emit()
