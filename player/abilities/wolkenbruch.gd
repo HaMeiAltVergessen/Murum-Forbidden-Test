@@ -41,6 +41,7 @@ var state_timer: float = 0.0
 var charge_time: float = 0.0
 var charge_level: int = 0  # 1-8
 var charging_position: Vector2 = Vector2.ZERO  # Position where charging started
+var is_auto_releasing: bool = false  # Flag to prevent input interference during auto-release
 
 # ============================================================================
 # REFERENCES
@@ -75,6 +76,10 @@ func _ready() -> void:
 # ============================================================================
 
 func _input(event: InputEvent) -> void:
+	# Ignore input during auto-release
+	if is_auto_releasing:
+		return
+
 	# Start charging on wolkenbruch_slam (S) press (Attack must also be held)
 	if event.is_action_pressed("wolkenbruch_slam"):
 		_try_start_charge()
@@ -231,9 +236,11 @@ func _process(delta: float) -> void:
 	match current_state:
 		State.IDLE:
 			# Kontinuierliche Prüfung: Wenn S gehalten wird und Spieler in Luft ist
-			if Input.is_action_pressed("wolkenbruch_slam") and Input.is_action_pressed("light_attack"):
-				if not player.is_on_floor():
-					_try_start_charge()
+			# NICHT während Auto-Release
+			if not is_auto_releasing:
+				if Input.is_action_pressed("wolkenbruch_slam") and Input.is_action_pressed("light_attack"):
+					if not player.is_on_floor():
+						_try_start_charge()
 		State.CHARGING:
 			_process_charging(delta)
 
@@ -261,6 +268,8 @@ func _process_charging(delta: float) -> void:
 
 	# Auto-release at max charge
 	if charge_time >= MAX_CHARGE_TIME:
+		print("[Wolkenbruch] MAX CHARGE REACHED - Auto-releasing!")
+		is_auto_releasing = true
 		_release_charge()
 
 	# Keep player at charging position (hover)
@@ -529,6 +538,7 @@ func _complete_wolkenbruch() -> void:
 	current_state = State.IDLE
 	charge_time = 0.0
 	charge_level = 0
+	is_auto_releasing = false  # Reset auto-release flag
 
 	# Safety: Ensure time scale is restored
 	Engine.time_scale = 1.0
