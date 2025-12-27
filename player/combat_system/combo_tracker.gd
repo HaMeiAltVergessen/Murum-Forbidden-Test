@@ -297,9 +297,13 @@ func _get_held_direction() -> Vector2:
 	var direction = Vector2(
 		Input.get_axis("move_left", "move_right"),
 		0.0  # Vertical movement not used for leap
-	).normalized()
+	)
 
-	return direction
+	# CRITICAL: Prevent NaN from normalizing zero vector (no input)
+	if direction.length_squared() < 0.01:
+		return Vector2(1, 0)  # Default to right if no input
+
+	return direction.normalized()
 
 
 func consume_leap_ender() -> Vector2:

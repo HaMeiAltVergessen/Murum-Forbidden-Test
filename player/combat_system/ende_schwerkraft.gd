@@ -66,10 +66,11 @@ func _process(delta: float) -> void:
 	if not is_executing and cooldown_timer <= 0.0:
 		# Keyboard: W + LMB
 		var keyboard_combo = Input.is_physical_key_pressed(KEY_W) and Input.is_action_pressed("light_attack")
-		# Gamepad: Up D-pad + X
-		var gamepad_combo = Input.is_joy_button_pressed(0, JOY_BUTTON_DPAD_UP) and Input.is_action_pressed("light_attack")
+		# Gamepad: Up D-pad + X OR Left Stick Up + X
+		var dpad_combo = Input.is_joy_button_pressed(0, JOY_BUTTON_DPAD_UP) and Input.is_action_pressed("light_attack")
+		var stick_combo = Input.get_joy_axis(0, JOY_AXIS_LEFT_Y) < -0.5 and Input.is_action_pressed("light_attack")
 
-		if (keyboard_combo or gamepad_combo) and player.is_on_floor():
+		if (keyboard_combo or dpad_combo or stick_combo) and player.is_on_floor():
 			_try_execute()
 
 
@@ -79,10 +80,11 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("light_attack"):
 		# Keyboard: Check if W key is physically pressed
 		var keyboard_combo = Input.is_physical_key_pressed(KEY_W)
-		# Gamepad: Check if Up D-pad is pressed
-		var gamepad_combo = Input.is_joy_button_pressed(0, JOY_BUTTON_DPAD_UP)
+		# Gamepad: Check if Up D-pad OR Left Stick Up is pressed
+		var dpad_combo = Input.is_joy_button_pressed(0, JOY_BUTTON_DPAD_UP)
+		var stick_combo = Input.get_joy_axis(0, JOY_AXIS_LEFT_Y) < -0.5
 
-		if keyboard_combo or gamepad_combo:
+		if keyboard_combo or dpad_combo or stick_combo:
 			_try_execute()
 
 			# Consume the event to prevent combat system from processing it
