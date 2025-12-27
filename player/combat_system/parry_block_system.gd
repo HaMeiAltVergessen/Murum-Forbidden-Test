@@ -36,17 +36,15 @@ const PARRY_COOLDOWN: float = 0.3   # Brief cooldown after perfect parry
 const BLOCK_COOLDOWN: float = 0.1   # Very brief after block
 
 # ============================================================================
-# REBOUND SYSTEM (Commit 018)
+# REBOUND SYSTEM (Commit 018 - REVISED)
 # ============================================================================
 
 # Rebound Parameters
-const PARRY_COUNT_REQUIRED: int = 1       # TESTING: 1 parry (will be 3 after testing)
+const PARRY_COUNT_REQUIRED: int = 3       # 3 perfect parrys required
 const PARRY_TIMEOUT: float = 5.0          # Reset if no parry for 5s
 
-# Counter Damage
-const REBOUND_DAMAGE_MULTIPLIER: float = 1.5
-const REBOUND_BASE_DAMAGE: int = 15       # Base (vs 10 normal attack)
-# Final: 15 × 1.5 = 22.5 → 23 damage
+# Healing (REVISED - no longer damage)
+const REBOUND_HEAL_PERCENT: float = 0.30  # 30% HP restored
 
 # Resonance Bonus
 const NORMAL_PARRY_RESONANCE: float = 12.5  # Same as RESONANCE_GAIN_ON_PARRY
@@ -54,7 +52,6 @@ const REBOUND_RESONANCE_BONUS: float = 25.0  # Double normal
 
 # Visual/Audio
 const REBOUND_FLASH_DURATION: float = 0.3
-const REBOUND_COUNTER_SPEED: float = 800.0    # Very fast counter-attack
 
 # ============================================================================
 # STATE
@@ -270,7 +267,13 @@ func _on_block_area_entered(area: Area2D) -> void:
 
 	print("[ParryBlockSystem] ===== AREA_ENTERED SIGNAL FIRED =====")
 	print("[ParryBlockSystem] Area: ", area.name)
-	print("[ParryBlockSystem] Area owner: ", area.owner.name if area.owner else "null")
+
+	# CRITICAL: Safe owner check to prevent crash on freed objects
+	var owner_name = "null"
+	if is_instance_valid(area.owner):
+		owner_name = area.owner.name
+	print("[ParryBlockSystem] Area owner: ", owner_name)
+
 	print("[ParryBlockSystem] Area groups: ", area.get_groups())
 	var state_name = "IDLE"
 	if current_state == State.PARRY_WINDOW:
@@ -527,19 +530,22 @@ func _reset_parry_counter() -> void:
 # ============================================================================
 
 func _execute_rebound_counter(enemy: Node) -> void:
-	"""Executes Rebound auto-counter"""
+	"""Executes Rebound heal (REVISED - no longer damage)"""
 
-	print("[ParryBlockSystem] ========== REBOUND COUNTER! ==========")
+	print("[ParryBlockSystem] ========== REBOUND HEAL! ==========")
 
 	# Play counter animation (async)
 	_play_rebound_animation(enemy)
 
-	# Apply enhanced damage
-	var damage = int(REBOUND_BASE_DAMAGE * REBOUND_DAMAGE_MULTIPLIER)
-	print("[ParryBlockSystem] Rebound damage: %d (base: %d × multiplier: %.1f)" % [damage, REBOUND_BASE_DAMAGE, REBOUND_DAMAGE_MULTIPLIER])
-
-	if enemy.has_method("take_damage"):
-		enemy.take_damage(damage, player)
+	# REVISED: Heal player for 30% HP instead of dealing damage
+	var health_component = player.get_node_or_null("HealthComponent")
+	if health_component and health_component.has_method("heal"):
+		var max_hp = health_component.max_health
+		var heal_amount = int(max_hp * REBOUND_HEAL_PERCENT)
+		health_component.heal(heal_amount)
+		print("[ParryBlockSystem] Rebound heal: %d HP (%.0f%% of max)" % [heal_amount, REBOUND_HEAL_PERCENT * 100])
+	else:
+		print("[ParryBlockSystem] WARNING: HealthComponent not found or has no heal() method")
 
 	# Apply enhanced resonance (ADDITIONAL to normal parry resonance)
 	var resonance = player.get_node_or_null("CombatSystem/ResonanceSystem")
@@ -603,7 +609,10 @@ func _process(delta: float) -> void:
 		if overlapping.size() > 0:
 			print("[ParryBlockSystem] PARRY WINDOW - Overlapping areas (", overlapping.size(), "):")
 			for area in overlapping:
-				print("  - ", area.name, " (owner: ", area.owner.name if area.owner else "null", ", groups: ", area.get_groups(), ")")
+				var area_owner_name = "null"
+				if is_instance_valid(area.owner):
+					area_owner_name = area.owner.name
+				print("  - ", area.name, " (owner: ", area_owner_name, ", groups: ", area.get_groups(), ")")
 
 		if parry_window_timer <= 0.0:
 			# Parry window expired, transition to normal blocking
@@ -619,7 +628,10 @@ func _process(delta: float) -> void:
 		if overlapping.size() > 0:
 			print("[ParryBlockSystem] BLOCKING - Overlapping areas (", overlapping.size(), "):")
 			for area in overlapping:
-				print("  - ", area.name, " (owner: ", area.owner.name if area.owner else "null", ", groups: ", area.get_groups(), ")")
+				var area_owner_name = "null"
+				if is_instance_valid(area.owner):
+					area_owner_name = area.owner.name
+				print("  - ", area.name, " (owner: ", area_owner_name, ", groups: ", area.get_groups(), ")")
 
 	# ========== REBOUND TIMEOUT TRACKING (Commit 018) ==========
 	if perfect_parry_count > 0 and not rebound_ready:
@@ -834,20 +846,24 @@ func _hide_rebound_indicator() -> void:
 func _spawn_rebound_flash(enemy: Node) -> void:
 	"""Spawns enhanced flash VFX for Rebound"""
 
-	if not enemy:
+	# CRITICAL: Safety check for freed objects
+	if not is_instance_valid(enemy):
 		return
+
+	# Store position before any async operations
+	var enemy_pos = enemy.global_position
 
 	# Enhanced parry flash (golden)
 	if ResourceLoader.exists("res://vfx/particles/rebound_flash.tscn"):
 		var flash_scene = preload("res://vfx/particles/rebound_flash.tscn")
 		var flash = flash_scene.instantiate()
 		get_tree().root.add_child(flash)
-		flash.global_position = enemy.global_position
+		flash.global_position = enemy_pos  # Use stored position
 		flash.emitting = true
 
 		# Auto-cleanup
 		await get_tree().create_timer(1.0).timeout
-		if flash:
+		if is_instance_valid(flash):
 			flash.queue_free()
 
 	# Impact lines (speed effect)
@@ -855,7 +871,7 @@ func _spawn_rebound_flash(enemy: Node) -> void:
 		var lines_scene = preload("res://vfx/particles/rebound_impact_lines.tscn")
 		var lines = lines_scene.instantiate()
 		get_tree().root.add_child(lines)
-		lines.global_position = enemy.global_position
+		lines.global_position = enemy_pos  # Use stored position
 		lines.emitting = true
 
 		# Auto-cleanup
@@ -867,7 +883,7 @@ func _spawn_rebound_flash(enemy: Node) -> void:
 # DAMAGE NOTIFICATION (Commit 018)
 # ============================================================================
 
-func _on_player_damaged(amount: int, attacker: Node) -> void:
+func _on_player_damaged(_amount: int, _attacker: Node) -> void:
 	"""Called when player takes damage - resets parry counter"""
 	# TESTING: Disabled - only timeout resets counter
 	# This allows maintaining counter even after taking damage
