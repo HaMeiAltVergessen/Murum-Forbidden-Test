@@ -229,6 +229,11 @@ func _consume_charge_mana() -> void:
 
 func _process(delta: float) -> void:
 	match current_state:
+		State.IDLE:
+			# Kontinuierliche Prüfung: Wenn S gehalten wird und Spieler in Luft ist
+			if Input.is_action_pressed("wolkenbruch_slam") and Input.is_action_pressed("light_attack"):
+				if not player.is_on_floor():
+					_try_start_charge()
 		State.CHARGING:
 			_process_charging(delta)
 
