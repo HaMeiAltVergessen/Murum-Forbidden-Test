@@ -50,6 +50,9 @@ var charging_position: Vector2 = Vector2.ZERO  # Position where charging started
 @onready var mana_component: ManaComponent = player.get_node("ManaComponent")
 @onready var movement_controller: Node = player.get_node_or_null("MovementController")
 
+# Screen darkening overlay
+var darkening_overlay: ColorRect = null
+
 # ============================================================================
 # SIGNALS
 # ============================================================================
@@ -158,6 +161,13 @@ func _start_charge() -> void:
 	# Set initial brightness
 	_update_brightness()
 
+	# Slow down time by 80% (time_scale = 0.2)
+	Engine.time_scale = 0.2
+	print("[Wolkenbruch] Time slowed to 20%")
+
+	# Darken screen by 30%
+	_apply_screen_darkening()
+
 	# Audio
 	AudioManager.play_sfx_at_position("player/wolkenbruch_charge_full", player.global_position, 0.2)
 
@@ -183,6 +193,12 @@ func _release_charge() -> void:
 
 	# Reset brightness
 	_reset_brightness()
+
+	# Restore time scale
+	Engine.time_scale = 1.0
+
+	# Remove screen darkening
+	_remove_screen_darkening()
 
 	# Enter slamming state
 	current_state = State.SLAMMING
@@ -312,6 +328,48 @@ func _reset_brightness() -> void:
 	var sprite = player.get_node_or_null("Sprite2D")
 	if sprite:
 		sprite.modulate = Color.WHITE
+
+
+func _apply_screen_darkening() -> void:
+	"""Applies 30% screen darkening overlay"""
+
+	# Don't create duplicate overlays
+	if darkening_overlay:
+		return
+
+	# Create a fullscreen ColorRect overlay
+	darkening_overlay = ColorRect.new()
+	darkening_overlay.color = Color(0, 0, 0, 0.3)  # Black with 30% opacity
+	darkening_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Don't block input
+
+	# Make it fullscreen
+	darkening_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	darkening_overlay.z_index = 100  # Draw on top
+
+	# Add to scene tree (to CanvasLayer for proper layering)
+	var canvas_layer = CanvasLayer.new()
+	canvas_layer.layer = 100  # High layer for overlay
+	canvas_layer.name = "WolkenbruchDarkeningLayer"
+	canvas_layer.add_child(darkening_overlay)
+	get_tree().root.add_child(canvas_layer)
+
+	print("[Wolkenbruch] Screen darkened by 30%")
+
+
+func _remove_screen_darkening() -> void:
+	"""Removes screen darkening overlay"""
+
+	if not darkening_overlay:
+		return
+
+	# Remove the CanvasLayer parent (which contains the ColorRect)
+	var canvas_layer = darkening_overlay.get_parent()
+	if canvas_layer:
+		canvas_layer.queue_free()
+
+	darkening_overlay = null
+
+	print("[Wolkenbruch] Screen darkening removed")
 
 # ============================================================================
 # IMPACT
@@ -466,6 +524,12 @@ func _complete_wolkenbruch() -> void:
 	current_state = State.IDLE
 	charge_time = 0.0
 	charge_level = 0
+
+	# Safety: Ensure time scale is restored
+	Engine.time_scale = 1.0
+
+	# Safety: Ensure darkening is removed
+	_remove_screen_darkening()
 
 	print("[Wolkenbruch] Completed")
 
