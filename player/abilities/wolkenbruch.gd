@@ -604,11 +604,15 @@ func _apply_aoe_knockback(knockback_force: float, radius: float) -> void:
 	"""Applies radial knockback to enemies"""
 
 	var enemies = get_tree().get_nodes_in_group("enemies")
+	var stuck_enemies = []  # Track enemies that might be stuck at walls
 
 	for enemy in enemies:
 		var distance = player.global_position.distance_to(enemy.global_position)
 
 		if distance <= radius:
+			# Store position BEFORE knockback to check if enemy gets stuck
+			var position_before = enemy.global_position
+
 			# Calculate radial direction (away from impact)
 			var direction_to_enemy = enemy.global_position - player.global_position
 
@@ -630,6 +634,46 @@ func _apply_aoe_knockback(knockback_force: float, radius: float) -> void:
 				kb.apply_knockback(direction, knockback_force, 0.5)
 			elif enemy.has_method("apply_knockback"):
 				enemy.apply_knockback(direction, knockback_force, 0.5)
+
+			# Track enemy for stuck check
+			stuck_enemies.append({
+				"enemy": enemy,
+				"position_before": position_before
+			})
+
+	# CRITICAL: Kill enemies that are stuck at walls to prevent glitches
+	_check_and_kill_stuck_enemies(stuck_enemies)
+
+
+func _check_and_kill_stuck_enemies(tracked_enemies: Array) -> void:
+	"""Checks if enemies moved after knockback, kills them if stuck at walls"""
+
+	# Wait a brief moment for knockback to take effect
+	await get_tree().create_timer(0.15).timeout
+
+	for data in tracked_enemies:
+		var enemy = data["enemy"]
+		var position_before = data["position_before"]
+
+		# Safety check: enemy might have died already
+		if not is_instance_valid(enemy):
+			continue
+
+		# Check if enemy position changed significantly
+		var position_after = enemy.global_position
+		var movement = position_after.distance_to(position_before)
+
+		# If enemy barely moved (< 10 pixels), they're stuck at a wall
+		if movement < 10.0:
+			print("[Wolkenbruch] CRITICAL: Enemy %s stuck at wall (moved %.1fpx), killing to prevent glitch" % [enemy.name, movement])
+
+			# Instant kill to prevent physics glitches
+			if enemy.has_method("take_damage"):
+				enemy.take_damage(9999, player)  # Overkill damage
+			elif enemy.has_node("HealthComponent"):
+				var health = enemy.get_node("HealthComponent")
+				if health.has_method("take_damage"):
+					health.take_damage(9999)
 
 
 func _spawn_impact_effects(radius: float) -> void:
