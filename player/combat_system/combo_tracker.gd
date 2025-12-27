@@ -41,6 +41,7 @@ signal combo_finisher_ready  # Next hit will be finisher
 signal combo_finisher_executed(damage: int)  # Finisher was executed
 signal leap_ender_available  # After 4th hit, leap ender can be triggered
 signal leap_ender_triggered(direction: Vector2)  # Leap ender was triggered
+signal machtbruch_available  # Machtbruch can be charged (after 3rd hit) - COMMIT 019
 
 # ============ COMBO MILESTONES ============
 const MILESTONE_THRESHOLDS: Array[int] = [5, 10, 25, 50, 100]
@@ -100,6 +101,11 @@ func _on_combo_increased(new_count: int, multiplier: float) -> void:
 		combo_finisher_ready.emit()
 		EventBus.combo_finisher_ready.emit()
 		print("[ComboTracker] Next hit is FINISHER!")
+
+		# COMMIT 019: Machtbruch available (can hold attack to charge burst)
+		machtbruch_available.emit()
+		EventBus.machtbruch_available.emit()
+		print("[ComboTracker] Machtbruch AVAILABLE (hold attack to charge)")
 
 	# Check if this hit WAS a finisher (4th hit landed) - enable leap ender window
 	if new_count % FINISHER_HIT_INDEX == 0:
