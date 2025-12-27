@@ -58,8 +58,8 @@ func _ready() -> void:
 	print("[Wolkenbruch] Initialized")
 
 func _input(event: InputEvent) -> void:
-	# Trigger on crouch (S) press (Attack must also be held)
-	if event.is_action_pressed("crouch"):
+	# Trigger on wolkenbruch_slam (S) press (Attack must also be held)
+	if event.is_action_pressed("wolkenbruch_slam"):
 		_try_activate()
 
 func _try_activate() -> void:
