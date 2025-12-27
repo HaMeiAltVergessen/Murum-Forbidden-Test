@@ -159,9 +159,9 @@ func _activate() -> void:
 	# Audio
 	AudioManager.play_sfx("player_machtstoss_activate", 0.1)
 
-	# Camera shake
+	# Camera shake (reduced from 0.25)
 	if player.has_node("PlayerCamera"):
-		player.get_node("PlayerCamera").add_trauma(0.25)
+		player.get_node("PlayerCamera").add_trauma(0.15)
 
 	# Hitstop
 	GlobalTimeEffects.hit_stop(SHOCKWAVE_HITSTOP)

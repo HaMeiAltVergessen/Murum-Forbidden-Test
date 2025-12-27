@@ -330,9 +330,9 @@ func _trigger_explosion(position: Vector2, source_enemy: Node) -> void:
 	# Audio
 	AudioManager.play_sfx("player_urteil_explosion", 0.1)
 
-	# Camera shake
+	# Camera shake (reduced from 0.3)
 	if player.has_node("PlayerCamera"):
-		player.get_node("PlayerCamera").add_trauma(0.3)
+		player.get_node("PlayerCamera").add_trauma(0.2)
 
 	# Hitstop
 	GlobalTimeEffects.hit_stop(EXPLOSION_HITSTOP)

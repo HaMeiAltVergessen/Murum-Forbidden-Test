@@ -210,9 +210,9 @@ func _activate() -> void:
 	# Audio
 	AudioManager.play_sfx("player_echo_activate", 0.2)
 
-	# Camera shake
+	# Camera shake (reduced from 0.15 - subtle for buff activation)
 	if player.has_node("PlayerCamera"):
-		player.get_node("PlayerCamera").add_trauma(0.15)
+		player.get_node("PlayerCamera").add_trauma(0.05)
 
 	# Hitstop
 	GlobalTimeEffects.hit_stop(ACTIVATION_HITSTOP)
