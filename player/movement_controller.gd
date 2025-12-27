@@ -303,6 +303,9 @@ func _process_dash(delta: float) -> void:
 		is_dashing = false
 		player.velocity.x = 0
 
+		# Dash end explosion (damage + knockback)
+		_dash_end_explosion()
+
 		# Re-enable collision with enemies after dash
 		# Restore BOTH layer and mask:
 		# - Layer: 32 → 2 (normal player layer)
@@ -324,6 +327,53 @@ func _process_dash(delta: float) -> void:
 
 	# No gravity during dash
 	player.move_and_slide()
+
+
+func _dash_end_explosion() -> void:
+	"""Creates a small AoE explosion at the end of dash"""
+	const EXPLOSION_RADIUS: float = 80.0  # Small AoE
+	const EXPLOSION_DAMAGE: int = 15  # Minor damage
+	const EXPLOSION_KNOCKBACK: float = 300.0  # Moderate knockback
+
+	print("[MovementController] Dash end explosion!")
+
+	# Find enemies in radius
+	var enemies = get_tree().get_nodes_in_group("enemies")
+	var hit_count: int = 0
+
+	for enemy in enemies:
+		if not is_instance_valid(enemy):
+			continue
+
+		# Check distance
+		var distance = player.global_position.distance_to(enemy.global_position)
+		if distance > EXPLOSION_RADIUS:
+			continue
+
+		# Apply damage
+		if enemy.has_method("take_damage"):
+			enemy.take_damage(EXPLOSION_DAMAGE, player)
+			hit_count += 1
+		elif enemy.has_node("HealthComponent"):
+			var health = enemy.get_node("HealthComponent")
+			if health.has_method("take_damage"):
+				health.take_damage(EXPLOSION_DAMAGE)
+				hit_count += 1
+
+		# Apply knockback
+		var direction = (enemy.global_position - player.global_position)
+		if direction.length_squared() < 0.01:
+			direction = Vector2(1, 0)  # Default direction
+		else:
+			direction = direction.normalized()
+
+		if enemy.has_node("KnockbackComponent"):
+			var knockback = enemy.get_node("KnockbackComponent")
+			if knockback.has_method("apply_knockback"):
+				knockback.apply_knockback(direction, EXPLOSION_KNOCKBACK, 0.3)
+
+	if hit_count > 0:
+		print("[MovementController] Dash explosion hit %d enemies" % hit_count)
 
 
 # ============ GETTERS ============

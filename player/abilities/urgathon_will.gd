@@ -154,8 +154,8 @@ func _start_charge() -> void:
 	# Slow time
 	Engine.time_scale = TIME_SLOW_SCALE
 
-	# Start looping sound
-	AudioManager.play_sfx_looped("urgathon_charge")
+	# Start looping sound (TODO: Add sound file)
+	# AudioManager.play_sfx_looped("urgathon_charge")
 
 	# Show charge bar
 	if charge_bar:
@@ -219,8 +219,8 @@ func _release_charge() -> void:
 	# Reset time scale
 	Engine.time_scale = 1.0
 
-	# Stop sound
-	AudioManager.stop_sfx_looped("urgathon_charge")
+	# Stop sound (TODO: Add sound file)
+	# AudioManager.stop_sfx_looped("urgathon_charge")
 
 	# Hide charge bar
 	if charge_bar:
@@ -236,7 +236,7 @@ func _cancel_charge() -> void:
 	"""Cancels charge without releasing"""
 	is_charging = false
 	Engine.time_scale = 1.0
-	AudioManager.stop_sfx_looped("urgathon_charge")
+	# AudioManager.stop_sfx_looped("urgathon_charge")
 
 	if charge_bar:
 		charge_bar.visible = false
@@ -280,12 +280,12 @@ func _execute_release(level: int) -> void:
 	# Spawn VFX
 	_spawn_explosion(level)
 
-	# Play release sound
-	AudioManager.play_sfx("urgathon_release")
+	# Play release sound (TODO: Add sound file)
+	# AudioManager.play_sfx("urgathon_release")
 
-	# Camera shake
-	if player.has_node("PlayerCamera"):
-		player.get_node("PlayerCamera").add_trauma(1.0)  # Max trauma
+	# Camera shake (TODO: Fix camera reference)
+	# if player and player.has_node("PlayerCamera"):
+	# 	player.get_node("PlayerCamera").add_trauma(1.0)  # Max trauma
 
 	# Enter unconscious state
 	var duration = UNCONSCIOUS_DURATIONS[use_count - 1]
@@ -301,18 +301,29 @@ func _deal_fullscreen_damage(damage: int) -> void:
 	print("[UrgathonWill] Damaging %d enemies" % enemies.size())
 
 	for enemy in enemies:
-		if is_instance_valid(enemy) and enemy.has_method("take_damage"):
+		if not is_instance_valid(enemy):
+			continue
+
+		# Try direct method first
+		if enemy.has_method("take_damage"):
 			enemy.take_damage(damage, player)
+			print("[UrgathonWill] Dealt %d damage to %s (direct)" % [damage, enemy.name])
+		# Fallback to HealthComponent
+		elif enemy.has_node("HealthComponent"):
+			var health = enemy.get_node("HealthComponent")
+			if health.has_method("take_damage"):
+				health.take_damage(damage)
+				print("[UrgathonWill] Dealt %d damage to %s (HealthComponent)" % [damage, enemy.name])
 
 func _spawn_explosion(level: int) -> void:
 	"""Spawns explosion VFX based on level"""
 	# Placeholder - can be enhanced with particle system
 	print("[UrgathonWill] Spawning level %d explosion VFX" % level)
 
-	# Flash screen white
-	if player.has_node("PlayerCamera"):
-		var camera = player.get_node("PlayerCamera")
-		# Screen flash effect would go here
+	# Flash screen white (TODO: Implement screen flash)
+	# if player and player.has_node("PlayerCamera"):
+	# 	var camera = player.get_node("PlayerCamera")
+	# 	# Screen flash effect would go here
 
 func _enter_unconscious(duration: float) -> void:
 	"""Enters unconscious state for specified duration"""
@@ -326,8 +337,11 @@ func _enter_unconscious(duration: float) -> void:
 		player.set_physics_process(false)
 		player.set_process_input(false)
 
-	# Fade to black (placeholder - needs fade overlay)
-	# await _fade_to_black(1.0)
+	# Fade to black (TODO: Implement fade overlay)
+	print("[UrgathonWill] TODO: Fade to black")
+	# var fade = get_node("/root/Game/UI/FadeOverlay")
+	# if fade:
+	# 	fade.fade_to_black(1.0)
 
 	# Wait for duration
 	await get_tree().create_timer(duration).timeout
@@ -342,8 +356,11 @@ func _exit_unconscious() -> void:
 	is_unconscious = false
 	urgathon_unconscious_ended.emit()
 
-	# Fade from black (placeholder)
-	# await _fade_from_black(2.0)
+	# Fade from black (TODO: Implement fade overlay)
+	print("[UrgathonWill] TODO: Fade from black")
+	# var fade = get_node("/root/Game/UI/FadeOverlay")
+	# if fade:
+	# 	await fade.fade_from_black(2.0)
 
 	# Re-enable player control
 	if player:

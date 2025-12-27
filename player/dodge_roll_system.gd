@@ -7,8 +7,8 @@ class_name DodgeRollSystem
 # ============================================================================
 
 const ROLL_DURATION: float = 0.4
-const ROLL_DISTANCE: float = 150.0
-const ROLL_SPEED: float = 375.0  # 150 / 0.4
+const ROLL_DISTANCE: float = 300.0  # Doubled from 150.0
+const ROLL_SPEED: float = 750.0  # 300 / 0.4 (doubled)
 
 const STARTUP_DURATION: float = 0.05
 const ACTIVE_DURATION: float = 0.25   # I-frames window
