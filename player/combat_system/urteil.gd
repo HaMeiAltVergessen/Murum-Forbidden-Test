@@ -391,6 +391,27 @@ func _apply_explosion_effect(enemy: Node, explosion_center: Vector2, distance: f
 	if enemy.has_method("take_damage"):
 		enemy.take_damage(EXPLOSION_DAMAGE, player)
 		print("[Urteil] Damaged %s for %d" % [enemy.name, EXPLOSION_DAMAGE])
+	# Fallback to HealthComponent
+	elif enemy.has_node("HealthComponent"):
+		var health = enemy.get_node("HealthComponent")
+		if health.has_method("take_damage"):
+			health.take_damage(EXPLOSION_DAMAGE)
+			print("[Urteil] Damaged %s for %d (HealthComponent)" % [enemy.name, EXPLOSION_DAMAGE])
+
+	# Check if enemy died from explosion and ensure cleanup
+	await get_tree().process_frame  # Wait for damage to process
+
+	if is_instance_valid(enemy):
+		# Check if health is 0 or below
+		if enemy.has_node("HealthComponent"):
+			var health = enemy.get_node("HealthComponent")
+			if health.current_health <= 0:
+				print("[Urteil] Enemy %s died from explosion - ensuring cleanup" % enemy.name)
+				# Ensure enemy is removed from enemies group
+				if enemy.is_in_group("enemies"):
+					enemy.remove_from_group("enemies")
+				# Let the enemy's death handler finish before queue_free
+				await get_tree().process_frame
 
 	# Spawn hit VFX on enemy
 	_spawn_hit_vfx(enemy)

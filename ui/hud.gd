@@ -26,6 +26,7 @@ var echo_icon: AbilityIcon = null
 # ============ URGATHON'S WILL ============
 var urgathon_charge_bar: ProgressBar = null
 var urgathon_counter: Label = null
+var urgathon_blackscreen: ColorRect = null
 
 
 func _ready() -> void:
@@ -306,7 +307,7 @@ func _create_urgathon_ui() -> void:
 	# Create use counter (top-left)
 	urgathon_counter = Label.new()
 	urgathon_counter.name = "UrgathonCounter"
-	urgathon_counter.text = "Urgathon Uses: 0/3"
+	urgathon_counter.text = "Urgathon Uses: 0/4"
 	urgathon_counter.add_theme_font_size_override("font_size", 16)
 	urgathon_counter.add_theme_color_override("font_color", Color(0.8, 0.4, 1.0, 1.0))  # Purple
 
@@ -317,5 +318,22 @@ func _create_urgathon_ui() -> void:
 	urgathon_counter.offset_top = 120  # Below other UI
 
 	add_child(urgathon_counter)
+
+	# Create black screen overlay (fullscreen)
+	urgathon_blackscreen = ColorRect.new()
+	urgathon_blackscreen.name = "UrgathonBlackscreen"
+	urgathon_blackscreen.color = Color(0, 0, 0, 0)  # Transparent initially
+	urgathon_blackscreen.visible = false
+	urgathon_blackscreen.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Don't block input when invisible
+
+	# Fullscreen
+	urgathon_blackscreen.anchor_left = 0.0
+	urgathon_blackscreen.anchor_right = 1.0
+	urgathon_blackscreen.anchor_top = 0.0
+	urgathon_blackscreen.anchor_bottom = 1.0
+
+	# Add as first child so it's on top of everything
+	add_child(urgathon_blackscreen)
+	move_child(urgathon_blackscreen, 0)  # Move to back initially
 
 	print("[HUD] Urgathon UI created")
