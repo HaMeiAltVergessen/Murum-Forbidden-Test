@@ -281,6 +281,10 @@ func _attempt_dash() -> void:
 	dash_timer = dash_duration
 	dash_cooldown_timer = dash_cooldown
 
+	# Disable collision with enemies during dash (can pass through)
+	# collision_mask 17 (0b10001) → 1 (0b00001) - only terrain
+	player.collision_mask = 1
+
 	# Cancel vertical velocity
 	player.velocity.y = 0
 
@@ -295,6 +299,11 @@ func _process_dash(delta: float) -> void:
 		# End dash
 		is_dashing = false
 		player.velocity.x = 0
+
+		# Re-enable collision with enemies after dash
+		# collision_mask 1 (0b00001) → 17 (0b10001) - terrain + enemies
+		player.collision_mask = 17
+
 		return
 
 	# Calculate dash speed

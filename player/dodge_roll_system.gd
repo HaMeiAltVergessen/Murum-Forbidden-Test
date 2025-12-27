@@ -101,6 +101,11 @@ func _start_dodge() -> void:
 	# Determine direction
 	roll_direction = _get_dodge_direction()
 
+	# Disable collision with enemies during dodge (can pass through)
+	# collision_mask 17 (0b10001) → 1 (0b00001) - only terrain
+	player.collision_mask = 1
+	print("[DodgeRollSystem] Enemy collision disabled (can pass through)")
+
 	# Enter startup state
 	current_state = State.STARTUP
 	state_timer = STARTUP_DURATION
@@ -230,6 +235,11 @@ func _complete_dodge() -> void:
 
 	current_state = State.IDLE
 	cooldown_timer = COOLDOWN_DURATION  # Start cooldown
+
+	# Re-enable collision with enemies after dodge
+	# collision_mask 1 (0b00001) → 17 (0b10001) - terrain + enemies
+	player.collision_mask = 17
+	print("[DodgeRollSystem] Enemy collision re-enabled")
 
 	# Stop movement
 	player.velocity = Vector2.ZERO
