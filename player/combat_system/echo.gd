@@ -106,11 +106,22 @@ func _input(event: InputEvent) -> void:
 		else:
 			attempt_activation()
 	# Gamepad: RT + A (A = jump button, button 0)
-	elif event.is_action_pressed("jump") and Input.is_action_pressed("gamepad_modifier"):
-		if is_active:
-			print("[Echo] Already active - wait for duration to expire")
-		else:
-			attempt_activation()
+	elif event.is_action_pressed("jump"):
+		if _is_rt_pressed():
+			if is_active:
+				print("[Echo] Already active - wait for duration to expire")
+			else:
+				attempt_activation()
+
+func _is_rt_pressed() -> bool:
+	"""Check if RT is pressed (either as button or analog trigger)"""
+	# Button 7 (some controllers)
+	if Input.is_action_pressed("gamepad_modifier"):
+		return true
+	# Axis 5 (analog trigger on Xbox/PS controllers)
+	if Input.get_joy_axis(0, JOY_AXIS_TRIGGER_RIGHT) > 0.5:
+		return true
+	return false
 
 # ============================================================================
 # TIMERS

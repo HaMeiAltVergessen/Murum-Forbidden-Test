@@ -50,8 +50,19 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("staff_throw"):
 		attempt_throw()
 	# Gamepad: RT + X (X = light_attack button)
-	elif event.is_action_pressed("light_attack") and Input.is_action_pressed("gamepad_modifier"):
-		attempt_throw()
+	elif event.is_action_pressed("light_attack"):
+		if _is_rt_pressed():
+			attempt_throw()
+
+func _is_rt_pressed() -> bool:
+	"""Check if RT is pressed (either as button or analog trigger)"""
+	# Button 7 (some controllers)
+	if Input.is_action_pressed("gamepad_modifier"):
+		return true
+	# Axis 5 (analog trigger on Xbox/PS controllers)
+	if Input.get_joy_axis(0, JOY_AXIS_TRIGGER_RIGHT) > 0.5:
+		return true
+	return false
 
 # ============================================================================
 # THROW LOGIC
