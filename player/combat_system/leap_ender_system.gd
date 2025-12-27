@@ -438,6 +438,9 @@ func _teleport_to_nearest_enemy(current_enemy: Node) -> void:
 		# Spawn teleport VFX at old position
 		_spawn_hit_effect(player.global_position)
 
+		# Safe teleport: reset velocity first to prevent physics conflicts
+		player.velocity = Vector2.ZERO
+
 		# Teleport
 		player.global_position = teleport_pos
 

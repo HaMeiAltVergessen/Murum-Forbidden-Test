@@ -35,6 +35,7 @@ var cooldown_timer: float = 0.0
 # Marked enemy tracking
 var marked_enemy: Node = null
 var mark_timer: float = 0.0
+var mark_icon: Node2D = null  # Visual indicator above marked enemy
 
 # ============================================================================
 # REFERENCES
@@ -239,6 +240,9 @@ func _apply_mark(enemy: Node) -> void:
 
 	print("[Urteil] Mark applied to %s (expires in %.1fs)" % [enemy.name, MARK_DURATION])
 
+	# Spawn visual mark icon above enemy
+	_spawn_mark_icon(enemy)
+
 	# Emit signal
 	urteil_mark_applied.emit(enemy)
 	EventBus.urteil_mark_applied.emit(enemy)
@@ -251,6 +255,9 @@ func _remove_mark(enemy: Node) -> void:
 
 	enemy.remove_meta("urteil_marked")
 	enemy.remove_meta("urteil_marker")
+
+	# Remove visual mark icon
+	_remove_mark_icon()
 
 	print("[Urteil] Mark removed from %s" % enemy.name)
 
@@ -295,6 +302,8 @@ func _on_enemy_died(enemy: Node, death_position: Vector2) -> void:
 	if marked_enemy == enemy:
 		marked_enemy = null
 		mark_timer = 0.0
+		# Remove visual icon (enemy is dying, icon should disappear)
+		_remove_mark_icon()
 
 	# Trigger explosion
 	_trigger_explosion(death_position, enemy)
@@ -430,6 +439,33 @@ func _spawn_hit_vfx(enemy: Node) -> void:
 	await get_tree().create_timer(1.0).timeout
 	if hit:
 		hit.queue_free()
+
+func _spawn_mark_icon(enemy: Node) -> void:
+	"""Spawns visual mark icon above enemy"""
+
+	var icon_path = "res://ui/urteil_mark_icon.tscn"
+
+	if not ResourceLoader.exists(icon_path):
+		print("[Urteil] Mark icon not found: %s" % icon_path)
+		return
+
+	# Remove old icon if exists
+	_remove_mark_icon()
+
+	# Load and instantiate icon scene
+	var icon_scene = load(icon_path)
+	mark_icon = icon_scene.instantiate()
+	enemy.add_child(mark_icon)
+
+	print("[Urteil] Mark icon spawned above %s" % enemy.name)
+
+func _remove_mark_icon() -> void:
+	"""Removes the visual mark icon"""
+
+	if mark_icon and is_instance_valid(mark_icon):
+		mark_icon.queue_free()
+		mark_icon = null
+		print("[Urteil] Mark icon removed")
 
 # ============================================================================
 # UTILITY
