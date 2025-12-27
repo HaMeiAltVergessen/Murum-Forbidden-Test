@@ -384,9 +384,7 @@ func _spawn_mark_vfx(enemy: Node) -> void:
 	var mark_scene = load(vfx_path)
 	var mark_vfx = mark_scene.instantiate()
 	enemy.add_child(mark_vfx)
-
-	if mark_vfx.has_property("emitting"):
-		mark_vfx.emitting = true
+	mark_vfx.emitting = true
 
 	# Auto-cleanup when mark expires
 	await get_tree().create_timer(MARK_DURATION).timeout
@@ -406,9 +404,7 @@ func _spawn_explosion_vfx(position: Vector2) -> void:
 	var explosion = explosion_scene.instantiate()
 	get_tree().root.add_child(explosion)
 	explosion.global_position = position
-
-	if explosion.has_property("emitting"):
-		explosion.emitting = true
+	explosion.emitting = true
 
 	# Auto-cleanup
 	await get_tree().create_timer(2.0).timeout
@@ -428,9 +424,7 @@ func _spawn_hit_vfx(enemy: Node) -> void:
 	var hit = hit_scene.instantiate()
 	get_tree().root.add_child(hit)
 	hit.global_position = enemy.global_position
-
-	if hit.has_property("emitting"):
-		hit.emitting = true
+	hit.emitting = true
 
 	# Auto-cleanup
 	await get_tree().create_timer(1.0).timeout
