@@ -42,14 +42,9 @@ func display_item(item_data: Dictionary) -> void:
 	if name_label:
 		name_label.text = item_data.get("name", "???")
 
-	# World
+	# World - HIDDEN per user request
 	if world_label:
-		var world_num = item_data.get("world", 0)
-		if world_num > 0:
-			world_label.text = "Welt: %d" % world_num
-			world_label.visible = true
-		else:
-			world_label.visible = false
+		world_label.visible = false
 
 	# Lore
 	if lore_text:
