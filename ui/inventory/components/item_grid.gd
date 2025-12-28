@@ -69,6 +69,9 @@ func setup_grid(category_name: String, max_slots: int) -> void:
 
 func populate_items(items: Array) -> void:
 	"""Populates the grid with item data"""
+	print("[ItemGrid] Populating ", category, " with ", items.size(), " items")
+	print("[ItemGrid] Items: ", items)
+
 	for i in range(slots.size()):
 		if i < items.size():
 			var item_entry = items[i]
@@ -80,11 +83,19 @@ func populate_items(items: Array) -> void:
 			else:
 				item_id = item_entry
 
+			print("[ItemGrid] Processing slot ", i, " with item_id: ", item_id)
+
 			# Get full item data
 			var item_data = InventoryManager.get_item_data(item_id)
 
-			# Add count for consumables
+			if item_data.is_empty():
+				print("[ItemGrid] WARNING: No data found for item: ", item_id)
+			else:
+				print("[ItemGrid] Found item data: ", item_data.get("name", "???"))
+
+			# Add count for consumables - need to duplicate to modify
 			if item_entry is Dictionary and item_entry.has("count"):
+				item_data = item_data.duplicate(true)  # Deep copy
 				item_data["count"] = item_entry["count"]
 
 			slots[i].setup(item_data, i)
