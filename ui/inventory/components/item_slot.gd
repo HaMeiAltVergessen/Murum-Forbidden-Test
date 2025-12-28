@@ -37,9 +37,12 @@ func setup(data: Dictionary, index: int) -> void:
 	slot_index = index
 	is_empty = data.is_empty()
 
+	print("[ItemSlot] Setup slot ", index, " - empty: ", is_empty, " - data: ", data.get("name", "???"))
+
 	# Ensure nodes are found
 	if icon == null or count_label == null:
 		_find_child_nodes()
+		print("[ItemSlot] Finding child nodes - icon: ", icon != null, " label: ", count_label != null)
 
 	if is_empty:
 		_clear_slot()
@@ -49,15 +52,20 @@ func setup(data: Dictionary, index: int) -> void:
 
 func _populate_slot() -> void:
 	"""Populates the slot with item data"""
+	print("[ItemSlot] _populate_slot called - icon: ", icon != null, " label: ", count_label != null)
+
 	if not icon or not count_label:
+		print("[ItemSlot] ERROR: Missing nodes, cannot populate!")
 		return
 
 	# Create placeholder texture if icon doesn't exist
 	if item_data.has("icon") and ResourceLoader.exists(item_data["icon"]):
 		icon.texture = load(item_data["icon"])
+		print("[ItemSlot] Loaded real icon from: ", item_data["icon"])
 	else:
 		# Use colored placeholder
 		icon.texture = _create_placeholder_texture()
+		print("[ItemSlot] Created placeholder texture")
 
 		# Color based on type
 		var item_type = item_data.get("type", "")
@@ -71,12 +79,20 @@ func _populate_slot() -> void:
 			_:
 				icon.modulate = Color(0.5, 0.5, 0.5, 1.0)  # Gray
 
+		print("[ItemSlot] Set color for type: ", item_type)
+
+	# Make sure the slot is visible
+	modulate = Color(1.0, 1.0, 1.0, 1.0)
+	visible = true
+
 	# Show count for consumables
 	if item_data.has("count"):
 		count_label.visible = true
 		count_label.text = "x%d" % item_data["count"]
 	else:
 		count_label.visible = false
+
+	print("[ItemSlot] Populate complete - texture: ", icon.texture != null, " visible: ", visible)
 
 
 func _create_placeholder_texture() -> ImageTexture:
