@@ -24,26 +24,7 @@ signal inventory_changed()
 
 func _ready() -> void:
 	_load_item_database()
-	_add_test_items()  # TODO: Remove this after testing
 	print("[InventoryManager] Initialized")
-
-
-func _add_test_items() -> void:
-	"""Adds test items for development (remove in production)"""
-	# Add some consumables from each world
-	add_item("titanenblut_stein", "consumables")  # World 1
-	add_item("staub_einkehr", "consumables")  # World 1
-	add_item("resonanzstaub", "consumables")  # World 2
-	add_item("heilkraeuter", "consumables")  # Shop item
-
-	# Add some relics
-	add_item("auge_von_xy", "relics")  # World 1
-	add_item("urtraene", "relics")  # World 1
-
-	# Add a key item
-	add_item("key_item_1", "key_items")
-
-	print("[InventoryManager] Test items added (DEV MODE)")
 
 
 # ============ DATABASE LOADING ============
