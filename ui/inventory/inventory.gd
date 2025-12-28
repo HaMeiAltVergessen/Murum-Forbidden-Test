@@ -80,6 +80,21 @@ func _ready() -> void:
 
 func _setup_grids() -> void:
 	"""Sets up all item grids"""
+	# Ensure scripts are attached
+	var item_grid_script = load("res://ui/inventory/components/item_grid.gd")
+
+	if consumables_grid.get_script() == null:
+		consumables_grid.set_script(item_grid_script)
+		print("[Inventory] WARNING: ConsumablesGrid had no script, attached manually")
+
+	if relics_grid.get_script() == null:
+		relics_grid.set_script(item_grid_script)
+		print("[Inventory] WARNING: RelicsGrid had no script, attached manually")
+
+	if key_items_grid.get_script() == null:
+		key_items_grid.set_script(item_grid_script)
+		print("[Inventory] WARNING: KeyItemsGrid had no script, attached manually")
+
 	# Setup Consumables
 	consumables_grid.setup_grid("consumables", TAB_GRID_SIZES["Consumables"])
 	consumables_grid.columns = TAB_GRID_COLUMNS["Consumables"]
@@ -99,6 +114,9 @@ func _setup_grids() -> void:
 	key_items_grid.item_hovered.connect(_on_item_hovered)
 
 	grids = [consumables_grid, relics_grid, key_items_grid]
+
+	print("[Inventory] Grids setup complete")
+	print("  ConsumablesGrid has methods: ", consumables_grid.has_method("populate_items"))
 
 
 func _input(event: InputEvent) -> void:
