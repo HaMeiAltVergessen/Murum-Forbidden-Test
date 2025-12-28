@@ -75,10 +75,13 @@ func _ready() -> void:
 	yes_button.pressed.connect(_on_confirm_yes)
 	no_button.pressed.connect(_on_confirm_no)
 
-	# Connect inventory signals
-	InventoryManager.inventory_changed.connect(_refresh_current_tab)
+	# Connect inventory signals with safety check
+	if is_instance_valid(InventoryManager):
+		InventoryManager.inventory_changed.connect(_refresh_current_tab)
+	else:
+		push_error("[Inventory] InventoryManager not available at _ready()")
 
-	print("[Inventory] Initialized")
+	print("[Inventory] Initialized (Autoload)")
 
 
 func _setup_grids() -> void:
@@ -168,11 +171,20 @@ func toggle_inventory() -> void:
 
 func open_inventory() -> void:
 	"""Opens the inventory"""
+	# Safety check
+	if not is_instance_valid(InventoryManager):
+		push_error("[Inventory] Cannot open - InventoryManager not valid")
+		return
+
+	if not is_instance_valid(GameManager):
+		push_error("[Inventory] Cannot open - GameManager not valid")
+		return
+
 	is_open = true
 	visible = true
 
 	# Disable player movement and input
-	if GameManager.player:
+	if GameManager.player and is_instance_valid(GameManager.player):
 		GameManager.player.set_physics_process(false)
 		GameManager.player.set_process_input(false)
 		print("[Inventory] Player input disabled")
@@ -197,7 +209,7 @@ func close_inventory() -> void:
 	visible = false
 
 	# Re-enable player movement and input
-	if GameManager.player:
+	if is_instance_valid(GameManager) and GameManager.player and is_instance_valid(GameManager.player):
 		GameManager.player.set_physics_process(true)
 		GameManager.player.set_process_input(true)
 		print("[Inventory] Player input enabled")

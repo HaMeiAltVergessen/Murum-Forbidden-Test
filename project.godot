@@ -25,6 +25,7 @@ GlobalTimeEffects="*res://core/autoloads/global_time_effects.gd"
 SaveManager="*res://core/autoloads/save_manager.gd"
 WorldManager="*res://core/autoloads/world_manager.gd"
 InventoryManager="*res://core/autoloads/inventory_manager.gd"
+InventoryUI="*res://ui/inventory/inventory.tscn"
 
 [display]
 

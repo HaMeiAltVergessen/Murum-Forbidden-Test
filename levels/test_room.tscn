@@ -176,5 +176,3 @@ item_id = "schluessel_ruinen"
 [node name="HUD" parent="." instance=ExtResource("7_hud_scene")]
 
 [node name="DeathScreen" parent="." instance=ExtResource("8_death_screen_scene")]
-
-[node name="Inventory" parent="." instance=ExtResource("9_inventory_scene")]
