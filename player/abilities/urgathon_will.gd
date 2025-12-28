@@ -266,7 +266,7 @@ func _execute_release(level: int) -> void:
 	_update_counter_ui()
 
 	# Check if this was the last use
-	if use_count > MAX_USES:
+	if use_count >= MAX_USES:
 		print("[UrgathonWill] FINAL USE - Triggering game over")
 		_trigger_game_over()
 		return
