@@ -1,0 +1,329 @@
+[gd_scene load_steps=7 format=3 uid="uid://item_room_scene"]
+
+[ext_resource type="Script" path="res://levels/item_room.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://player_murum" path="res://player/murum.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://pickup_base_scene" path="res://environment/pickups/pickup_base.tscn" id="3"]
+[ext_resource type="Script" path="res://environment/door.gd" id="4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
+size = Vector2(4000, 100)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
+size = Vector2(100, 200)
+
+[node name="ItemRoom" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(960, 540)
+zoom = Vector2(0.6, 0.6)
+
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(960, 1000)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("RectangleShape2D_floor")
+
+[node name="FloorVisual" type="ColorRect" parent="Floor"]
+offset_left = -2000.0
+offset_top = -50.0
+offset_right = 2000.0
+offset_bottom = 50.0
+color = Color(0.3, 0.3, 0.35, 1)
+
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 1920.0
+offset_bottom = 1080.0
+color = Color(0.15, 0.15, 0.2, 1)
+
+[node name="Title" type="Label" parent="."]
+offset_left = 400.0
+offset_top = 50.0
+offset_right = 1520.0
+offset_bottom = 120.0
+theme_override_font_sizes/font_size = 48
+text = "ITEM DATABASE - ALL 51 ITEMS"
+horizontal_alignment = 1
+
+[node name="Instructions" type="Label" parent="."]
+offset_left = 400.0
+offset_top = 130.0
+offset_right = 1520.0
+offset_bottom = 180.0
+theme_override_font_sizes/font_size = 24
+text = "Press E to pick up items | Press I to open Inventory | Door to TestRoom on right →"
+horizontal_alignment = 1
+
+[node name="Player" parent="." instance=ExtResource("2")]
+position = Vector2(200, 850)
+
+[node name="Door" type="Area2D" parent="."]
+position = Vector2(1800, 800)
+script = ExtResource("4")
+collision_layer = 1
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Door"]
+shape = SubResource("RectangleShape2D_door")
+
+[node name="DoorVisual" type="ColorRect" parent="Door"]
+offset_left = -50.0
+offset_top = -100.0
+offset_right = 50.0
+offset_bottom = 100.0
+color = Color(0.8, 0.6, 0.2, 1)
+
+[node name="DoorLabel" type="Label" parent="Door"]
+offset_left = -80.0
+offset_top = -130.0
+offset_right = 80.0
+offset_bottom = -90.0
+theme_override_font_sizes/font_size = 20
+text = "TestRoom"
+horizontal_alignment = 1
+
+[node name="Items" type="Node2D" parent="."]
+
+[node name="SectionLabel_Consumables" type="Label" parent="Items"]
+offset_left = 200.0
+offset_top = 220.0
+offset_right = 600.0
+offset_bottom = 260.0
+theme_override_font_sizes/font_size = 28
+text = "CONSUMABLES (Green)"
+
+[node name="Pickup_titanenblut_stein" parent="Items" instance=ExtResource("3")]
+position = Vector2(250, 300)
+item_id = "titanenblut_stein"
+category = "consumables"
+
+[node name="Pickup_staub_einkehr" parent="Items" instance=ExtResource("3")]
+position = Vector2(400, 300)
+item_id = "staub_einkehr"
+category = "consumables"
+
+[node name="Pickup_splitter_erdung" parent="Items" instance=ExtResource("3")]
+position = Vector2(550, 300)
+item_id = "splitter_erdung"
+category = "consumables"
+
+[node name="Pickup_resonanzstaub" parent="Items" instance=ExtResource("3")]
+position = Vector2(700, 300)
+item_id = "resonanzstaub"
+category = "consumables"
+
+[node name="Pickup_energiesplitter" parent="Items" instance=ExtResource("3")]
+position = Vector2(850, 300)
+item_id = "energiesplitter"
+category = "consumables"
+
+[node name="Pickup_impulsdraht" parent="Items" instance=ExtResource("3")]
+position = Vector2(1000, 300)
+item_id = "impulsdraht"
+category = "consumables"
+
+[node name="Pickup_kondensatorfragment" parent="Items" instance=ExtResource("3")]
+position = Vector2(1150, 300)
+item_id = "kondensatorfragment"
+category = "consumables"
+
+[node name="Pickup_fragment_beharrlichkeit" parent="Items" instance=ExtResource("3")]
+position = Vector2(1300, 300)
+item_id = "fragment_beharrlichkeit"
+category = "consumables"
+
+[node name="Pickup_heilkraeuter" parent="Items" instance=ExtResource("3")]
+position = Vector2(250, 450)
+item_id = "heilkraeuter"
+category = "consumables"
+
+[node name="Pickup_glas_gleichgewicht" parent="Items" instance=ExtResource("3")]
+position = Vector2(400, 450)
+item_id = "glas_gleichgewicht"
+category = "consumables"
+
+[node name="Pickup_schimmernde_essenz" parent="Items" instance=ExtResource("3")]
+position = Vector2(550, 450)
+item_id = "schimmernde_essenz"
+category = "consumables"
+
+[node name="Pickup_zerbrochene_muenze" parent="Items" instance=ExtResource("3")]
+position = Vector2(700, 450)
+item_id = "zerbrochene_muenze"
+category = "consumables"
+
+[node name="Pickup_funken_gnade" parent="Items" instance=ExtResource("3")]
+position = Vector2(850, 450)
+item_id = "funken_gnade"
+category = "consumables"
+
+[node name="Pickup_nanofluid_patch" parent="Items" instance=ExtResource("3")]
+position = Vector2(1000, 450)
+item_id = "nanofluid_patch"
+category = "consumables"
+
+[node name="Pickup_stabilitaet_modul" parent="Items" instance=ExtResource("3")]
+position = Vector2(1150, 450)
+item_id = "stabilitaet_modul"
+category = "consumables"
+
+[node name="Pickup_neural_booster" parent="Items" instance=ExtResource("3")]
+position = Vector2(1300, 450)
+item_id = "neural_booster"
+category = "consumables"
+
+[node name="Pickup_katalysatorchip" parent="Items" instance=ExtResource("3")]
+position = Vector2(250, 600)
+item_id = "katalysatorchip"
+category = "consumables"
+
+[node name="Pickup_core_reconstructor" parent="Items" instance=ExtResource("3")]
+position = Vector2(400, 600)
+item_id = "core_reconstructor"
+category = "consumables"
+
+[node name="Pickup_blut_vergessens" parent="Items" instance=ExtResource("3")]
+position = Vector2(550, 600)
+item_id = "blut_vergessens"
+category = "consumables"
+
+[node name="Pickup_zerfallener_segen" parent="Items" instance=ExtResource("3")]
+position = Vector2(700, 600)
+item_id = "zerfallener_segen"
+category = "consumables"
+
+[node name="Pickup_zeitlose_scherbe" parent="Items" instance=ExtResource("3")]
+position = Vector2(850, 600)
+item_id = "zeitlose_scherbe"
+category = "consumables"
+
+[node name="Pickup_echo_relikt" parent="Items" instance=ExtResource("3")]
+position = Vector2(1000, 600)
+item_id = "echo_relikt"
+category = "consumables"
+
+[node name="Pickup_traene_erwachens" parent="Items" instance=ExtResource("3")]
+position = Vector2(1150, 600)
+item_id = "traene_erwachens"
+category = "consumables"
+
+[node name="SectionLabel_Relics" type="Label" parent="Items"]
+offset_left = 1450.0
+offset_top = 220.0
+offset_right = 1750.0
+offset_bottom = 260.0
+theme_override_font_sizes/font_size = 28
+text = "RELICS (Gold)"
+
+[node name="Pickup_auge_von_xy" parent="Items" instance=ExtResource("3")]
+position = Vector2(1450, 300)
+item_id = "auge_von_xy"
+category = "relics"
+
+[node name="Pickup_splitter_von_xa" parent="Items" instance=ExtResource("3")]
+position = Vector2(1450, 450)
+item_id = "splitter_von_xa"
+category = "relics"
+
+[node name="Pickup_urtraene" parent="Items" instance=ExtResource("3")]
+position = Vector2(1450, 600)
+item_id = "urtraene"
+category = "relics"
+
+[node name="Pickup_quanten_nucleus" parent="Items" instance=ExtResource("3")]
+position = Vector2(1600, 300)
+item_id = "quanten_nucleus"
+category = "relics"
+
+[node name="Pickup_lins_kette" parent="Items" instance=ExtResource("3")]
+position = Vector2(1600, 450)
+item_id = "lins_kette"
+category = "relics"
+
+[node name="Pickup_blitzmauer" parent="Items" instance=ExtResource("3")]
+position = Vector2(1600, 600)
+item_id = "blitzmauer"
+category = "relics"
+
+[node name="Pickup_runenfragment_lythrun" parent="Items" instance=ExtResource("3")]
+position = Vector2(1750, 300)
+item_id = "runenfragment_lythrun"
+category = "relics"
+
+[node name="Pickup_echo_antwort" parent="Items" instance=ExtResource("3")]
+position = Vector2(1750, 450)
+item_id = "echo_antwort"
+category = "relics"
+
+[node name="Pickup_herz_leere" parent="Items" instance=ExtResource("3")]
+position = Vector2(1750, 600)
+item_id = "herz_leere"
+category = "relics"
+
+[node name="SectionLabel_KeyItems" type="Label" parent="Items"]
+offset_left = 200.0
+offset_top = 670.0
+offset_right = 550.0
+offset_bottom = 710.0
+theme_override_font_sizes/font_size = 28
+text = "KEY ITEMS (Blue)"
+
+[node name="Pickup_key_item_1" parent="Items" instance=ExtResource("3")]
+position = Vector2(250, 750)
+item_id = "key_item_1"
+category = "key_items"
+
+[node name="Pickup_key_item_2" parent="Items" instance=ExtResource("3")]
+position = Vector2(400, 750)
+item_id = "key_item_2"
+category = "key_items"
+
+[node name="Pickup_key_item_3" parent="Items" instance=ExtResource("3")]
+position = Vector2(550, 750)
+item_id = "key_item_3"
+category = "key_items"
+
+[node name="Pickup_key_item_4" parent="Items" instance=ExtResource("3")]
+position = Vector2(700, 750)
+item_id = "key_item_4"
+category = "key_items"
+
+[node name="Pickup_key_item_5" parent="Items" instance=ExtResource("3")]
+position = Vector2(850, 750)
+item_id = "key_item_5"
+category = "key_items"
+
+[node name="Pickup_key_item_6" parent="Items" instance=ExtResource("3")]
+position = Vector2(1000, 750)
+item_id = "key_item_6"
+category = "key_items"
+
+[node name="Pickup_key_item_7" parent="Items" instance=ExtResource("3")]
+position = Vector2(250, 900)
+item_id = "key_item_7"
+category = "key_items"
+
+[node name="Pickup_key_item_8" parent="Items" instance=ExtResource("3")]
+position = Vector2(400, 900)
+item_id = "key_item_8"
+category = "key_items"
+
+[node name="Pickup_key_item_9" parent="Items" instance=ExtResource("3")]
+position = Vector2(550, 900)
+item_id = "key_item_9"
+category = "key_items"
+
+[node name="Pickup_key_item_10" parent="Items" instance=ExtResource("3")]
+position = Vector2(700, 900)
+item_id = "key_item_10"
+category = "key_items"
+
+[node name="Pickup_key_item_11" parent="Items" instance=ExtResource("3")]
+position = Vector2(850, 900)
+item_id = "key_item_11"
+category = "key_items"
+
+[node name="Pickup_key_item_12" parent="Items" instance=ExtResource("3")]
+position = Vector2(1000, 900)
+item_id = "key_item_12"
+category = "key_items"
