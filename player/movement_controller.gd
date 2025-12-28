@@ -17,7 +17,7 @@ class_name MovementController
 @export var max_jumps: int = 2  # Allows double jump
 
 # ============ DASH CONFIGURATION ============
-@export var dash_distance: float = 250.0
+@export var dash_distance: float = 375.0  # Increased by 50% (from 250.0)
 @export var dash_duration: float = 0.2
 @export var dash_mana_cost: int = 20
 @export var dash_cooldown: float = 1.0

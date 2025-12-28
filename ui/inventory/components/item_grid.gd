@@ -29,7 +29,6 @@ func setup_grid(category_name: String, max_slots: int) -> void:
 
 	for i in range(max_slots):
 		var slot = PanelContainer.new()
-		slot.set_script(item_slot_script)
 		slot.custom_minimum_size = Vector2(80, 80)
 		slot.focus_mode = Control.FOCUS_ALL
 
@@ -67,12 +66,24 @@ func setup_grid(category_name: String, max_slots: int) -> void:
 		margin.add_child(vbox)
 		slot.add_child(margin)
 
-		# Connect signals
-		slot.slot_selected.connect(_on_slot_selected)
-		slot.slot_hovered.connect(_on_slot_hovered)
-
+		# ADD CHILD FIRST, THEN SET SCRIPT!
 		add_child(slot)
+
+		# Now set script and it will call _ready()
+		slot.set_script(item_slot_script)
+
+		# Store reference
 		slots.append(slot)
+
+	# Now connect signals AFTER all slots are ready
+	await get_tree().process_frame
+
+	for slot in slots:
+		# Connect signals
+		if slot.has_signal("slot_selected"):
+			slot.slot_selected.connect(_on_slot_selected)
+		if slot.has_signal("slot_hovered"):
+			slot.slot_hovered.connect(_on_slot_hovered)
 
 
 func populate_items(items: Array) -> void:
