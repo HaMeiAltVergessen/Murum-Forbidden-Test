@@ -19,33 +19,51 @@ func display_item(item_data: Dictionary) -> void:
 		return
 
 	# Icon
-	if item_data.has("icon") and ResourceLoader.exists(item_data["icon"]):
-		icon_display.texture = load(item_data["icon"])
-	else:
-		icon_display.texture = null
+	if icon_display:
+		if item_data.has("icon") and ResourceLoader.exists(item_data["icon"]):
+			icon_display.texture = load(item_data["icon"])
+		else:
+			# Create placeholder
+			icon_display.texture = _create_placeholder_icon()
+
+			# Color based on type
+			var item_type = item_data.get("type", "")
+			match item_type:
+				"consumable":
+					icon_display.modulate = Color(0.3, 0.8, 0.3, 1.0)  # Green
+				"relic":
+					icon_display.modulate = Color(0.8, 0.6, 0.2, 1.0)  # Gold
+				"key_item":
+					icon_display.modulate = Color(0.5, 0.5, 0.8, 1.0)  # Blue
+				_:
+					icon_display.modulate = Color(0.5, 0.5, 0.5, 1.0)
 
 	# Name
-	name_label.text = item_data.get("name", "???")
+	if name_label:
+		name_label.text = item_data.get("name", "???")
 
 	# World
-	var world_num = item_data.get("world", 0)
-	if world_num > 0:
-		world_label.text = "Welt: %d" % world_num
-		world_label.visible = true
-	else:
-		world_label.visible = false
+	if world_label:
+		var world_num = item_data.get("world", 0)
+		if world_num > 0:
+			world_label.text = "Welt: %d" % world_num
+			world_label.visible = true
+		else:
+			world_label.visible = false
 
 	# Lore
-	var lore = item_data.get("lore", "")
-	if lore != "":
-		lore_text.text = lore
-		lore_text.visible = true
-	else:
-		lore_text.visible = false
+	if lore_text:
+		var lore = item_data.get("lore", "")
+		if lore != "":
+			lore_text.text = lore
+			lore_text.visible = true
+		else:
+			lore_text.visible = false
 
 	# Clear previous effects
-	for child in effect_list.get_children():
-		child.queue_free()
+	if effect_list:
+		for child in effect_list.get_children():
+			child.queue_free()
 
 	# Display effects/stats based on type
 	var item_type = item_data.get("type", "")
@@ -61,7 +79,7 @@ func display_item(item_data: Dictionary) -> void:
 
 func _display_consumable_effect(item_data: Dictionary) -> void:
 	"""Displays consumable effect information"""
-	if not item_data.has("effect"):
+	if not item_data.has("effect") or not effect_list:
 		return
 
 	var effect = item_data["effect"]
@@ -103,7 +121,7 @@ func _display_consumable_effect(item_data: Dictionary) -> void:
 
 func _display_relic_stats(item_data: Dictionary) -> void:
 	"""Displays relic passive stats"""
-	if not item_data.has("stats"):
+	if not item_data.has("stats") or not effect_list:
 		return
 
 	var stats = item_data["stats"]
@@ -165,6 +183,9 @@ func _format_stat(stat_key: String, value) -> String:
 
 func _display_key_item_description(item_data: Dictionary) -> void:
 	"""Displays key item description"""
+	if not effect_list:
+		return
+
 	if item_data.has("description"):
 		var desc_label = Label.new()
 		desc_label.text = item_data["description"]
@@ -174,10 +195,23 @@ func _display_key_item_description(item_data: Dictionary) -> void:
 
 func clear_display() -> void:
 	"""Clears the display"""
-	icon_display.texture = null
-	name_label.text = ""
-	world_label.visible = false
-	lore_text.visible = false
+	if icon_display:
+		icon_display.texture = null
+		icon_display.modulate = Color.WHITE
+	if name_label:
+		name_label.text = ""
+	if world_label:
+		world_label.visible = false
+	if lore_text:
+		lore_text.visible = false
 
-	for child in effect_list.get_children():
-		child.queue_free()
+	if effect_list:
+		for child in effect_list.get_children():
+			child.queue_free()
+
+
+func _create_placeholder_icon() -> ImageTexture:
+	"""Creates a simple colored square as placeholder"""
+	var img = Image.create(128, 128, false, Image.FORMAT_RGBA8)
+	img.fill(Color.WHITE)
+	return ImageTexture.create_from_image(img)
