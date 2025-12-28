@@ -33,6 +33,14 @@ func setup_grid(category_name: String, max_slots: int) -> void:
 		slot.custom_minimum_size = Vector2(80, 80)
 		slot.focus_mode = Control.FOCUS_ALL
 
+		# Make slots brighter with a StyleBox
+		var style = StyleBoxFlat.new()
+		style.bg_color = Color(0.25, 0.25, 0.3, 1.0)  # Lighter dark blue-gray
+		style.border_width_all = 2
+		style.border_color = Color(0.4, 0.4, 0.5, 1.0)  # Visible border
+		style.corner_radius_all = 4
+		slot.add_theme_stylebox_override("panel", style)
+
 		# Create internal structure for slot
 		var margin = MarginContainer.new()
 		margin.add_theme_constant_override("margin_left", 4)
