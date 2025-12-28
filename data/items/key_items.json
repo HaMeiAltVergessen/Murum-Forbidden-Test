@@ -1,0 +1,49 @@
+{
+  "items": [
+    {
+      "id": "schluessel_ruinen",
+      "name": "Schlüssel der Ruinen",
+      "type": "key_item",
+      "world": 1,
+      "icon": "res://assets/items/schluessel_ruinen.png",
+      "lore": "Verrosteter Schlüssel. Öffnet die vergessenen Katakomben.",
+      "description": "Benötigt für: Zugang zu den Tiefen der Ruinen"
+    },
+    {
+      "id": "sternenkarte",
+      "name": "Sternenkarte",
+      "type": "key_item",
+      "world": 2,
+      "icon": "res://assets/items/sternenkarte.png",
+      "lore": "Karte eines vergessenen Himmels. Zeigt Wege, die nicht existieren.",
+      "description": "Benötigt für: Navigation durch die Nebellande"
+    },
+    {
+      "id": "siegelstein",
+      "name": "Siegelstein",
+      "type": "key_item",
+      "world": 2,
+      "icon": "res://assets/items/siegelstein.png",
+      "lore": "Stein mit einem glühenden Symbol. Pulsiert im Rhythmus eines toten Herzens.",
+      "description": "Benötigt für: Öffnen der versiegelten Tore"
+    },
+    {
+      "id": "schattenschluessel",
+      "name": "Schattenschlüssel",
+      "type": "key_item",
+      "world": 3,
+      "icon": "res://assets/items/schattenschluessel.png",
+      "lore": "Schlüssel aus purem Schatten. Flüchtig, aber beständig.",
+      "description": "Benötigt für: Zugang zum Schattenpalast"
+    },
+    {
+      "id": "fragmentierte_krone",
+      "name": "Fragmentierte Krone",
+      "type": "key_item",
+      "world": 3,
+      "icon": "res://assets/items/fragmentierte_krone.png",
+      "lore": "Krone eines gefallenen Königs. Jeder Splitter schreit nach Rache.",
+      "description": "Story-Item: Symbol der verlorenen Herrschaft"
+    }
+  ]
+}

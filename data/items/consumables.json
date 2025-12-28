@@ -1,0 +1,46 @@
+{
+  "items": [
+    {
+      "id": "titanenblut_stein",
+      "name": "Titanenblut-Stein",
+      "type": "consumable",
+      "world": 1,
+      "icon": "res://assets/items/titanenblut_stein.png",
+      "description": "Poröser Stein, der langsam Wärme abgibt",
+      "effect": {
+        "type": "hp_regen",
+        "value": 0.008,
+        "duration": 30
+      },
+      "lore": "Basalstes Heilmittel; absichtlich schwach. Jede Wunde muss verdient werden."
+    },
+    {
+      "id": "mana_elixier",
+      "name": "Mana-Elixier",
+      "type": "consumable",
+      "world": 1,
+      "icon": "res://assets/items/mana_elixier.png",
+      "description": "Blaues Elixier, das Mana regeneriert",
+      "effect": {
+        "type": "mana_regen",
+        "value": 0.015,
+        "duration": 20
+      },
+      "lore": "Kondensierte Essenz. Brennt beim Trinken."
+    },
+    {
+      "id": "heilkristall",
+      "name": "Heilkristall",
+      "type": "consumable",
+      "world": 2,
+      "icon": "res://assets/items/heilkristall.png",
+      "description": "Kristall, der sofort heilt",
+      "effect": {
+        "type": "instant_heal",
+        "value": 50,
+        "duration": 0
+      },
+      "lore": "Splitter einer verlorenen Gottheit."
+    }
+  ]
+}

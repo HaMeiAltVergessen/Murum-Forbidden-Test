@@ -1,0 +1,46 @@
+[gd_scene load_steps=3 format=3 uid="uid://pickup_base_scene"]
+
+[ext_resource type="Script" path="res://environment/pickups/pickup_base.gd" id="1"]
+[ext_resource type="Script" path="res://environment/pickups/pickup_prompt.gd" id="2"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 48.0
+
+[node name="PickupBase" type="Area2D"]
+script = ExtResource("1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_1")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(2, 2)
+
+[node name="PickupPrompt" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -60.0
+offset_top = -80.0
+offset_right = 60.0
+offset_bottom = -40.0
+script = ExtResource("2")
+
+[node name="PanelContainer" type="PanelContainer" parent="PickupPrompt"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="PickupPrompt/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 4
+
+[node name="Label" type="Label" parent="PickupPrompt/PanelContainer/MarginContainer"]
+layout_mode = 2
+text = "E - Aufheben"
+horizontal_alignment = 1
+vertical_alignment = 1
