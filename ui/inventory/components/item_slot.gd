@@ -61,28 +61,33 @@ func _populate_slot() -> void:
 	# Create placeholder texture if icon doesn't exist
 	if item_data.has("icon") and ResourceLoader.exists(item_data["icon"]):
 		icon.texture = load(item_data["icon"])
+		icon.modulate = Color(1.0, 1.0, 1.0, 1.0)  # Reset modulate for real icons
 		print("[ItemSlot] Loaded real icon from: ", item_data["icon"])
 	else:
 		# Use colored placeholder
 		icon.texture = _create_placeholder_texture()
 		print("[ItemSlot] Created placeholder texture")
 
-		# Color based on type
+		# Color based on type - BRIGHTER colors
 		var item_type = item_data.get("type", "")
 		match item_type:
 			"consumable":
-				icon.modulate = Color(0.3, 0.8, 0.3, 1.0)  # Green
+				icon.modulate = Color(0.4, 1.0, 0.4, 1.0)  # Bright Green
+				print("[ItemSlot] Set GREEN color for consumable")
 			"relic":
-				icon.modulate = Color(0.8, 0.6, 0.2, 1.0)  # Gold
+				icon.modulate = Color(1.0, 0.8, 0.2, 1.0)  # Bright Gold
+				print("[ItemSlot] Set GOLD color for relic")
 			"key_item":
-				icon.modulate = Color(0.5, 0.5, 0.8, 1.0)  # Blue
+				icon.modulate = Color(0.6, 0.6, 1.0, 1.0)  # Bright Blue
+				print("[ItemSlot] Set BLUE color for key_item")
 			_:
-				icon.modulate = Color(0.5, 0.5, 0.5, 1.0)  # Gray
+				icon.modulate = Color(0.7, 0.7, 0.7, 1.0)  # Light Gray
+				print("[ItemSlot] Set GRAY color for unknown type")
 
-		print("[ItemSlot] Set color for type: ", item_type)
+		print("[ItemSlot] Final icon.modulate: ", icon.modulate)
 
-	# Make sure the slot is visible
-	modulate = Color(1.0, 1.0, 1.0, 1.0)
+	# Make sure the slot is visible and NOT dimmed
+	self_modulate = Color(1.0, 1.0, 1.0, 1.0)  # Full brightness for filled slots
 	visible = true
 
 	# Show count for consumables
@@ -106,10 +111,10 @@ func _clear_slot() -> void:
 	"""Clears the slot visuals"""
 	if icon:
 		icon.texture = null
-		icon.modulate = Color(1.0, 1.0, 1.0, 1.0)  # Reset modulate
+		icon.modulate = Color(0.5, 0.5, 0.5, 1.0)  # Dim gray for empty slots
 	if count_label:
 		count_label.visible = false
-	modulate = Color(0.3, 0.3, 0.3, 0.5)
+	self_modulate = Color(0.6, 0.6, 0.6, 1.0)  # Dim the entire slot
 
 
 func set_selected(selected: bool) -> void:

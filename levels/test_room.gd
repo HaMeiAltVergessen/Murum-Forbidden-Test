@@ -4,8 +4,8 @@ class_name TestRoom
 
 # ============ REFERENCES ============
 @onready var player_spawn: Marker2D = $SpawnPoints/PlayerSpawn
-@onready var lever: Lever = $Environment/Lever
-@onready var door: Door = $Environment/Door
+@onready var lever: Node = $Environment/Lever  # Generic Node instead of Lever type
+@onready var door: Node = $Environment/Door    # Generic Node instead of Door type
 @onready var player: Murum = $Murum
 
 # ============ ROOM BOUNDS ============

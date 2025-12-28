@@ -38,8 +38,5 @@ func _on_body_exited(body: Node2D) -> void:
 func _load_scene() -> void:
 	print("[Door] Loading scene: ", target_scene)
 
-	# Store spawn position in GameManager
-	if GameManager.has_method("set_spawn_override"):
-		GameManager.set_spawn_override(spawn_position)
-
+	# Simple scene transition - spawn position handled by target scene
 	get_tree().change_scene_to_file(target_scene)

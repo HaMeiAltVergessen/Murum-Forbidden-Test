@@ -187,7 +187,24 @@ func open_inventory() -> void:
 	if GameManager.player and is_instance_valid(GameManager.player):
 		GameManager.player.set_physics_process(false)
 		GameManager.player.set_process_input(false)
-		print("[Inventory] Player input disabled")
+
+		# Also disable all player components that might process input
+		var movement = GameManager.player.get_node_or_null("MovementController")
+		if movement:
+			movement.set_process_input(false)
+			movement.set_physics_process(false)
+
+		var combat = GameManager.player.get_node_or_null("CombatSystem")
+		if combat:
+			combat.set_process_input(false)
+			combat.set_physics_process(false)
+
+		var dodge = GameManager.player.get_node_or_null("DodgeRollSystem")
+		if dodge:
+			dodge.set_process_input(false)
+			dodge.set_physics_process(false)
+
+		print("[Inventory] Player input and movement fully disabled")
 
 	print("[Inventory] Opening - current inventory state:")
 	print("  Consumables: ", InventoryManager.get_items_by_category("consumables"))
@@ -212,7 +229,24 @@ func close_inventory() -> void:
 	if is_instance_valid(GameManager) and GameManager.player and is_instance_valid(GameManager.player):
 		GameManager.player.set_physics_process(true)
 		GameManager.player.set_process_input(true)
-		print("[Inventory] Player input enabled")
+
+		# Also re-enable all player components
+		var movement = GameManager.player.get_node_or_null("MovementController")
+		if movement:
+			movement.set_process_input(true)
+			movement.set_physics_process(true)
+
+		var combat = GameManager.player.get_node_or_null("CombatSystem")
+		if combat:
+			combat.set_process_input(true)
+			combat.set_physics_process(true)
+
+		var dodge = GameManager.player.get_node_or_null("DodgeRollSystem")
+		if dodge:
+			dodge.set_process_input(true)
+			dodge.set_physics_process(true)
+
+		print("[Inventory] Player input and movement fully enabled")
 
 	print("[Inventory] Closed")
 
