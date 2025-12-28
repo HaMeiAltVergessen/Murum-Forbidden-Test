@@ -36,9 +36,9 @@ func setup_grid(category_name: String, max_slots: int) -> void:
 		# Make slots brighter with a StyleBox
 		var style = StyleBoxFlat.new()
 		style.bg_color = Color(0.25, 0.25, 0.3, 1.0)  # Lighter dark blue-gray
-		style.border_width_all = 2
+		style.set_border_width_all(2)  # Use method instead of property
 		style.border_color = Color(0.4, 0.4, 0.5, 1.0)  # Visible border
-		style.corner_radius_all = 4
+		style.set_corner_radius_all(4)  # Use method instead of property
 		slot.add_theme_stylebox_override("panel", style)
 
 		# Create internal structure for slot
