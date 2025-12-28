@@ -150,10 +150,15 @@ func open_inventory() -> void:
 	is_open = true
 	visible = true
 
-	# Refresh all tabs
+	print("[Inventory] Opening - current inventory state:")
+	print("  Consumables: ", InventoryManager.get_items_by_category("consumables"))
+	print("  Relics: ", InventoryManager.get_items_by_category("relics"))
+	print("  Key Items: ", InventoryManager.get_items_by_category("key_items"))
+
+	# Refresh all tabs BEFORE switching (to populate data)
 	_refresh_all_tabs()
 
-	# Select first tab
+	# Select first tab (this will refresh again, but that's ok)
 	switch_tab(Tab.CONSUMABLES)
 
 	print("[Inventory] Opened")
@@ -215,6 +220,7 @@ func _refresh_current_tab() -> void:
 func _refresh_tab_data(grid: GridContainer, category: String) -> void:
 	"""Refreshes a specific tab's data"""
 	var items = InventoryManager.get_items_by_category(category)
+	print("[Inventory] Refreshing ", category, " tab with ", items.size(), " items")
 	grid.populate_items(items)
 
 
