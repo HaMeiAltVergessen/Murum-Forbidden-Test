@@ -9,6 +9,8 @@
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="6_door_scene"]
 [ext_resource type="PackedScene" uid="uid://cg1yfqr5u0pjd" path="res://ui/hud.tscn" id="7_hud_scene"]
 [ext_resource type="PackedScene" uid="uid://cnwm5dx2vx7b4" path="res://ui/death_screen.tscn" id="8_death_screen_scene"]
+[ext_resource type="PackedScene" uid="uid://inventory_scene" path="res://ui/inventory/inventory.tscn" id="9_inventory_scene"]
+[ext_resource type="PackedScene" uid="uid://pickup_base_scene" path="res://environment/pickups/pickup_base.tscn" id="10_pickup_scene"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_floor"]
 texture_region_size = Vector2i(32, 32)
@@ -157,6 +159,22 @@ target_room = "worlds/world_1_ruins/rooms/room_01_entry"
 spawn_point = "default"
 required_levers = Array[NodePath]([NodePath("../Lever")])
 
+[node name="Pickups" type="Node2D" parent="Environment"]
+
+[node name="PickupTitanenblut" parent="Environment/Pickups" instance=ExtResource("10_pickup_scene")]
+position = Vector2(300, 950)
+item_id = "titanenblut_stein"
+
+[node name="PickupUrtraene" parent="Environment/Pickups" instance=ExtResource("10_pickup_scene")]
+position = Vector2(600, 750)
+item_id = "urtraene"
+
+[node name="PickupSchluessel" parent="Environment/Pickups" instance=ExtResource("10_pickup_scene")]
+position = Vector2(1200, 950)
+item_id = "schluessel_ruinen"
+
 [node name="HUD" parent="." instance=ExtResource("7_hud_scene")]
 
 [node name="DeathScreen" parent="." instance=ExtResource("8_death_screen_scene")]
+
+[node name="Inventory" parent="." instance=ExtResource("9_inventory_scene")]

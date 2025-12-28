@@ -328,6 +328,16 @@ signal air_reset_hit(count: int, damage: int)
 ## Emitted when air reset ends
 signal air_reset_ended(total_hits: int)
 
+# ============ INVENTORY SIGNALS ============
+## Emitted when a relic is equipped (stats should be applied)
+signal relic_equipped(relic_id: String, stats: Dictionary)
+
+## Emitted when a relic is unequipped (stats should be removed)
+signal relic_unequipped(relic_id: String, stats: Dictionary)
+
+## Emitted when an item is picked up
+signal item_picked_up(item_id: String, item_name: String, category: String)
+
 
 func _ready() -> void:
 	print("[EventBus] Initialized")

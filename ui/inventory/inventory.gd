@@ -1,0 +1,282 @@
+extends CanvasLayer
+## Main Inventory UI Controller
+## Manages tabs, navigation, and item interactions
+
+# ============ TAB CONFIGURATION ============
+enum Tab {
+	CONSUMABLES = 0,
+	RELICS = 1,
+	KEY_ITEMS = 2
+}
+
+const TAB_NAMES = ["Consumables", "Relics", "Key Items"]
+const TAB_GRID_SIZES = {
+	"Consumables": 20,  # 4x5
+	"Relics": 9,        # 3x3
+	"Key_Items": 16     # 4x4
+}
+
+const TAB_GRID_COLUMNS = {
+	"Consumables": 4,
+	"Relics": 3,
+	"Key_Items": 4
+}
+
+# ============ NODE REFERENCES ============
+@onready var inventory_panel: Control = $InventoryPanel
+@onready var tab_header: HBoxContainer = $InventoryPanel/MainContainer/TabHeader
+@onready var content_container: HBoxContainer = $InventoryPanel/MainContainer/ContentContainer
+
+# Tabs
+@onready var consumables_tab: Button = $InventoryPanel/MainContainer/TabHeader/ConsumablesTab
+@onready var relics_tab: Button = $InventoryPanel/MainContainer/TabHeader/RelicsTab
+@onready var key_items_tab: Button = $InventoryPanel/MainContainer/TabHeader/KeyItemsTab
+
+# Grids
+@onready var consumables_grid: GridContainer = $InventoryPanel/MainContainer/ContentContainer/GridPanel/MarginContainer/ConsumablesGrid
+@onready var relics_grid: GridContainer = $InventoryPanel/MainContainer/ContentContainer/GridPanel/MarginContainer/RelicsGrid
+@onready var key_items_grid: GridContainer = $InventoryPanel/MainContainer/ContentContainer/GridPanel/MarginContainer/KeyItemsGrid
+
+# Detail panel
+@onready var detail_panel: PanelContainer = $InventoryPanel/MainContainer/ContentContainer/DetailPanel
+
+# Confirmation popup
+@onready var confirmation_popup: PopupPanel = $ConfirmationPopup
+@onready var popup_label: Label = $ConfirmationPopup/MarginContainer/VBoxContainer/QuestionLabel
+@onready var yes_button: Button = $ConfirmationPopup/MarginContainer/VBoxContainer/ButtonContainer/YesButton
+@onready var no_button: Button = $ConfirmationPopup/MarginContainer/VBoxContainer/ButtonContainer/NoButton
+
+# ============ STATE ============
+var current_tab: Tab = Tab.CONSUMABLES
+var is_open: bool = false
+var pending_use_item: Dictionary = {}
+
+# Grid references
+var grids: Array[GridContainer] = []
+
+
+func _ready() -> void:
+	# Hide by default
+	visible = false
+	is_open = false
+
+	# Setup grids
+	_setup_grids()
+
+	# Connect tab buttons
+	consumables_tab.pressed.connect(func(): switch_tab(Tab.CONSUMABLES))
+	relics_tab.pressed.connect(func(): switch_tab(Tab.RELICS))
+	key_items_tab.pressed.connect(func(): switch_tab(Tab.KEY_ITEMS))
+
+	# Connect popup buttons
+	yes_button.pressed.connect(_on_confirm_yes)
+	no_button.pressed.connect(_on_confirm_no)
+
+	# Connect inventory signals
+	InventoryManager.inventory_changed.connect(_refresh_current_tab)
+
+	print("[Inventory] Initialized")
+
+
+func _setup_grids() -> void:
+	"""Sets up all item grids"""
+	# Setup Consumables
+	consumables_grid.setup_grid("consumables", TAB_GRID_SIZES["Consumables"])
+	consumables_grid.columns = TAB_GRID_COLUMNS["Consumables"]
+	consumables_grid.item_selected.connect(_on_item_selected)
+	consumables_grid.item_hovered.connect(_on_item_hovered)
+
+	# Setup Relics
+	relics_grid.setup_grid("relics", TAB_GRID_SIZES["Relics"])
+	relics_grid.columns = TAB_GRID_COLUMNS["Relics"]
+	relics_grid.item_selected.connect(_on_item_selected)
+	relics_grid.item_hovered.connect(_on_item_hovered)
+
+	# Setup Key Items
+	key_items_grid.setup_grid("key_items", TAB_GRID_SIZES["Key_Items"])
+	key_items_grid.columns = TAB_GRID_COLUMNS["Key_Items"]
+	key_items_grid.item_selected.connect(_on_item_selected)
+	key_items_grid.item_hovered.connect(_on_item_hovered)
+
+	grids = [consumables_grid, relics_grid, key_items_grid]
+
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("inventory_toggle"):
+		toggle_inventory()
+		get_viewport().set_input_as_handled()
+
+	if not is_open:
+		return
+
+	# Tab switching
+	if event.is_action_pressed("tab_right"):
+		switch_tab((current_tab + 1) % 3)
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("tab_left"):
+		switch_tab((current_tab - 1 + 3) % 3)
+		get_viewport().set_input_as_handled()
+
+	# Grid navigation
+	if event.is_action_pressed("ui_left"):
+		_navigate_grid(Vector2i(-1, 0))
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("ui_right"):
+		_navigate_grid(Vector2i(1, 0))
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("ui_up"):
+		_navigate_grid(Vector2i(0, -1))
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("ui_down"):
+		_navigate_grid(Vector2i(0, 1))
+		get_viewport().set_input_as_handled()
+
+	# Close inventory
+	if event.is_action_pressed("ui_cancel"):
+		close_inventory()
+		get_viewport().set_input_as_handled()
+
+
+func toggle_inventory() -> void:
+	"""Toggles inventory open/closed"""
+	if is_open:
+		close_inventory()
+	else:
+		open_inventory()
+
+
+func open_inventory() -> void:
+	"""Opens the inventory"""
+	is_open = true
+	visible = true
+
+	# Refresh all tabs
+	_refresh_all_tabs()
+
+	# Select first tab
+	switch_tab(Tab.CONSUMABLES)
+
+	print("[Inventory] Opened")
+
+
+func close_inventory() -> void:
+	"""Closes the inventory"""
+	is_open = false
+	visible = false
+
+	print("[Inventory] Closed")
+
+
+func switch_tab(tab: Tab) -> void:
+	"""Switches to a different tab"""
+	current_tab = tab
+
+	# Hide all grids
+	consumables_grid.visible = false
+	relics_grid.visible = false
+	key_items_grid.visible = false
+
+	# Update tab button states
+	consumables_tab.button_pressed = (tab == Tab.CONSUMABLES)
+	relics_tab.button_pressed = (tab == Tab.RELICS)
+	key_items_tab.button_pressed = (tab == Tab.KEY_ITEMS)
+
+	# Show current grid
+	match tab:
+		Tab.CONSUMABLES:
+			consumables_grid.visible = true
+			_refresh_tab_data(consumables_grid, "consumables")
+		Tab.RELICS:
+			relics_grid.visible = true
+			_refresh_tab_data(relics_grid, "relics")
+		Tab.KEY_ITEMS:
+			key_items_grid.visible = true
+			_refresh_tab_data(key_items_grid, "key_items")
+
+
+func _refresh_all_tabs() -> void:
+	"""Refreshes all tab data"""
+	_refresh_tab_data(consumables_grid, "consumables")
+	_refresh_tab_data(relics_grid, "relics")
+	_refresh_tab_data(key_items_grid, "key_items")
+
+
+func _refresh_current_tab() -> void:
+	"""Refreshes only the current tab"""
+	match current_tab:
+		Tab.CONSUMABLES:
+			_refresh_tab_data(consumables_grid, "consumables")
+		Tab.RELICS:
+			_refresh_tab_data(relics_grid, "relics")
+		Tab.KEY_ITEMS:
+			_refresh_tab_data(key_items_grid, "key_items")
+
+
+func _refresh_tab_data(grid: GridContainer, category: String) -> void:
+	"""Refreshes a specific tab's data"""
+	var items = InventoryManager.get_items_by_category(category)
+	grid.populate_items(items)
+
+
+func _navigate_grid(direction: Vector2i) -> void:
+	"""Navigates the current grid"""
+	var current_grid = grids[current_tab]
+	current_grid.navigate(direction)
+
+
+func _on_item_hovered(item_data: Dictionary) -> void:
+	"""Handles item hover - updates detail panel"""
+	detail_panel.display_item(item_data)
+
+
+func _on_item_selected(item_data: Dictionary) -> void:
+	"""Handles item selection"""
+	var item_type = item_data.get("type", "")
+
+	# Only consumables can be used
+	if item_type == "consumable":
+		_show_use_confirmation(item_data)
+	else:
+		# For relics and key items, just inspect (already shown in detail panel)
+		print("[Inventory] Inspecting: ", item_data.get("name", ""))
+
+
+func _show_use_confirmation(item_data: Dictionary) -> void:
+	"""Shows the use item confirmation popup"""
+	pending_use_item = item_data
+
+	var item_name = item_data.get("name", "???")
+	popup_label.text = "%s verwenden?" % item_name
+
+	# Show popup
+	confirmation_popup.popup_centered()
+
+	# Focus yes button
+	yes_button.grab_focus()
+
+
+func _on_confirm_yes() -> void:
+	"""Handles 'Yes' in confirmation popup"""
+	confirmation_popup.hide()
+
+	if pending_use_item.is_empty():
+		return
+
+	var item_id = pending_use_item.get("id", "")
+	if item_id != "":
+		# Use the item
+		var success = InventoryManager.use_item(item_id)
+
+		if success:
+			print("[Inventory] Used item: ", item_id)
+			# Grid will auto-refresh via signal
+		else:
+			print("[Inventory] Failed to use item: ", item_id)
+
+	pending_use_item = {}
+
+
+func _on_confirm_no() -> void:
+	"""Handles 'No' in confirmation popup"""
+	confirmation_popup.hide()
+	pending_use_item = {}

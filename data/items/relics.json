@@ -1,0 +1,112 @@
+{
+  "items": [
+    {
+      "id": "auge_von_xy",
+      "name": "Auge von Xy",
+      "type": "relic",
+      "world": 1,
+      "icon": "res://assets/relics/auge_xy.png",
+      "lore": "Auge eines Heiligen. Sieht durch Zeit.",
+      "stats": {
+        "parry_window_bonus": 0.1,
+        "parry_slow_duration": 0.5
+      }
+    },
+    {
+      "id": "urtraene",
+      "name": "Urträne",
+      "type": "relic",
+      "world": 1,
+      "icon": "res://assets/relics/urtraene.png",
+      "lore": "Hoffnung in der Zerstörung. Träne eines sterbenden Titanen.",
+      "stats": {
+        "mana_regen_bonus": 0.15,
+        "mana_regen_interval": 20
+      }
+    },
+    {
+      "id": "herz_des_golems",
+      "name": "Herz des Golems",
+      "type": "relic",
+      "world": 1,
+      "icon": "res://assets/relics/herz_golem.png",
+      "lore": "Schlägt noch. Flüstert von vergessenen Schlachten.",
+      "stats": {
+        "max_hp_bonus": 25,
+        "damage_reduction": 0.05
+      }
+    },
+    {
+      "id": "schattenfeder",
+      "name": "Schattenfeder",
+      "type": "relic",
+      "world": 2,
+      "icon": "res://assets/relics/schattenfeder.png",
+      "lore": "Feder eines nicht existierenden Vogels. Macht Bewegung flüssiger.",
+      "stats": {
+        "dodge_roll_cooldown_reduction": 0.2,
+        "dodge_roll_distance_bonus": 20
+      }
+    },
+    {
+      "id": "splitter_der_ewigkeit",
+      "name": "Splitter der Ewigkeit",
+      "type": "relic",
+      "world": 2,
+      "icon": "res://assets/relics/splitter_ewigkeit.png",
+      "lore": "Zeit selbst, gefroren in Glas. Flüstert Wahrheiten.",
+      "stats": {
+        "combo_timer_bonus": 2.0,
+        "ability_cooldown_reduction": 0.1
+      }
+    },
+    {
+      "id": "knochen_des_wächters",
+      "name": "Knochen des Wächters",
+      "type": "relic",
+      "world": 2,
+      "icon": "res://assets/relics/knochen_waechter.png",
+      "lore": "Knochen eines vergessenen Beschützers. Verleiht Standhaftigkeit.",
+      "stats": {
+        "knockback_resistance": 0.3,
+        "stagger_threshold_bonus": 15
+      }
+    },
+    {
+      "id": "mondamulett",
+      "name": "Mondamulett",
+      "type": "relic",
+      "world": 3,
+      "icon": "res://assets/relics/mondamulett.png",
+      "lore": "Geschmiedet im Licht eines toten Mondes. Verleiht nächtliche Kraft.",
+      "stats": {
+        "damage_bonus": 0.12,
+        "critical_chance": 0.08
+      }
+    },
+    {
+      "id": "echo_der_tiefe",
+      "name": "Echo der Tiefe",
+      "type": "relic",
+      "world": 3,
+      "icon": "res://assets/relics/echo_tiefe.png",
+      "lore": "Stimmen aus dem Abgrund. Sie sprechen von verbotenen Techniken.",
+      "stats": {
+        "ability_damage_bonus": 0.2,
+        "mana_cost_reduction": 0.15
+      }
+    },
+    {
+      "id": "blutsiegel",
+      "name": "Blutsiegel",
+      "type": "relic",
+      "world": 3,
+      "icon": "res://assets/relics/blutsiegel.png",
+      "lore": "Siegel eines uralten Paktes. Kraft gegen Schmerz.",
+      "stats": {
+        "damage_bonus": 0.25,
+        "hp_drain_per_second": 2
+      }
+    }
+  ]
+}
