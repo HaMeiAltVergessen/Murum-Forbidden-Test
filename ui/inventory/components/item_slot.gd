@@ -9,8 +9,9 @@ var slot_index: int = 0
 var is_selected: bool = false
 var is_empty: bool = true
 
-@onready var icon: TextureRect = $MarginContainer/VBoxContainer/Icon
-@onready var count_label: Label = $MarginContainer/VBoxContainer/CountLabel
+# References to child nodes (found dynamically)
+var icon: TextureRect = null
+var count_label: Label = null
 
 
 func _ready() -> void:
@@ -18,12 +19,27 @@ func _ready() -> void:
 	focus_entered.connect(_on_focus_entered)
 	gui_input.connect(_on_gui_input)
 
+	# Find child nodes
+	_find_child_nodes()
+
+
+func _find_child_nodes() -> void:
+	"""Finds the icon and count_label nodes"""
+	if has_node("MarginContainer/VBoxContainer/Icon"):
+		icon = get_node("MarginContainer/VBoxContainer/Icon")
+	if has_node("MarginContainer/VBoxContainer/CountLabel"):
+		count_label = get_node("MarginContainer/VBoxContainer/CountLabel")
+
 
 func setup(data: Dictionary, index: int) -> void:
 	"""Sets up the slot with item data"""
 	item_data = data
 	slot_index = index
 	is_empty = data.is_empty()
+
+	# Ensure nodes are found
+	if icon == null or count_label == null:
+		_find_child_nodes()
 
 	if is_empty:
 		_clear_slot()
@@ -33,12 +49,27 @@ func setup(data: Dictionary, index: int) -> void:
 
 func _populate_slot() -> void:
 	"""Populates the slot with item data"""
-	# Load icon
+	if not icon or not count_label:
+		return
+
+	# Create placeholder texture if icon doesn't exist
 	if item_data.has("icon") and ResourceLoader.exists(item_data["icon"]):
 		icon.texture = load(item_data["icon"])
 	else:
-		# Use placeholder if icon doesn't exist
-		icon.modulate = Color(0.5, 0.5, 0.5, 1.0)
+		# Use colored placeholder
+		icon.texture = _create_placeholder_texture()
+
+		# Color based on type
+		var item_type = item_data.get("type", "")
+		match item_type:
+			"consumable":
+				icon.modulate = Color(0.3, 0.8, 0.3, 1.0)  # Green
+			"relic":
+				icon.modulate = Color(0.8, 0.6, 0.2, 1.0)  # Gold
+			"key_item":
+				icon.modulate = Color(0.5, 0.5, 0.8, 1.0)  # Blue
+			_:
+				icon.modulate = Color(0.5, 0.5, 0.5, 1.0)  # Gray
 
 	# Show count for consumables
 	if item_data.has("count"):
@@ -48,10 +79,20 @@ func _populate_slot() -> void:
 		count_label.visible = false
 
 
+func _create_placeholder_texture() -> ImageTexture:
+	"""Creates a simple colored square as placeholder"""
+	var img = Image.create(64, 64, false, Image.FORMAT_RGBA8)
+	img.fill(Color.WHITE)
+	return ImageTexture.create_from_image(img)
+
+
 func _clear_slot() -> void:
 	"""Clears the slot visuals"""
-	icon.texture = null
-	count_label.visible = false
+	if icon:
+		icon.texture = null
+		icon.modulate = Color(1.0, 1.0, 1.0, 1.0)  # Reset modulate
+	if count_label:
+		count_label.visible = false
 	modulate = Color(0.3, 0.3, 0.3, 0.5)
 
 

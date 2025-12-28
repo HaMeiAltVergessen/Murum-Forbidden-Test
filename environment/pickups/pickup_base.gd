@@ -24,6 +24,10 @@ func _ready() -> void:
 	set_collision_layer_value(1, true)  # World layer
 	set_collision_mask_value(2, true)   # Player layer
 
+	# Update visual if item_id is set
+	if item_id != "":
+		_update_visual()
+
 	print("[Pickup] Created: ", item_id)
 
 
@@ -128,7 +132,38 @@ func _update_visual() -> void:
 	"""Updates the pickup visual based on item data"""
 	var item_data = InventoryManager.get_item_data(item_id)
 
-	if item_data.has("icon") and sprite:
-		var icon_path = item_data["icon"]
-		if ResourceLoader.exists(icon_path):
-			sprite.texture = load(icon_path)
+	if sprite:
+		if item_data.has("icon") and ResourceLoader.exists(item_data["icon"]):
+			sprite.texture = load(item_data["icon"])
+		else:
+			# Create placeholder
+			sprite.texture = _create_placeholder_texture()
+
+			# Color based on type
+			var item_type = item_data.get("type", "")
+			match item_type:
+				"consumable":
+					sprite.modulate = Color(0.3, 0.8, 0.3, 1.0)  # Green
+				"relic":
+					sprite.modulate = Color(0.8, 0.6, 0.2, 1.0)  # Gold
+				"key_item":
+					sprite.modulate = Color(0.5, 0.5, 0.8, 1.0)  # Blue
+				_:
+					sprite.modulate = Color(0.7, 0.7, 0.7, 1.0)  # Gray
+
+
+func _create_placeholder_texture() -> ImageTexture:
+	"""Creates a simple colored circle as placeholder"""
+	var img = Image.create(32, 32, false, Image.FORMAT_RGBA8)
+	img.fill(Color.WHITE)
+
+	# Draw a simple circle
+	for y in range(32):
+		for x in range(32):
+			var dx = x - 16
+			var dy = y - 16
+			var dist = sqrt(dx * dx + dy * dy)
+			if dist > 14:
+				img.set_pixel(x, y, Color.TRANSPARENT)
+
+	return ImageTexture.create_from_image(img)
