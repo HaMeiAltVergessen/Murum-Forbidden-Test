@@ -60,6 +60,9 @@ func _ready() -> void:
 	visible = false
 	is_open = false
 
+	# Wait for child nodes to be ready before setting up grids
+	await get_tree().process_frame
+
 	# Setup grids
 	_setup_grids()
 
@@ -168,6 +171,12 @@ func open_inventory() -> void:
 	is_open = true
 	visible = true
 
+	# Disable player movement and input
+	if GameManager.player:
+		GameManager.player.set_physics_process(false)
+		GameManager.player.set_process_input(false)
+		print("[Inventory] Player input disabled")
+
 	print("[Inventory] Opening - current inventory state:")
 	print("  Consumables: ", InventoryManager.get_items_by_category("consumables"))
 	print("  Relics: ", InventoryManager.get_items_by_category("relics"))
@@ -186,6 +195,12 @@ func close_inventory() -> void:
 	"""Closes the inventory"""
 	is_open = false
 	visible = false
+
+	# Re-enable player movement and input
+	if GameManager.player:
+		GameManager.player.set_physics_process(true)
+		GameManager.player.set_process_input(true)
+		print("[Inventory] Player input enabled")
 
 	print("[Inventory] Closed")
 
@@ -237,9 +252,18 @@ func _refresh_current_tab() -> void:
 
 func _refresh_tab_data(grid: GridContainer, category: String) -> void:
 	"""Refreshes a specific tab's data"""
+	# Safety check in case this is called during scene transition
+	if not is_instance_valid(InventoryManager):
+		print("[Inventory] WARNING: InventoryManager not available")
+		return
+
 	var items = InventoryManager.get_items_by_category(category)
 	print("[Inventory] Refreshing ", category, " tab with ", items.size(), " items")
-	grid.populate_items(items)
+
+	if grid and grid.has_method("populate_items"):
+		grid.populate_items(items)
+	else:
+		print("[Inventory] ERROR: Grid doesn't have populate_items method!")
 
 
 func _navigate_grid(direction: Vector2i) -> void:
