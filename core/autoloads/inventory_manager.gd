@@ -24,27 +24,35 @@ signal inventory_changed()
 
 func _ready() -> void:
 	_load_item_database()
+	_add_test_items()  # TODO: Remove this after testing
 	print("[InventoryManager] Initialized")
+
+
+func _add_test_items() -> void:
+	"""Adds test items for development (remove in production)"""
+	# Add some consumables from each world
+	add_item("titanenblut_stein", "consumables")  # World 1
+	add_item("staub_einkehr", "consumables")  # World 1
+	add_item("resonanzstaub", "consumables")  # World 2
+	add_item("heilkraeuter", "consumables")  # Shop item
+
+	# Add some relics
+	add_item("auge_von_xy", "relics")  # World 1
+	add_item("urtraene", "relics")  # World 1
+
+	# Add a key item
+	add_item("key_item_1", "key_items")
+
+	print("[InventoryManager] Test items added (DEV MODE)")
 
 
 # ============ DATABASE LOADING ============
 func _load_item_database() -> void:
-	"""Loads all item data from JSON files"""
-	_load_category("consumables", "res://data/items/consumables.json")
-	_load_category("relics", "res://data/items/relics.json")
-	_load_category("key_items", "res://data/items/key_items.json")
-
-	print("[InventoryManager] Loaded ", item_database["consumables"].size(), " consumables")
-	print("[InventoryManager] Loaded ", item_database["relics"].size(), " relics")
-	print("[InventoryManager] Loaded ", item_database["key_items"].size(), " key items")
-
-
-func _load_category(category: String, path: String) -> void:
-	"""Loads items from a JSON file into the database"""
-	var file = FileAccess.open(path, FileAccess.READ)
+	"""Loads all item data from unified database"""
+	var file = FileAccess.open("res://data/items/item_database.json", FileAccess.READ)
 
 	if not file:
-		push_error("[InventoryManager] Failed to load " + category + " from " + path)
+		push_error("[InventoryManager] Failed to load item database")
 		return
 
 	var json_string = file.get_as_text()
@@ -54,19 +62,37 @@ func _load_category(category: String, path: String) -> void:
 	var parse_result = json.parse(json_string)
 
 	if parse_result != OK:
-		push_error("[InventoryManager] Failed to parse JSON for " + category)
+		push_error("[InventoryManager] Failed to parse item database JSON")
 		return
 
 	var data = json.get_data()
 
 	if not data.has("items"):
-		push_error("[InventoryManager] JSON missing 'items' array for " + category)
+		push_error("[InventoryManager] Database missing 'items' array")
 		return
 
-	# Store items by ID
+	# Categorize items by type
 	for item in data["items"]:
-		if item.has("id"):
-			item_database[category][item["id"]] = item
+		if not item.has("id") or not item.has("type"):
+			continue
+
+		var item_id = item["id"]
+		var item_type = item["type"]
+
+		# Map item type to category
+		match item_type:
+			"consumable":
+				item_database["consumables"][item_id] = item
+			"relic":
+				item_database["relics"][item_id] = item
+			"key_item":
+				item_database["key_items"][item_id] = item
+			_:
+				push_warning("[InventoryManager] Unknown item type: " + item_type + " for " + item_id)
+
+	print("[InventoryManager] Loaded ", item_database["consumables"].size(), " consumables")
+	print("[InventoryManager] Loaded ", item_database["relics"].size(), " relics")
+	print("[InventoryManager] Loaded ", item_database["key_items"].size(), " key items")
 
 
 # ============ ITEM MANAGEMENT ============
@@ -215,13 +241,11 @@ func use_item(item_id: String) -> bool:
 
 func _apply_consumable_effect(item_data: Dictionary) -> void:
 	"""Applies the effect of a consumable"""
-	if not item_data.has("effect"):
+	if not item_data.has("stats"):
+		print("[InventoryManager] Item has no stats: ", item_data.get("name", "???"))
 		return
 
-	var effect = item_data["effect"]
-	var effect_type = effect.get("type", "")
-	var value = effect.get("value", 0)
-	var duration = effect.get("duration", 0)
+	var stats = item_data["stats"]
 
 	# Get player reference
 	var player = GameManager.player
@@ -229,15 +253,26 @@ func _apply_consumable_effect(item_data: Dictionary) -> void:
 		push_error("[InventoryManager] No player registered")
 		return
 
-	match effect_type:
-		"hp_regen":
-			_apply_hp_regen(player, value, duration)
-		"mana_regen":
-			_apply_mana_regen(player, value, duration)
-		"instant_heal":
-			_apply_instant_heal(player, value)
-		_:
-			print("[InventoryManager] Unknown effect type: ", effect_type)
+	# Check for instant heal
+	if stats.has("heal_percent"):
+		_apply_percent_heal(player, stats["heal_percent"])
+
+	# Check for HP regen over time
+	if stats.has("hp_regen_percent_per_sec") and stats.has("duration_sec"):
+		_apply_hp_regen(player, stats["hp_regen_percent_per_sec"], stats["duration_sec"])
+
+	# Check for flat HP regen
+	if stats.has("hp_regen_flat") and stats.has("duration_sec"):
+		_apply_flat_hp_regen(player, stats["hp_regen_flat"], stats["duration_sec"])
+
+	# Check for Mana regen over time
+	if stats.has("mana_regen_percent_per_sec") and stats.has("duration_sec"):
+		_apply_mana_regen(player, stats["mana_regen_percent_per_sec"], stats["duration_sec"])
+
+	# For buffs and other effects, emit signal to BuffManager (to be created)
+	if stats.has("damage_reduction") or stats.has("knockback_reduction") or stats.has("movement_speed_bonus"):
+		EventBus.emit_signal("consumable_buff_applied", item_data)
+		print("[InventoryManager] Buff effect applied: ", item_data.get("name", "???"))
 
 
 func _apply_hp_regen(player: Node, regen_rate: float, duration: float) -> void:
@@ -300,6 +335,42 @@ func _apply_instant_heal(player: Node, heal_amount: int) -> void:
 	var health_comp = player.get_node("HealthComponent")
 	health_comp.heal(heal_amount)
 	print("[InventoryManager] Applied instant heal: ", heal_amount)
+
+
+func _apply_percent_heal(player: Node, heal_percent: float) -> void:
+	"""Applies percentage-based instant healing"""
+	if not player.has_node("HealthComponent"):
+		return
+
+	var health_comp = player.get_node("HealthComponent")
+	var heal_amount = int(health_comp.max_health * heal_percent)
+	health_comp.heal(heal_amount)
+	print("[InventoryManager] Applied percent heal: ", heal_percent * 100, "% (", heal_amount, " HP)")
+
+
+func _apply_flat_hp_regen(player: Node, regen_amount: float, duration: float) -> void:
+	"""Applies flat HP regeneration over time"""
+	if not player.has_node("HealthComponent"):
+		return
+
+	var health_comp = player.get_node("HealthComponent")
+	var timer = Timer.new()
+	timer.wait_time = 5.0  # Tick every 5 seconds
+	timer.one_shot = false
+	player.add_child(timer)
+
+	var ticks_remaining = int(duration / 5.0)
+
+	timer.timeout.connect(func():
+		if ticks_remaining > 0:
+			health_comp.heal(int(regen_amount))
+			ticks_remaining -= 1
+		else:
+			timer.queue_free()
+	)
+
+	timer.start()
+	print("[InventoryManager] Applied flat HP regen: ", regen_amount, " every 5s for ", duration, "s")
 
 
 # ============ RELIC STATS ============
