@@ -14,6 +14,12 @@ class_name Murum
 
 # ============ ABILITIES ============
 var urgathon_will: Node = null
+var buff_manager: BuffManager = null
+
+# ============ RELIC BONUSES ============
+var relic_damage_bonus: float = 0.0
+var relic_attack_speed_bonus: float = 0.0
+var relic_parry_window_bonus: float = 0.0
 
 # ============ STATE ============
 var is_dead: bool = false
@@ -22,6 +28,9 @@ var is_dead: bool = false
 func _ready() -> void:
 	# Initialize abilities
 	_initialize_abilities()
+
+	# Initialize BuffManager
+	_initialize_buff_manager()
 
 	# Connect component signals
 	_connect_signals()
@@ -46,6 +55,18 @@ func _initialize_abilities() -> void:
 		print("[Murum] ERROR: Could not load UrgathonWill script!")
 
 
+func _initialize_buff_manager() -> void:
+	"""Initializes BuffManager for consumable effects"""
+	var buff_manager_script = load("res://player/buff_manager.gd")
+	if buff_manager_script:
+		buff_manager = BuffManager.new()
+		buff_manager.name = "BuffManager"
+		add_child(buff_manager)
+		print("[Murum] BuffManager added")
+	else:
+		print("[Murum] ERROR: Could not load BuffManager script!")
+
+
 func _connect_signals() -> void:
 	"""Connects all component signals"""
 	# Health signals
@@ -66,6 +87,11 @@ func _connect_signals() -> void:
 	if dodge_roll_system:
 		dodge_roll_system.dodge_started.connect(_on_dodge_started)
 		dodge_roll_system.dodge_completed.connect(_on_dodge_completed)
+
+	# Relic signals
+	if is_instance_valid(EventBus):
+		EventBus.relic_equipped.connect(_on_relic_equipped)
+		EventBus.relic_unequipped.connect(_on_relic_unequipped)
 
 
 func _register_with_game_manager() -> void:
@@ -139,6 +165,45 @@ func _on_dodge_completed() -> void:
 		combat_system.set_combat_enabled(true)
 
 
+func _on_relic_equipped(_relic_id: String, stats: Dictionary) -> void:
+	"""Handles relic being equipped - applies stat bonuses"""
+	# Damage bonus
+	if stats.has("damage_bonus"):
+		relic_damage_bonus += stats["damage_bonus"]
+
+	# Attack speed bonus
+	if stats.has("attack_speed_bonus"):
+		relic_attack_speed_bonus += stats["attack_speed_bonus"]
+
+	# Parry window bonus
+	if stats.has("parry_window_bonus"):
+		relic_parry_window_bonus += stats["parry_window_bonus"]
+
+	# Note: Other relic effects (like mana regen intervals, group damage bonuses, etc.)
+	# should be handled by their respective systems that listen to the relic_equipped signal
+
+	print("[Murum] Relic equipped - Damage bonus: ", relic_damage_bonus,
+		  " Attack speed: ", relic_attack_speed_bonus)
+
+
+func _on_relic_unequipped(_relic_id: String, stats: Dictionary) -> void:
+	"""Handles relic being unequipped - removes stat bonuses"""
+	# Damage bonus
+	if stats.has("damage_bonus"):
+		relic_damage_bonus -= stats["damage_bonus"]
+
+	# Attack speed bonus
+	if stats.has("attack_speed_bonus"):
+		relic_attack_speed_bonus -= stats["attack_speed_bonus"]
+
+	# Parry window bonus
+	if stats.has("parry_window_bonus"):
+		relic_parry_window_bonus -= stats["parry_window_bonus"]
+
+	print("[Murum] Relic unequipped - Damage bonus: ", relic_damage_bonus,
+		  " Attack speed: ", relic_attack_speed_bonus)
+
+
 # ============ VISUAL FEEDBACK ============
 func _flash_sprite() -> void:
 	"""Creates a white flash effect on damage"""
@@ -167,3 +232,33 @@ func respawn(spawn_position: Vector2) -> void:
 	set_process_input(true)
 
 	print("[Murum] Player respawned at ", spawn_position)
+
+
+func get_total_damage_multiplier() -> float:
+	"""Returns total damage multiplier from relics and buffs"""
+	var total = 1.0 + relic_damage_bonus
+	if buff_manager:
+		total += buff_manager.get_damage_bonus()
+	return total
+
+
+func get_total_attack_speed_multiplier() -> float:
+	"""Returns total attack speed multiplier from relics and buffs"""
+	var total = 1.0 + relic_attack_speed_bonus
+	if buff_manager:
+		total *= buff_manager.get_attack_speed_multiplier()
+	return total
+
+
+func get_total_movement_speed_multiplier() -> float:
+	"""Returns total movement speed multiplier from buffs"""
+	if buff_manager:
+		return buff_manager.get_movement_speed_multiplier()
+	return 1.0
+
+
+func get_damage_reduction() -> float:
+	"""Returns total damage reduction from buffs"""
+	if buff_manager:
+		return buff_manager.get_damage_reduction()
+	return 0.0

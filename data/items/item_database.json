@@ -1,0 +1,640 @@
+{
+  "version": "1.0",
+  "items": [
+    {
+      "id": "titanenblut_stein",
+      "name": "Titanenblut-Stein",
+      "type": "consumable",
+      "world": 1,
+      "category": "heal",
+      "description": "Poröser Stein, der langsam Wärme abgibt",
+      "icon": "res://assets/items/icons/titanenblut_stein.png",
+      "price": 20,
+      "effect": "Sehr langsame Lebensregeneration (+0.8% max. Leben/Sek.)",
+      "duration": "30 Sek.",
+      "design_reason": "Basalstes Heilmittel; absichtlich schwach, kein Ersatz für sauberes Spiel",
+      "stats": {
+        "hp_regen_percent_per_sec": 0.008,
+        "duration_sec": 30
+      }
+    },
+    {
+      "id": "staub_einkehr",
+      "name": "Staub der Einkehr",
+      "type": "consumable",
+      "world": 1,
+      "category": "buff",
+      "description": "Feiner Aschestaub, der beim Einatmen beruhigt",
+      "icon": "res://assets/items/icons/staub_einkehr.png",
+      "price": 25,
+      "effect": "Reduziert eingehenden Schaden (−10%)",
+      "duration": "20 Sek.",
+      "design_reason": "Defensive Einsteiger-Option; thematisch: Innehalten, Schuld akzeptieren",
+      "stats": {
+        "damage_reduction": 0.1,
+        "duration_sec": 20
+      }
+    },
+    {
+      "id": "splitter_erdung",
+      "name": "Splitter der Erdung",
+      "type": "consumable",
+      "world": 1,
+      "category": "buff",
+      "description": "Schwerer Steinsplitter, der Murum nach unten zieht",
+      "icon": "res://assets/items/icons/splitter_erdung.png",
+      "price": 30,
+      "effect": "Reduziert Rückstoß & Luftschleudern (−30% Knockback)",
+      "duration": "25 Sek.",
+      "design_reason": "Unterstützt Kontrolle ohne Schadenserhöhung; fördert Standfestigkeit",
+      "stats": {
+        "knockback_reduction": 0.3,
+        "duration_sec": 25
+      }
+    },
+    {
+      "id": "resonanzstaub",
+      "name": "Resonanzstaub",
+      "type": "consumable",
+      "world": 2,
+      "category": "buff",
+      "description": "Metallischer Staub, der unter der Haut vibriert",
+      "icon": "res://assets/items/icons/resonanzstaub.png",
+      "price": 40,
+      "effect": "Erhöht Resonanzaufbau (+25% Trefferwertung)",
+      "duration": "20 Sek.",
+      "design_reason": "Fördert aggressiven, sauberen Kampf; macht Resonanz planbarer",
+      "stats": {
+        "resonance_gain_bonus": 0.25,
+        "duration_sec": 20
+      }
+    },
+    {
+      "id": "energiesplitter",
+      "name": "Energiesplitter",
+      "type": "consumable",
+      "world": 2,
+      "category": "buff",
+      "description": "Zerbrochener Energiestein mit instabilem Puls",
+      "icon": "res://assets/items/icons/energiesplitter.png",
+      "price": 35,
+      "effect": "Langsame Mana-Regeneration (+1% max. Mana/Sek.)",
+      "duration": "25 Sek.",
+      "design_reason": "Mana bleibt gefährlich & endlich; erlaubt kleine Fehler, kein Spammen",
+      "stats": {
+        "mana_regen_percent_per_sec": 0.01,
+        "duration_sec": 25
+      }
+    },
+    {
+      "id": "impulsdraht",
+      "name": "Impulsdraht",
+      "type": "consumable",
+      "world": 2,
+      "category": "buff",
+      "description": "Aufgeladener Drahtrest zur Muskelstimulation",
+      "icon": "res://assets/items/icons/impulsdraht.png",
+      "price": 30,
+      "effect": "Erhöht Bewegungsgeschwindigkeit (+10%)",
+      "duration": "10 Sek.",
+      "design_reason": "Unterstützt aggressive Spielweise; sehr kurz, kein Dauerbuff",
+      "stats": {
+        "movement_speed_bonus": 0.1,
+        "duration_sec": 10
+      }
+    },
+    {
+      "id": "kondensatorfragment",
+      "name": "Kondensatorfragment",
+      "type": "consumable",
+      "world": 2,
+      "category": "buff",
+      "description": "Instabiler Energiespeicher",
+      "icon": "res://assets/items/icons/kondensatorfragment.png",
+      "price": 45,
+      "effect": "Erhöht max. Mana (+10%)",
+      "duration": "30 Sek.",
+      "design_reason": "Kein Regen, nur Spielraum; verstärkt Versuchung zur AoE-Nutzung",
+      "stats": {
+        "max_mana_bonus": 0.1,
+        "duration_sec": 30
+      }
+    },
+    {
+      "id": "fragment_beharrlichkeit",
+      "name": "Fragment der Beharrlichkeit",
+      "type": "consumable",
+      "world": 3,
+      "category": "buff",
+      "description": "Kaltes Bruchstück, das nicht zerfällt",
+      "icon": "res://assets/items/icons/fragment_beharrlichkeit.png",
+      "price": 50,
+      "effect": "Reduziert Umwelt- & Felddamage (−20%)",
+      "duration": "30 Sek.",
+      "design_reason": "Welt 3 ist umgebungs-tödlich; unterstützt Durchhalten",
+      "stats": {
+        "environmental_damage_reduction": 0.2,
+        "duration_sec": 30
+      }
+    },
+    {
+      "id": "heilkraeuter",
+      "name": "Heilkräuter",
+      "type": "consumable",
+      "world": 1,
+      "category": "heal",
+      "description": "Frische Kräuter mit heilenden Eigenschaften",
+      "icon": "res://assets/items/icons/heilkraeuter.png",
+      "price": 50,
+      "effect": "Stelle 40% HP wieder her",
+      "duration": "Sofort",
+      "lythrun_influence": "Lythrun heilt 20% einmal bei 50% HP",
+      "stats": {
+        "heal_percent": 0.4
+      }
+    },
+    {
+      "id": "glas_gleichgewicht",
+      "name": "Glas des Gleichgewichts",
+      "type": "consumable",
+      "world": 1,
+      "category": "buff",
+      "description": "Zerbrechliches Glas mit magischer Resonanz",
+      "icon": "res://assets/items/icons/glas_gleichgewicht.png",
+      "price": 80,
+      "effect": "+0.5s Parry-Fenster",
+      "duration": "2 Level",
+      "lythrun_influence": "Lythrun bekommt erweitertes Parry-Fenster",
+      "stats": {
+        "parry_window_bonus": 0.5,
+        "duration_levels": 2
+      }
+    },
+    {
+      "id": "schimmernde_essenz",
+      "name": "Schimmernde Essenz",
+      "type": "consumable",
+      "world": 1,
+      "category": "buff",
+      "description": "Leuchtende Flüssigkeit mit regenerativen Kräften",
+      "icon": "res://assets/items/icons/schimmernde_essenz.png",
+      "price": 100,
+      "effect": "HP-Regen (5 HP/5s)",
+      "duration": "3 Minuten",
+      "lythrun_influence": "Lythrun regeneriert langsam in Phase 2 (30s)",
+      "stats": {
+        "hp_regen_flat": 1,
+        "duration_sec": 180
+      }
+    },
+    {
+      "id": "zerbrochene_muenze",
+      "name": "Zerbrochene Münze",
+      "type": "consumable",
+      "world": 1,
+      "category": "buff",
+      "description": "Alte Münze mit mystischer Anziehungskraft",
+      "icon": "res://assets/items/icons/zerbrochene_muenze.png",
+      "price": 60,
+      "effect": "+10% Münz-Drops",
+      "duration": "3 Level",
+      "lythrun_influence": "Lythrun droppt Münzen die explodieren",
+      "stats": {
+        "gold_drop_bonus": 0.1,
+        "duration_levels": 3
+      }
+    },
+    {
+      "id": "funken_gnade",
+      "name": "Funken der Gnade",
+      "type": "consumable",
+      "world": 1,
+      "category": "revive",
+      "description": "Göttlicher Funke, der den Tod verweigert",
+      "icon": "res://assets/items/icons/funken_gnade.png",
+      "price": 200,
+      "effect": "Respawn an Todesort",
+      "duration": "Permanent",
+      "lythrun_influence": "+1 Lythrun Revive, heilt 25%",
+      "stats": {
+        "revive_on_death": true,
+        "revive_hp_percent": 0.25
+      }
+    },
+    {
+      "id": "nanofluid_patch",
+      "name": "Nanofluid-Patch",
+      "type": "consumable",
+      "world": 2,
+      "category": "heal",
+      "description": "Kybernetischer Patch mit Nano-Reparatur-Flüssigkeit",
+      "icon": "res://assets/items/icons/nanofluid_patch.png",
+      "price": 110,
+      "effect": "Heile 50% HP",
+      "duration": "3 Nutzungen",
+      "lythrun_influence": "Lythrun nutzt Selbst-Reparatur (+15% HP einmal)",
+      "stats": {
+        "heal_percent": 0.5,
+        "max_uses": 3
+      }
+    },
+    {
+      "id": "stabilitaet_modul",
+      "name": "Stabilität-Modul",
+      "type": "consumable",
+      "world": 2,
+      "category": "buff",
+      "description": "Biomechanisches Modul zur Schadensreduktion",
+      "icon": "res://assets/items/icons/stabilitaet_modul.png",
+      "price": 150,
+      "effect": "−25% Genommener Schaden",
+      "duration": "3 Level",
+      "lythrun_influence": "Lythrun erhält +5% Rüstung",
+      "stats": {
+        "damage_reduction": 0.25,
+        "duration_levels": 3
+      }
+    },
+    {
+      "id": "neural_booster",
+      "name": "Neural-Booster",
+      "type": "consumable",
+      "world": 2,
+      "category": "buff",
+      "description": "Neurostimulator für erhöhte Reflexgeschwindigkeit",
+      "icon": "res://assets/items/icons/neural_booster.png",
+      "price": 130,
+      "effect": "+10% Angriffsgeschwindigkeit",
+      "duration": "5 Minuten",
+      "lythrun_influence": "Lythrun greift 10% schneller an in Phase 3",
+      "stats": {
+        "attack_speed_bonus": 0.1,
+        "duration_sec": 300
+      }
+    },
+    {
+      "id": "katalysatorchip",
+      "name": "Katalysatorchip",
+      "type": "consumable",
+      "world": 2,
+      "category": "buff",
+      "description": "Energiekatalysator für Mana-Regeneration",
+      "icon": "res://assets/items/icons/katalysatorchip.png",
+      "price": 140,
+      "effect": "Mana-Regen bei Hit",
+      "duration": "2 Level",
+      "lythrun_influence": "Lythrun lädt Energie wenn getroffen; mehr AoE-Pulse",
+      "stats": {
+        "mana_on_hit": 5,
+        "duration_levels": 2
+      }
+    },
+    {
+      "id": "core_reconstructor",
+      "name": "Core-Reconstructor",
+      "type": "consumable",
+      "world": 2,
+      "category": "revive",
+      "description": "Kybernetischer Wiederherstellungs-Core",
+      "icon": "res://assets/items/icons/core_reconstructor.png",
+      "price": 220,
+      "effect": "Revive + 10s Schadens-Buff",
+      "duration": "Permanent",
+      "lythrun_influence": "+1 Lythrun Revive (20% HP) mit Schadens-Buff",
+      "stats": {
+        "revive_on_death": true,
+        "revive_hp_percent": 0.2,
+        "revive_damage_buff": 0.15,
+        "revive_buff_duration": 10
+      }
+    },
+    {
+      "id": "blut_vergessens",
+      "name": "Blut des Vergessens",
+      "type": "consumable",
+      "world": 3,
+      "category": "heal",
+      "description": "Dunkles Blut aus dem Abgrund der Erinnerung",
+      "icon": "res://assets/items/icons/blut_vergessens.png",
+      "price": 150,
+      "effect": "Volle Heilung",
+      "duration": "Sofort",
+      "lythrun_influence": "Lythrun opfert 10% HP für massive AoE",
+      "stats": {
+        "heal_percent": 1.0
+      }
+    },
+    {
+      "id": "zerfallener_segen",
+      "name": "Zerfallener Segen",
+      "type": "consumable",
+      "world": 3,
+      "category": "buff",
+      "description": "Überrest göttlichen Schutzes",
+      "icon": "res://assets/items/icons/zerfallener_segen.png",
+      "price": 180,
+      "effect": "Ignoriere ersten genommenen Hit",
+      "duration": "3 Level",
+      "lythrun_influence": "Lythrun hat Schild (1 HP) in jeder Phase",
+      "stats": {
+        "block_next_hit": true,
+        "duration_levels": 3
+      }
+    },
+    {
+      "id": "zeitlose_scherbe",
+      "name": "Zeitlose Scherbe",
+      "type": "consumable",
+      "world": 3,
+      "category": "buff",
+      "description": "Fragment aus erstarrter Zeit",
+      "icon": "res://assets/items/icons/zeitlose_scherbe.png",
+      "price": 200,
+      "effect": "Verlangsame Gegner 3s nach Parry",
+      "duration": "Permanent",
+      "lythrun_influence": "Lythrun schafft Zeit-Verlangsamungs-Zonen",
+      "stats": {
+        "parry_slow_duration": 3,
+        "parry_slow_strength": 0.5
+      }
+    },
+    {
+      "id": "echo_relikt",
+      "name": "Echo-Relikt",
+      "type": "consumable",
+      "world": 3,
+      "category": "buff",
+      "description": "Kristallisierte Erinnerung an vergangene Stärke",
+      "icon": "res://assets/items/icons/echo_relikt.png",
+      "price": 160,
+      "effect": "+5% Schaden",
+      "duration": "Permanent",
+      "lythrun_influence": "Lythrun beschwört Schatten-Kopien vergangener Gegner",
+      "stats": {
+        "damage_bonus": 0.05
+      }
+    },
+    {
+      "id": "traene_erwachens",
+      "name": "Träne des Erwachens",
+      "type": "consumable",
+      "world": 3,
+      "category": "revive",
+      "description": "Träne aus dem Moment des Erwachens zur Wahrheit",
+      "icon": "res://assets/items/icons/traene_erwachens.png",
+      "price": 240,
+      "effect": "Revive mit vollem Mana, −50% Max HP",
+      "duration": "Permanent",
+      "lythrun_influence": "+1 Lythrun Revive (halbes HP), neues Angriffs-Muster",
+      "stats": {
+        "revive_on_death": true,
+        "revive_hp_percent": 0.5,
+        "revive_mana_percent": 1.0,
+        "revive_max_hp_penalty": 0.5
+      }
+    },
+    {
+      "id": "auge_von_xy",
+      "name": "Auge von Xy",
+      "type": "relic",
+      "world": 1,
+      "category": "passive",
+      "description": "Versteinerte Auge eines vergessenen Heiligen",
+      "icon": "res://assets/items/icons/auge_von_xy.png",
+      "lore": "Auge eines Heiligen. Das Parry-Fenster wird verlängert, und getroffene Gegner werden kurz verlangsamt.",
+      "stats": {
+        "parry_window_bonus": 0.1,
+        "parry_slow_duration": 0.5,
+        "parry_slow_strength": 0.3
+      }
+    },
+    {
+      "id": "splitter_von_xa",
+      "name": "Splitter von Xa",
+      "type": "relic",
+      "world": 1,
+      "category": "passive",
+      "description": "Knochensplitter eines legendären Märtyrers",
+      "icon": "res://assets/items/icons/splitter_von_xa.png",
+      "lore": "Knochensplitter eines legendären Märtyrers. Erhöht Schaden gegen Gruppen von 3+ Gegnern.",
+      "stats": {
+        "group_damage_bonus": 0.15,
+        "group_enemy_threshold": 3
+      }
+    },
+    {
+      "id": "urtraene",
+      "name": "Urträne",
+      "type": "relic",
+      "world": 1,
+      "category": "passive",
+      "description": "Kristallisierte Träne aus dem Schoß der Schöpfung",
+      "icon": "res://assets/items/icons/urtraene.png",
+      "lore": "Hoffnung in der Zerstörung. Eine Träne aus dem Schoß der Schöpfung. Regeneriert Mana alle 20 Sekunden.",
+      "stats": {
+        "mana_regen_interval": 20,
+        "mana_regen_percent": 0.15
+      }
+    },
+    {
+      "id": "quanten_nucleus",
+      "name": "Quanten Nucleus",
+      "type": "relic",
+      "world": 2,
+      "category": "passive",
+      "description": "Instabiler Energiekern aus dem Herzen der Maschine",
+      "icon": "res://assets/items/icons/quanten_nucleus.png",
+      "lore": "Macht, die sich selbst verstärkt. Erhöht Angriffsgeschwindigkeit permanent.",
+      "stats": {
+        "attack_speed_bonus": 0.15
+      }
+    },
+    {
+      "id": "lins_kette",
+      "name": "Lin's Kette",
+      "type": "relic",
+      "world": 2,
+      "category": "passive",
+      "description": "Kybernetische Kette mit Momentum-Verstärker",
+      "icon": "res://assets/items/icons/lins_kette.png",
+      "lore": "Kontrolle durch Bewegung. Erhöht Bewegungsgeschwindigkeit außerhalb des Kampfes.",
+      "stats": {
+        "out_of_combat_speed_bonus": 0.2
+      }
+    },
+    {
+      "id": "blitzmauer",
+      "name": "Blitzmauer",
+      "type": "relic",
+      "world": 2,
+      "category": "passive",
+      "description": "Kondensator der auf perfektes Timing reagiert",
+      "icon": "res://assets/items/icons/blitzmauer.png",
+      "lore": "Verteidigung als Energiequelle. Perfect Parry erzeugt Schockwelle mit Schaden.",
+      "stats": {
+        "perfect_parry_shockwave_damage": 20,
+        "perfect_parry_shockwave_radius": 3
+      }
+    },
+    {
+      "id": "runenfragment_lythrun",
+      "name": "Runenfragment von Lythrun",
+      "type": "relic",
+      "world": 3,
+      "category": "passive",
+      "description": "Fragment aus Lythruns zerfallender Essenz",
+      "icon": "res://assets/items/icons/runenfragment_lythrun.png",
+      "lore": "Stärke durch Wiederholung. Erhöht Urgathon-Schaden massiv für 30 Sekunden.",
+      "stats": {
+        "urgathon_damage_bonus": 0.5,
+        "urgathon_duration": 30
+      }
+    },
+    {
+      "id": "echo_antwort",
+      "name": "Echo der Antwort",
+      "type": "relic",
+      "world": 3,
+      "category": "passive",
+      "description": "Resonanz vergangener Erkenntnisse",
+      "icon": "res://assets/items/icons/echo_antwort.png",
+      "lore": "Erkenntnis als Beschleuniger. Erhöht Gesamtschaden permanent.",
+      "stats": {
+        "damage_bonus": 0.2
+      }
+    },
+    {
+      "id": "herz_leere",
+      "name": "Herz der Leere",
+      "type": "relic",
+      "world": 3,
+      "category": "passive",
+      "description": "Pulsierendes Vakuum aus dem Abgrund",
+      "icon": "res://assets/items/icons/herz_leere.png",
+      "lore": "Hingabe an das Nichts. Startet in Resonanz-Zustand, bis zum ersten Treffer.",
+      "stats": {
+        "resonance_state_until_hit": true
+      }
+    },
+    {
+      "id": "key_item_1",
+      "name": "[PLACEHOLDER] Schlüssel der Ruinen",
+      "type": "key_item",
+      "world": 1,
+      "category": "quest",
+      "description": "Ein mysteriöser Schlüssel aus der Ruinenwelt. Wird später mit Story-Kontext gefüllt.",
+      "icon": "res://assets/items/icons/placeholder_key.png",
+      "lore": "Platzhalter für Story-Schlüssel"
+    },
+    {
+      "id": "key_item_2",
+      "name": "[PLACEHOLDER] Fragment des Gedächtnisses",
+      "type": "key_item",
+      "world": 1,
+      "category": "quest",
+      "description": "Ein zerbrochenes Fragment mit Erinnerungen. Wird später mit Story-Kontext gefüllt.",
+      "icon": "res://assets/items/icons/placeholder_key.png",
+      "lore": "Platzhalter für Story-Schlüssel"
+    },
+    {
+      "id": "key_item_3",
+      "name": "[PLACEHOLDER] Siegel der Buße",
+      "type": "key_item",
+      "world": 1,
+      "category": "quest",
+      "description": "Ein göttliches Siegel der Vergebung. Wird später mit Story-Kontext gefüllt.",
+      "icon": "res://assets/items/icons/placeholder_key.png",
+      "lore": "Platzhalter für Story-Schlüssel"
+    },
+    {
+      "id": "key_item_4",
+      "name": "[PLACEHOLDER] Reliquie von Xy",
+      "type": "key_item",
+      "world": 1,
+      "category": "quest",
+      "description": "Eine heilige Reliquie aus alter Zeit. Wird später mit Story-Kontext gefüllt.",
+      "icon": "res://assets/items/icons/placeholder_key.png",
+      "lore": "Platzhalter für Story-Schlüssel"
+    },
+    {
+      "id": "key_item_5",
+      "name": "[PLACEHOLDER] Energiekern-Modul",
+      "type": "key_item",
+      "world": 2,
+      "category": "quest",
+      "description": "Ein kybernetisches Kern-Modul. Wird später mit Story-Kontext gefüllt.",
+      "icon": "res://assets/items/icons/placeholder_key.png",
+      "lore": "Platzhalter für Story-Schlüssel"
+    },
+    {
+      "id": "key_item_6",
+      "name": "[PLACEHOLDER] Lin's Datenkristall",
+      "type": "key_item",
+      "world": 2,
+      "category": "quest",
+      "description": "Ein verschlüsselter Datenkristall von Lin. Wird später mit Story-Kontext gefüllt.",
+      "icon": "res://assets/items/icons/placeholder_key.png",
+      "lore": "Platzhalter für Story-Schlüssel"
+    },
+    {
+      "id": "key_item_7",
+      "name": "[PLACEHOLDER] Zugangspass Sektor 7",
+      "type": "key_item",
+      "world": 2,
+      "category": "quest",
+      "description": "Ein digitaler Zugangspass. Wird später mit Story-Kontext gefüllt.",
+      "icon": "res://assets/items/icons/placeholder_key.png",
+      "lore": "Platzhalter für Story-Schlüssel"
+    },
+    {
+      "id": "key_item_8",
+      "name": "[PLACEHOLDER] Protokoll-Override",
+      "type": "key_item",
+      "world": 2,
+      "category": "quest",
+      "description": "Ein System-Override Schlüssel. Wird später mit Story-Kontext gefüllt.",
+      "icon": "res://assets/items/icons/placeholder_key.png",
+      "lore": "Platzhalter für Story-Schlüssel"
+    },
+    {
+      "id": "key_item_9",
+      "name": "[PLACEHOLDER] Lythruns Tagebuch",
+      "type": "key_item",
+      "world": 3,
+      "category": "quest",
+      "description": "Das persönliche Tagebuch von Lythrun. Wird später mit Story-Kontext gefüllt.",
+      "icon": "res://assets/items/icons/placeholder_key.png",
+      "lore": "Platzhalter für Story-Schlüssel"
+    },
+    {
+      "id": "key_item_10",
+      "name": "[PLACEHOLDER] Splitter der Wahrheit",
+      "type": "key_item",
+      "world": 3,
+      "category": "quest",
+      "description": "Ein Fragment der verbotenen Wahrheit. Wird später mit Story-Kontext gefüllt.",
+      "icon": "res://assets/items/icons/placeholder_key.png",
+      "lore": "Platzhalter für Story-Schlüssel"
+    },
+    {
+      "id": "key_item_11",
+      "name": "[PLACEHOLDER] Leeres Medaillon",
+      "type": "key_item",
+      "world": 3,
+      "category": "quest",
+      "description": "Ein Medaillon ohne Inhalt. Wird später mit Story-Kontext gefüllt.",
+      "icon": "res://assets/items/icons/placeholder_key.png",
+      "lore": "Platzhalter für Story-Schlüssel"
+    },
+    {
+      "id": "key_item_12",
+      "name": "[PLACEHOLDER] Götterfunke",
+      "type": "key_item",
+      "world": 3,
+      "category": "quest",
+      "description": "Ein letzter Funke göttlicher Macht. Wird später mit Story-Kontext gefüllt.",
+      "icon": "res://assets/items/icons/placeholder_key.png",
+      "lore": "Platzhalter für Story-Schlüssel"
+    }
+  ]
+}

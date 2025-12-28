@@ -338,6 +338,9 @@ signal relic_unequipped(relic_id: String, stats: Dictionary)
 ## Emitted when an item is picked up
 signal item_picked_up(item_id: String, item_name: String, category: String)
 
+## Emitted when a consumable buff is applied (handled by BuffManager)
+signal consumable_buff_applied(item_data: Dictionary)
+
 
 func _ready() -> void:
 	print("[EventBus] Initialized")
