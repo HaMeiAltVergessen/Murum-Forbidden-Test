@@ -155,8 +155,13 @@ func _input(event: InputEvent) -> void:
 		_navigate_grid(Vector2i(0, 1))
 		get_viewport().set_input_as_handled()
 
-	# Use consumable with E key or A button (ui_accept)
-	if event.is_action_pressed("interact") or event.is_action_pressed("ui_accept"):
+	# Use consumable with E key (keyboard) or A button (ui_accept on controller)
+	# Note: interact is now Y button, only use A button in inventory
+	if event.is_action_pressed("ui_accept"):
+		_use_selected_consumable()
+		get_viewport().set_input_as_handled()
+	elif event is InputEventKey and event.is_action_pressed("interact"):
+		# Allow E key on keyboard, but not Y button on controller
 		_use_selected_consumable()
 		get_viewport().set_input_as_handled()
 
