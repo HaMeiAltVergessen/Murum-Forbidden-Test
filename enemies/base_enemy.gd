@@ -12,7 +12,7 @@ class_name BaseEnemy
 @onready var knockback_component: KnockbackComponent = $KnockbackComponent
 
 # ============ STATS ============
-@export var max_health: int = 10  # Testing value
+@export var max_health: int = 40  # Original value (400 was 10x)
 @export var move_speed: float = 100.0
 @export var attack_damage: int = 10
 @export var attack_range: float = 70.0  # Must be > min_distance (60.0) to allow attacks
