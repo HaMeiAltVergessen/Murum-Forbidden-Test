@@ -56,12 +56,14 @@ position = Vector2(1000, 600)
 [node name="Doors" type="Node2D" parent="."]
 
 [node name="DoorToRoom01" parent="Doors" instance=ExtResource("5_door")]
-position = Vector2(100, 600)
+position = Vector2(100, 640)
 target_scene = "res://worlds/world_1_ruins/rooms/room_01_entry.tscn"
+spawn_position = Vector2(150, 640)
 
 [node name="DoorToRoom03" parent="Doors" instance=ExtResource("5_door")]
-position = Vector2(1180, 600)
+position = Vector2(1180, 640)
 target_scene = "res://worlds/world_1_ruins/rooms/room_03_arena.tscn"
+spawn_position = Vector2(150, 780)
 
 [node name="SpawnPoints" type="Node2D" parent="."]
 
