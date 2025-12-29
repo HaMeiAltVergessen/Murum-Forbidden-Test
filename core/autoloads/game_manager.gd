@@ -164,13 +164,24 @@ func _reposition_player_in_scene(scene: Node) -> void:
 		print("[GameManager] Cannot reposition: Scene invalid")
 		return
 
+	# If player is already a child of the target scene, just reposition
+	if player.get_parent() == scene:
+		print("[GameManager] Player already in target scene, just repositioning")
+		player.global_position = player_spawn_position
+		player.z_index = 10
+		if "velocity" in player:
+			player.velocity = Vector2.ZERO
+		return
+
 	print("[GameManager] Repositioning player. Current parent: ", player.get_parent())
 	print("[GameManager] Target scene: ", scene.name)
 	print("[GameManager] Target spawn position: ", player_spawn_position)
 
-	# Remove from root
-	if player.get_parent() == get_tree().root:
-		get_tree().root.remove_child(player)
+	# Remove from current parent (whether root or another scene)
+	var current_parent = player.get_parent()
+	if current_parent:
+		current_parent.remove_child(player)
+		print("[GameManager] Removed player from: ", current_parent.name)
 
 	# Add to new scene as last child (renders on top)
 	scene.add_child(player)
