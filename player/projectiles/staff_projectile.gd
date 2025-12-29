@@ -23,6 +23,10 @@ enum State { FLYING_OUT, RETURNING }
 var current_state: State = State.FLYING_OUT
 var distance_traveled: float = 0.0
 
+var total_rotation: float = 0.0  # Track rotation for 3-rotation return mechanic
+const ROTATIONS_BEFORE_RETURN: float = 3.0  # Number of full rotations before returning
+const ROTATION_SPEED: float = 15.0  # Rotation speed in radians per second
+
 var hit_enemies: Dictionary = {}
 const HIT_COOLDOWN: float = 0.3
 
@@ -70,8 +74,18 @@ func _physics_process(delta: float) -> void:
 		State.RETURNING:
 			_process_returning(delta)
 
-	if sprite:
-		sprite.rotation += delta * 15.0
+	# Rotate sprite and track total rotation
+	if sprite and current_state == State.FLYING_OUT:
+		var rotation_delta = delta * ROTATION_SPEED
+		sprite.rotation += rotation_delta
+		total_rotation += rotation_delta
+
+		# After 3 full rotations (6π radians), start returning
+		if total_rotation >= ROTATIONS_BEFORE_RETURN * TAU:  # TAU = 2π
+			_start_return()
+	elif sprite and current_state == State.RETURNING:
+		# Continue rotating during return
+		sprite.rotation += delta * ROTATION_SPEED
 
 	_update_hit_cooldowns(delta)
 
