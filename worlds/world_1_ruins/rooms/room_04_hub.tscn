@@ -42,11 +42,12 @@ collision_layer = 1
 collision_mask = 0
 
 [node name="ColorRect" type="ColorRect" parent="WallLeft"]
+z_index = -1
 offset_left = -20.0
 offset_top = -450.0
 offset_right = 20.0
 offset_bottom = 450.0
-color = Color(0.2, 0.18, 0.2, 1)
+color = Color(0.3, 0.25, 0.28, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
 shape = SubResource("RectangleShape2D_wall")
@@ -57,11 +58,12 @@ collision_layer = 1
 collision_mask = 0
 
 [node name="ColorRect" type="ColorRect" parent="WallRight"]
+z_index = -1
 offset_left = -20.0
 offset_top = -450.0
 offset_right = 20.0
 offset_bottom = 450.0
-color = Color(0.2, 0.18, 0.2, 1)
+color = Color(0.3, 0.25, 0.28, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("RectangleShape2D_wall")

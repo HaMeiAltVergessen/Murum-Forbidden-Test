@@ -69,7 +69,7 @@ func _load_shop_data() -> void:
 		push_error("[Merchant] Failed to parse shop data: %s (line %d)" % [json.get_error_message(), json.get_error_line()])
 		return
 
-	shop_data = json.data
+	shop_data = json.get_data()
 
 	print("[Merchant] Shop data loaded: %d items" % shop_data.get("items", []).size())
 
