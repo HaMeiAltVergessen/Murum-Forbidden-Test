@@ -24,8 +24,13 @@ var coins_collected: int = 0
 # ============ WORLD PROGRESSION ============
 var world1_arena_cleared: bool = false
 
+# ============ FLAGS SYSTEM ============
+# Generic flag system for boss defeats, unlocks, etc.
+var flags: Dictionary = {}
+
 # ============ SIGNALS ============
 signal arena_cleared
+signal flag_changed(flag_name: String, value: bool)
 
 
 func _ready() -> void:
@@ -242,3 +247,27 @@ func get_statistics() -> Dictionary:
 		"deaths": deaths,
 		"coins_collected": coins_collected
 	}
+
+
+# ============ FLAGS SYSTEM ============
+func set_flag(flag_name: String, value: bool) -> void:
+	"""Sets a game flag (for boss defeats, unlocks, etc.)"""
+	flags[flag_name] = value
+	flag_changed.emit(flag_name, value)
+	print("[GameManager] Flag set: %s = %s" % [flag_name, value])
+
+
+func get_flag(flag_name: String, default_value: bool = false) -> bool:
+	"""Gets a game flag value"""
+	return flags.get(flag_name, default_value)
+
+
+func has_flag(flag_name: String) -> bool:
+	"""Checks if a flag exists"""
+	return flags.has(flag_name)
+
+
+func clear_flags() -> void:
+	"""Clears all flags (for new game)"""
+	flags.clear()
+	print("[GameManager] All flags cleared")
