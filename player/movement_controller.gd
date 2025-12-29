@@ -17,7 +17,7 @@ class_name MovementController
 @export var max_jumps: int = 2  # Allows double jump
 
 # ============ DASH CONFIGURATION ============
-@export var dash_distance: float = 375.0  # Increased by 50% (from 250.0)
+@export var dash_distance: float = 675.0  # Increased by 80% (from 375.0)
 @export var dash_duration: float = 0.2
 @export var dash_mana_cost: int = 20
 @export var dash_cooldown: float = 1.0
@@ -330,10 +330,10 @@ func _process_dash(delta: float) -> void:
 
 
 func _dash_end_explosion() -> void:
-	"""Creates a small AoE explosion at the end of dash"""
-	const EXPLOSION_RADIUS: float = 80.0  # Small AoE
-	const EXPLOSION_DAMAGE: int = 15  # Minor damage
-	const EXPLOSION_KNOCKBACK: float = 300.0  # Moderate knockback
+	"""Creates a powerful AoE explosion at the end of dash"""
+	const EXPLOSION_RADIUS: float = 144.0  # Increased by 80% (from 80.0)
+	const EXPLOSION_DAMAGE: int = 27  # Increased by 80% (from 15)
+	const EXPLOSION_KNOCKBACK: float = 540.0  # Increased by 80% (from 300.0)
 
 	print("[MovementController] Dash end explosion!")
 
