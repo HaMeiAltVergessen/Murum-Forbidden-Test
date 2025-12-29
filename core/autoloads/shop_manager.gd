@@ -35,7 +35,8 @@ func open_shop(shop_data: Dictionary, merchant_name: String = "Merchant", greeti
 		push_warning("[ShopManager] Shop already open")
 		return
 
-	current_shop_data = shop_data
+	# Make a deep copy to avoid clearing the merchant's data
+	current_shop_data = shop_data.duplicate(true)
 	current_merchant_name = merchant_name
 	current_greeting = greeting
 
