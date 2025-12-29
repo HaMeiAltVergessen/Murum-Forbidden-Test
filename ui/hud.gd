@@ -1,6 +1,5 @@
 extends CanvasLayer
 ## HUD - Displays player health, mana, resonance, and interaction prompts
-class_name HUD
 
 # ============ REFERENCES ============
 @onready var health_container: HBoxContainer = $MarginContainer/VBoxContainer/HealthBar
