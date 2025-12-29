@@ -42,12 +42,14 @@ func setup_grid(category_name: String, max_slots: int) -> void:
 
 		# Create internal structure for slot
 		var margin = MarginContainer.new()
+		margin.name = "MarginContainer"  # IMPORTANT: Name the node!
 		margin.add_theme_constant_override("margin_left", 4)
 		margin.add_theme_constant_override("margin_right", 4)
 		margin.add_theme_constant_override("margin_top", 4)
 		margin.add_theme_constant_override("margin_bottom", 4)
 
 		var vbox = VBoxContainer.new()
+		vbox.name = "VBoxContainer"  # IMPORTANT: Name the node!
 		vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 
 		var icon = TextureRect.new()

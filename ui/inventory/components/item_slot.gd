@@ -122,9 +122,15 @@ func set_selected(selected: bool) -> void:
 	is_selected = selected
 
 	if is_selected:
-		self_modulate = Color(1.5, 1.5, 1.2, 1.0)  # Highlight
+		# Only highlight if slot is not empty
+		if not is_empty:
+			self_modulate = Color(1.5, 1.5, 1.2, 1.0)  # Highlight
 	else:
-		self_modulate = Color(1.0, 1.0, 1.0, 1.0)  # Normal
+		# Restore appropriate brightness based on empty state
+		if is_empty:
+			self_modulate = Color(0.6, 0.6, 0.6, 1.0)  # Dim for empty
+		else:
+			self_modulate = Color(1.0, 1.0, 1.0, 1.0)  # Normal for filled
 
 
 func _on_mouse_entered() -> void:
