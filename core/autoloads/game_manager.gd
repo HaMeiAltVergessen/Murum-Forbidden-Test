@@ -164,20 +164,31 @@ func _reposition_player_in_scene(scene: Node) -> void:
 		print("[GameManager] Cannot reposition: Scene invalid")
 		return
 
+	print("[GameManager] Repositioning player. Current parent: ", player.get_parent())
+	print("[GameManager] Target scene: ", scene.name)
+	print("[GameManager] Target spawn position: ", player_spawn_position)
+
 	# Remove from root
 	if player.get_parent() == get_tree().root:
 		get_tree().root.remove_child(player)
 
-	# Add to new scene
+	# Add to new scene as last child (renders on top)
 	scene.add_child(player)
 
-	# Move player to end of children list (renders on top)
-	scene.move_child(player, -1)
+	# Ensure player has correct z_index to render above background
+	player.z_index = 10
 
 	# Position at spawn point
 	player.global_position = player_spawn_position
 
-	print("[GameManager] Player repositioned in scene: ", scene.name, " at ", player_spawn_position)
+	# Reset velocity to prevent falling through floor
+	if player.has_method("reset_velocity"):
+		player.reset_velocity()
+	elif "velocity" in player:
+		player.velocity = Vector2.ZERO
+
+	print("[GameManager] Player repositioned in scene: ", scene.name, " at ", player.global_position)
+	print("[GameManager] Player z_index: ", player.z_index)
 
 
 # ============ STATISTICS ============
