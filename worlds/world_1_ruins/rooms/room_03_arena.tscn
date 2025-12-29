@@ -74,6 +74,13 @@ position = Vector2(-20, 450)
 collision_layer = 1
 collision_mask = 0
 
+[node name="ColorRect" type="ColorRect" parent="WallLeft"]
+offset_left = -20.0
+offset_top = -450.0
+offset_right = 20.0
+offset_bottom = 450.0
+color = Color(0.2, 0.15, 0.15, 1)
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
 shape = SubResource("RectangleShape2D_wall_left")
 
@@ -81,6 +88,13 @@ shape = SubResource("RectangleShape2D_wall_left")
 position = Vector2(1620, 450)
 collision_layer = 1
 collision_mask = 0
+
+[node name="ColorRect" type="ColorRect" parent="WallRight"]
+offset_left = -20.0
+offset_top = -450.0
+offset_right = 20.0
+offset_bottom = 450.0
+color = Color(0.2, 0.15, 0.15, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("RectangleShape2D_wall_right")

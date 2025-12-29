@@ -106,13 +106,18 @@ func _input(event: InputEvent) -> void:
 	if not player_in_range:
 		return
 
-	# Don't open shop if already open
-	if ShopManager.is_open():
+	# Only process when interact key is pressed
+	if not event.is_action_pressed("interact"):
 		return
 
-	if event.is_action_pressed("interact"):
-		_open_shop()
-		get_viewport().set_input_as_handled()
+	# Don't open shop if already open
+	if ShopManager.is_open():
+		print("[Merchant] Shop already open, ignoring")
+		return
+
+	print("[Merchant] Opening shop for %s" % merchant_name)
+	_open_shop()
+	get_viewport().set_input_as_handled()
 
 func _open_shop() -> void:
 	"""Opens shop UI"""
