@@ -97,19 +97,79 @@ func _on_arena_cleared() -> void:
 	"""Called when arena is cleared (during this session)"""
 
 	_show_merchant()
+	_unlock_boss_door()  # NEW: Unlock boss door for testing
 
 func _setup_boss_door() -> void:
 	"""Sets up boss door (locked for now)"""
 
 	if not door_to_boss:
+		print("[Room04] No boss door in scene")
 		return
 
-	# Lock boss door (will be unlocked in later content)
-	door_to_boss.monitoring = false
+	# Check if boss door should be unlocked (testing: after arena clear)
+	if GameManager.world1_arena_cleared:
+		_unlock_boss_door()
+	else:
+		_lock_boss_door()
 
-	# Add visual indication (if door has label)
-	if door_to_boss.has_node("PromptLabel"):
-		var label = door_to_boss.get_node("PromptLabel")
-		label.text = "Sealed by ancient magic"
+func _lock_boss_door() -> void:
+	"""Locks the boss door"""
+
+	if not door_to_boss:
+		return
+
+	if door_to_boss.has_method("lock_door"):
+		door_to_boss.lock_door()
+	else:
+		# Fallback: disable interaction
+		door_to_boss.monitoring = false
 
 	print("[Room04] Boss door locked")
+
+func _unlock_boss_door() -> void:
+	"""Unlocks the boss door (for testing purposes)"""
+
+	if not door_to_boss:
+		return
+
+	# Check if already unlocked
+	if door_to_boss.has_method("is_locked"):
+		if not door_to_boss.is_locked():
+			return  # Already unlocked
+
+	# Unlock door
+	if door_to_boss.has_method("unlock_door"):
+		door_to_boss.unlock_door()
+	else:
+		# Fallback: enable interaction
+		door_to_boss.monitoring = true
+
+	# Spawn unlock VFX
+	_spawn_door_unlock_vfx()
+
+	# Notification
+	EventBus.show_notification.emit("Boss Arena Unlocked!", 3.0)
+
+	print("[Room04] Boss door unlocked")
+
+func _spawn_door_unlock_vfx() -> void:
+	"""Spawns VFX when door unlocks"""
+
+	if not door_to_boss:
+		return
+
+	# Check if VFX scene exists
+	var vfx_path = "res://vfx/boss/boss_door_unlock.tscn"
+	if not ResourceLoader.exists(vfx_path):
+		print("[Room04] Boss door unlock VFX not found")
+		return
+
+	var vfx_scene = load(vfx_path)
+	var vfx = vfx_scene.instantiate()
+	door_to_boss.add_child(vfx)
+
+	# Start emission if it's a particle system
+	if vfx.has_method("emit"):
+		vfx.emit()
+	elif vfx is GPUParticles2D:
+		vfx.emitting = true
