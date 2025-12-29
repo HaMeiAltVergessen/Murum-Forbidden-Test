@@ -264,35 +264,45 @@ func _process_jump_buffer(delta: float) -> void:
 func _attempt_edge_climb() -> bool:
 	"""Attempts to perform an edge climb. Returns true if successful.
 	Works independently of jump count - acts as a 3rd jump option."""
+	print("[EdgeClimb] Attempting edge climb - jumps_used: %d, velocity.y: %.1f, is_falling: %s" % [jumps_used, player.velocity.y, player.velocity.y > 0])
+
 	# Check both left and right directions
 	var edge_position: Vector2 = Vector2.ZERO
 	var found_edge: bool = false
 
 	# Try right side first (facing direction has priority)
 	if facing_right:
+		print("[EdgeClimb] Checking RIGHT direction (facing right)")
 		edge_position = _detect_edge(Vector2.RIGHT)
 		if edge_position != Vector2.ZERO:
 			found_edge = true
+			print("[EdgeClimb] Found edge on RIGHT at position: ", edge_position)
 		else:
 			# Try left side if right fails
+			print("[EdgeClimb] No edge on RIGHT, trying LEFT")
 			edge_position = _detect_edge(Vector2.LEFT)
 			if edge_position != Vector2.ZERO:
 				found_edge = true
+				print("[EdgeClimb] Found edge on LEFT at position: ", edge_position)
 	else:
-		# Try left side first
+		print("[EdgeClimb] Checking LEFT direction (facing left)")
 		edge_position = _detect_edge(Vector2.LEFT)
 		if edge_position != Vector2.ZERO:
 			found_edge = true
+			print("[EdgeClimb] Found edge on LEFT at position: ", edge_position)
 		else:
 			# Try right side if left fails
+			print("[EdgeClimb] No edge on LEFT, trying RIGHT")
 			edge_position = _detect_edge(Vector2.RIGHT)
 			if edge_position != Vector2.ZERO:
 				found_edge = true
+				print("[EdgeClimb] Found edge on RIGHT at position: ", edge_position)
 
 	if found_edge:
 		_perform_edge_climb(edge_position)
 		return true
 
+	print("[EdgeClimb] No edge found in any direction")
 	return false
 
 
@@ -304,6 +314,7 @@ func _detect_edge(direction: Vector2) -> Vector2:
 
 	# Start from player center
 	var player_center: Vector2 = player.global_position
+	print("[EdgeClimb] Player center: ", player_center, " Direction: ", direction)
 
 	# Step 1: Cast horizontal ray to find wall
 	var wall_ray_start: Vector2 = player_center
@@ -319,14 +330,18 @@ func _detect_edge(direction: Vector2) -> Vector2:
 	var wall_result: Dictionary = space_state.intersect_ray(wall_query)
 
 	if wall_result.is_empty():
+		print("[EdgeClimb] No wall found in direction ", direction)
 		return Vector2.ZERO  # No wall found
 
 	var wall_position: Vector2 = wall_result.position
+	print("[EdgeClimb] Wall found at: ", wall_position)
 
 	# Step 2: Search for the platform edge vertically
 	# Search range covers both edges above AND below the player (for falling scenarios)
 	var edge_search_bottom: Vector2 = Vector2(wall_position.x, player_center.y - edge_climb_min_height)
 	var edge_search_top: Vector2 = Vector2(wall_position.x, player_center.y - edge_climb_max_height)
+
+	print("[EdgeClimb] Searching vertical range: top=", edge_search_top, " bottom=", edge_search_bottom)
 
 	# Cast ray downward from top to bottom to find the surface
 	var surface_ray_start: Vector2 = edge_search_top
@@ -342,9 +357,11 @@ func _detect_edge(direction: Vector2) -> Vector2:
 	var surface_result: Dictionary = space_state.intersect_ray(surface_query)
 
 	if surface_result.is_empty():
+		print("[EdgeClimb] No surface found in vertical range")
 		return Vector2.ZERO  # No surface found
 
 	var edge_top: Vector2 = surface_result.position
+	print("[EdgeClimb] Surface/edge found at: ", edge_top)
 
 	# Step 3: Validate edge height
 	var height_difference: float = player_center.y - edge_top.y
@@ -359,6 +376,8 @@ func _detect_edge(direction: Vector2) -> Vector2:
 	# Step 4: Check if there's enough space at the top for the player
 	var landing_position: Vector2 = edge_top + edge_climb_offset
 
+	print("[EdgeClimb] Testing landing position: ", landing_position)
+
 	# Check if landing position is clear
 	var collision_shape: CollisionShape2D = player.get_node_or_null("CollisionShape2D")
 	if collision_shape and collision_shape.shape:
@@ -370,8 +389,10 @@ func _detect_edge(direction: Vector2) -> Vector2:
 
 		var overlap_result: Array = space_state.intersect_shape(test_query, 1)
 		if not overlap_result.is_empty():
+			print("[EdgeClimb] Landing position blocked by: ", overlap_result[0])
 			return Vector2.ZERO  # Landing position is blocked
 
+	print("[EdgeClimb] Edge climb valid! Returning landing position: ", landing_position)
 	return landing_position
 
 
