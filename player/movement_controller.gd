@@ -17,9 +17,9 @@ class_name MovementController
 @export var max_jumps: int = 2  # Allows double jump
 
 # ============ EDGE CLIMB CONFIGURATION ============
-@export var edge_climb_detection_distance: float = 40.0  # How far to check for edges
-@export var edge_climb_max_height: float = 80.0  # Maximum height difference for edge climb
-@export var edge_climb_min_height: float = 20.0  # Minimum height difference (must be above player)
+@export var edge_climb_detection_distance: float = 60.0  # How far to check for edges (increased for better detection)
+@export var edge_climb_max_height: float = 120.0  # Maximum height difference for edge climb
+@export var edge_climb_min_height: float = -40.0  # Minimum height difference (can be below player when falling)
 @export var edge_climb_offset: Vector2 = Vector2(0, -10)  # Offset from edge top
 
 # ============ DASH CONFIGURATION ============
@@ -217,8 +217,10 @@ func _process_jump() -> void:
 
 	# Check for jump input
 	if Input.is_action_just_pressed("jump"):
-		# Check for edge climb first (highest priority)
+		# IMPORTANT: Edge climb is checked FIRST, before jump count validation
+		# This allows edge climb to work as a "3rd jump" after double jump is used
 		if _attempt_edge_climb():
+			print("[Movement] Edge climb successful (jumps_used: %d)" % jumps_used)
 			return
 
 		# First jump: use coyote time and jump buffer
@@ -260,7 +262,8 @@ func _process_jump_buffer(delta: float) -> void:
 
 # ============ EDGE CLIMB SYSTEM ============
 func _attempt_edge_climb() -> bool:
-	"""Attempts to perform an edge climb. Returns true if successful."""
+	"""Attempts to perform an edge climb. Returns true if successful.
+	Works independently of jump count - acts as a 3rd jump option."""
 	# Check both left and right directions
 	var edge_position: Vector2 = Vector2.ZERO
 	var found_edge: bool = false
@@ -320,14 +323,14 @@ func _detect_edge(direction: Vector2) -> Vector2:
 
 	var wall_position: Vector2 = wall_result.position
 
-	# Step 2: From wall position, cast upward to find the top edge
-	# Start slightly below player center and check upward
-	var edge_search_start: Vector2 = Vector2(wall_position.x, player_center.y + 20)
-	var edge_search_end: Vector2 = Vector2(wall_position.x, player_center.y - edge_climb_max_height)
+	# Step 2: Search for the platform edge vertically
+	# Search range covers both edges above AND below the player (for falling scenarios)
+	var edge_search_bottom: Vector2 = Vector2(wall_position.x, player_center.y - edge_climb_min_height)
+	var edge_search_top: Vector2 = Vector2(wall_position.x, player_center.y - edge_climb_max_height)
 
-	# Cast ray downward from above to find the surface
-	var surface_ray_start: Vector2 = edge_search_end
-	var surface_ray_end: Vector2 = edge_search_start
+	# Cast ray downward from top to bottom to find the surface
+	var surface_ray_start: Vector2 = edge_search_top
+	var surface_ray_end: Vector2 = edge_search_bottom
 
 	var surface_query: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(
 		surface_ray_start,
@@ -345,9 +348,12 @@ func _detect_edge(direction: Vector2) -> Vector2:
 
 	# Step 3: Validate edge height
 	var height_difference: float = player_center.y - edge_top.y
+	# Positive = edge above player, Negative = edge below player (falling past it)
 
-	# Edge must be above player and within range
+	# Edge must be within climbable range
+	# Allows climbing even when falling past the edge (negative height_difference)
 	if height_difference < edge_climb_min_height or height_difference > edge_climb_max_height:
+		print("[Movement] Edge too far: height_diff=%.1f (min=%.1f, max=%.1f)" % [height_difference, edge_climb_min_height, edge_climb_max_height])
 		return Vector2.ZERO
 
 	# Step 4: Check if there's enough space at the top for the player
