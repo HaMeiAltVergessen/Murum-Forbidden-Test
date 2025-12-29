@@ -14,6 +14,15 @@ size = Vector2(400, 40)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_platform_small"]
 size = Vector2(250, 40)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_edgeclimb_thin"]
+size = Vector2(80, 30)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_edgeclimb_medium"]
+size = Vector2(120, 60)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_edgeclimb_thick"]
+size = Vector2(200, 100)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
 size = Vector2(100, 200)
 
@@ -567,3 +576,130 @@ category = "key_items"
 position = Vector2(1000, 900)
 item_id = "key_item_12"
 category = "key_items"
+
+[node name="EdgeClimbTestLabel" type="Label" parent="."]
+offset_left = 1550.0
+offset_top = 200.0
+offset_right = 1850.0
+offset_bottom = 270.0
+theme_override_font_sizes/font_size = 32
+text = "EDGE CLIMB
+TEST AREA"
+horizontal_alignment = 1
+
+[node name="EdgeClimbTest_Thin_Low" type="StaticBody2D" parent="."]
+position = Vector2(1650, 800)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EdgeClimbTest_Thin_Low"]
+shape = SubResource("RectangleShape2D_edgeclimb_thin")
+
+[node name="Visual" type="ColorRect" parent="EdgeClimbTest_Thin_Low"]
+offset_left = -40.0
+offset_top = -15.0
+offset_right = 40.0
+offset_bottom = 15.0
+color = Color(0.8, 0.3, 0.3, 1)
+
+[node name="EdgeClimbTest_Thin_Mid" type="StaticBody2D" parent="."]
+position = Vector2(1650, 650)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EdgeClimbTest_Thin_Mid"]
+shape = SubResource("RectangleShape2D_edgeclimb_thin")
+
+[node name="Visual" type="ColorRect" parent="EdgeClimbTest_Thin_Mid"]
+offset_left = -40.0
+offset_top = -15.0
+offset_right = 40.0
+offset_bottom = 15.0
+color = Color(0.8, 0.3, 0.3, 1)
+
+[node name="EdgeClimbTest_Thin_High" type="StaticBody2D" parent="."]
+position = Vector2(1650, 480)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EdgeClimbTest_Thin_High"]
+shape = SubResource("RectangleShape2D_edgeclimb_thin")
+
+[node name="Visual" type="ColorRect" parent="EdgeClimbTest_Thin_High"]
+offset_left = -40.0
+offset_top = -15.0
+offset_right = 40.0
+offset_bottom = 15.0
+color = Color(0.8, 0.3, 0.3, 1)
+
+[node name="EdgeClimbTest_Medium_Low" type="StaticBody2D" parent="."]
+position = Vector2(1800, 800)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EdgeClimbTest_Medium_Low"]
+shape = SubResource("RectangleShape2D_edgeclimb_medium")
+
+[node name="Visual" type="ColorRect" parent="EdgeClimbTest_Medium_Low"]
+offset_left = -60.0
+offset_top = -30.0
+offset_right = 60.0
+offset_bottom = 30.0
+color = Color(0.3, 0.8, 0.3, 1)
+
+[node name="EdgeClimbTest_Medium_Mid" type="StaticBody2D" parent="."]
+position = Vector2(1800, 630)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EdgeClimbTest_Medium_Mid"]
+shape = SubResource("RectangleShape2D_edgeclimb_medium")
+
+[node name="Visual" type="ColorRect" parent="EdgeClimbTest_Medium_Mid"]
+offset_left = -60.0
+offset_top = -30.0
+offset_right = 60.0
+offset_bottom = 30.0
+color = Color(0.3, 0.8, 0.3, 1)
+
+[node name="EdgeClimbTest_Medium_High" type="StaticBody2D" parent="."]
+position = Vector2(1800, 440)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EdgeClimbTest_Medium_High"]
+shape = SubResource("RectangleShape2D_edgeclimb_medium")
+
+[node name="Visual" type="ColorRect" parent="EdgeClimbTest_Medium_High"]
+offset_left = -60.0
+offset_top = -30.0
+offset_right = 60.0
+offset_bottom = 30.0
+color = Color(0.3, 0.8, 0.3, 1)
+
+[node name="EdgeClimbTest_Thick_Low" type="StaticBody2D" parent="."]
+position = Vector2(1550, 800)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EdgeClimbTest_Thick_Low"]
+shape = SubResource("RectangleShape2D_edgeclimb_thick")
+
+[node name="Visual" type="ColorRect" parent="EdgeClimbTest_Thick_Low"]
+offset_left = -100.0
+offset_top = -50.0
+offset_right = 100.0
+offset_bottom = 50.0
+color = Color(0.3, 0.3, 0.8, 1)
+
+[node name="EdgeClimbTest_Thick_Mid" type="StaticBody2D" parent="."]
+position = Vector2(1550, 610)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EdgeClimbTest_Thick_Mid"]
+shape = SubResource("RectangleShape2D_edgeclimb_thick")
+
+[node name="Visual" type="ColorRect" parent="EdgeClimbTest_Thick_Mid"]
+offset_left = -100.0
+offset_top = -50.0
+offset_right = 100.0
+offset_bottom = 50.0
+color = Color(0.3, 0.3, 0.8, 1)
+
+[node name="EdgeClimbTest_Thick_High" type="StaticBody2D" parent="."]
+position = Vector2(1550, 390)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EdgeClimbTest_Thick_High"]
+shape = SubResource("RectangleShape2D_edgeclimb_thick")
+
+[node name="Visual" type="ColorRect" parent="EdgeClimbTest_Thick_High"]
+offset_left = -100.0
+offset_top = -50.0
+offset_right = 100.0
+offset_bottom = 50.0
+color = Color(0.3, 0.3, 0.8, 1)
