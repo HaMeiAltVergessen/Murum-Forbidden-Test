@@ -181,7 +181,23 @@ func _on_enemy_died(enemy: Node, _position: Vector2) -> void:
 
 	print("[WaveSpawner] Enemy died, remaining: %d" % spawned_enemies.size())
 
-	# Check if wave clear
+	# Check if wave clear (also clean up invalid enemies)
+	_check_wave_completion()
+
+func _check_wave_completion() -> void:
+	"""Checks if wave is complete, removing invalid enemies from tracking"""
+
+	# Remove any invalid/freed enemies from tracking
+	var valid_enemies: Array[Node] = []
+	for enemy in spawned_enemies:
+		if is_instance_valid(enemy) and not enemy.is_queued_for_deletion():
+			valid_enemies.append(enemy)
+		else:
+			print("[WaveSpawner] Removed invalid enemy from tracking")
+
+	spawned_enemies = valid_enemies
+
+	# Check if wave cleared
 	if spawned_enemies.is_empty():
 		_on_wave_cleared()
 
