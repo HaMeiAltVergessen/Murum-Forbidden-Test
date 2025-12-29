@@ -122,9 +122,11 @@ func set_selected(selected: bool) -> void:
 	is_selected = selected
 
 	if is_selected:
-		# Only highlight if slot is not empty
-		if not is_empty:
-			self_modulate = Color(1.5, 1.5, 1.2, 1.0)  # Highlight
+		# ALWAYS highlight when selected, regardless of empty state
+		if is_empty:
+			self_modulate = Color(1.0, 1.0, 1.0, 1.0)  # Lighter highlight for empty slots
+		else:
+			self_modulate = Color(1.5, 1.5, 1.2, 1.0)  # Bright highlight for filled slots
 	else:
 		# Restore appropriate brightness based on empty state
 		if is_empty:

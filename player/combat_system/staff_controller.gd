@@ -114,16 +114,14 @@ func _throw_staff() -> void:
 	_disable_melee_attack()
 
 func _get_throw_direction() -> Vector2:
-	var mouse_pos = player.get_global_mouse_position()
-	var direction = (mouse_pos - player.global_position).normalized()
+	# Always throw horizontally in the direction player is facing
+	var sprite = player.get_node_or_null("Sprite2D")
+	if sprite:
+		var facing = 1 if not sprite.flip_h else -1
+		return Vector2(facing, 0)
 
-	if direction.length() < 0.1:
-		var sprite = player.get_node_or_null("Sprite2D")
-		if sprite:
-			var facing = 1 if not sprite.flip_h else -1
-			direction = Vector2(facing, 0)
-
-	return direction
+	# Fallback to right if no sprite found
+	return Vector2.RIGHT
 
 # ============================================================================
 # RETURN LOGIC
