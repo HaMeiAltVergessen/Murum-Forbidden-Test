@@ -154,10 +154,7 @@ position = Vector2(1500, 450)
 
 [node name="Door" parent="Environment" instance=ExtResource("6_door_scene")]
 position = Vector2(1700, 900)
-is_transition_door = true
-target_room = "worlds/world_1_ruins/rooms/room_01_entry"
-spawn_point = "default"
-required_levers = Array[NodePath]([NodePath("../Lever")])
+target_scene = "res://worlds/world_1_ruins/rooms/room_01_entry.tscn"
 
 [node name="Pickups" type="Node2D" parent="Environment"]
 
