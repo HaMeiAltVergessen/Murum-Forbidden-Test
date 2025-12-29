@@ -228,6 +228,12 @@ func add_coins(amount: int) -> void:
 	EventBus.coins_changed.emit(coins_collected)
 	print("[GameManager] Coins added: +%d. Total: %d" % [amount, coins_collected])
 
+func remove_coins(amount: int) -> void:
+	"""Removes coins from player's total"""
+	coins_collected -= amount
+	EventBus.coins_changed.emit(coins_collected)
+	print("[GameManager] Coins removed: -%d. Total: %d" % [amount, coins_collected])
+
 
 func get_statistics() -> Dictionary:
 	"""Returns current game statistics"""

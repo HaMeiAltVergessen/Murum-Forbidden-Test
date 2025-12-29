@@ -119,8 +119,8 @@ func attempt_purchase(item_id: String, price: int) -> bool:
 		EventBus.show_notification.emit("Not enough coins", 2.0)
 		return false
 
-	# Deduct coins
-	GameManager.coins_collected -= price
+	# Deduct coins (emits coins_changed signal)
+	GameManager.remove_coins(price)
 
 	# Find item data
 	var item_data = null
