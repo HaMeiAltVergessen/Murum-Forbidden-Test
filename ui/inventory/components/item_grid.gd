@@ -109,19 +109,27 @@ func populate_items(items: Array) -> void:
 
 			if item_data.is_empty():
 				print("[ItemGrid] WARNING: No data found for item: ", item_id)
+				# Treat as empty slot
+				slots[i].setup({}, i)
 			else:
 				print("[ItemGrid] Found item data: ", item_data.get("name", "???"))
 
-			# Add count for consumables - need to duplicate to modify
-			if item_entry is Dictionary and item_entry.has("count"):
-				item_data = item_data.duplicate(true)  # Deep copy
-				item_data["count"] = item_entry["count"]
+				# Add count for consumables - need to duplicate to modify
+				if item_entry is Dictionary and item_entry.has("count"):
+					item_data = item_data.duplicate(true)  # Deep copy
+					item_data["count"] = item_entry["count"]
 
-			slots[i].setup(item_data, i)
+				slots[i].setup(item_data, i)
 		else:
 			slots[i].setup({}, i)
 
 	# Select first non-empty slot
+	for i in range(slots.size()):
+		if not slots[i].is_empty:
+			_select_slot(i)
+			return
+
+	# If all empty, select slot 0 anyway
 	if slots.size() > 0:
 		_select_slot(0)
 
