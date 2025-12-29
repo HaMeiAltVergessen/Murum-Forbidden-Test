@@ -110,6 +110,9 @@ func _input(event: InputEvent) -> void:
 	if not event.is_action_pressed("interact"):
 		return
 
+	# Mark input as handled FIRST to prevent double-processing
+	get_viewport().set_input_as_handled()
+
 	# Don't open shop if already open
 	if ShopManager.is_open():
 		print("[Merchant] Shop already open, ignoring")
@@ -117,7 +120,6 @@ func _input(event: InputEvent) -> void:
 
 	print("[Merchant] Opening shop for %s" % merchant_name)
 	_open_shop()
-	get_viewport().set_input_as_handled()
 
 func _open_shop() -> void:
 	"""Opens shop UI"""
