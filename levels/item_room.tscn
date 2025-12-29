@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://item_room_scene"]
+[gd_scene load_steps=8 format=3 uid="uid://item_room_scene"]
 
 [ext_resource type="Script" path="res://levels/item_room.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://player_murum" path="res://player/murum.tscn" id="2"]
@@ -7,6 +7,9 @@
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
 size = Vector2(4000, 100)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_platform"]
+size = Vector2(1500, 40)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
 size = Vector2(100, 200)
@@ -54,11 +57,102 @@ theme_override_font_sizes/font_size = 24
 text = "Press E to pick up items | Press I to open Inventory | Door to TestRoom on right →"
 horizontal_alignment = 1
 
+[node name="Platform1" type="StaticBody2D" parent="."]
+position = Vector2(900, 350)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform1"]
+shape = SubResource("RectangleShape2D_platform")
+
+[node name="Visual" type="ColorRect" parent="Platform1"]
+offset_left = -750.0
+offset_top = -20.0
+offset_right = 750.0
+offset_bottom = 20.0
+color = Color(0.35, 0.35, 0.4, 1)
+
+[node name="Platform2" type="StaticBody2D" parent="."]
+position = Vector2(900, 500)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform2"]
+shape = SubResource("RectangleShape2D_platform")
+
+[node name="Visual" type="ColorRect" parent="Platform2"]
+offset_left = -750.0
+offset_top = -20.0
+offset_right = 750.0
+offset_bottom = 20.0
+color = Color(0.35, 0.35, 0.4, 1)
+
+[node name="Platform3" type="StaticBody2D" parent="."]
+position = Vector2(900, 650)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform3"]
+shape = SubResource("RectangleShape2D_platform")
+
+[node name="Visual" type="ColorRect" parent="Platform3"]
+offset_left = -750.0
+offset_top = -20.0
+offset_right = 750.0
+offset_bottom = 20.0
+color = Color(0.35, 0.35, 0.4, 1)
+
+[node name="Platform4" type="StaticBody2D" parent="."]
+position = Vector2(900, 800)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform4"]
+shape = SubResource("RectangleShape2D_platform")
+
+[node name="Visual" type="ColorRect" parent="Platform4"]
+offset_left = -750.0
+offset_top = -20.0
+offset_right = 750.0
+offset_bottom = 20.0
+color = Color(0.35, 0.35, 0.4, 1)
+
+[node name="Platform5_Relics" type="StaticBody2D" parent="."]
+position = Vector2(1600, 350)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform5_Relics"]
+shape = SubResource("RectangleShape2D_platform")
+
+[node name="Visual" type="ColorRect" parent="Platform5_Relics"]
+offset_left = -300.0
+offset_top = -20.0
+offset_right = 300.0
+offset_bottom = 20.0
+color = Color(0.5, 0.4, 0.2, 1)
+
+[node name="Platform6_Relics" type="StaticBody2D" parent="."]
+position = Vector2(1600, 500)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform6_Relics"]
+shape = SubResource("RectangleShape2D_platform")
+
+[node name="Visual" type="ColorRect" parent="Platform6_Relics"]
+offset_left = -300.0
+offset_top = -20.0
+offset_right = 300.0
+offset_bottom = 20.0
+color = Color(0.5, 0.4, 0.2, 1)
+
+[node name="Platform7_Relics" type="StaticBody2D" parent="."]
+position = Vector2(1600, 650)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform7_Relics"]
+shape = SubResource("RectangleShape2D_platform")
+
+[node name="Visual" type="ColorRect" parent="Platform7_Relics"]
+offset_left = -300.0
+offset_top = -20.0
+offset_right = 300.0
+offset_bottom = 20.0
+color = Color(0.5, 0.4, 0.2, 1)
+
 [node name="Player" parent="." instance=ExtResource("2")]
 position = Vector2(200, 850)
 
 [node name="Door" type="Area2D" parent="."]
-position = Vector2(1800, 800)
+position = Vector2(1800, 1000)
 script = ExtResource("4")
 collision_layer = 1
 collision_mask = 2
