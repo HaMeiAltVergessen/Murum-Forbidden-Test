@@ -155,8 +155,8 @@ func _input(event: InputEvent) -> void:
 		_navigate_grid(Vector2i(0, 1))
 		get_viewport().set_input_as_handled()
 
-	# Use consumable with E key
-	if event.is_action_pressed("interact"):
+	# Use consumable with E key or A button (ui_accept)
+	if event.is_action_pressed("interact") or event.is_action_pressed("ui_accept"):
 		_use_selected_consumable()
 		get_viewport().set_input_as_handled()
 
