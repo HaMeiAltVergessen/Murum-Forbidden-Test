@@ -7,6 +7,7 @@ extends CanvasLayer
 @onready var mana_label: Label = $MarginContainer/VBoxContainer/ManaBar/ManaLabel
 @onready var resonance_bar: ResonanceBar = $MarginContainer/VBoxContainer/ResonanceBar
 @onready var interaction_prompt: Label = $InteractionPrompt
+@onready var gold_counter: Label = $GoldCounter
 
 # ============ HEART TRACKING ============
 var heart_textures: Array[TextureRect] = []
@@ -38,6 +39,7 @@ func _ready() -> void:
 	EventBus.resonance_mode_activated.connect(_on_resonance_mode_activated)
 	EventBus.resonance_mode_deactivated.connect(_on_resonance_mode_deactivated)
 	EventBus.resonance_mode_timer_updated.connect(_on_resonance_mode_timer_updated)
+	EventBus.coins_changed.connect(_on_coins_changed)
 
 	# Connect parry signals (spatial system - no window indicator needed)
 	EventBus.perfect_parry_executed.connect(_on_perfect_parry)
@@ -63,6 +65,10 @@ func _ready() -> void:
 	# Hide interaction prompt initially
 	if interaction_prompt:
 		interaction_prompt.visible = false
+
+	# Initialize gold counter
+	if gold_counter:
+		gold_counter.text = "Gold: %d" % GameManager.coins_collected
 
 	# Add to hud group
 	add_to_group("hud")
@@ -155,6 +161,11 @@ func _on_player_mana_changed(new_mana: int, max_mana: int) -> void:
 	if mana_bar:
 		mana_bar.max_value = max_mana
 		mana_bar.value = new_mana
+
+func _on_coins_changed(new_amount: int) -> void:
+	"""Updates gold counter display"""
+	if gold_counter:
+		gold_counter.text = "Gold: %d" % new_amount
 
 	if mana_label:
 		mana_label.text = str(new_mana) + "/" + str(max_mana)

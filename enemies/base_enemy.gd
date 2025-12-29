@@ -12,7 +12,7 @@ class_name BaseEnemy
 @onready var knockback_component: KnockbackComponent = $KnockbackComponent
 
 # ============ STATS ============
-@export var max_health: int = 400  # 10x for testing
+@export var max_health: int = 10  # Testing value
 @export var move_speed: float = 100.0
 @export var attack_damage: int = 10
 @export var attack_range: float = 70.0  # Must be > min_distance (60.0) to allow attacks
@@ -182,21 +182,33 @@ func _die() -> void:
 
 
 func _spawn_coin() -> void:
-	"""Spawns a coin at death location"""
-	# Simple coin sprite
-	var coin: Sprite2D = Sprite2D.new()
-	coin.global_position = global_position
+	"""Spawns gold coins at death location"""
 
-	# Create colored rect as placeholder
-	var coin_rect: ColorRect = ColorRect.new()
-	coin_rect.size = Vector2(16, 16)
-	coin_rect.position = Vector2(-8, -8)
-	coin_rect.color = Color(1, 0.84, 0, 1)  # Gold color
-	coin.add_child(coin_rect)
+	# Load gold coin scene
+	var gold_coin_scene = load("res://environment/pickups/gold_coin.tscn")
+	if not gold_coin_scene:
+		push_warning("[Enemy] Gold coin scene not found!")
+		return
 
-	get_parent().add_child(coin)
+	# Spawn 1-3 coins randomly
+	var coin_count = randi() % 3 + 1
 
-	print("[Enemy] Coin spawned at ", global_position)
+	for i in range(coin_count):
+		var coin = gold_coin_scene.instantiate()
+
+		# Random offset for scatter effect
+		var offset = Vector2(
+			randf_range(-20, 20),
+			randf_range(-20, 20)
+		)
+
+		coin.global_position = global_position + offset
+		coin.gold_value = 1
+
+		# Add to scene (not as child of enemy)
+		get_tree().root.add_child(coin)
+
+	print("[Enemy] Spawned %d gold coins at %v" % [coin_count, global_position])
 
 
 func _play_death_animation() -> void:

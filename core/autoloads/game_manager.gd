@@ -219,9 +219,14 @@ func _reposition_player_in_scene(scene: Node) -> void:
 
 # ============ STATISTICS ============
 func add_coin() -> void:
-	"""Increments coin counter"""
-	coins_collected += 1
-	print("[GameManager] Coin collected. Total: ", coins_collected)
+	"""Increments coin counter by 1"""
+	add_coins(1)
+
+func add_coins(amount: int) -> void:
+	"""Adds coins to player's total"""
+	coins_collected += amount
+	EventBus.coins_changed.emit(coins_collected)
+	print("[GameManager] Coins added: +%d. Total: %d" % [amount, coins_collected])
 
 
 func get_statistics() -> Dictionary:
