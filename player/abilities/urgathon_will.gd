@@ -104,27 +104,16 @@ func _setup_ui() -> void:
 # ============================================================================
 
 func _input(event: InputEvent) -> void:
-	# Debug: Log all joypad button presses
-	if event is InputEventJoypadButton and event.pressed:
-		print("[UrgathonWill] DEBUG: Joypad button pressed: ", event.button_index)
-
-	# Debug: Log urgathon_charge action
-	if event.is_action_pressed("urgathon_charge"):
-		print("[UrgathonWill] DEBUG: urgathon_charge action pressed!")
-
 	# Don't allow charging while unconscious
 	if is_unconscious:
-		print("[UrgathonWill] DEBUG: Cannot charge - unconscious")
 		return
 
 	# Start charging
 	if event.is_action_pressed("urgathon_charge"):
-		print("[UrgathonWill] DEBUG: Starting charge...")
 		_start_charge()
 
 	# Release charge
 	if event.is_action_released("urgathon_charge"):
-		print("[UrgathonWill] DEBUG: Releasing charge...")
 		_release_charge()
 
 # ============================================================================
