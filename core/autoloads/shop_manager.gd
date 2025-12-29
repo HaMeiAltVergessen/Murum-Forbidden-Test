@@ -134,7 +134,19 @@ func attempt_purchase(item_id: String, price: int) -> bool:
 
 	# Add to inventory
 	if InventoryManager:
-		var category = item_data.get("category", "consumable")
+		# Get item type (consumable/relic/key_item) and convert to plural for inventory
+		var item_type = item_data.get("type", "consumable")
+		var category = ""
+		match item_type:
+			"consumable":
+				category = "consumables"
+			"relic":
+				category = "relics"
+			"key_item":
+				category = "key_items"
+			_:
+				category = "consumables"  # Default fallback
+
 		InventoryManager.add_item(item_id, category)
 
 	# Notification

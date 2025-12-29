@@ -1,9 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://cg1yfqr5u0pjd"]
+[gd_scene load_steps=7 format=3 uid="uid://cg1yfqr5u0pjd"]
 
 [ext_resource type="Script" path="res://ui/hud.gd" id="1_hud"]
 [ext_resource type="PackedScene" path="res://ui/hud/combo_display.tscn" id="2_combo_display"]
 [ext_resource type="PackedScene" path="res://ui/hud/resonance_bar.tscn" id="3_resonance_bar"]
-[ext_resource type="PackedScene" path="res://ui/hud/parry_indicator.tscn" id="4_parry_indicator"]
 [ext_resource type="PackedScene" uid="uid://dx5m8q3v2rnpt" path="res://ui/hud/wave_indicator.tscn" id="5_wave_indicator"]
 [ext_resource type="PackedScene" uid="uid://air_combo_display_ui" path="res://ui/hud/air_combo_display.tscn" id="6_air_combo_display"]
 [ext_resource type="PackedScene" uid="uid://rebound_indicator_001" path="res://ui/hud/rebound_indicator.tscn" id="7_rebound_indicator"]
@@ -78,8 +77,6 @@ vertical_alignment = 1
 
 [node name="ComboDisplay" parent="." instance=ExtResource("2_combo_display")]
 
-[node name="ParryIndicator" parent="." instance=ExtResource("4_parry_indicator")]
-
 [node name="WaveIndicator" parent="." instance=ExtResource("5_wave_indicator")]
 
 [node name="AirComboDisplay" parent="." instance=ExtResource("6_air_combo_display")]
@@ -96,19 +93,19 @@ grow_vertical = 2
 color = Color(0, 0, 0, 0)
 
 [node name="GoldCounter" type="Label" parent="."]
-anchors_preset = 3
-anchor_left = 1.0
+anchors_preset = 2
+anchor_left = 0.0
 anchor_top = 1.0
-anchor_right = 1.0
+anchor_right = 0.0
 anchor_bottom = 1.0
-offset_left = -220.0
+offset_left = 20.0
 offset_top = -80.0
-offset_right = -20.0
+offset_right = 220.0
 offset_bottom = -40.0
 grow_horizontal = 0
 grow_vertical = 0
 theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
 theme_override_font_sizes/font_size = 24
 text = "Gold: 0"
-horizontal_alignment = 2
+horizontal_alignment = 0
 vertical_alignment = 1
