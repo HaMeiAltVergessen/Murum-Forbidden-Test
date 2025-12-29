@@ -117,7 +117,7 @@ func _get_throw_direction() -> Vector2:
 	# Always throw horizontally in the direction player is facing
 	var sprite = player.get_node_or_null("Sprite2D")
 	if sprite:
-		var facing = 1 if not sprite.flip_h else -1
+		var facing = 1 if sprite.scale.x > 0 else -1
 		return Vector2(facing, 0)
 
 	# Fallback to right if no sprite found
