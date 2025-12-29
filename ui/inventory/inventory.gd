@@ -341,7 +341,7 @@ func _on_item_selected(item_data: Dictionary) -> void:
 
 
 func _use_selected_consumable() -> void:
-	"""Uses the currently selected consumable (E key press)"""
+	"""Shows confirmation dialog for the currently selected consumable (E/A key press)"""
 	var current_grid = grids[current_tab]
 	var selected_item = current_grid.get_selected_item()
 
@@ -354,19 +354,8 @@ func _use_selected_consumable() -> void:
 		print("[Inventory] Cannot use non-consumable item")
 		return
 
-	var item_id = selected_item.get("id", "")
-	if item_id == "":
-		print("[Inventory] Invalid item ID")
-		return
-
-	# Use the item directly (no confirmation)
-	var success = InventoryManager.use_item(item_id)
-
-	if success:
-		print("[Inventory] Used consumable: ", selected_item.get("name", item_id))
-		# Grid will auto-refresh via signal
-	else:
-		print("[Inventory] Failed to use consumable: ", item_id)
+	# Show confirmation dialog before using
+	_show_use_confirmation(selected_item)
 
 
 func _show_use_confirmation(item_data: Dictionary) -> void:

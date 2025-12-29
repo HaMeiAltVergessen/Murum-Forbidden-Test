@@ -13,7 +13,7 @@ const WORLD_ID: String = "world_1_ruins"
 # REFERENCES
 # ============================================================================
 
-@onready var door_to_room_02: Door = $Doors/DoorToRoom02
+@onready var door_to_room_02: Node = $Doors/DoorToRoom02
 
 # ============================================================================
 # INITIALIZATION
