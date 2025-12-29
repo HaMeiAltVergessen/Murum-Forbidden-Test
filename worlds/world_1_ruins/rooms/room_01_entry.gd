@@ -40,8 +40,9 @@ func _activate() -> void:
 
 		# Ensure player is in this scene
 		if player.get_parent() == self:
-			print("[Room01] Player found in scene, ensuring correct z_index")
-			player.z_index = 10
+			print("[Room01] Player found in scene, ensuring correct z_index and position")
+			player.z_index = 100
+			player.z_as_relative = false
 
 			# Ensure player is on ground (not floating or falling through)
 			if player is CharacterBody2D:

@@ -13,6 +13,19 @@ class_name TestRoom
 
 
 func _ready() -> void:
+	# CRITICAL: Remove duplicate player if transitioning from another scene
+	# If GameManager already has a player (from door transition), use that one
+	if GameManager.player and is_instance_valid(GameManager.player):
+		# Scene has its own player instance from .tscn file
+		if player and is_instance_valid(player) and player != GameManager.player:
+			print("[TestRoom] Removing duplicate player from scene (using GameManager.player)")
+			if player.get_parent():
+				player.get_parent().remove_child(player)
+			player.queue_free()
+
+			# Use the GameManager's player instead
+			player = GameManager.player
+
 	# Activate room
 	activate()
 
