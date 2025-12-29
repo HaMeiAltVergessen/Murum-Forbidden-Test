@@ -52,23 +52,12 @@ func _ready() -> void:
 
 func _setup_doors() -> void:
 	"""Configures door properties"""
-
-	# Door to Room 01 (entry)
-	if door_to_room_01:
-		door_to_room_01.door_id = "room_02_door_to_room_01"
-		# Already configured in scene file
-
-	# Door to Room 03 (exit) - locked by lever
-	if door_to_room_03:
-		door_to_room_03.door_id = "room_02_door_to_room_03"
-		# Already configured in scene file with required_levers
+	# Doors are configured directly in scene files via target_scene export
+	pass
 
 func _setup_room() -> void:
 	"""Sets up room for first playthrough"""
-
-	# Lock exit door (unlocked by lever)
-	if door_to_room_03:
-		door_to_room_03.lock()
+	# Door locking handled by lever connections in scene files
 
 	# Connect enemy signals
 	EventBus.enemy_killed.connect(_on_enemy_killed)

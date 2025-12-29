@@ -54,22 +54,8 @@ func _ready() -> void:
 
 func _setup_doors() -> void:
 	"""Configures door properties"""
-
-	# Door from Room 02 (entry)
-	if door_from_room_02:
-		door_from_room_02.door_id = "room_03_door_from_room_02"
-		door_from_room_02.is_transition_door = true
-		door_from_room_02.target_room = "room_02_corridor"
-		door_from_room_02.spawn_point = "from_room_03"
-		door_from_room_02.unlock_on_room_clear = false
-
-	# Door to Room 04 (exit)
-	if door_to_room_04:
-		door_to_room_04.door_id = "room_03_door_to_room_04"
-		door_to_room_04.is_transition_door = true
-		door_to_room_04.target_room = "room_04_next"
-		door_to_room_04.spawn_point = "from_room_03"
-		door_to_room_04.unlock_on_room_clear = false
+	# Doors are configured directly in scene files via target_scene export
+	pass
 
 func _setup_arena() -> void:
 	"""Sets up arena for first playthrough"""
@@ -82,9 +68,7 @@ func _setup_arena() -> void:
 		checkpoint.visible = false
 		checkpoint.monitoring = false
 
-	# Lock exit door
-	if door_to_room_04:
-		door_to_room_04.lock()
+	# Door locking removed - simple door system doesn't support it
 
 	# Connect wave events
 	wave_spawner.all_waves_completed.connect(_on_all_waves_completed)
@@ -105,9 +89,7 @@ func _on_room_already_cleared() -> void:
 		checkpoint.is_activated = true
 		checkpoint._update_visual()
 
-	# Unlock exit door
-	if door_to_room_04:
-		door_to_room_04.unlock()
+	# Door unlocking removed - simple door system doesn't support it
 
 # ============================================================================
 # WAVE CONFIGURATION
