@@ -54,11 +54,10 @@ func _setup_checkpoint() -> void:
 func _on_checkpoint_activated() -> void:
 	"""Called when checkpoint is activated"""
 
-	# Save game
-	if SaveManager and SaveManager.has_method("save_game"):
-		SaveManager.save_game()
+	# Checkpoint already saved via WorldManager.set_last_checkpoint()
+	# Manual save would require slot_index parameter
 
-	print("[Room04] Checkpoint activated and game saved")
+	print("[Room04] Checkpoint activated")
 
 func _setup_merchant() -> void:
 	"""Sets up merchant NPC"""
