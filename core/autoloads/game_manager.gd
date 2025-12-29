@@ -171,6 +171,9 @@ func _reposition_player_in_scene(scene: Node) -> void:
 	# Add to new scene
 	scene.add_child(player)
 
+	# Move player to end of children list (renders on top)
+	scene.move_child(player, -1)
+
 	# Position at spawn point
 	player.global_position = player_spawn_position
 
