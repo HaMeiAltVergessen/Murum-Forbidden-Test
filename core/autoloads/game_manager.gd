@@ -29,6 +29,9 @@ func _ready() -> void:
 	EventBus.player_died.connect(_on_player_died)
 	EventBus.enemy_died.connect(_on_enemy_died)
 
+	# Connect to scene tree signals
+	get_tree().node_added.connect(_on_node_added)
+
 
 func _input(event: InputEvent) -> void:
 	# Pause/Unpause with ESC
@@ -140,6 +143,38 @@ func _on_enemy_died(enemy: Node, _position: Vector2) -> void:
 	"""Handles enemy death"""
 	enemies_killed += 1
 	print("[GameManager] Enemy killed: ", enemy.name, " Total: ", enemies_killed)
+
+
+func _on_node_added(node: Node) -> void:
+	"""Handles when nodes are added to the scene tree (used for scene transitions)"""
+	# Check if this is a new scene being loaded
+	if node == get_tree().current_scene and player and is_instance_valid(player):
+		# If player is still at root, move to new scene
+		if player.get_parent() == get_tree().root:
+			call_deferred("_reposition_player_in_scene", node)
+
+
+func _reposition_player_in_scene(scene: Node) -> void:
+	"""Repositions player in the new scene after a transition"""
+	if not player or not is_instance_valid(player):
+		print("[GameManager] Cannot reposition: Player invalid")
+		return
+
+	if not scene or not is_instance_valid(scene):
+		print("[GameManager] Cannot reposition: Scene invalid")
+		return
+
+	# Remove from root
+	if player.get_parent() == get_tree().root:
+		get_tree().root.remove_child(player)
+
+	# Add to new scene
+	scene.add_child(player)
+
+	# Position at spawn point
+	player.global_position = player_spawn_position
+
+	print("[GameManager] Player repositioned in scene: ", scene.name, " at ", player_spawn_position)
 
 
 # ============ STATISTICS ============

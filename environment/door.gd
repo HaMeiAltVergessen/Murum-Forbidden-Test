@@ -40,5 +40,23 @@ func _on_body_exited(body: Node2D) -> void:
 func _load_scene() -> void:
 	print("[Door] Loading scene: ", target_scene)
 
-	# Simple scene transition - spawn position handled by target scene
+	# Store spawn position in GameManager
+	GameManager.player_spawn_position = spawn_position
+
+	# Preserve player across scene transitions
+	if GameManager.player and is_instance_valid(GameManager.player):
+		var player = GameManager.player
+
+		# Remove player from current scene (but don't free it)
+		if player.get_parent():
+			player.get_parent().remove_child(player)
+
+		# Add player to root temporarily (persists across scene change)
+		get_tree().root.add_child(player)
+
+		print("[Door] Player preserved for transition to ", target_scene)
+
+	# Change scene
 	get_tree().change_scene_to_file(target_scene)
+
+	# GameManager will handle repositioning via scene_changed signal
