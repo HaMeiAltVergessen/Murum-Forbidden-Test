@@ -42,9 +42,15 @@ facing_direction = -1
 
 [node name="Doors" type="Node2D" parent="."]
 
+[node name="DoorToTestRoom" parent="Doors" instance=ExtResource("3_door")]
+position = Vector2(100, 600)
+target_scene = "res://levels/test_room.tscn"
+spawn_position = Vector2(1600, 900)
+
 [node name="DoorToRoom02" parent="Doors" instance=ExtResource("3_door")]
 position = Vector2(1180, 600)
 target_scene = "res://worlds/world_1_ruins/rooms/room_02_corridor.tscn"
+spawn_position = Vector2(200, 600)
 
 [node name="Environment" type="Node2D" parent="."]
 

@@ -18,14 +18,14 @@ var owner_player: Node = null
 # STATE
 # ============================================================================
 
-enum State { FLYING_OUT, RETURNING }
+enum State { FLYING_OUT, ROTATING_AT_END, RETURNING }
 
 var current_state: State = State.FLYING_OUT
 var distance_traveled: float = 0.0
 
-var total_rotation: float = 0.0  # Track rotation for 3-rotation return mechanic
+var total_rotation: float = 0.0  # Track rotation for 3-rotation mechanic
 const ROTATIONS_BEFORE_RETURN: float = 3.0  # Number of full rotations before returning
-const ROTATION_SPEED: float = 15.0  # Rotation speed in radians per second
+const ROTATION_SPEED: float = 25.0  # Rotation speed in radians per second (faster for end spin)
 
 var hit_enemies: Dictionary = {}
 const HIT_COOLDOWN: float = 0.3
@@ -71,21 +71,10 @@ func _physics_process(delta: float) -> void:
 	match current_state:
 		State.FLYING_OUT:
 			_process_flying_out(delta)
+		State.ROTATING_AT_END:
+			_process_rotating(delta)
 		State.RETURNING:
 			_process_returning(delta)
-
-	# Rotate sprite and track total rotation
-	if sprite and current_state == State.FLYING_OUT:
-		var rotation_delta = delta * ROTATION_SPEED
-		sprite.rotation += rotation_delta
-		total_rotation += rotation_delta
-
-		# After 3 full rotations (6π radians), start returning
-		if total_rotation >= ROTATIONS_BEFORE_RETURN * TAU:  # TAU = 2π
-			_start_return()
-	elif sprite and current_state == State.RETURNING:
-		# Continue rotating during return
-		sprite.rotation += delta * ROTATION_SPEED
 
 	_update_hit_cooldowns(delta)
 
@@ -95,7 +84,18 @@ func _process_flying_out(delta: float) -> void:
 	distance_traveled += movement.length()
 
 	if distance_traveled >= max_range:
-		_start_return()
+		_start_rotating()
+
+func _process_rotating(delta: float) -> void:
+	# Staff stays in place and rotates 3 times
+	if sprite:
+		var rotation_delta = delta * ROTATION_SPEED
+		sprite.rotation += rotation_delta
+		total_rotation += rotation_delta
+
+		# After 3 full rotations (6π radians), start returning
+		if total_rotation >= ROTATIONS_BEFORE_RETURN * TAU:  # TAU = 2π
+			_start_return()
 
 func _process_returning(delta: float) -> void:
 	if not owner_player or not is_instance_valid(owner_player):
@@ -116,14 +116,23 @@ func _process_returning(delta: float) -> void:
 # STATE TRANSITIONS
 # ============================================================================
 
-func _start_return() -> void:
-	if current_state == State.RETURNING:
+func _start_rotating() -> void:
+	if current_state != State.FLYING_OUT:
 		return
 
-	print("[StaffProjectile] Starting return")
+	print("[StaffProjectile] Reached end, rotating 3 times")
+
+	current_state = State.ROTATING_AT_END
+	total_rotation = 0.0  # Reset rotation counter
+	staff_max_range_reached.emit()
+
+func _start_return() -> void:
+	if current_state != State.ROTATING_AT_END:
+		return
+
+	print("[StaffProjectile] Finished rotating, returning to player")
 
 	current_state = State.RETURNING
-	staff_max_range_reached.emit()
 
 func _on_caught() -> void:
 	print("[StaffProjectile] Caught by player")
@@ -196,7 +205,7 @@ func _on_body_entered(body: Node2D) -> void:
 		print("[StaffProjectile] Hit wall")
 
 		if current_state == State.FLYING_OUT:
-			_start_return()
+			_start_rotating()
 			staff_hit_wall.emit()
 			_play_wall_impact_effect()
 
