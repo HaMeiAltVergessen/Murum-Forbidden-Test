@@ -16,6 +16,12 @@ class_name MovementController
 @export var jump_buffer_time: float = 0.15
 @export var max_jumps: int = 2  # Allows double jump
 
+# ============ EDGE CLIMB CONFIGURATION ============
+@export var edge_climb_detection_distance: float = 40.0  # How far to check for edges
+@export var edge_climb_max_height: float = 80.0  # Maximum height difference for edge climb
+@export var edge_climb_min_height: float = 20.0  # Minimum height difference (must be above player)
+@export var edge_climb_offset: Vector2 = Vector2(0, -10)  # Offset from edge top
+
 # ============ DASH CONFIGURATION ============
 @export var dash_distance: float = 1350.0  # Doubled from 675.0 (originally 375.0)
 @export var dash_duration: float = 0.2
@@ -211,6 +217,10 @@ func _process_jump() -> void:
 
 	# Check for jump input
 	if Input.is_action_just_pressed("jump"):
+		# Check for edge climb first (highest priority)
+		if _attempt_edge_climb():
+			return
+
 		# First jump: use coyote time and jump buffer
 		if jumps_used == 0:
 			jump_buffer_timer = jump_buffer_time
@@ -246,6 +256,127 @@ func _process_jump_buffer(delta: float) -> void:
 	"""Manages jump buffer (allows early jump input)"""
 	if jump_buffer_timer > 0:
 		jump_buffer_timer -= delta
+
+
+# ============ EDGE CLIMB SYSTEM ============
+func _attempt_edge_climb() -> bool:
+	"""Attempts to perform an edge climb. Returns true if successful."""
+	# Check both left and right directions
+	var edge_position: Vector2 = Vector2.ZERO
+	var found_edge: bool = false
+
+	# Try right side first (facing direction has priority)
+	if facing_right:
+		edge_position = _detect_edge(Vector2.RIGHT)
+		if edge_position != Vector2.ZERO:
+			found_edge = true
+		else:
+			# Try left side if right fails
+			edge_position = _detect_edge(Vector2.LEFT)
+			if edge_position != Vector2.ZERO:
+				found_edge = true
+	else:
+		# Try left side first
+		edge_position = _detect_edge(Vector2.LEFT)
+		if edge_position != Vector2.ZERO:
+			found_edge = true
+		else:
+			# Try right side if left fails
+			edge_position = _detect_edge(Vector2.RIGHT)
+			if edge_position != Vector2.ZERO:
+				found_edge = true
+
+	if found_edge:
+		_perform_edge_climb(edge_position)
+		return true
+
+	return false
+
+
+func _detect_edge(direction: Vector2) -> Vector2:
+	"""Detects if there's a climbable edge in the given direction.
+	Returns the position to teleport to, or Vector2.ZERO if no edge found."""
+
+	var space_state: PhysicsDirectSpaceState2D = player.get_world_2d().direct_space_state
+
+	# Start from player center
+	var player_center: Vector2 = player.global_position
+
+	# Step 1: Cast horizontal ray to find wall
+	var wall_ray_start: Vector2 = player_center
+	var wall_ray_end: Vector2 = player_center + (direction * edge_climb_detection_distance)
+
+	var wall_query: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(
+		wall_ray_start,
+		wall_ray_end
+	)
+	wall_query.collision_mask = 1  # Only check World layer
+	wall_query.exclude = [player]
+
+	var wall_result: Dictionary = space_state.intersect_ray(wall_query)
+
+	if wall_result.is_empty():
+		return Vector2.ZERO  # No wall found
+
+	var wall_position: Vector2 = wall_result.position
+
+	# Step 2: From wall position, cast upward to find the top edge
+	# Start slightly below player center and check upward
+	var edge_search_start: Vector2 = Vector2(wall_position.x, player_center.y + 20)
+	var edge_search_end: Vector2 = Vector2(wall_position.x, player_center.y - edge_climb_max_height)
+
+	# Cast ray downward from above to find the surface
+	var surface_ray_start: Vector2 = edge_search_end
+	var surface_ray_end: Vector2 = edge_search_start
+
+	var surface_query: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(
+		surface_ray_start,
+		surface_ray_end
+	)
+	surface_query.collision_mask = 1  # Only check World layer
+	surface_query.exclude = [player]
+
+	var surface_result: Dictionary = space_state.intersect_ray(surface_query)
+
+	if surface_result.is_empty():
+		return Vector2.ZERO  # No surface found
+
+	var edge_top: Vector2 = surface_result.position
+
+	# Step 3: Validate edge height
+	var height_difference: float = player_center.y - edge_top.y
+
+	# Edge must be above player and within range
+	if height_difference < edge_climb_min_height or height_difference > edge_climb_max_height:
+		return Vector2.ZERO
+
+	# Step 4: Check if there's enough space at the top for the player
+	var landing_position: Vector2 = edge_top + edge_climb_offset
+
+	# Check if landing position is clear
+	var collision_shape: CollisionShape2D = player.get_node_or_null("CollisionShape2D")
+	if collision_shape and collision_shape.shape:
+		var test_query: PhysicsShapeQueryParameters2D = PhysicsShapeQueryParameters2D.new()
+		test_query.shape = collision_shape.shape
+		test_query.transform = Transform2D(0, landing_position)
+		test_query.collision_mask = 1  # World layer
+		test_query.exclude = [player]
+
+		var overlap_result: Array = space_state.intersect_shape(test_query, 1)
+		if not overlap_result.is_empty():
+			return Vector2.ZERO  # Landing position is blocked
+
+	return landing_position
+
+
+func _perform_edge_climb(target_position: Vector2) -> void:
+	"""Performs the edge climb by teleporting player to target position."""
+	player.global_position = target_position
+	player.velocity = Vector2.ZERO  # Cancel all velocity
+	jumps_used = 0  # Reset jumps (landed on platform)
+
+	print("[Movement] Edge climb to position: ", target_position)
+	# AudioManager.play_sfx("edge_climb")  # Uncomment when audio added
 
 
 # ============ DASH SYSTEM ============
