@@ -26,6 +26,7 @@ SaveManager="*res://core/autoloads/save_manager.gd"
 WorldManager="*res://core/autoloads/world_manager.gd"
 InventoryManager="*res://core/autoloads/inventory_manager.gd"
 InventoryUI="*res://ui/inventory/inventory.tscn"
+HUD="*res://ui/hud.tscn"
 
 [display]
 

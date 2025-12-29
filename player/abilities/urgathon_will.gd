@@ -73,10 +73,16 @@ func _ready() -> void:
 
 func _setup_ui() -> void:
 	"""Sets up UI references (deferred to ensure UI exists)"""
-	# Try to find UI elements in the scene tree
-	charge_bar = get_tree().root.get_node_or_null("HUD/UrgathonChargeBar")
-	use_counter_label = get_tree().root.get_node_or_null("HUD/UrgathonCounter")
-	blackscreen = get_tree().root.get_node_or_null("HUD/UrgathonBlackscreen")
+	# HUD is now an Autoload, access it directly
+	var hud = get_node_or_null("/root/HUD")
+
+	if not hud:
+		print("[UrgathonWill] ERROR: HUD Autoload not found!")
+		return
+
+	charge_bar = hud.get_node_or_null("UrgathonChargeBar")
+	use_counter_label = hud.get_node_or_null("UrgathonCounter")
+	blackscreen = hud.get_node_or_null("UrgathonBlackscreen")
 
 	if not charge_bar:
 		print("[UrgathonWill] WARNING: Charge bar not found in HUD")

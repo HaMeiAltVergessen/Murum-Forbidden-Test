@@ -155,6 +155,7 @@ position = Vector2(1500, 450)
 [node name="Door" parent="Environment" instance=ExtResource("6_door_scene")]
 position = Vector2(1700, 900)
 target_scene = "res://worlds/world_1_ruins/rooms/room_01_entry.tscn"
+spawn_position = Vector2(200, 600)
 
 [node name="Pickups" type="Node2D" parent="Environment"]
 
@@ -169,7 +170,5 @@ item_id = "urtraene"
 [node name="PickupSchluessel" parent="Environment/Pickups" instance=ExtResource("10_pickup_scene")]
 position = Vector2(1200, 950)
 item_id = "schluessel_ruinen"
-
-[node name="HUD" parent="." instance=ExtResource("7_hud_scene")]
 
 [node name="DeathScreen" parent="." instance=ExtResource("8_death_screen_scene")]
