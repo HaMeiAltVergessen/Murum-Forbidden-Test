@@ -162,13 +162,13 @@ func _on_player_mana_changed(new_mana: int, max_mana: int) -> void:
 		mana_bar.max_value = max_mana
 		mana_bar.value = new_mana
 
+	if mana_label:
+		mana_label.text = str(new_mana) + "/" + str(max_mana)
+
 func _on_coins_changed(new_amount: int) -> void:
 	"""Updates gold counter display"""
 	if gold_counter:
 		gold_counter.text = "Gold: %d" % new_amount
-
-	if mana_label:
-		mana_label.text = str(new_mana) + "/" + str(max_mana)
 
 
 func _on_show_interaction_prompt(text: String) -> void:
