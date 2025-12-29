@@ -11,8 +11,10 @@ func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
 
-	# Find or create prompt label
-	if has_node("DoorLabel"):
+	# Find prompt label
+	if has_node("PromptLabel"):
+		prompt_label = get_node("PromptLabel")
+	elif has_node("DoorLabel"):
 		prompt_label = get_node("DoorLabel")
 
 
