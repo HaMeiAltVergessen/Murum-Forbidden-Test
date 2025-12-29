@@ -14,9 +14,9 @@ const WORLD_ID: String = "world_1_ruins"
 # ============================================================================
 
 @onready var enemies_node: Node2D = $Enemies
-@onready var door_to_room_01: Door = $Doors/DoorToRoom01
-@onready var door_to_room_03: Door = $Doors/DoorToRoom03
-@onready var lever: Lever = $Environment/Lever
+@onready var door_to_room_01: Node = $Doors/DoorToRoom01
+@onready var door_to_room_03: Node = $Doors/DoorToRoom03
+@onready var lever: Node = $Environment/Lever
 
 # ============================================================================
 # STATE

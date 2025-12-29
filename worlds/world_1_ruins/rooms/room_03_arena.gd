@@ -19,8 +19,8 @@ const GEIST_SCENE = preload("res://enemies/world_1_ruins/geist.tscn")
 
 @onready var wave_spawner: WaveSpawner = $WaveSpawner
 @onready var checkpoint: Checkpoint = $Checkpoint
-@onready var door_from_room_02: Door = $Doors/DoorFromRoom02
-@onready var door_to_room_04: Door = $Doors/DoorToRoom04
+@onready var door_from_room_02: Node = $Doors/DoorFromRoom02
+@onready var door_to_room_04: Node = $Doors/DoorToRoom04
 
 # Spawn Points
 @onready var wave_spawn_1: Marker2D = $SpawnPoints/WaveSpawn1

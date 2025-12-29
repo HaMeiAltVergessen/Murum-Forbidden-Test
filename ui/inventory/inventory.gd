@@ -155,8 +155,13 @@ func _input(event: InputEvent) -> void:
 		_navigate_grid(Vector2i(0, 1))
 		get_viewport().set_input_as_handled()
 
-	# Use consumable with E key or A button (ui_accept)
-	if event.is_action_pressed("interact") or event.is_action_pressed("ui_accept"):
+	# Use consumable with E key (keyboard) or A button (ui_accept on controller)
+	# Note: interact is now Y button, only use A button in inventory
+	if event.is_action_pressed("ui_accept"):
+		_use_selected_consumable()
+		get_viewport().set_input_as_handled()
+	elif event is InputEventKey and event.is_action_pressed("interact"):
+		# Allow E key on keyboard, but not Y button on controller
 		_use_selected_consumable()
 		get_viewport().set_input_as_handled()
 
@@ -341,7 +346,7 @@ func _on_item_selected(item_data: Dictionary) -> void:
 
 
 func _use_selected_consumable() -> void:
-	"""Uses the currently selected consumable (E key press)"""
+	"""Shows confirmation dialog for the currently selected consumable (E/A key press)"""
 	var current_grid = grids[current_tab]
 	var selected_item = current_grid.get_selected_item()
 
@@ -354,19 +359,8 @@ func _use_selected_consumable() -> void:
 		print("[Inventory] Cannot use non-consumable item")
 		return
 
-	var item_id = selected_item.get("id", "")
-	if item_id == "":
-		print("[Inventory] Invalid item ID")
-		return
-
-	# Use the item directly (no confirmation)
-	var success = InventoryManager.use_item(item_id)
-
-	if success:
-		print("[Inventory] Used consumable: ", selected_item.get("name", item_id))
-		# Grid will auto-refresh via signal
-	else:
-		print("[Inventory] Failed to use consumable: ", item_id)
+	# Show confirmation dialog before using
+	_show_use_confirmation(selected_item)
 
 
 func _show_use_confirmation(item_data: Dictionary) -> void:
