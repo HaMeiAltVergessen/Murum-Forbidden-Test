@@ -133,6 +133,12 @@ func _input(event: InputEvent) -> void:
 	if not is_open:
 		return
 
+	# Debug: Log all button presses when inventory is open
+	if event is InputEventJoypadButton and event.pressed:
+		print("[Inventory] Joypad button pressed: ", event.button_index)
+	if event is InputEventKey and event.pressed:
+		print("[Inventory] Key pressed: ", event.keycode)
+
 	# Tab switching
 	if event.is_action_pressed("tab_right"):
 		switch_tab((current_tab + 1) % 3)
