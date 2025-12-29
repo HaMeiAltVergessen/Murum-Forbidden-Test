@@ -25,6 +25,8 @@ class_name Merchant
 
 var player_in_range: bool = false
 var shop_data: Dictionary = {}
+var interaction_cooldown: float = 0.0
+const INTERACTION_COOLDOWN_TIME: float = 0.5
 
 # ============================================================================
 # INITIALIZATION
@@ -46,6 +48,16 @@ func _ready() -> void:
 	add_to_group("merchants")
 
 	print("[Merchant] %s ready" % merchant_name)
+
+func _process(delta: float) -> void:
+	# Countdown interaction cooldown
+	if interaction_cooldown > 0:
+		interaction_cooldown -= delta
+
+	# Controller support - check for interact button when player is in range
+	if player_in_range and interaction_cooldown <= 0:
+		if Input.is_action_just_pressed("interact"):
+			_attempt_open_shop()
 
 func _load_shop_data() -> void:
 	"""Loads shop data from JSON file"""
@@ -101,22 +113,26 @@ func _on_body_exited(body: Node2D) -> void:
 		prompt_label.visible = false
 
 func _input(event: InputEvent) -> void:
-	"""Handles interaction input"""
+	"""Handles keyboard interaction input"""
 
-	if not player_in_range:
+	# Skip if not in range or on cooldown
+	if not player_in_range or interaction_cooldown > 0:
 		return
 
-	# Only process when interact key is pressed
-	if not event.is_action_pressed("interact"):
-		return
+	# Only process keyboard E key (controller handled in _process)
+	if event is InputEventKey and event.is_action_pressed("interact"):
+		get_viewport().set_input_as_handled()
+		_attempt_open_shop()
 
-	# Mark input as handled FIRST to prevent double-processing
-	get_viewport().set_input_as_handled()
+func _attempt_open_shop() -> void:
+	"""Attempts to open shop with cooldown protection"""
 
-	# Don't open shop if already open
+	# Don't open if already open
 	if ShopManager.is_open():
-		print("[Merchant] Shop already open, ignoring")
 		return
+
+	# Set cooldown to prevent double-triggering
+	interaction_cooldown = INTERACTION_COOLDOWN_TIME
 
 	print("[Merchant] Opening shop for %s" % merchant_name)
 	_open_shop()
