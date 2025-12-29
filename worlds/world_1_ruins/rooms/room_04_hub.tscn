@@ -1,12 +1,19 @@
-[gd_scene load_steps=6 format=3 uid="uid://room04hub"]
+[gd_scene load_steps=9 format=3 uid="uid://room04hub"]
 
 [ext_resource type="Script" path="res://worlds/world_1_ruins/rooms/room_04_hub.gd" id="1_room04"]
 [ext_resource type="PackedScene" uid="uid://c2nx5q8v4kmpr" path="res://environment/checkpoint.tscn" id="2_checkpoint"]
 [ext_resource type="PackedScene" path="res://environment/door.tscn" id="3_door"]
 [ext_resource type="PackedScene" uid="uid://world1_merchant" path="res://environment/npcs/world1_merchant.tscn" id="4_merchant"]
+[ext_resource type="Script" path="res://environment/death_box.gd" id="5_deathbox"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1200, 80)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall"]
+size = Vector2(40, 900)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_deathbox"]
+size = Vector2(1500, 200)
 
 [node name="Room04Hub" type="Node2D"]
 script = ExtResource("1_room04")
@@ -27,6 +34,39 @@ color = Color(0.28, 0.24, 0.26, 1)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
 position = Vector2(600, 40)
 shape = SubResource("RectangleShape2D_ground")
+
+[node name="WallLeft" type="StaticBody2D" parent="."]
+position = Vector2(-20, 450)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="WallRight" type="StaticBody2D" parent="."]
+position = Vector2(1220, 450)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="DeathBoxLeft" type="Area2D" parent="."]
+position = Vector2(-120, 450)
+script = ExtResource("5_deathbox")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathBoxLeft"]
+shape = SubResource("RectangleShape2D_deathbox")
+
+[node name="DeathBoxRight" type="Area2D" parent="."]
+position = Vector2(1320, 450)
+script = ExtResource("5_deathbox")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathBoxRight"]
+shape = SubResource("RectangleShape2D_deathbox")
+
+[node name="DeathBoxBottom" type="Area2D" parent="."]
+position = Vector2(600, 1000)
+script = ExtResource("5_deathbox")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathBoxBottom"]
+shape = SubResource("RectangleShape2D_deathbox")
 
 [node name="Doors" type="Node2D" parent="."]
 

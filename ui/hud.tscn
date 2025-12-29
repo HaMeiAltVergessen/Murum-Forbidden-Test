@@ -86,36 +86,6 @@ vertical_alignment = 1
 
 [node name="ReboundIndicator" parent="." instance=ExtResource("7_rebound_indicator")]
 
-[node name="UrgathonChargeBar" type="ProgressBar" parent="."]
-visible = false
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -200.0
-offset_top = -100.0
-offset_right = 200.0
-offset_bottom = -70.0
-grow_horizontal = 2
-grow_vertical = 0
-max_value = 100.0
-show_percentage = false
-
-[node name="UrgathonCounter" type="Label" parent="."]
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = -80.0
-offset_right = 220.0
-offset_bottom = -40.0
-grow_vertical = 0
-theme_override_font_sizes/font_size = 20
-text = "Urgathon Uses: 0/3"
-horizontal_alignment = 0
-vertical_alignment = 1
-
 [node name="UrgathonBlackscreen" type="ColorRect" parent="."]
 visible = false
 anchors_preset = 15

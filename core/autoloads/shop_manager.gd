@@ -134,7 +134,8 @@ func attempt_purchase(item_id: String, price: int) -> bool:
 
 	# Add to inventory
 	if InventoryManager:
-		InventoryManager.add_item(item_data)
+		var category = item_data.get("category", "consumable")
+		InventoryManager.add_item(item_id, category)
 
 	# Notification
 	EventBus.show_notification.emit("Purchased: %s" % item_data.get("name", item_id), 2.0)
