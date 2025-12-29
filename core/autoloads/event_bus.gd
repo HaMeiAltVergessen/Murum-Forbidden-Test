@@ -341,6 +341,10 @@ signal item_picked_up(item_id: String, item_name: String, category: String)
 ## Emitted when a consumable buff is applied (handled by BuffManager)
 signal consumable_buff_applied(item_data: Dictionary)
 
+# ============ CURRENCY SIGNALS ============
+## Emitted when player's gold/coins change
+signal coins_changed(new_amount: int)
+
 
 func _ready() -> void:
 	print("[EventBus] Initialized")

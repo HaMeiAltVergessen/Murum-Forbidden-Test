@@ -106,8 +106,13 @@ func _input(event: InputEvent) -> void:
 	if not player_in_range:
 		return
 
+	# Don't open shop if already open
+	if ShopManager.is_open():
+		return
+
 	if event.is_action_pressed("interact"):
 		_open_shop()
+		get_viewport().set_input_as_handled()
 
 func _open_shop() -> void:
 	"""Opens shop UI"""

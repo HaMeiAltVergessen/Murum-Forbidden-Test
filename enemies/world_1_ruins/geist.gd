@@ -8,7 +8,7 @@ class_name Geist
 # CONSTANTS
 # ============================================================================
 
-const MAX_HP: int = 300  # 10x for testing
+const MAX_HP: int = 10  # Testing value
 const MOVE_SPEED: float = 80.0
 const DAMAGE: int = 15
 
@@ -176,8 +176,32 @@ func die() -> void:
 
 func _spawn_loot() -> void:
 	"""Spawns coins on death"""
-	# TODO: Spawn coin pickup
-	print("[Geist] Dropped loot at %v" % global_position)
+
+	# Load gold coin scene
+	var gold_coin_scene = load("res://environment/pickups/gold_coin.tscn")
+	if not gold_coin_scene:
+		push_warning("[Geist] Gold coin scene not found!")
+		return
+
+	# Geists drop 2-4 coins
+	var coin_count = randi() % 3 + 2
+
+	for i in range(coin_count):
+		var coin = gold_coin_scene.instantiate()
+
+		# Random offset for scatter effect
+		var offset = Vector2(
+			randf_range(-30, 30),
+			randf_range(-30, 30)
+		)
+
+		coin.global_position = global_position + offset
+		coin.gold_value = 1
+
+		# Add to scene
+		get_tree().root.add_child(coin)
+
+	print("[Geist] Spawned %d gold coins at %v" % [coin_count, global_position])
 
 # ============================================================================
 # STUN SYSTEM
