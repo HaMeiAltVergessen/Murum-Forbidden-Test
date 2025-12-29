@@ -21,6 +21,12 @@ var enemies_killed: int = 0
 var deaths: int = 0
 var coins_collected: int = 0
 
+# ============ WORLD PROGRESSION ============
+var world1_arena_cleared: bool = false
+
+# ============ SIGNALS ============
+signal arena_cleared
+
 
 func _ready() -> void:
 	print("[GameManager] Initialized")

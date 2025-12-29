@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://world1_merchant"]
+
+[ext_resource type="PackedScene" uid="uid://merchant_base" path="res://environment/npcs/merchant.tscn" id="1_base_merchant"]
+
+[node name="Merchant" instance=ExtResource("1_base_merchant")]
+merchant_name = "Dorfhändler"
+greeting = "Die Arena überlebt... beeindruckend."
+shop_data_path = "res://data/shops/world1_village.json"

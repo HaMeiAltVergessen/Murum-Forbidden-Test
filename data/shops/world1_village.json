@@ -1,0 +1,67 @@
+{
+  "merchant_id": "world1_village_merchant",
+  "merchant_name": "Dorfhändler",
+  "world": 1,
+  "items": [
+    {
+      "id": "heilkraeuter",
+      "name": "Heilkräuter",
+      "type": "consumable",
+      "category": "healing",
+      "price": 50,
+      "description": "Heilende Kräuter aus den Ruinen",
+      "effect": "Stelle 40% HP wieder her",
+      "duration": "Sofort",
+      "lythrun_influence": "Lythrun heilt 20% einmal bei 50% HP",
+      "icon": "res://assets/items/icons/heilkraeuter.png"
+    },
+    {
+      "id": "glas_gleichgewicht",
+      "name": "Glas des Gleichgewichts",
+      "type": "consumable",
+      "category": "buff",
+      "price": 80,
+      "description": "Erweitert dein Parry-Timing",
+      "effect": "+0.5s Parry-Fenster",
+      "duration": "2 Level",
+      "lythrun_influence": "Lythrun bekommt erweitertes Parry-Fenster",
+      "icon": "res://assets/items/icons/glas_gleichgewicht.png"
+    },
+    {
+      "id": "schimmernde_essenz",
+      "name": "Schimmernde Essenz",
+      "type": "consumable",
+      "category": "buff",
+      "price": 100,
+      "description": "Mystische Essenz mit regenerativer Kraft",
+      "effect": "HP-Regen (5 HP/5s)",
+      "duration": "3 Minuten",
+      "lythrun_influence": "Lythrun regeneriert langsam in Phase 2 (30s)",
+      "icon": "res://assets/items/icons/schimmernde_essenz.png"
+    },
+    {
+      "id": "zerbrochene_muenze",
+      "name": "Zerbrochene Münze",
+      "type": "consumable",
+      "category": "buff",
+      "price": 60,
+      "description": "Zieht mehr Reichtum an",
+      "effect": "+10% Münz-Drops",
+      "duration": "3 Level",
+      "lythrun_influence": "Lythrun droppt Münzen die explodieren",
+      "icon": "res://assets/items/icons/zerbrochene_muenze.png"
+    },
+    {
+      "id": "funken_gnade",
+      "name": "Funken der Gnade",
+      "type": "consumable",
+      "category": "special",
+      "price": 200,
+      "description": "Eine zweite Chance im Angesicht des Todes",
+      "effect": "Respawn an Todesort",
+      "duration": "Permanent (bis zum Tod)",
+      "lythrun_influence": "+1 Lythrun Revive, heilt 25%",
+      "icon": "res://assets/items/icons/funken_gnade.png"
+    }
+  ]
+}

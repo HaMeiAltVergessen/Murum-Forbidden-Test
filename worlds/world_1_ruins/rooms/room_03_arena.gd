@@ -68,7 +68,11 @@ func _setup_arena() -> void:
 		checkpoint.visible = false
 		checkpoint.monitoring = false
 
-	# Door locking removed - simple door system doesn't support it
+	# Hide exit door until arena complete
+	if door_to_room_04:
+		door_to_room_04.visible = false
+		door_to_room_04.monitoring = false
+		door_to_room_04.modulate.a = 0.0
 
 	# Connect wave events
 	wave_spawner.all_waves_completed.connect(_on_all_waves_completed)
@@ -89,7 +93,14 @@ func _on_room_already_cleared() -> void:
 		checkpoint.is_activated = true
 		checkpoint._update_visual()
 
-	# Door unlocking removed - simple door system doesn't support it
+	# Make exit door visible/accessible
+	if door_to_room_04:
+		door_to_room_04.visible = true
+		door_to_room_04.monitoring = true
+		door_to_room_04.modulate.a = 1.0
+
+	# Ensure GameManager knows arena is cleared
+	GameManager.world1_arena_cleared = true
 
 # ============================================================================
 # WAVE CONFIGURATION
@@ -149,6 +160,13 @@ func _on_all_waves_completed() -> void:
 	WorldManager.mark_room_cleared(full_room_id)
 	is_cleared = true
 
+	# Mark arena cleared in GameManager
+	GameManager.world1_arena_cleared = true
+	GameManager.arena_cleared.emit()
+
+	# Unlock exit door to hub
+	_unlock_exit_door()
+
 	# Enable checkpoint
 	if checkpoint:
 		await get_tree().create_timer(1.0).timeout
@@ -156,6 +174,30 @@ func _on_all_waves_completed() -> void:
 
 	# Play completion effects
 	_play_arena_complete_effects()
+
+func _unlock_exit_door() -> void:
+	"""Unlocks exit door to Room 04 (Hub)"""
+
+	if not door_to_room_04:
+		push_warning("[Room03] Exit door not found!")
+		return
+
+	# Make door visible/active (if it was hidden)
+	door_to_room_04.visible = true
+	door_to_room_04.monitoring = true
+
+	# Visual feedback
+	var tween = create_tween()
+	tween.tween_property(door_to_room_04, "modulate:a", 1.0, 0.5)
+
+	# Notification
+	EventBus.show_notification.emit("Exit to Hub Unlocked!", 3.0)
+
+	# Audio
+	if AudioManager:
+		AudioManager.play_sfx("ui/door_unlock", 0.0)
+
+	print("[Room03] Exit door to hub unlocked")
 
 func _activate_checkpoint() -> void:
 	"""Activates checkpoint after arena clear"""

@@ -1,0 +1,37 @@
+[gd_scene load_steps=4 format=3 uid="uid://merchant_base"]
+
+[ext_resource type="Script" path="res://environment/npcs/merchant.gd" id="1_merchant"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_interaction"]
+radius = 80.0
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_merchant"]
+size = Vector2(32, 32)
+
+[node name="Merchant" type="CharacterBody2D"]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1_merchant")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.8, 0.7, 0.5, 1)
+scale = Vector2(2, 3)
+texture = SubResource("PlaceholderTexture2D_merchant")
+
+[node name="InteractionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
+shape = SubResource("CircleShape2D_interaction")
+
+[node name="InteractionPrompt" type="Label" parent="."]
+offset_left = -60.0
+offset_top = -100.0
+offset_right = 60.0
+offset_bottom = -70.0
+theme_override_colors/font_color = Color(1, 1, 0.6, 1)
+theme_override_font_sizes/font_size = 16
+text = "E - Talk"
+horizontal_alignment = 1
+vertical_alignment = 1
