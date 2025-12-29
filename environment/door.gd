@@ -27,14 +27,16 @@ func _on_body_entered(body: Node2D) -> void:
 	if body is Murum:
 		player_in_area = true
 		if prompt_label:
-			prompt_label.text = "E - Enter TestRoom"
+			var scene_name = target_scene.get_file().get_basename()
+			prompt_label.text = "E - Enter " + scene_name
 
 
 func _on_body_exited(body: Node2D) -> void:
 	if body is Murum:
 		player_in_area = false
 		if prompt_label:
-			prompt_label.text = "TestRoom"
+			var scene_name = target_scene.get_file().get_basename()
+			prompt_label.text = scene_name
 
 
 func _load_scene() -> void:

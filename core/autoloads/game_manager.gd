@@ -183,23 +183,32 @@ func _reposition_player_in_scene(scene: Node) -> void:
 		current_parent.remove_child(player)
 		print("[GameManager] Removed player from: ", current_parent.name)
 
-	# Add to new scene as last child (renders on top)
+	# Add to new scene as LAST child (renders on top of all existing nodes)
 	scene.add_child(player)
 
-	# Ensure player has correct z_index to render above background
-	player.z_index = 10
+	# Force player to absolute end of children list
+	scene.move_child(player, scene.get_child_count() - 1)
+
+	# High z_index to ensure rendering above everything
+	player.z_index = 100
+	player.z_as_relative = false  # Absolute z-ordering
 
 	# Position at spawn point
 	player.global_position = player_spawn_position
 
-	# Reset velocity to prevent falling through floor
+	# Reset velocity and physics state
 	if player.has_method("reset_velocity"):
 		player.reset_velocity()
 	elif "velocity" in player:
 		player.velocity = Vector2.ZERO
 
-	print("[GameManager] Player repositioned in scene: ", scene.name, " at ", player.global_position)
-	print("[GameManager] Player z_index: ", player.z_index)
+	# Force player to be on floor (not falling)
+	if player.has_method("apply_floor_snap"):
+		player.apply_floor_snap()
+
+	print("[GameManager] Player repositioned in scene: ", scene.name)
+	print("[GameManager] Position: ", player.global_position, " | z_index: ", player.z_index)
+	print("[GameManager] Child index: ", player.get_index(), " of ", scene.get_child_count())
 
 
 # ============ STATISTICS ============
