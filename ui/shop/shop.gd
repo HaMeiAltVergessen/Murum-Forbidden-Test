@@ -23,6 +23,8 @@ signal shop_closed
 # ============================================================================
 
 var current_shop_data: Dictionary = {}
+var buy_buttons: Array[Button] = []
+var current_focus_index: int = 0
 
 # ============================================================================
 # INITIALIZATION
@@ -42,13 +44,28 @@ func _ready() -> void:
 	print("[Shop UI] Ready")
 
 func _input(event: InputEvent) -> void:
-	"""Handles ESC to close shop"""
+	"""Handles ESC and controller input"""
 
 	if not visible:
 		return
 
+	# Close shop
 	if event.is_action_pressed("ui_cancel"):
 		_close_shop()
+		get_viewport().set_input_as_handled()
+		return
+
+	# Controller navigation
+	if event.is_action_pressed("ui_down"):
+		_navigate_buttons(1)
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("ui_up"):
+		_navigate_buttons(-1)
+		get_viewport().set_input_as_handled()
+
+	# Controller confirm (A button)
+	elif event.is_action_pressed("ui_accept"):
+		_activate_focused_button()
 		get_viewport().set_input_as_handled()
 
 # ============================================================================
@@ -79,10 +96,18 @@ func populate_shop(shop_data: Dictionary, merchant_name: String = "Merchant", gr
 		for child in items_container.get_children():
 			child.queue_free()
 
+	# Reset button tracking
+	buy_buttons.clear()
+	current_focus_index = 0
+
 	# Create item entries
 	var items = shop_data.get("items", [])
 	for item_data in items:
 		_create_item_entry(item_data)
+
+	# Focus first button for controller navigation
+	if buy_buttons.size() > 0:
+		_update_button_focus()
 
 	print("[Shop UI] Populated with %d items" % items.size())
 
@@ -131,7 +156,11 @@ func _create_item_entry(item_data: Dictionary) -> void:
 	var price = item_data.get("price", 0)
 	buy_button.text = "Buy (%d coins)" % price
 	buy_button.pressed.connect(_on_buy_item.bind(item_data))
+	buy_button.focus_mode = Control.FOCUS_ALL
 	vbox.add_child(buy_button)
+
+	# Track button for controller navigation
+	buy_buttons.append(buy_button)
 
 	items_container.add_child(item_panel)
 
@@ -183,3 +212,45 @@ func _on_close_button_pressed() -> void:
 	"""Called when close button is pressed"""
 
 	_close_shop()
+
+# ============================================================================
+# CONTROLLER NAVIGATION
+# ============================================================================
+
+func _navigate_buttons(direction: int) -> void:
+	"""Navigates through buy buttons with controller"""
+
+	if buy_buttons.is_empty():
+		return
+
+	# Update index with wrapping
+	current_focus_index += direction
+	if current_focus_index < 0:
+		current_focus_index = buy_buttons.size() - 1
+	elif current_focus_index >= buy_buttons.size():
+		current_focus_index = 0
+
+	_update_button_focus()
+
+func _update_button_focus() -> void:
+	"""Updates visual focus indicator for current button"""
+
+	if buy_buttons.is_empty():
+		return
+
+	# Remove focus from all buttons
+	for button in buy_buttons:
+		button.release_focus()
+
+	# Focus current button
+	if current_focus_index >= 0 and current_focus_index < buy_buttons.size():
+		buy_buttons[current_focus_index].grab_focus()
+
+func _activate_focused_button() -> void:
+	"""Activates the currently focused button"""
+
+	if buy_buttons.is_empty():
+		return
+
+	if current_focus_index >= 0 and current_focus_index < buy_buttons.size():
+		buy_buttons[current_focus_index].emit_signal("pressed")
