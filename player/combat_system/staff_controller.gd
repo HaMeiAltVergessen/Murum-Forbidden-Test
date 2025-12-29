@@ -115,12 +115,19 @@ func _throw_staff() -> void:
 
 func _get_throw_direction() -> Vector2:
 	# Always throw horizontally in the direction player is facing
+	var movement_controller = player.get_node_or_null("MovementController")
+	if movement_controller and movement_controller.has_method("get_facing_direction"):
+		var facing = movement_controller.get_facing_direction()
+		print("[StaffController] Throwing in direction: ", facing, " (", "right" if facing > 0 else "left", ")")
+		return Vector2(facing, 0)
+
+	# Fallback: check sprite scale
 	var sprite = player.get_node_or_null("Sprite2D")
 	if sprite:
 		var facing = 1 if sprite.scale.x > 0 else -1
 		return Vector2(facing, 0)
 
-	# Fallback to right if no sprite found
+	# Final fallback to right
 	return Vector2.RIGHT
 
 # ============================================================================
