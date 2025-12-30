@@ -29,6 +29,7 @@ const ROTATION_SPEED: float = 25.0  # Rotation speed in radians per second (fast
 
 var hit_enemies: Dictionary = {}
 const HIT_COOLDOWN: float = 0.3
+const HIT_COOLDOWN_ROTATION: float = 0.15  # Shorter cooldown during rotation for multi-hit
 
 # ============================================================================
 # REFERENCES
@@ -172,7 +173,9 @@ func _on_area_entered(area: Area2D) -> void:
 		else:
 			knockback_direction = dir_vec.normalized()
 
-		var knockback_force = knockback_direction * 400.0  # Strong knockback
+		# Increase knockback during rotation spin
+		var knockback_multiplier = 1.5 if current_state == State.ROTATING_AT_END else 1.0
+		var knockback_force = knockback_direction * 400.0 * knockback_multiplier
 
 		# Deal damage with knockback through HurtboxComponent
 		area.take_damage(damage, knockback_force, 0.2)
@@ -222,10 +225,13 @@ func _is_enemy_on_cooldown(enemy: Node) -> bool:
 func _update_hit_cooldowns(delta: float) -> void:
 	var to_remove = []
 
+	# Use shorter cooldown during rotation for multi-hit
+	var cooldown_time = HIT_COOLDOWN_ROTATION if current_state == State.ROTATING_AT_END else HIT_COOLDOWN
+
 	for enemy in hit_enemies:
 		hit_enemies[enemy] += delta
 
-		if hit_enemies[enemy] >= HIT_COOLDOWN:
+		if hit_enemies[enemy] >= cooldown_time:
 			to_remove.append(enemy)
 
 	for enemy in to_remove:
