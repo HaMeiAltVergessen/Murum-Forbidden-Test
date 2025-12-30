@@ -635,6 +635,38 @@
       "description": "Ein letzter Funke göttlicher Macht. Wird später mit Story-Kontext gefüllt.",
       "icon": "res://assets/items/icons/placeholder_key.png",
       "lore": "Platzhalter für Story-Schlüssel"
+    },
+    {
+      "id": "lythrun_fragment",
+      "name": "Lythruns Fragment",
+      "type": "relic",
+      "world": 1,
+      "category": "passive",
+      "description": "Seelenfragment des vergessenen Helden",
+      "icon": "res://assets/items/icons/lythrun_fragment.png",
+      "lore": "Lythrun's Essenz, gebunden an den Stab. Wer ihn trägt, spürt seine Macht.",
+      "stats": {
+        "all_damage_bonus": 0.15,
+        "staff_throw_damage": 0.25,
+        "resonance_gain_bonus": 0.20
+      }
+    },
+    {
+      "id": "lythrun_essence",
+      "name": "Essenz der Vergessenheit",
+      "type": "consumable",
+      "world": 1,
+      "category": "buff",
+      "description": "Dunkle Energie aus Lythruns Kern",
+      "icon": "res://assets/items/icons/lythrun_essence.png",
+      "price": 0,
+      "effect": "Aktiviert 'Lythrun-Modus': +50% Schaden, -50% HP für 60s",
+      "duration": "60 Sekunden",
+      "stats": {
+        "damage_multiplier": 1.5,
+        "max_hp_penalty": 0.5,
+        "duration_sec": 60
+      }
     }
   ]
 }

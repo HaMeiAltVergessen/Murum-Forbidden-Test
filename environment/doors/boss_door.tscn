@@ -1,0 +1,52 @@
+[gd_scene load_steps=3 format=3 uid="uid://boss_door_001"]
+
+[ext_resource type="Script" path="res://environment/doors/boss_door.gd" id="1"]
+
+[sub_resource type="RectangleShape2D" id="trigger_shape"]
+size = Vector2(80, 120)
+
+[sub_resource type="RectangleShape2D" id="barrier_shape"]
+size = Vector2(60, 100)
+
+[node name="BossDoor" type="Area2D"]
+collision_layer = 0
+collision_mask = 1
+script = ExtResource("1")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -50)
+scale = Vector2(2, 2)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -50)
+shape = SubResource("trigger_shape")
+
+[node name="Barrier" type="StaticBody2D" parent="."]
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Barrier"]
+position = Vector2(0, -50)
+shape = SubResource("barrier_shape")
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+position = Vector2(0, -80)
+color = Color(1, 0, 0, 1)
+energy = 0.5
+texture_scale = 2.0
+
+[node name="RuneParticles" type="GPUParticles2D" parent="."]
+position = Vector2(0, -50)
+amount = 20
+lifetime = 2.0
+preprocess = 1.0
+
+[node name="PromptLabel" type="Label" parent="."]
+offset_left = -100.0
+offset_top = -120.0
+offset_right = 100.0
+offset_bottom = -100.0
+theme_override_font_sizes/font_size = 14
+text = "Versiegelt"
+horizontal_alignment = 1
+vertical_alignment = 1

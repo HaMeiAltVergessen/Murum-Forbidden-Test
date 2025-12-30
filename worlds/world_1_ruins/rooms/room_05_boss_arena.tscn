@@ -1,0 +1,43 @@
+[gd_scene load_steps=2 format=3 uid="uid://boss_arena_001"]
+
+[ext_resource type="Script" path="res://worlds/world_1_ruins/rooms/room_05_boss_arena.gd" id="1"]
+
+[sub_resource type="CircleShape2D" id="boundary_shape"]
+radius = 350.0
+
+[node name="Room05BossArena" type="Node2D"]
+script = ExtResource("1")
+
+[node name="TileMap" type="TileMap" parent="."]
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="PlayerSpawn" type="Marker2D" parent="Spawns"]
+position = Vector2(0, 250)
+
+[node name="BossSpawn" type="Marker2D" parent="Spawns"]
+position = Vector2(0, -200)
+
+[node name="ArenaBoundary" type="StaticBody2D" parent="."]
+collision_layer = 1
+collision_mask = 0
+modulate = Color(1, 0.3, 0.3, 0.3)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ArenaBoundary"]
+shape = SubResource("boundary_shape")
+
+[node name="Polygon2D" type="Polygon2D" parent="ArenaBoundary"]
+color = Color(0.5, 0, 0, 0.2)
+polygon = PackedVector2Array(-350, 0, -300, -180, -180, -300, 0, -350, 180, -300, 300, -180, 350, 0, 300, 180, 180, 300, 0, 350, -180, 300, -300, 180)
+
+[node name="Doors" type="Node2D" parent="."]
+
+[node name="Environment" type="Node2D" parent="."]
+
+[node name="Lighting" type="CanvasModulate" parent="."]
+color = Color(0.4, 0.3, 0.5, 1)
+
+[node name="Atmosphere" type="Node2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+enabled = false
