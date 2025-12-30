@@ -41,12 +41,25 @@ var is_active: bool = false
 
 
 func _ready() -> void:
+	# Set boss reference for all components
+	_setup_component_references()
+
 	setup_boss()
 	connect_signals()
 
 	# Wait a bit, then start fight
 	await get_tree().create_timer(1.0).timeout
 	start_fight()
+
+
+func _setup_component_references() -> void:
+	"""Sets up boss references for all components that need it"""
+	if phase_manager and "boss" in phase_manager:
+		phase_manager.boss = self
+	if attack_manager and "boss" in attack_manager:
+		attack_manager.boss = self
+	if camera_controller and "boss" in camera_controller:
+		camera_controller.boss = self
 
 
 func _physics_process(delta: float) -> void:
