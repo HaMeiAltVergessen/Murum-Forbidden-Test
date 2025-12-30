@@ -2,6 +2,7 @@ extends CanvasLayer
 ## Boss health bar UI displayed during boss fights
 class_name BossHealthBar
 
+@onready var container: MarginContainer = $MarginContainer
 @onready var name_label: Label = $MarginContainer/VBoxContainer/BossNameLabel
 @onready var hp_bar: ProgressBar = $MarginContainer/VBoxContainer/HealthBar
 @onready var hp_text: Label = $MarginContainer/VBoxContainer/HealthBar/HPLabel
@@ -13,7 +14,8 @@ var max_health: float = 1000.0
 
 func _ready() -> void:
 	# Start hidden
-	modulate.a = 0.0
+	if container:
+		container.modulate.a = 0.0
 	visible = true
 
 
@@ -33,14 +35,18 @@ func setup(boss_name_text: String, max_hp: float) -> void:
 
 func show_bar() -> void:
 	"""Fades in the boss health bar"""
+	if not container:
+		return
 	var tween = create_tween()
-	tween.tween_property(self, "modulate:a", 1.0, 0.5)
+	tween.tween_property(container, "modulate:a", 1.0, 0.5)
 
 
 func hide_bar() -> void:
 	"""Fades out the boss health bar"""
+	if not container:
+		return
 	var tween = create_tween()
-	tween.tween_property(self, "modulate:a", 0.0, 0.5)
+	tween.tween_property(container, "modulate:a", 0.0, 0.5)
 
 
 func update_health(current_hp: float, max_hp: float) -> void:
