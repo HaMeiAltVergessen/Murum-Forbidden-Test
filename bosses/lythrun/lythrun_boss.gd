@@ -296,10 +296,33 @@ func perform_staff_slam() -> void:
 	# Face player
 	face_player()
 
+	# Move toward player (60% of distance)
+	if player_target:
+		var target_pos = player_target.global_position
+		var distance = global_position.distance_to(target_pos)
+
+		if distance > 150.0:  # Only move if far away
+			var move_direction = (target_pos - global_position).normalized()
+			var move_distance = min(distance * 0.6, 300.0)  # Move 60% or max 300 units
+			var new_pos = global_position + move_direction * move_distance
+
+			# Smooth movement
+			var move_time = 0.3
+			var start_pos = global_position
+			var elapsed = 0.0
+
+			while elapsed < move_time:
+				elapsed += get_physics_process_delta_time()
+				var t = elapsed / move_time
+				global_position = start_pos.lerp(new_pos, t)
+				await get_tree().process_frame
+
+			global_position = new_pos
+
 	# Telegraph
 	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("staff_slam_windup"):
 		sprite.play("staff_slam_windup")
-		await get_tree().create_timer(0.5).timeout
+		await get_tree().create_timer(0.3).timeout
 
 	# Slam
 	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("staff_slam"):
