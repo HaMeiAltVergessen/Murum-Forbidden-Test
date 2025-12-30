@@ -7,16 +7,22 @@ extends Area2D
 @export var lifetime: float = 5.0
 
 var direction: Vector2 = Vector2.ZERO
+var velocity: Vector2 = Vector2.ZERO  # Can be set directly for directional orbs
 var has_hit: bool = false
 
 
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 
-	# Calculate direction to target
-	if target != Vector2.ZERO:
+	# If velocity is already set, use that
+	if velocity != Vector2.ZERO:
+		# Velocity already set - don't calculate from target
+		pass
+	elif target != Vector2.ZERO:
+		# Calculate direction to target
 		direction = (target - global_position).normalized()
 	else:
+		# Default direction
 		direction = Vector2.RIGHT
 
 	# Auto-destroy after lifetime
@@ -25,13 +31,16 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	"""Moves the orb towards target"""
+	"""Moves the orb towards target or in set direction"""
 
 	if has_hit:
 		return
 
-	# Move in direction
-	global_position += direction * speed * delta
+	# Move using velocity if set, otherwise use direction * speed
+	if velocity != Vector2.ZERO:
+		global_position += velocity * delta
+	else:
+		global_position += direction * speed * delta
 
 
 func _on_body_entered(body: Node2D) -> void:

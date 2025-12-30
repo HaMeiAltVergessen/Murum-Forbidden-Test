@@ -1,15 +1,19 @@
-[gd_scene load_steps=2 format=3 uid="uid://lythrun_boss_001"]
+[gd_scene load_steps=3 format=3 uid="uid://lythrun_boss_001"]
 
 [ext_resource type="PackedScene" uid="uid://boss_base_001" path="res://bosses/boss_base.tscn" id="1"]
 [ext_resource type="Script" path="res://bosses/lythrun/lythrun_boss.gd" id="2"]
+[ext_resource type="Script" path="res://bosses/lythrun/adaptive_ai.gd" id="3"]
 
 [node name="LythrunBoss" instance=ExtResource("1")]
 script = ExtResource("2")
 boss_name = "Lythrun, der Vergessene"
-max_health = 1500.0
+max_health = 2500.0
 movement_speed = 120.0
-phase_1_pattern = Array[String](["staff_slam", "idle_pause", "staff_slam"])
-phase_2_pattern = Array[String](["staff_slam", "teleport", "staff_slam"])
-phase_3_pattern = Array[String](["staff_slam", "teleport", "staff_slam", "teleport"])
-gold_reward = 750
+phase_1_pattern = Array[String](["staff_slam", "shadow_dash", "staff_slam", "void_orbs"])
+phase_2_pattern = Array[String](["staff_slam_combo", "shadow_dash", "void_orbs", "teleport_strike", "staff_slam"])
+phase_3_pattern = Array[String](["teleport_barrage", "void_orbs_spread", "staff_slam_combo", "shadow_dash_multi", "desperation_aoe"])
+gold_reward = 1500
 unlock_flag = "lythrun_defeated"
+
+[node name="AdaptiveAI" type="Node" parent="." index="6"]
+script = ExtResource("3")

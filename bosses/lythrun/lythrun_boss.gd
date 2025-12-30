@@ -98,7 +98,7 @@ func _setup_attack_patterns() -> void:
 		"staff_slam"
 	]
 
-	# Phase 3 (50%-0%): Desperate
+	# Phase 3 (50%-25%): Desperate
 	phase_3_pattern = [
 		"teleport_barrage",
 		"void_orbs_spread",
@@ -106,6 +106,17 @@ func _setup_attack_patterns() -> void:
 		"shadow_dash_multi",
 		"desperation_aoe"
 	]
+
+
+# Added: Connect adaptive AI to phase changes
+func _on_phase_changed(old_phase: int, new_phase: int) -> void:
+	"""Override to add adaptive AI integration"""
+	super._on_phase_changed(old_phase, new_phase)
+
+	# Notify adaptive AI
+	var ai = get_adaptive_ai()
+	if ai and ai.has_method("on_phase_changed"):
+		ai.on_phase_changed(new_phase)
 
 
 func _find_player() -> void:
@@ -459,38 +470,144 @@ func _spawn_void_orb(delay: float) -> void:
 
 
 # ============================================================================
-# PHASE 2+ ATTACKS (Placeholders for Part 2)
+# PHASE 2+ ATTACKS
 # ============================================================================
 
+# Get adaptive AI component
+func get_adaptive_ai() -> Node:
+	return get_node_or_null("AdaptiveAI")
+
+
 func perform_staff_slam_combo() -> void:
-	await perform_staff_slam()
-	await get_tree().create_timer(0.3).timeout
-	await perform_staff_slam()
+	"""3x Staff Slam combo"""
+	for i in range(3):
+		await perform_staff_slam()
+		await get_tree().create_timer(0.2).timeout
 
 
 func perform_teleport_strike() -> void:
-	print("[Lythrun] Teleport Strike (TODO)")
-	await get_tree().create_timer(1.5).timeout
+	"""Teleport behind player and attack"""
+	print("[Lythrun] Teleport Strike")
+
+	if not player_target:
+		await get_tree().create_timer(1.0).timeout
+		return
+
+	# Vanish
+	if sprite:
+		sprite.modulate.a = 0
+
+	await get_tree().create_timer(0.3).timeout
+
+	# Position behind player
+	var player_pos = player_target.global_position
+	var behind_offset = Vector2(-80, 0) if player_target.global_position.x > global_position.x else Vector2(80, 0)
+	global_position = player_pos + behind_offset
+
+	# Appear
+	if sprite:
+		sprite.modulate.a = 1.0
+
+	await get_tree().create_timer(0.2).timeout
+
+	# Quick attack
+	await perform_staff_slam()
 
 
 func perform_void_orbs_spread() -> void:
-	await perform_void_orbs()
+	"""Shoots void orbs in all directions"""
+	print("[Lythrun] Void Orbs Spread")
+
+	# 8 orbs in circle
+	var orb_count = 8
+	var angle_step = TAU / orb_count
+
+	for i in range(orb_count):
+		var angle = i * angle_step
+		var direction = Vector2(cos(angle), sin(angle))
+		_spawn_void_orb_directional(direction)
+		await get_tree().create_timer(0.1).timeout
+
+	await get_tree().create_timer(0.5).timeout
+
+
+func _spawn_void_orb_directional(direction: Vector2) -> void:
+	"""Spawns void orb in specific direction"""
+	var orb_path = "res://projectiles/void_orb.tscn"
+
+	if not ResourceLoader.exists(orb_path):
+		return
+
+	var orb_scene = load(orb_path)
+	var orb = orb_scene.instantiate()
+	get_parent().add_child(orb)
+
+	orb.global_position = global_position + Vector2(0, -30)
+
+	# Set direction instead of target
+	if "velocity" in orb:
+		orb.velocity = direction * 250.0
+	if "damage" in orb:
+		orb.damage = 30
 
 
 func perform_teleport_barrage() -> void:
-	print("[Lythrun] Teleport Barrage (TODO)")
-	await get_tree().create_timer(2.0).timeout
+	"""4x rapid teleports with attacks"""
+	print("[Lythrun] Teleport Barrage")
+
+	for i in range(4):
+		await perform_teleport_strike()
+		await get_tree().create_timer(0.2).timeout
 
 
 func perform_shadow_dash_multi() -> void:
-	await perform_shadow_dash()
-	await get_tree().create_timer(0.3).timeout
-	await perform_shadow_dash()
+	"""3x shadow dashes"""
+	for i in range(3):
+		await perform_shadow_dash()
+		await get_tree().create_timer(0.2).timeout
 
 
 func perform_desperation_aoe() -> void:
-	print("[Lythrun] Desperation AOE (TODO)")
-	await get_tree().create_timer(2.0).timeout
+	"""Massive AoE explosion"""
+	print("[Lythrun] Desperation AOE")
+
+	# Charge up
+	await get_tree().create_timer(1.5).timeout
+
+	# Spawn large AoE
+	var aoe_radius = 300.0
+	var ai = get_adaptive_ai()
+	if ai and ai.has_method("get_aoe_radius"):
+		aoe_radius = ai.get_aoe_radius(aoe_radius)
+
+	_spawn_aoe_ring(global_position, aoe_radius, 70.0)
+
+	# Camera shake
+	if camera_controller:
+		camera_controller.shake(20.0, 1.0)
+
+	await get_tree().create_timer(1.0).timeout
+
+
+func _spawn_aoe_ring(pos: Vector2, radius: float, damage: float) -> void:
+	"""Spawns AoE ring"""
+	var aoe_path = "res://hitboxes/boss_aoe_ring.tscn"
+
+	if not ResourceLoader.exists(aoe_path):
+		return
+
+	var aoe_scene = load(aoe_path)
+	var aoe = aoe_scene.instantiate()
+	get_parent().add_child(aoe)
+
+	aoe.global_position = pos
+
+	if "radius" in aoe:
+		aoe.radius = radius
+	if "damage" in aoe:
+		aoe.damage = damage
+	if aoe.has_method("activate"):
+		aoe.activate()
 
 
 # ============================================================================
