@@ -444,6 +444,13 @@ func _process_recovery(delta: float) -> void:
 	# Lock in place
 	player.velocity = Vector2.ZERO
 
+	# Safety: Check for NaN position during recovery
+	if is_nan(player.global_position.x) or is_nan(player.global_position.y):
+		print("[Wolkenbruch] ERROR: NaN detected during recovery!")
+		print("[Wolkenbruch] Forcing emergency completion")
+		_complete_wolkenbruch()
+		return
+
 	if state_timer <= 0.0:
 		_complete_wolkenbruch()
 
@@ -758,11 +765,13 @@ func _complete_wolkenbruch() -> void:
 	# Safety: Ensure player position is valid (not NaN or extreme values)
 	if is_nan(player.global_position.x) or is_nan(player.global_position.y):
 		print("[Wolkenbruch] CRITICAL ERROR: NaN position detected in _complete_wolkenbruch!")
-		print("[Wolkenbruch] This should have been caught earlier.")
-		print("[Wolkenbruch] Reset velocity and let physics engine handle position")
-		# NEVER teleport player - this causes glitches!
-		# Just reset velocity and let physics stabilize
+		print("[Wolkenbruch] Attempting to restore to safe position...")
+		# Reset velocity
 		player.velocity = Vector2.ZERO
+		# Find a safe ground position (raycast downward from center of arena)
+		var safe_pos = Vector2(0, 300)  # Center of arena, near ground
+		player.global_position = safe_pos
+		print("[Wolkenbruch] Position restored to: ", safe_pos)
 
 	# Safety: Disable hover mode if still active
 	if movement_controller and movement_controller.is_hovering:
