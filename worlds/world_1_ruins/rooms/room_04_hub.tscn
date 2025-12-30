@@ -1,6 +1,7 @@
-[gd_scene load_steps=9 format=3 uid="uid://room04hub"]
+[gd_scene load_steps=10 format=3 uid="uid://room04hub"]
 
 [ext_resource type="Script" path="res://worlds/world_1_ruins/rooms/room_04_hub.gd" id="1_room04"]
+[ext_resource type="PackedScene" uid="uid://b1k5wfkqxc8yx" path="res://player/murum.tscn" id="2_murum"]
 [ext_resource type="PackedScene" uid="uid://c2nx5q8v4kmpr" path="res://environment/checkpoint.tscn" id="2_checkpoint"]
 [ext_resource type="PackedScene" path="res://environment/door.tscn" id="3_door"]
 [ext_resource type="PackedScene" uid="uid://world1_merchant" path="res://environment/npcs/world1_merchant.tscn" id="4_merchant"]
@@ -152,5 +153,10 @@ pickup_radius = 80.0
 [node name="Merchant" parent="NPCs" instance=ExtResource("4_merchant")]
 position = Vector2(450, 780)
 
-[node name="Default" type="Marker2D" parent="."]
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="Default" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(200, 750)
+
+[node name="Murum" parent="." instance=ExtResource("2_murum")]
 position = Vector2(200, 750)
