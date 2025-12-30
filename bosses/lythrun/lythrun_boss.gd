@@ -462,7 +462,7 @@ func _spawn_void_orb(delay: float) -> void:
 
 	# Set properties
 	if "target" in orb:
-		orb.target = player_target.global_position
+		orb.target = player_target  # Node2D reference, not Vector2!
 	if "damage" in orb:
 		orb.damage = 25
 	if "speed" in orb:
