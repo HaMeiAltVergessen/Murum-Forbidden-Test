@@ -292,8 +292,9 @@ func _perform_air_reset_hit() -> void:
 
 	# Deal damage
 	if reset_enemy.has_node("HealthComponent"):
-		var health: HealthComponent = reset_enemy.get_node("HealthComponent")
-		health.take_damage(damage)
+		var health_comp = reset_enemy.get_node("HealthComponent")
+		if health_comp and health_comp.has_method("take_damage"):
+			health_comp.take_damage(damage)
 
 	# Play hit effect
 	_play_reset_hit_effect()

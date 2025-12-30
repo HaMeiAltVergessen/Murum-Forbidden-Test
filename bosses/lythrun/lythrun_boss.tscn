@@ -33,6 +33,7 @@ animations = [{
 }]
 
 [node name="LythrunBoss" instance=ExtResource("1")]
+scale = Vector2(2, 2)
 script = ExtResource("2")
 boss_name = "Lythrun, der Vergessene"
 max_health = 2500.0

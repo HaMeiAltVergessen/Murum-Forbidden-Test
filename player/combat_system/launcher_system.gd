@@ -218,8 +218,9 @@ func _launch_enemy(enemy: BaseEnemy) -> void:
 
 	# Deal damage
 	if enemy.has_node("HealthComponent"):
-		var health: HealthComponent = enemy.get_node("HealthComponent")
-		health.take_damage(launcher_damage)
+		var health_comp = enemy.get_node("HealthComponent")
+		if health_comp and health_comp.has_method("take_damage"):
+			health_comp.take_damage(launcher_damage)
 
 	# Track launched enemy
 	if not launched_enemies.has(enemy):

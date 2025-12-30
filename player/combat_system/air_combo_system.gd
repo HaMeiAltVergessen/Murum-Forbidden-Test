@@ -194,8 +194,9 @@ func _perform_air_attack() -> void:
 
 	# Deal damage
 	if juggled_enemy.has_node("HealthComponent"):
-		var health: HealthComponent = juggled_enemy.get_node("HealthComponent")
-		health.take_damage(air_attack_damage)
+		var health_comp = juggled_enemy.get_node("HealthComponent")
+		if health_comp and health_comp.has_method("take_damage"):
+			health_comp.take_damage(air_attack_damage)
 
 	# Play air hit effect
 	_play_air_hit_effect()
