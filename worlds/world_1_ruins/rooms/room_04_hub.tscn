@@ -108,7 +108,7 @@ horizontal_alignment = 1
 
 [node name="DoorToBoss" parent="Doors" instance=ExtResource("3_door")]
 position = Vector2(1100, 760)
-target_scene = "res://worlds/world_1_ruins/rooms/room_05_boss.tscn"
+target_scene = "res://worlds/world_1_ruins/rooms/room_05_boss_arena.tscn"
 spawn_position = Vector2(200, 750)
 
 [node name="DoorLabel" type="Label" parent="Doors/DoorToBoss"]
@@ -119,6 +119,21 @@ offset_bottom = -50.0
 theme_override_colors/font_color = Color(0.6, 0.3, 0.3, 1)
 theme_override_font_sizes/font_size = 14
 text = "SEALED"
+horizontal_alignment = 1
+
+[node name="DoorToItemRoom" parent="Doors" instance=ExtResource("3_door")]
+position = Vector2(600, 760)
+target_scene = "res://levels/item_room.tscn"
+spawn_position = Vector2(300, 950)
+
+[node name="DoorLabel" type="Label" parent="Doors/DoorToItemRoom"]
+offset_left = -50.0
+offset_top = -80.0
+offset_right = 50.0
+offset_bottom = -50.0
+theme_override_colors/font_color = Color(0.8, 0.7, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "Item Room"
 horizontal_alignment = 1
 
 [node name="Objects" type="Node2D" parent="."]
