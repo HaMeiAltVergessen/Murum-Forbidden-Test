@@ -291,33 +291,34 @@ func execute_attack(attack_name: String) -> void:
 func perform_staff_slam() -> void:
 	"""Basic staff slam attack"""
 
-	print("[Lythrun] Staff Slam")
+	print("[Lythrun] Staff Slam - Boss pos: ", global_position)
+	print("[Lythrun] player_target: ", player_target)
 
 	# Face player
 	face_player()
 
 	# Move toward player (60% of distance)
-	if player_target:
+	if player_target and is_instance_valid(player_target):
 		var target_pos = player_target.global_position
 		var distance = global_position.distance_to(target_pos)
 
+		print("[Lythrun] Player pos: ", target_pos, " Distance: ", distance)
+
 		if distance > 150.0:  # Only move if far away
+			print("[Lythrun] Moving toward player (distance > 150)")
 			var move_direction = (target_pos - global_position).normalized()
 			var move_distance = min(distance * 0.6, 300.0)  # Move 60% or max 300 units
 			var new_pos = global_position + move_direction * move_distance
 
-			# Smooth movement
-			var move_time = 0.3
-			var start_pos = global_position
-			var elapsed = 0.0
+			print("[Lythrun] Moving from ", global_position, " to ", new_pos)
 
-			while elapsed < move_time:
-				elapsed += get_physics_process_delta_time()
-				var t = elapsed / move_time
-				global_position = start_pos.lerp(new_pos, t)
-				await get_tree().process_frame
-
+			# Direct position set (simplified for debugging)
 			global_position = new_pos
+			print("[Lythrun] Moved! New pos: ", global_position)
+		else:
+			print("[Lythrun] Close enough (distance <= 150), not moving")
+	else:
+		print("[Lythrun] ERROR: No valid player_target!")
 
 	# Telegraph
 	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("staff_slam_windup"):
@@ -328,6 +329,7 @@ func perform_staff_slam() -> void:
 	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("staff_slam"):
 		sprite.play("staff_slam")
 
+	print("[Lythrun] Spawning hitbox at: ", global_position + Vector2(0, 60))
 	# Spawn hitbox
 	_spawn_slam_hitbox(global_position + Vector2(0, 60), 80.0, 35.0)
 
