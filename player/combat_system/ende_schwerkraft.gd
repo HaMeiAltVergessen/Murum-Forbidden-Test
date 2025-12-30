@@ -124,6 +124,11 @@ func _find_targets() -> Array:
 		if not is_instance_valid(enemy):
 			continue
 
+		# CRITICAL: Bosses are too heavy to launch - skip them
+		if enemy.is_in_group("boss"):
+			print("[EndeSchwerkraft] Skipping boss %s (too heavy to launch)" % enemy.name)
+			continue
+
 		var to_enemy = enemy.global_position - player.global_position
 		var dist = to_enemy.length()
 

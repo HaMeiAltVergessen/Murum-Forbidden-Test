@@ -63,12 +63,35 @@ func _setup_component_references() -> void:
 
 func _physics_process(delta: float) -> void:
 	"""Applies gravity and basic physics"""
+
+	# CRITICAL: Check for NaN position at start of every frame
+	if is_nan(global_position.x) or is_nan(global_position.y):
+		print("[BaseBoss] CRITICAL ERROR: NaN position detected at frame start!")
+		print("[BaseBoss] Boss: ", boss_name, " This indicates position corruption.")
+		print("[BaseBoss] Resetting to safe position...")
+		global_position = Vector2(0, 300)  # Safe fallback position
+		velocity = Vector2.ZERO
+		return
+
+	# CRITICAL: Check for NaN velocity
+	if is_nan(velocity.x) or is_nan(velocity.y):
+		print("[BaseBoss] CRITICAL ERROR: NaN velocity detected!")
+		print("[BaseBoss] Boss: ", boss_name)
+		velocity = Vector2.ZERO
+
 	# Apply gravity if not on floor
 	if not is_on_floor():
 		velocity.y += 980.0 * delta  # Gravity
 
 	# Apply movement
 	move_and_slide()
+
+	# CRITICAL: Check for NaN after move_and_slide
+	if is_nan(global_position.x) or is_nan(global_position.y):
+		print("[BaseBoss] CRITICAL ERROR: NaN position after move_and_slide!")
+		print("[BaseBoss] Velocity was: ", velocity)
+		global_position = Vector2(0, 300)  # Safe fallback
+		velocity = Vector2.ZERO
 
 
 func setup_boss() -> void:
