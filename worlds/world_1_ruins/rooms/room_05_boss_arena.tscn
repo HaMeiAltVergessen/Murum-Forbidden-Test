@@ -65,10 +65,10 @@ shape = SubResource("wall_shape")
 [node name="Spawns" type="Node2D" parent="."]
 
 [node name="PlayerSpawn" type="Marker2D" parent="Spawns"]
-position = Vector2(0, 100)
+position = Vector2(-200, 0)
 
 [node name="BossSpawn" type="Marker2D" parent="Spawns"]
-position = Vector2(0, 150)
+position = Vector2(200, 0)
 
 [node name="ArenaBoundary" type="StaticBody2D" parent="."]
 collision_layer = 1
