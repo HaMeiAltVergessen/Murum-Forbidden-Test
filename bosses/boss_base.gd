@@ -49,6 +49,16 @@ func _ready() -> void:
 	start_fight()
 
 
+func _physics_process(delta: float) -> void:
+	"""Applies gravity and basic physics"""
+	# Apply gravity if not on floor
+	if not is_on_floor():
+		velocity.y += 980.0 * delta  # Gravity
+
+	# Apply movement
+	move_and_slide()
+
+
 func setup_boss() -> void:
 	"""Sets up boss components with initial values"""
 	# Setup health
