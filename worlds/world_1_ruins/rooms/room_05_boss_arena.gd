@@ -71,7 +71,8 @@ func _spawn_player() -> void:
 	if player.has_method("disable_movement"):
 		player.disable_movement()
 
-	print("[Room05] Player spawned at: ", player_spawn.global_position if player_spawn else "default")
+	var spawn_pos = player_spawn.global_position if player_spawn else Vector2.ZERO
+	print("[Room05] Player spawned at: ", spawn_pos)
 
 
 # ============================================================================
