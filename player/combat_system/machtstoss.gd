@@ -12,9 +12,10 @@ class_name Machtstoss
 # ============================================================================
 
 # Ability Parameters
-const KNOCKBACK_RADIUS: float = 180.0  # Detection radius
+const KNOCKBACK_RADIUS: float = 800.0  # Detection radius (one side only)
 const KNOCKBACK_FORCE: float = 450.0   # Knockback force applied
 const KNOCKBACK_DURATION: float = 0.6  # How long enemies are pushed
+const STAFF_RAISE_DURATION: float = 0.3  # How long staff is raised
 
 # Resource Costs
 const MANA_COST: int = 20
@@ -169,6 +170,9 @@ func _activate() -> void:
 
 	print("[Machtstoß] Consumed %d mana" % MANA_COST)
 
+	# Visual: Raise staff in facing direction
+	_raise_staff_visual()
+
 	# Execute knockback wave
 	_execute_knockback_wave()
 
@@ -196,12 +200,17 @@ func _activate() -> void:
 # ============================================================================
 
 func _execute_knockback_wave() -> void:
-	"""Executes the knockback wave - pushes ALL enemies in radius"""
+	"""Executes the knockback wave - pushes enemies on facing side only"""
 
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	var hit_count = 0
 
-	print("[Machtstoß] Searching for enemies in %.0fpx radius (ALL directions)..." % KNOCKBACK_RADIUS)
+	# Get player's facing direction from MovementController (1 = right, -1 = left)
+	var player_facing = 1  # Default to right
+	if movement_controller and movement_controller.has_method("get_facing_direction"):
+		player_facing = movement_controller.get_facing_direction()
+
+	print("[Machtstoß] Directional knockback wave (800px range, facing: %s)" % ("RIGHT" if player_facing > 0 else "LEFT"))
 
 	for enemy in enemies:
 		if not is_instance_valid(enemy):
@@ -212,11 +221,21 @@ func _execute_knockback_wave() -> void:
 		if distance > KNOCKBACK_RADIUS:
 			continue
 
-		# Apply knockback to ALL enemies in radius (no directional filtering)
+		# CRITICAL: Only affect enemies on the facing side
+		var direction_to_enemy = enemy.global_position - player.global_position
+
+		# If player faces right (1), enemy must be on right (x > 0)
+		# If player faces left (-1), enemy must be on left (x < 0)
+		if player_facing > 0 and direction_to_enemy.x < 0:
+			continue  # Enemy is on left side, skip
+		if player_facing < 0 and direction_to_enemy.x > 0:
+			continue  # Enemy is on right side, skip
+
+		# Enemy is on correct side, apply knockback
 		_apply_knockback(enemy, distance)
 		hit_count += 1
 
-	print("[Machtstoß] Hit %d enemies with omnidirectional knockback wave" % hit_count)
+	print("[Machtstoß] Hit %d enemies on %s side" % [hit_count, "RIGHT" if player_facing > 0 else "LEFT"])
 
 func _apply_knockback(enemy: Node, distance: float) -> void:
 	"""Applies knockback to a single enemy"""
@@ -273,6 +292,42 @@ func _apply_knockback_direct(enemy: CharacterBody2D, knockback_vector: Vector2) 
 
 	# Gradually reduce to zero
 	tween.tween_property(enemy, "velocity", Vector2.ZERO, KNOCKBACK_DURATION)
+
+# ============================================================================
+# VISUAL EFFECTS
+# ============================================================================
+
+func _raise_staff_visual() -> void:
+	"""Raises staff in facing direction as visual feedback"""
+
+	# Get player sprite
+	var sprite = player.get_node_or_null("Sprite2D")
+	if not sprite:
+		return
+
+	# Get facing direction
+	var player_facing = 1  # Default to right
+	if movement_controller and movement_controller.has_method("get_facing_direction"):
+		player_facing = movement_controller.get_facing_direction()
+
+	print("[Machtstoß] Raising staff %s" % ("RIGHT" if player_facing > 0 else "LEFT"))
+
+	# Create tween for staff raise animation
+	var tween = create_tween()
+	tween.set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_QUAD)
+
+	# Raise staff to the side (left or right based on facing)
+	# Positive X = right, Negative X = left
+	var staff_offset_x = 30.0 * player_facing  # 30 pixels to the side
+	var staff_offset_y = -40.0  # 40 pixels up
+
+	# Animate: raise staff
+	tween.tween_property(sprite, "position", Vector2(staff_offset_x, staff_offset_y), STAFF_RAISE_DURATION * 0.4)
+	# Hold briefly
+	tween.tween_interval(STAFF_RAISE_DURATION * 0.2)
+	# Return to normal
+	tween.tween_property(sprite, "position", Vector2.ZERO, STAFF_RAISE_DURATION * 0.4)
 
 # ============================================================================
 # VFX
