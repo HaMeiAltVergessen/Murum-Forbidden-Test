@@ -178,9 +178,8 @@ func _activate() -> void:
 	# Audio
 	AudioManager.play_sfx("player_machtstoss_activate", 0.1)
 
-	# Camera shake (minimal - no player knockback feeling)
-	if player.has_node("PlayerCamera"):
-		player.get_node("PlayerCamera").add_trauma(0.05)
+	# No camera shake - player should feel no knockback at all
+	# Only enemies are affected by the knockback wave
 
 	# Hitstop
 	GlobalTimeEffects.hit_stop(SHOCKWAVE_HITSTOP)
