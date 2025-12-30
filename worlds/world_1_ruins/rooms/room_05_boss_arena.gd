@@ -178,10 +178,10 @@ func _start_fight() -> void:
 	if player and player.has_method("enable_movement"):
 		player.enable_movement()
 
-	# Start boss fight
+	# Start boss fight (if not already started by boss_base)
 	if boss_instance and boss_instance.has_method("start_fight"):
-		# Boss has its own start_fight in BaseBoss
-		pass
+		if not boss_instance.is_active:
+			boss_instance.start_fight()
 
 	# Change music
 	if has_node("/root/AudioManager"):
