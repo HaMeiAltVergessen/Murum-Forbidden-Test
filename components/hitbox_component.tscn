@@ -6,9 +6,9 @@
 size = Vector2(60, 60)
 
 [node name="HitboxComponent" type="Area2D"]
-collision_layer = 0
-collision_mask = 0
-monitoring = false
+collision_layer = 3
+collision_mask = 7
+monitoring = true
 monitorable = false
 script = ExtResource("1_hitbox")
 damage = 10

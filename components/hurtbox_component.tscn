@@ -6,8 +6,8 @@
 size = Vector2(32, 48)
 
 [node name="HurtboxComponent" type="Area2D"]
-collision_layer = 0
-collision_mask = 0
+collision_layer = 4
+collision_mask = 6
 monitoring = false
 script = ExtResource("1_hurtbox")
 invulnerability_duration = 0.5

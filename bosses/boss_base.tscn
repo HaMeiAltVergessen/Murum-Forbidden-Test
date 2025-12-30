@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://bosses/components/boss_camera_controller.gd" id="5"]
 [ext_resource type="Script" path="res://bosses/components/victory_sequence.gd" id="6"]
 [ext_resource type="Script" path="res://bosses/ui/boss_health_bar.gd" id="7"]
+[ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="8"]
 
 [sub_resource type="RectangleShape2D" id="shape_1"]
 size = Vector2(40, 60)
@@ -26,6 +27,12 @@ shape = SubResource("shape_1")
 [node name="HealthComponent" type="Node" parent="."]
 script = ExtResource("2")
 max_hp = 1000.0
+
+[node name="HurtboxComponent" parent="." instance=ExtResource("8")]
+position = Vector2(0, -30)
+collision_layer = 7
+collision_mask = 3
+monitorable = true
 
 [node name="Components" type="Node" parent="."]
 
