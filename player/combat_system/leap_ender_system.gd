@@ -456,6 +456,12 @@ func _teleport_to_nearest_enemy(current_enemy: Node) -> void:
 		# Safe teleport: reset velocity first to prevent physics conflicts
 		player.velocity = Vector2.ZERO
 
+		# Safety: Check for NaN before teleporting
+		if is_nan(teleport_pos.x) or is_nan(teleport_pos.y):
+			print("[LeapEnderSystem] ERROR: Teleport position is NaN! Aborting teleport.")
+			_complete_leap()
+			return
+
 		# Teleport
 		player.global_position = teleport_pos
 

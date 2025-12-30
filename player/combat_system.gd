@@ -419,13 +419,12 @@ func _animate_player_attack(attack_num: int) -> void:
 			tween.chain().tween_property(sprite, "position:y", 0, attack_durations[1] * 0.7)
 			tween.parallel().tween_property(sprite, "position:x", 0, attack_durations[1] * 0.7)
 			tween.parallel().tween_property(sprite, "scale", Vector2(1.0, 1.0), attack_durations[1] * 0.7)
-		3:  # Heavy slam - big windup and strike
-			# Windup (pull back and up)
-			tween.tween_property(sprite, "position:x", -12, attack_durations[2] * 0.2)
+		3:  # Heavy slam - big windup and strike (NO KNOCKBACK/PULLBACK)
+			# Windup (up only, no pullback)
 			tween.tween_property(sprite, "position:y", -25, attack_durations[2] * 0.2)
 			tween.tween_property(sprite, "scale", Vector2(1.3, 0.7), attack_durations[2] * 0.2)
-			# Strike (forward slam)
-			tween.chain().tween_property(sprite, "position:x", 20, attack_durations[2] * 0.3)
+			# Strike (forward slam, reduced from 20 to 15)
+			tween.chain().tween_property(sprite, "position:x", 15, attack_durations[2] * 0.3)
 			tween.parallel().tween_property(sprite, "position:y", 5, attack_durations[2] * 0.3)
 			tween.parallel().tween_property(sprite, "scale", Vector2(0.85, 1.15), attack_durations[2] * 0.3)
 			# Recovery
