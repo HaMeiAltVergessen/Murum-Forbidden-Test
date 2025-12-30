@@ -15,7 +15,7 @@ size = Vector2(40, 60)
 [sub_resource type="RectangleShape2D" id="boss_hurtbox_shape"]
 size = Vector2(50, 70)
 
-[node name="BaseBoss" type="CharacterBody2D" groups=["boss", "enemy"]]
+[node name="BaseBoss" type="CharacterBody2D" groups=["boss", "enemy", "enemies"]]
 collision_layer = 5
 collision_mask = 3
 script = ExtResource("1")

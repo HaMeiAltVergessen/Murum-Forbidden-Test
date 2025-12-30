@@ -181,8 +181,13 @@ func _activate_hitbox() -> void:
 	if not hitbox:
 		return
 
-	hitbox.monitoring = true
-	hitbox.visible = true
+	# Call the hitbox's activate() method instead of setting properties directly
+	if hitbox.has_method("activate"):
+		hitbox.activate()
+	else:
+		# Fallback
+		hitbox.monitoring = true
+		hitbox.visible = true
 
 	# Position hitbox based on facing direction
 	if movement_controller:
@@ -198,8 +203,13 @@ func _deactivate_hitbox() -> void:
 	if not hitbox:
 		return
 
-	hitbox.monitoring = false
-	hitbox.visible = false
+	# Call the hitbox's deactivate() method
+	if hitbox.has_method("deactivate"):
+		hitbox.deactivate()
+	else:
+		# Fallback
+		hitbox.monitoring = false
+		hitbox.visible = false
 
 
 # ============ COMBO TRACKER ============
