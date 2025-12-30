@@ -576,7 +576,8 @@ func is_available() -> bool:
 	if not mana_component:
 		return false
 
-	return mana_component.has_mana(MANA_COST)
+	# Check minimum mana (Stage 1 requirement)
+	return mana_component.has_mana(STAGE_1_MANA)
 
 func get_cooldown_remaining() -> float:
 	"""Returns remaining cooldown time"""
