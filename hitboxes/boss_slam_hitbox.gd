@@ -1,18 +1,18 @@
 extends Area2D
-## Boss dash attack hitbox - trails behind boss during dash
+## Boss slam attack hitbox - deals damage on impact
 
-@export var damage: float = 25.0
-@export var lifetime: float = 0.4
-@export var knockback_force: float = 400.0
+@export var damage: float = 35.0
+@export var lifetime: float = 0.3  # How long hitbox stays active
+@export var knockback_force: float = 300.0
 
-var hit_targets: Array = []
+var hit_targets: Array = []  # Track what we've already hit
 
 func _ready() -> void:
 	# Set collision layers
 	collision_layer = 6  # EnemyHitbox
 	collision_mask = 4   # PlayerHurtbox
 
-	# Connect signals
+	# Connect signal
 	body_entered.connect(_on_body_entered)
 	area_entered.connect(_on_area_entered)
 
@@ -24,7 +24,7 @@ func _ready() -> void:
 func _on_body_entered(body: Node2D) -> void:
 	"""Handles collision with player body"""
 	if body in hit_targets:
-		return
+		return  # Already hit this target
 
 	if body.is_in_group("player"):
 		_deal_damage(body)
@@ -49,7 +49,7 @@ func _deal_damage(target: Node2D) -> void:
 		var health_component = target.get_node("HealthComponent")
 		if health_component.has_method("take_damage"):
 			health_component.take_damage(damage)
-			print("[BossDashHitbox] Dealt ", damage, " damage to player")
+			print("[BossSlamHitbox] Dealt ", damage, " damage to player")
 
 	# Apply knockback
 	if target is CharacterBody2D:
@@ -57,4 +57,5 @@ func _deal_damage(target: Node2D) -> void:
 		if target.has_method("apply_knockback"):
 			target.apply_knockback(direction * knockback_force)
 		else:
+			# Fallback: direct velocity modification
 			target.velocity = direction * knockback_force
