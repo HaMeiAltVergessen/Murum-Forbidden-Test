@@ -1,25 +1,44 @@
 extends Node
 class_name Machtstoss
 
-## Machtstoß (Knockback Wave)
-## Press Key 1 to release a directional knockback wave
-## Pure CC ability - no damage, only knockback
+## Machtstoß (Charge-based Knockback Wave)
+## Hold Key 1 to charge (3 stages)
+## Release to unleash directional knockback wave + damage
 ## Only affects enemies in facing direction
-## Costs 20 mana, 3s cooldown
+## Auto-releases at max charge (6s)
 
 # ============================================================================
 # CONSTANTS
 # ============================================================================
 
-# Ability Parameters
-const KNOCKBACK_RADIUS: float = 800.0  # Detection radius (one side only)
+# Charge Stages (hold duration in seconds)
+const STAGE_1_TIME: float = 0.0   # 0-2s
+const STAGE_2_TIME: float = 2.0   # 2-4s
+const STAGE_3_TIME: float = 4.0   # 4-6s
+const MAX_CHARGE_TIME: float = 6.0  # Auto-release
+
+# Stage 1 Parameters (0-2s)
+const STAGE_1_RANGE: float = 200.0
+const STAGE_1_DAMAGE: int = 20
+const STAGE_1_MANA: int = 2
+
+# Stage 2 Parameters (2-4s)
+const STAGE_2_RANGE: float = 600.0
+const STAGE_2_DAMAGE: int = 60
+const STAGE_2_MANA: int = 6
+
+# Stage 3 Parameters (4-6s)
+const STAGE_3_RANGE: float = 800.0
+const STAGE_3_DAMAGE: int = 80
+const STAGE_3_MANA: int = 8
+
+# Shared Parameters
 const KNOCKBACK_FORCE: float = 450.0   # Knockback force applied
 const KNOCKBACK_DURATION: float = 0.6  # How long enemies are pushed
 const STAFF_RAISE_DURATION: float = 0.3  # How long staff is raised
 
-# Resource Costs
-const MANA_COST: int = 20
-const COOLDOWN_DURATION: float = 3.0  # Reduced from 8.0
+# Cooldown
+const COOLDOWN_DURATION: float = 3.0
 
 # VFX
 const WAVE_EXPANSION_TIME: float = 0.4  # Wave visual expansion
@@ -31,6 +50,12 @@ const SHOCKWAVE_HITSTOP: float = 0.08   # Brief hitstop on activation
 
 var is_on_cooldown: bool = false
 var cooldown_timer: float = 0.0
+
+# Charging state
+var is_charging: bool = false
+var charge_time: float = 0.0
+var current_stage: int = 1  # 1, 2, or 3
+var last_stage: int = 0  # Track stage changes for visual feedback
 
 # ============================================================================
 # REFERENCES
@@ -82,13 +107,19 @@ func _ready() -> void:
 # ============================================================================
 
 func _input(event: InputEvent) -> void:
-	# Activate on Key 1 press OR RT + B (gamepad)
+	# Start charging on Key 1 press OR RT + B (gamepad)
 	if event.is_action_pressed("ability_1"):
-		attempt_activation()
-	# Gamepad: RT + B (check both button and analog trigger)
+		_start_charging()
+	# Release charge on Key 1 release
+	elif event.is_action_released("ability_1"):
+		_release_charge()
+	# Gamepad: RT + B
 	elif event.is_action_pressed("dodge"):
 		if _is_rt_pressed():
-			attempt_activation()
+			_start_charging()
+	elif event.is_action_released("dodge"):
+		if is_charging:
+			_release_charge()
 
 func _is_rt_pressed() -> bool:
 	"""Check if RT is pressed (either as button or analog trigger)"""
@@ -101,16 +132,27 @@ func _is_rt_pressed() -> bool:
 	return false
 
 # ============================================================================
-# COOLDOWN
+# PROCESS
 # ============================================================================
 
 func _process(delta: float) -> void:
 	# Update cooldown timer
 	if is_on_cooldown:
 		cooldown_timer -= delta
-
 		if cooldown_timer <= 0.0:
 			_finish_cooldown()
+
+	# Update charging
+	if is_charging:
+		charge_time += delta
+
+		# Update stage based on charge time
+		_update_charge_stage()
+
+		# Auto-release at max charge (6 seconds)
+		if charge_time >= MAX_CHARGE_TIME:
+			print("[Machtstoß] Max charge reached (6s), auto-releasing!")
+			_release_charge()
 
 func _start_cooldown() -> void:
 	"""Starts the cooldown timer"""
@@ -135,49 +177,168 @@ func _finish_cooldown() -> void:
 	EventBus.machtstoss_cooldown_finished.emit()
 
 # ============================================================================
-# ACTIVATION
+# CHARGING SYSTEM
 # ============================================================================
 
-func attempt_activation() -> bool:
-	"""Attempts to activate Machtstoß. Returns true if successful."""
+func _start_charging() -> void:
+	"""Starts charging Machtstoß"""
 
 	# Check cooldown
 	if is_on_cooldown:
 		print("[Machtstoß] On cooldown (%.1fs remaining)" % cooldown_timer)
-		return false
-
-	# Check mana
-	if not mana_component:
-		print("[Machtstoß] ERROR: ManaComponent not available!")
-		return false
-
-	if not mana_component.has_mana(MANA_COST):
-		print("[Machtstoß] Not enough mana (%d required, %d available)" % [MANA_COST, mana_component.current_mana])
-		return false
-
-	# All checks passed - activate!
-	_activate()
-	return true
-
-func _activate() -> void:
-	"""Activates the Machtstoß knockback wave"""
-	print("[Machtstoß] ===== ACTIVATED =====")
-
-	# Consume mana
-	if not mana_component.use_mana(MANA_COST):
-		print("[Machtstoß] ERROR: Failed to consume mana!")
 		return
 
-	print("[Machtstoß] Consumed %d mana" % MANA_COST)
+	# Check mana (minimum mana for stage 1)
+	if not mana_component:
+		print("[Machtstoß] ERROR: ManaComponent not available!")
+		return
+
+	if not mana_component.has_mana(STAGE_1_MANA):
+		print("[Machtstoß] Not enough mana (%d required, %d available)" % [STAGE_1_MANA, mana_component.current_mana])
+		return
+
+	# Start charging
+	is_charging = true
+	charge_time = 0.0
+	current_stage = 1
+	last_stage = 0
+
+	print("[Machtstoß] ===== CHARGING STARTED =====")
+
+func _update_charge_stage() -> void:
+	"""Updates the current charge stage based on charge_time"""
+
+	var new_stage = current_stage
+
+	# Determine stage based on charge time
+	if charge_time >= STAGE_3_TIME:
+		new_stage = 3
+	elif charge_time >= STAGE_2_TIME:
+		new_stage = 2
+	else:
+		new_stage = 1
+
+	# If stage changed, trigger visual feedback
+	if new_stage != current_stage:
+		current_stage = new_stage
+		_on_stage_reached(current_stage)
+
+func _on_stage_reached(stage: int) -> void:
+	"""Called when a new charge stage is reached"""
+
+	print("[Machtstoß] STAGE %d REACHED (%.1fs)" % [stage, charge_time])
+
+	# Visual feedback: Flash player sprite
+	_flash_player()
+
+	# Get stage parameters for display
+	var stage_params = _get_stage_parameters(stage)
+	print("[Machtstoß]   -> Range: %.0fpx, Damage: %d, Mana: %d" % [
+		stage_params.range,
+		stage_params.damage,
+		stage_params.mana
+	])
+
+func _release_charge() -> void:
+	"""Releases the charged Machtstoß"""
+
+	if not is_charging:
+		return
+
+	print("[Machtstoß] ===== RELEASED at Stage %d (%.1fs charge) =====" % [current_stage, charge_time])
+
+	# Stop charging
+	is_charging = false
+
+	# Get parameters for current stage
+	var stage_params = _get_stage_parameters(current_stage)
+
+	# Check mana for current stage
+	if not mana_component.has_mana(stage_params.mana):
+		print("[Machtstoß] Not enough mana (%d required, %d available)" % [stage_params.mana, mana_component.current_mana])
+		charge_time = 0.0
+		return
+
+	# Consume mana
+	if not mana_component.use_mana(stage_params.mana):
+		print("[Machtstoß] ERROR: Failed to consume mana!")
+		charge_time = 0.0
+		return
+
+	print("[Machtstoß] Consumed %d mana" % stage_params.mana)
 
 	# Visual: Raise staff in facing direction
 	_raise_staff_visual()
 
-	# Execute knockback wave
-	_execute_knockback_wave()
+	# Execute knockback wave with stage parameters
+	_execute_knockback_wave(stage_params)
 
 	# VFX
 	_spawn_wave_vfx()
+
+	# Audio
+	AudioManager.play_sfx("player_machtstoss_activate", 0.1)
+
+	# No camera shake - player should feel no knockback at all
+
+	# Hitstop
+	GlobalTimeEffects.hit_stop(SHOCKWAVE_HITSTOP)
+
+	# Start cooldown
+	_start_cooldown()
+
+	# Emit signal
+	machtstoss_activated.emit(player.global_position)
+	EventBus.machtstoss_activated.emit(player.global_position)
+
+	# Reset charge time
+	charge_time = 0.0
+
+func _get_stage_parameters(stage: int) -> Dictionary:
+	"""Returns parameters for the given stage"""
+
+	match stage:
+		1:
+			return {
+				"range": STAGE_1_RANGE,
+				"damage": STAGE_1_DAMAGE,
+				"mana": STAGE_1_MANA
+			}
+		2:
+			return {
+				"range": STAGE_2_RANGE,
+				"damage": STAGE_2_DAMAGE,
+				"mana": STAGE_2_MANA
+			}
+		3:
+			return {
+				"range": STAGE_3_RANGE,
+				"damage": STAGE_3_DAMAGE,
+				"mana": STAGE_3_MANA
+			}
+		_:
+			# Fallback to stage 1
+			return {
+				"range": STAGE_1_RANGE,
+				"damage": STAGE_1_DAMAGE,
+				"mana": STAGE_1_MANA
+			}
+
+func _flash_player() -> void:
+	"""Flashes player sprite briefly when stage is reached"""
+
+	var sprite = player.get_node_or_null("Sprite2D")
+	if not sprite:
+		return
+
+	# Create flash tween
+	var tween = create_tween()
+
+	# Flash white and back
+	tween.tween_property(sprite, "modulate", Color(2.0, 2.0, 2.0, 1.0), 0.1)
+	tween.tween_property(sprite, "modulate", Color.WHITE, 0.1)
+
+	print("[Machtstoß] Player flash!")
 
 	# Audio
 	AudioManager.play_sfx("player_machtstoss_activate", 0.1)
@@ -199,8 +360,8 @@ func _activate() -> void:
 # KNOCKBACK WAVE
 # ============================================================================
 
-func _execute_knockback_wave() -> void:
-	"""Executes the knockback wave - pushes enemies on facing side only"""
+func _execute_knockback_wave(stage_params: Dictionary) -> void:
+	"""Executes the knockback wave - pushes enemies on facing side only + deals damage"""
 
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	var hit_count = 0
@@ -210,7 +371,15 @@ func _execute_knockback_wave() -> void:
 	if movement_controller and movement_controller.has_method("get_facing_direction"):
 		player_facing = movement_controller.get_facing_direction()
 
-	print("[Machtstoß] Directional knockback wave (800px range, facing: %s)" % ("RIGHT" if player_facing > 0 else "LEFT"))
+	var knockback_range = stage_params.range
+	var damage = stage_params.damage
+
+	print("[Machtstoß] Stage %d wave (%.0fpx range, %d damage, facing: %s)" % [
+		current_stage,
+		knockback_range,
+		damage,
+		"RIGHT" if player_facing > 0 else "LEFT"
+	])
 
 	for enemy in enemies:
 		if not is_instance_valid(enemy):
@@ -218,7 +387,7 @@ func _execute_knockback_wave() -> void:
 
 		var distance = player.global_position.distance_to(enemy.global_position)
 
-		if distance > KNOCKBACK_RADIUS:
+		if distance > knockback_range:
 			continue
 
 		# CRITICAL: Only affect enemies on the facing side
@@ -231,14 +400,14 @@ func _execute_knockback_wave() -> void:
 		if player_facing < 0 and direction_to_enemy.x > 0:
 			continue  # Enemy is on right side, skip
 
-		# Enemy is on correct side, apply knockback
-		_apply_knockback(enemy, distance)
+		# Enemy is on correct side, apply knockback + damage
+		_apply_knockback(enemy, distance, damage)
 		hit_count += 1
 
 	print("[Machtstoß] Hit %d enemies on %s side" % [hit_count, "RIGHT" if player_facing > 0 else "LEFT"])
 
-func _apply_knockback(enemy: Node, distance: float) -> void:
-	"""Applies knockback to a single enemy"""
+func _apply_knockback(enemy: Node, distance: float, damage: int) -> void:
+	"""Applies knockback + damage to a single enemy"""
 
 	# Calculate knockback direction (away from player)
 	var direction_to_enemy = enemy.global_position - player.global_position
@@ -251,7 +420,10 @@ func _apply_knockback(enemy: Node, distance: float) -> void:
 	else:
 		direction = direction_to_enemy.normalized()
 
-	print("[Machtstoß] Knocking back %s (dist: %.1f, force: %.0f)" % [enemy.name, distance, KNOCKBACK_FORCE])
+	print("[Machtstoß] Hitting %s (dist: %.1f, force: %.0f, damage: %d)" % [enemy.name, distance, KNOCKBACK_FORCE, damage])
+
+	# Deal damage first
+	_deal_damage_to_enemy(enemy, damage)
 
 	# Check for KnockbackComponent first
 	var knockback_component = enemy.get_node_or_null("KnockbackComponent")
@@ -292,6 +464,25 @@ func _apply_knockback_direct(enemy: CharacterBody2D, knockback_vector: Vector2) 
 
 	# Gradually reduce to zero
 	tween.tween_property(enemy, "velocity", Vector2.ZERO, KNOCKBACK_DURATION)
+
+func _deal_damage_to_enemy(enemy: Node, damage: int) -> void:
+	"""Deals damage to an enemy"""
+
+	# Try to damage enemy using its take_damage method
+	if enemy.has_method("take_damage"):
+		enemy.take_damage(damage, player)
+		print("[Machtstoß]   -> Damaged %s for %d (direct method)" % [enemy.name, damage])
+		return
+
+	# Fallback: Use HealthComponent
+	if enemy.has_node("HealthComponent"):
+		var health = enemy.get_node("HealthComponent")
+		if health and health.has_method("take_damage"):
+			health.take_damage(damage)
+			print("[Machtstoß]   -> Damaged %s for %d (HealthComponent)" % [enemy.name, damage])
+			return
+
+	print("[Machtstoß]   -> WARNING: Could not damage %s (no damage method)" % enemy.name)
 
 # ============================================================================
 # VISUAL EFFECTS
