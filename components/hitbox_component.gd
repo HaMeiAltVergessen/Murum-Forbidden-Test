@@ -23,6 +23,8 @@ func _ready() -> void:
 	monitoring = false
 	monitorable = false
 
+	print("[HitboxComponent] Ready - Layer: ", collision_layer, " Mask: ", collision_mask)
+
 
 # ============ DETECTION ============
 func _on_area_entered(area: Area2D) -> void:
@@ -103,6 +105,7 @@ func activate() -> void:
 	monitoring = true
 	monitorable = true
 	visible = true
+	print("[HitboxComponent] ACTIVATED - Monitoring: ", monitoring, " Layer: ", collision_layer, " Mask: ", collision_mask)
 
 
 func deactivate() -> void:
