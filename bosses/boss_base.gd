@@ -47,9 +47,8 @@ func _ready() -> void:
 	setup_boss()
 	connect_signals()
 
-	# Wait a bit, then start fight
-	await get_tree().create_timer(1.0).timeout
-	start_fight()
+	# Don't auto-start fight - let the room control the timing
+	# start_fight() will be called by room_05_boss_arena.gd
 
 
 func _setup_component_references() -> void:
@@ -119,11 +118,10 @@ func start_fight() -> void:
 	if camera_controller:
 		camera_controller.activate()
 
-	# Play intro animation
+	# Play intro animation (non-blocking)
 	play_intro_animation()
-	await get_tree().create_timer(1.5).timeout
 
-	# Set initial attack pattern
+	# Set initial attack pattern immediately (boss is now attackable)
 	if attack_manager:
 		attack_manager.set_pattern(phase_1_pattern)
 		attack_manager.activate()
