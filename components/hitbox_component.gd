@@ -27,16 +27,24 @@ func _ready() -> void:
 # ============ DETECTION ============
 func _on_area_entered(area: Area2D) -> void:
 	"""Called when this hitbox overlaps with another area"""
+	print("[Hitbox] Area entered: ", area.name, " type: ", area.get_class(), " is HurtboxComponent: ", area is HurtboxComponent)
+	print("[Hitbox] Area collision_layer: ", area.collision_layer, ", mask: ", area.collision_mask)
+
 	# Check if it's a hurtbox
 	if not area is HurtboxComponent:
+		print("[Hitbox] Not a HurtboxComponent, ignoring")
 		return
 
 	var hurtbox: HurtboxComponent = area as HurtboxComponent
+	var hurtbox_owner = hurtbox.owner if hurtbox.owner else hurtbox.get_parent()
+	print("[Hitbox] HurtboxComponent found, owner: ", hurtbox_owner.name if hurtbox_owner else "null")
 
 	# Don't hit entities from same team
 	if _is_same_team(hurtbox):
+		print("[Hitbox] Same team, ignoring")
 		return
 
+	print("[Hitbox] Different team, dealing damage!")
 	# Apply damage
 	_deal_damage_to(hurtbox)
 
