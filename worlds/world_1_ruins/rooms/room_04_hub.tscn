@@ -157,6 +157,3 @@ position = Vector2(450, 780)
 
 [node name="Default" type="Marker2D" parent="SpawnPoints"]
 position = Vector2(200, 750)
-
-[node name="Murum" parent="." instance=ExtResource("2_murum")]
-position = Vector2(200, 750)
