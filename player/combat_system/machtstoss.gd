@@ -196,20 +196,12 @@ func _activate() -> void:
 # ============================================================================
 
 func _execute_knockback_wave() -> void:
-	"""Executes the knockback wave - pushes enemies in facing direction"""
+	"""Executes the knockback wave - pushes ALL enemies in radius"""
 
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	var hit_count = 0
 
-	# Get player's facing direction from MovementController (1 = right, -1 = left)
-	var player_facing = 1  # Default to right
-	if movement_controller and movement_controller.has_method("get_facing_direction"):
-		player_facing = movement_controller.get_facing_direction()
-
-	print("[Machtstoß] Searching for enemies in %.0fpx radius (facing: %s)..." % [
-		KNOCKBACK_RADIUS,
-		"RIGHT" if player_facing > 0 else "LEFT"
-	])
+	print("[Machtstoß] Searching for enemies in %.0fpx radius (ALL directions)..." % KNOCKBACK_RADIUS)
 
 	for enemy in enemies:
 		if not is_instance_valid(enemy):
@@ -220,23 +212,11 @@ func _execute_knockback_wave() -> void:
 		if distance > KNOCKBACK_RADIUS:
 			continue
 
-		# CRITICAL: Check if enemy is in facing direction
-		var direction_to_enemy = enemy.global_position - player.global_position
-
-		# If player faces right (1), enemy must be on right (x > 0)
-		# If player faces left (-1), enemy must be on left (x < 0)
-		if player_facing > 0 and direction_to_enemy.x < 0:
-			print("[Machtstoß] Skipping %s (behind player, facing right)" % enemy.name)
-			continue
-		if player_facing < 0 and direction_to_enemy.x > 0:
-			print("[Machtstoß] Skipping %s (behind player, facing left)" % enemy.name)
-			continue
-
-		# Enemy is in front, apply knockback
+		# Apply knockback to ALL enemies in radius (no directional filtering)
 		_apply_knockback(enemy, distance)
 		hit_count += 1
 
-	print("[Machtstoß] Hit %d enemies with directional knockback wave" % hit_count)
+	print("[Machtstoß] Hit %d enemies with omnidirectional knockback wave" % hit_count)
 
 func _apply_knockback(enemy: Node, distance: float) -> void:
 	"""Applies knockback to a single enemy"""

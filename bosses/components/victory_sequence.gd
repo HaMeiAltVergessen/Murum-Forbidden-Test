@@ -18,11 +18,17 @@ func start() -> void:
 	sequence_started.emit()
 	print("[VictorySequence] Starting victory sequence for boss: ", boss.name if boss else "Unknown")
 
+	# CRITICAL: Null safety - boss might be freed already
+	if not boss or not is_instance_valid(boss):
+		print("[VictorySequence] ERROR: Boss is null or invalid, skipping victory sequence")
+		sequence_completed.emit()
+		return
+
 	# 1. Play death animation
 	await play_death_animation()
 
 	# 2. Focus camera on boss
-	if boss.has_node("Components/BossCameraController"):
+	if boss and is_instance_valid(boss) and boss.has_node("Components/BossCameraController"):
 		var camera_ctrl = boss.get_node("Components/BossCameraController")
 		camera_ctrl.focus_on_boss(0.5)
 
@@ -32,7 +38,7 @@ func start() -> void:
 	spawn_death_vfx()
 
 	# Camera shake
-	if boss.has_node("Components/BossCameraController"):
+	if boss and is_instance_valid(boss) and boss.has_node("Components/BossCameraController"):
 		var camera_ctrl = boss.get_node("Components/BossCameraController")
 		camera_ctrl.shake(10.0, 1.0)
 
@@ -52,7 +58,7 @@ func start() -> void:
 	# 7. Deactivate boss camera
 	await get_tree().create_timer(2.0).timeout
 
-	if boss and boss.has_node("Components/BossCameraController"):
+	if boss and is_instance_valid(boss) and boss.has_node("Components/BossCameraController"):
 		var camera_ctrl = boss.get_node("Components/BossCameraController")
 		camera_ctrl.deactivate()
 
@@ -62,7 +68,7 @@ func start() -> void:
 
 func play_death_animation() -> void:
 	"""Plays the boss death animation"""
-	if boss and boss.has_method("play_death_animation"):
+	if boss and is_instance_valid(boss) and boss.has_method("play_death_animation"):
 		await boss.play_death_animation()
 	else:
 		# Fallback: just wait a bit
@@ -71,7 +77,7 @@ func play_death_animation() -> void:
 
 func spawn_death_vfx() -> void:
 	"""Spawns death visual effects"""
-	if not boss:
+	if not boss or not is_instance_valid(boss):
 		return
 
 	# TODO: Load actual VFX scene when created
@@ -86,7 +92,7 @@ func spawn_death_vfx() -> void:
 
 func spawn_loot() -> void:
 	"""Spawns gold and item loot"""
-	if not boss:
+	if not boss or not is_instance_valid(boss):
 		return
 
 	var spawn_position = boss.global_position
