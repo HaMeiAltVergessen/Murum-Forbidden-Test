@@ -29,6 +29,11 @@ func _on_body_entered(body: Node2D) -> void:
 	"""Handles collision with player body"""
 	print("[BossSlamHitbox] Body entered: ", body.name, " groups: ", body.get_groups())
 
+	# Ignore boss/enemy bodies
+	if body.is_in_group("boss") or body.is_in_group("enemy"):
+		print("[BossSlamHitbox] Ignoring boss/enemy body")
+		return
+
 	if body in hit_targets:
 		print("[BossSlamHitbox] Already hit this target")
 		return  # Already hit this target
@@ -43,12 +48,17 @@ func _on_area_entered(area: Area2D) -> void:
 	print("[BossSlamHitbox] Area entered: ", area.name, " type: ", area.get_class())
 	print("[BossSlamHitbox] Area collision_layer: ", area.collision_layer, ", mask: ", area.collision_mask)
 
-	if area.get_parent() in hit_targets:
-		print("[BossSlamHitbox] Parent already hit")
-		return
-
 	var parent = area.get_parent()
 	print("[BossSlamHitbox] Parent: ", parent.name if parent else "null", " is player: ", parent.is_in_group("player") if parent else false)
+
+	# Ignore boss/enemy hurtboxes
+	if parent and (parent.is_in_group("boss") or parent.is_in_group("enemy")):
+		print("[BossSlamHitbox] Ignoring boss/enemy hurtbox")
+		return
+
+	if parent in hit_targets:
+		print("[BossSlamHitbox] Parent already hit")
+		return
 
 	if parent and parent.is_in_group("player"):
 		print("[BossSlamHitbox] Detected player hurtbox!")
