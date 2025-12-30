@@ -110,7 +110,7 @@ horizontal_alignment = 1
 [node name="DoorToBoss" parent="Doors" instance=ExtResource("3_door")]
 position = Vector2(1100, 760)
 target_scene = "res://worlds/world_1_ruins/rooms/room_05_boss_arena.tscn"
-spawn_position = Vector2(200, 750)
+spawn_position = Vector2(0, 250)
 
 [node name="DoorLabel" type="Label" parent="Doors/DoorToBoss"]
 offset_left = -60.0
