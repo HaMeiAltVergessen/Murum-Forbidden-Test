@@ -303,9 +303,6 @@ offset_right = 125.0
 offset_bottom = 20.0
 color = Color(0.5, 0.4, 0.2, 1)
 
-[node name="Player" parent="." instance=ExtResource("2")]
-position = Vector2(200, 850)
-
 [node name="Door" type="Area2D" parent="."]
 position = Vector2(1800, 1000)
 script = ExtResource("4")
