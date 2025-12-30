@@ -1,0 +1,132 @@
+[gd_scene load_steps=12 format=3 uid="uid://lythrun_player"]
+
+[ext_resource type="Script" path="res://player/lythrun_player.gd" id="1_lythrun"]
+[ext_resource type="Script" path="res://player/movement_controller.gd" id="2_movement"]
+[ext_resource type="Script" path="res://player/health_component.gd" id="3_health"]
+[ext_resource type="Script" path="res://player/mana_component.gd" id="4_mana"]
+[ext_resource type="Script" path="res://player/combat_system.gd" id="5_combat"]
+[ext_resource type="PackedScene" uid="uid://dmqxgb7cyujwa" path="res://components/hitbox_component.tscn" id="6_hitbox"]
+[ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="7_hurtbox"]
+[ext_resource type="Script" path="res://player/player_camera.gd" id="8_camera"]
+[ext_resource type="Texture2D" uid="uid://jg4v3jkvbw1b" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Wizard/wizard-sheet.png" id="9_wizard"]
+[ext_resource type="Script" path="res://player/combat_system/staff_controller.gd" id="10_staff"]
+[ext_resource type="Script" path="res://player/combat_system/launcher_system.gd" id="11_launcher"]
+[ext_resource type="Script" path="res://player/combat_system/air_combo_system.gd" id="12_air_combo"]
+[ext_resource type="Script" path="res://player/dodge_roll_system.gd" id="13_dodge"]
+[ext_resource type="Script" path="res://player/combat_system/ende_schwerkraft.gd" id="14_ende_schwerkraft"]
+[ext_resource type="Script" path="res://player/abilities/wolkenbruch.gd" id="15_wolkenbruch"]
+[ext_resource type="Script" path="res://player/abilities/echo_von_urgathon.gd" id="16_echo"]
+[ext_resource type="Script" path="res://player/combat_system/luftgott_system.gd" id="16_luftgott"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
+radius = 16.0
+height = 48.0
+
+[node name="Lythrun" type="CharacterBody2D" groups=["player", "player2"]]
+collision_layer = 4
+collision_mask = 153
+script = ExtResource("1_lythrun")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.7, 0.5, 0.9, 1)
+texture = ExtResource("9_wizard")
+hframes = 6
+vframes = 1
+frame = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_player")
+
+[node name="ShadowTrail" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 16
+process_material = null
+lifetime = 0.5
+
+[node name="DarkAura" type="PointLight2D" parent="."]
+enabled = false
+color = Color(0.4, 0.2, 0.6, 1)
+energy = 0.3
+texture_scale = 2.0
+
+[node name="MovementController" type="Node" parent="."]
+script = ExtResource("2_movement")
+move_speed = 300.0
+jump_velocity = -800.0
+gravity = 1800.0
+coyote_time = 0.1
+jump_buffer_time = 0.15
+max_jumps = 2
+dash_distance = 800.0
+dash_duration = 0.2
+dash_mana_cost = 20
+dash_cooldown = 1.0
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("3_health")
+max_health = 100
+invulnerability_duration = 0.5
+
+[node name="ManaComponent" type="Node" parent="."]
+script = ExtResource("4_mana")
+max_mana = 100
+regeneration_rate = 10.0
+regen_delay_after_use = 1.0
+
+[node name="CombatSystem" type="Node2D" parent="."]
+script = ExtResource("5_combat")
+attack_damages = Array[int]([10, 12, 15])
+attack_durations = Array[float]([0.3, 0.35, 0.4])
+combo_window = 0.5
+
+[node name="HitboxComponent" parent="CombatSystem" instance=ExtResource("6_hitbox")]
+position = Vector2(50, 0)
+collision_layer = 3
+collision_mask = 71
+damage = 10
+
+[node name="HurtboxComponent" parent="." instance=ExtResource("7_hurtbox")]
+collision_layer = 4
+collision_mask = 6
+
+[node name="StaffController" type="Node" parent="."]
+script = ExtResource("10_staff")
+
+[node name="LauncherSystem" type="Node" parent="."]
+script = ExtResource("11_launcher")
+launch_force = 600.0
+launch_horizontal_force = 100.0
+launcher_mana_cost = 15
+launcher_damage = 20
+launcher_cooldown = 2.0
+
+[node name="AirComboSystem" type="Node" parent="."]
+script = ExtResource("12_air_combo")
+air_attack_damage = 15
+juggle_force = 400.0
+max_air_combo = 10
+slam_damage_multiplier = 2.0
+slam_force = 800.0
+
+[node name="EndeSchwerkraft" type="Node" parent="."]
+script = ExtResource("14_ende_schwerkraft")
+
+[node name="DodgeRollSystem" type="Node" parent="."]
+script = ExtResource("13_dodge")
+
+[node name="Wolkenbruch" type="Node" parent="."]
+script = ExtResource("15_wolkenbruch")
+
+[node name="EchoVonUrgathon" type="Node" parent="."]
+script = ExtResource("16_echo")
+
+[node name="LuftgottSystem" type="Node" parent="."]
+script = ExtResource("16_luftgott")
+
+[node name="PlayerCamera" type="Camera2D" parent="."]
+enabled = false
+offset = Vector2(0, -150)
+position_smoothing_enabled = true
+position_smoothing_speed = 5.0
+script = ExtResource("8_camera")
+zoom = Vector2(1, 1)
