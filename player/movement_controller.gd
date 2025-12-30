@@ -62,6 +62,15 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	# CRITICAL: Check for NaN position at start of every frame
+	if is_nan(player.global_position.x) or is_nan(player.global_position.y):
+		print("[MovementController] CRITICAL ERROR: NaN position detected at frame start!")
+		print("[MovementController] This indicates position corruption from previous frame.")
+		print("[MovementController] Resetting to safe position...")
+		player.global_position = Vector2(0, 300)  # Safe fallback position
+		player.velocity = Vector2.ZERO
+		return
+
 	if is_dashing:
 		_process_dash(delta)
 		return
@@ -79,6 +88,13 @@ func _physics_process(delta: float) -> void:
 		dash_cooldown_timer -= delta
 
 	player.move_and_slide()
+
+	# CRITICAL: Check for NaN after move_and_slide
+	if is_nan(player.global_position.x) or is_nan(player.global_position.y):
+		print("[MovementController] CRITICAL ERROR: NaN position after move_and_slide!")
+		print("[MovementController] Velocity was: ", player.velocity)
+		player.global_position = Vector2(0, 300)  # Safe fallback
+		player.velocity = Vector2.ZERO
 
 
 # ============ CROUCH ============
@@ -413,6 +429,11 @@ func _detect_edge(direction: Vector2) -> Vector2:
 
 func _perform_edge_climb(target_position: Vector2) -> void:
 	"""Performs the edge climb by teleporting player to target position."""
+	# Safety: Check for NaN before teleporting
+	if is_nan(target_position.x) or is_nan(target_position.y):
+		print("[Movement] ERROR: Edge climb target position is NaN! Aborting.")
+		return
+
 	player.global_position = target_position
 	player.velocity = Vector2.ZERO  # Cancel all velocity
 	jumps_used = 0  # Reset jumps (landed on platform)
