@@ -45,8 +45,9 @@ func take_damage(damage: int, knockback: Vector2, hitstun: float, attacker: Node
 	# Apply damage to parent's HealthComponent if it exists
 	var parent: Node = get_parent()
 	if parent.has_node("HealthComponent"):
-		var health_comp: HealthComponent = parent.get_node("HealthComponent")
-		health_comp.take_damage(damage)
+		var health_comp = parent.get_node("HealthComponent")
+		if health_comp and health_comp.has_method("take_damage"):
+			health_comp.take_damage(damage)
 
 	# Visual feedback: Red damage flash
 	_flash_damage_red(parent)
