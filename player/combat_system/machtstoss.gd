@@ -363,6 +363,9 @@ func _flash_player() -> void:
 func _execute_knockback_wave(stage_params: Dictionary) -> void:
 	"""Executes the knockback wave - pushes enemies on facing side only + deals damage"""
 
+	# Play SFX
+	AudioManager.play_sfx("ability_machtstoss", 0.1)
+
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	var hit_count = 0
 

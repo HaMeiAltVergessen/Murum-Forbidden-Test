@@ -42,6 +42,9 @@ func _on_body_exited(body: Node2D) -> void:
 func _load_scene() -> void:
 	print("[Door] Loading scene: ", target_scene)
 
+	# Play door SFX
+	AudioManager.play_sfx("door_open")
+
 	# Store spawn position in GameManager
 	GameManager.player_spawn_position = spawn_position
 

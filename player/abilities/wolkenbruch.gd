@@ -541,6 +541,9 @@ func _on_impact() -> void:
 	var radius = charge_level * BASE_RADIUS_PER_LEVEL
 	var trauma = charge_level * CAMERA_TRAUMA_PER_LEVEL
 
+	# Play SFX
+	AudioManager.play_sfx("ability_wolkenbruch", 0.2)
+
 	print("[Wolkenbruch] IMPACT! Level %d → Damage: %d, Radius: %.0f, Knockback: %.0f" % [
 		charge_level, damage, radius, knockback
 	])

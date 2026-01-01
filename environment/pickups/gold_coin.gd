@@ -134,7 +134,7 @@ func _play_collect_effects() -> void:
 
 	# Audio
 	if AudioManager:
-		AudioManager.play_sfx_at_position("pickups/coin_collect", global_position, 0.0)
+		AudioManager.play_sfx("pickup_coin", 0.1)
 
 	# Visual sparkle (simple scale/fade)
 	if sprite:

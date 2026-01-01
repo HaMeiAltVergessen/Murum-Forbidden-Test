@@ -72,7 +72,7 @@ func activate() -> void:
 
 	# Audio
 	if AudioManager:
-		AudioManager.play_sfx_at_position("environment/checkpoint_activate", global_position, 0.0)
+		AudioManager.play_sfx("checkpoint", 0.1)
 
 	# Notification
 	EventBus.show_notification.emit("Checkpoint Activated", 2.0)

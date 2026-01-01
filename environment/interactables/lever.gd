@@ -95,8 +95,7 @@ func toggle() -> void:
 
 	# Audio
 	if AudioManager:
-		var sound = "environment/lever_on" if is_active else "environment/lever_off"
-		AudioManager.play_sfx_at_position(sound, global_position, 0.0)
+		AudioManager.play_sfx("lever_pull", 0.1)
 
 	# Emit signals
 	lever_toggled.emit(self, is_active)
