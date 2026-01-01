@@ -49,15 +49,22 @@ func _ready() -> void:
 	owner_enemy = owner as CharacterBody2D
 	player = get_tree().get_first_node_in_group("player")
 
-	# Store base scale from sprite
-	if owner_enemy and owner_enemy.animated_sprite:
-		base_scale = owner_enemy.animated_sprite.scale
+	# Defer base scale reading to next frame (scene properties need to be applied first)
+	call_deferred("_initialize_base_scale")
 
 	# Register with CombatManager
 	if player and owner_enemy:
 		CombatManager.register_enemy(owner_enemy)
 
-	print("[GeistAI] Initialized for %s with base_scale %v" % [owner_enemy.name if owner_enemy else "unknown", base_scale])
+
+func _initialize_base_scale() -> void:
+	"""Initialize base scale after scene is fully loaded"""
+	# Store base scale from sprite (now that scene properties are applied)
+	if owner_enemy and owner_enemy.animated_sprite:
+		base_scale = owner_enemy.animated_sprite.scale
+		print("[GeistAI] Initialized for %s with base_scale %v" % [owner_enemy.name, base_scale])
+	else:
+		print("[GeistAI] WARNING: Could not read base_scale, using default Vector2.ONE")
 
 # ============================================================================
 # AI UPDATE
