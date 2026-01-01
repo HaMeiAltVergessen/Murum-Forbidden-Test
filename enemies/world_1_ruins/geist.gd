@@ -24,7 +24,7 @@ var stun_duration: float = 0.0
 # REFERENCES
 # ============================================================================
 
-@onready var animated_sprite: Node2D = $AnimatedSprite2D  # Can be AnimatedSprite2D or Polygon2D placeholder
+@onready var animated_sprite: Node2D = $Sprite2D  # Sprite2D for visual representation
 @onready var ai_controller: Node = $GeistAI
 @onready var hurtbox: Area2D = $HurtboxComponent
 @onready var hitbox: Area2D = $HitboxComponent

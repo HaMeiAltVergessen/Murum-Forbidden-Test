@@ -1,8 +1,9 @@
 [gd_scene load_steps=14 format=3 uid="uid://dq7m4n8x3vspt"]
 
 [ext_resource type="Script" path="res://worlds/world_1_ruins/rooms/room_03_arena.gd" id="1_room03"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Background/Environments/Old-dark-Castle-tileset-Files/PNG/old-dark-castle-interior-background.png" id="1_background"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Background/Environments/Old-dark-Castle-tileset-Files/PNG/old-dark-castle-interior-tileset.png" id="1_tileset"]
+[ext_resource type="Texture2D" path="res://Assets/Placeholder/Background/Environments/HauntedForest/Layers/back.png" id="1_background"]
+[ext_resource type="Texture2D" path="res://Assets/Placeholder/Background/Environments/HauntedForest/Layers/middle.png" id="2_middle"]
+[ext_resource type="Texture2D" path="res://Assets/Placeholder/Background/Environments/HauntedForest/Layers/tileset.png" id="1_tileset"]
 [ext_resource type="Script" path="res://worlds/wave_spawner.gd" id="2_wave_spawner"]
 [ext_resource type="PackedScene" uid="uid://c2nx5q8v4kmpr" path="res://environment/checkpoint.tscn" id="3_checkpoint"]
 [ext_resource type="PackedScene" path="res://environment/door.tscn" id="4_door"]
@@ -27,10 +28,18 @@ size = Vector2(2000, 200)
 [node name="Room03Arena" type="Node2D"]
 script = ExtResource("1_room03")
 
-[node name="Background" type="Sprite2D" parent="."]
+[node name="BackLayer" type="Sprite2D" parent="."]
+z_index = -3
 position = Vector2(800, 450)
-scale = Vector2(3, 2.5)
+scale = Vector2(3.2, 3)
 texture = ExtResource("1_background")
+
+[node name="MiddleLayer" type="Sprite2D" parent="."]
+z_index = -2
+position = Vector2(800, 450)
+scale = Vector2(3.2, 3)
+texture = ExtResource("2_middle")
+modulate = Color(1, 1, 1, 0.7)
 
 [node name="TileMap" type="TileMap" parent="."]
 format = 2
@@ -40,8 +49,10 @@ position = Vector2(0, 820)
 
 [node name="Sprite2D" type="Sprite2D" parent="Ground"]
 position = Vector2(800, 40)
-scale = Vector2(14, 2)
+scale = Vector2(6.5, 5)
 texture = ExtResource("1_tileset")
+region_enabled = true
+region_rect = Rect2(0, 0, 256, 16)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
 position = Vector2(800, 40)
@@ -52,8 +63,10 @@ position = Vector2(400, 600)
 
 [node name="Sprite2D" type="Sprite2D" parent="Platform1"]
 position = Vector2(128, 16)
-scale = Vector2(3, 1)
+scale = Vector2(3, 2)
 texture = ExtResource("1_tileset")
+region_enabled = true
+region_rect = Rect2(0, 0, 96, 16)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Platform1"]
 position = Vector2(128, 16)
@@ -64,8 +77,10 @@ position = Vector2(944, 600)
 
 [node name="Sprite2D" type="Sprite2D" parent="Platform2"]
 position = Vector2(128, 16)
-scale = Vector2(3, 1)
+scale = Vector2(3, 2)
 texture = ExtResource("1_tileset")
+region_enabled = true
+region_rect = Rect2(0, 0, 96, 16)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Platform2"]
 position = Vector2(128, 16)
@@ -76,13 +91,12 @@ position = Vector2(-20, 450)
 collision_layer = 1
 collision_mask = 0
 
-[node name="ColorRect" type="ColorRect" parent="WallLeft"]
+[node name="Sprite2D" type="Sprite2D" parent="WallLeft"]
 z_index = -1
-offset_left = -20.0
-offset_top = -450.0
-offset_right = 20.0
-offset_bottom = 450.0
-color = Color(0.3, 0.2, 0.2, 1)
+position = Vector2(0, 0)
+scale = Vector2(0.2, 6)
+texture = ExtResource("1_tileset")
+modulate = Color(0.4, 0.35, 0.4, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
 shape = SubResource("RectangleShape2D_wall_left")
@@ -92,13 +106,12 @@ position = Vector2(1620, 450)
 collision_layer = 1
 collision_mask = 0
 
-[node name="ColorRect" type="ColorRect" parent="WallRight"]
+[node name="Sprite2D" type="Sprite2D" parent="WallRight"]
 z_index = -1
-offset_left = -20.0
-offset_top = -450.0
-offset_right = 20.0
-offset_bottom = 450.0
-color = Color(0.3, 0.2, 0.2, 1)
+position = Vector2(0, 0)
+scale = Vector2(0.2, 6)
+texture = ExtResource("1_tileset")
+modulate = Color(0.4, 0.35, 0.4, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("RectangleShape2D_wall_right")
