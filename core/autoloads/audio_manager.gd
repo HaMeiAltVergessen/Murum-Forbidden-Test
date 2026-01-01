@@ -134,11 +134,14 @@ func play_sfx(sfx_name: String, pitch_variation: float = 0.0) -> void:
 	player.stream = audio_stream
 	player.volume_db = linear_to_db(sfx_volume * master_volume)
 
-	# Apply pitch variation
+	# Dark Fantasy/Sci-Fi base pitch (0.75 = darker, more ominous)
+	var base_pitch = 0.75
+
+	# Apply pitch variation on top of base pitch
 	if pitch_variation > 0.0:
-		player.pitch_scale = randf_range(1.0 - pitch_variation, 1.0 + pitch_variation)
+		player.pitch_scale = base_pitch * randf_range(1.0 - pitch_variation, 1.0 + pitch_variation)
 	else:
-		player.pitch_scale = 1.0
+		player.pitch_scale = base_pitch
 
 	player.play()
 
@@ -147,6 +150,7 @@ func play_sfx_at_position(sfx_name: String, _position: Vector2, pitch_variation:
 	"""Plays a positioned sound effect (uses same pool for now)"""
 	# In a full implementation, this would use AudioStreamPlayer2D for spatial audio
 	# Position parameter reserved for future spatial audio implementation
+	# Dark fantasy pitch is applied in play_sfx
 	play_sfx(sfx_name, pitch_variation)
 
 

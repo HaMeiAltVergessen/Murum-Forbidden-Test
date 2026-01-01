@@ -540,6 +540,16 @@ func _spawn_wave_vfx() -> void:
 	var wave = wave_scene.instantiate()
 	get_tree().root.add_child(wave)
 	wave.global_position = player.global_position
+
+	# Set direction based on player facing
+	var player_facing = 1  # Default to right
+	if movement_controller and movement_controller.has_method("get_facing_direction"):
+		player_facing = movement_controller.get_facing_direction()
+
+	# Flip the particles horizontally if facing left
+	if player_facing < 0:
+		wave.scale.x = -1
+
 	wave.emitting = true
 
 	# Auto-cleanup
