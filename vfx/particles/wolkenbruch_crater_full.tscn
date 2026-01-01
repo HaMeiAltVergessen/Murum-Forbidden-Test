@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://wolkenbruch_crater_full"]
+[gd_scene load_steps=4 format=3 uid="uid://wolkenbruch_crater_full"]
 
 [ext_resource type="Script" path="res://vfx/particles/wolkenbruch_crater_full.gd" id="1_crater_full_script"]
+[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Misc/Explosions pack/explosion-1-d/Sprites/explosion-d5.png" id="2_crater_texture"]
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_crater_full"]
 emission_shape = 1
@@ -18,7 +19,7 @@ color = Color(1.5, 0.8, 0.3, 1)
 [node name="WolkenbruchCraterFull" type="GPUParticles2D"]
 amount = 50
 process_material = SubResource("ParticleProcessMaterial_crater_full")
-texture = null
+texture = ExtResource("2_crater_texture")
 lifetime = 0.8
 one_shot = true
 explosiveness = 1.0
