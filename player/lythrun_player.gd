@@ -48,6 +48,9 @@ func _ready() -> void:
 	if player_camera:
 		player_camera.enabled = false
 
+	# Register with CoopCamera (COMMIT 021)
+	_register_with_coop_camera()
+
 	print("[Lythrun] Player 2 ready! Scaling: %.0f%% (%s)" % [scaling_factor * 100, LythrunStatsScaling.get_scaling_description(scaling_factor)])
 
 # ============ STATS SCALING ============
@@ -169,6 +172,17 @@ func activate_shadow_aesthetic() -> void:
 		dark_aura.energy = 0.3
 
 	print("[Lythrun] Shadow aesthetic activated")
+
+func _register_with_coop_camera() -> void:
+	"""Register P2 with CoopCamera (COMMIT 021)"""
+	# Wait one frame to ensure all nodes are ready
+	await get_tree().process_frame
+
+	# Register with CoopCamera
+	var camera = get_viewport().get_camera_2d()
+	if camera and camera.has_method("set_player2"):
+		camera.set_player2(self)
+		print("[Lythrun] Registered with CoopCamera")
 
 # ============ COLLISION LAYERS ============
 

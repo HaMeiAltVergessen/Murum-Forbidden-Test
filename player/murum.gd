@@ -38,6 +38,9 @@ func _ready() -> void:
 	# Register with GameManager
 	_register_with_game_manager()
 
+	# Register with CoopManager as P1 (COMMIT 021)
+	_register_with_coop_manager()
+
 	print("[Murum] Player initialized")
 
 
@@ -99,6 +102,22 @@ func _register_with_game_manager() -> void:
 	# Wait one frame to ensure spawn position is set
 	await get_tree().process_frame
 	GameManager.register_player(self, global_position)
+
+
+func _register_with_coop_manager() -> void:
+	"""Registers this player with CoopManager and CoopCamera (COMMIT 021)"""
+	# Wait one frame to ensure all nodes are ready
+	await get_tree().process_frame
+
+	# Register with CoopManager as P1
+	if CoopManager:
+		CoopManager.set_p1_reference(self)
+
+	# Register with CoopCamera
+	var camera = get_viewport().get_camera_2d()
+	if camera and camera.has_method("set_player1"):
+		camera.set_player1(self)
+		print("[Murum] Registered with CoopCamera")
 
 
 # ============ SIGNAL HANDLERS ============

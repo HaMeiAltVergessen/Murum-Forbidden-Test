@@ -1,0 +1,41 @@
+[gd_scene load_steps=2 format=3 uid="uid://split_screen_manager"]
+
+[ext_resource type="Script" path="res://camera/split_screen_manager.gd" id="1_split"]
+
+[node name="SplitScreenManager" type="Node2D" groups=["split_screen_manager"]]
+script = ExtResource("1_split")
+
+[node name="LeftViewport" type="SubViewportContainer" parent="."]
+offset_right = 640.0
+offset_bottom = 720.0
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="LeftViewport"]
+handle_input_locally = false
+size = Vector2i(640, 720)
+render_target_update_mode = 4
+
+[node name="Camera2D" type="Camera2D" parent="LeftViewport/SubViewport"]
+enabled = false
+zoom = Vector2(1.5, 1.5)
+
+[node name="RightViewport" type="SubViewportContainer" parent="."]
+offset_left = 644.0
+offset_right = 1284.0
+offset_bottom = 720.0
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="RightViewport"]
+handle_input_locally = false
+size = Vector2i(640, 720)
+render_target_update_mode = 4
+
+[node name="Camera2D" type="Camera2D" parent="RightViewport/SubViewport"]
+enabled = false
+zoom = Vector2(1.5, 1.5)
+
+[node name="SplitLine" type="ColorRect" parent="."]
+offset_left = 638.0
+offset_right = 642.0
+offset_bottom = 720.0
+color = Color(0.2, 0.2, 0.2, 1)

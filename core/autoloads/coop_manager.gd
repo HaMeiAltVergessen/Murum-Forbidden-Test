@@ -331,3 +331,63 @@ func is_p2_alive() -> bool:
 		return not p2_instance.is_dead
 
 	return true
+
+# ============ COLLISION LAYER SWITCHING (COMMIT 021) ============
+
+func set_coop_collision() -> void:
+	"""Set collision layers for co-op mode (players pass through each other)"""
+	if p1_instance and is_instance_valid(p1_instance):
+		# P1 collides with world, enemies, P2 projectiles
+		p1_instance.collision_mask = 0
+		p1_instance.set_collision_mask_value(1, true)   # World
+		p1_instance.set_collision_mask_value(4, true)   # Enemies
+		p1_instance.set_collision_mask_value(6, true)   # P2 Projectiles
+		p1_instance.set_collision_mask_value(7, true)   # Pickups
+		p1_instance.set_collision_mask_value(8, true)   # Hazards
+
+	if p2_instance and is_instance_valid(p2_instance):
+		# P2 collides with world, enemies, P1 projectiles
+		p2_instance.collision_mask = 0
+		p2_instance.set_collision_mask_value(1, true)   # World
+		p2_instance.set_collision_mask_value(4, true)   # Enemies
+		p2_instance.set_collision_mask_value(5, true)   # P1 Projectiles
+		p2_instance.set_collision_mask_value(7, true)   # Pickups
+		p2_instance.set_collision_mask_value(8, true)   # Hazards
+
+	print("[CoopManager] Collision set to CO-OP mode (players pass through)")
+
+func set_pvp_collision() -> void:
+	"""Set collision layers for PvP mode (players collide with each other)"""
+	if p1_instance and is_instance_valid(p1_instance):
+		# P1 collides with world, enemies, P2 (Layer 3), P2 projectiles
+		p1_instance.collision_mask = 0
+		p1_instance.set_collision_mask_value(1, true)   # World
+		p1_instance.set_collision_mask_value(3, true)   # Player2 (ADDED for PvP)
+		p1_instance.set_collision_mask_value(4, true)   # Enemies
+		p1_instance.set_collision_mask_value(6, true)   # P2 Projectiles
+		p1_instance.set_collision_mask_value(7, true)   # Pickups
+		p1_instance.set_collision_mask_value(8, true)   # Hazards
+
+		# P1's hitbox can hit P2
+		if p1_instance.has_node("CombatSystem/HitboxComponent"):
+			var hitbox = p1_instance.get_node("CombatSystem/HitboxComponent")
+			hitbox.set_collision_mask_value(3, true)   # Can hit Player2
+			hitbox.set_collision_mask_value(10, true)  # Can hit PlayerHurtbox
+
+	if p2_instance and is_instance_valid(p2_instance):
+		# P2 collides with world, enemies, P1 (Layer 2), P1 projectiles
+		p2_instance.collision_mask = 0
+		p2_instance.set_collision_mask_value(1, true)   # World
+		p2_instance.set_collision_mask_value(2, true)   # Player1 (ADDED for PvP)
+		p2_instance.set_collision_mask_value(4, true)   # Enemies
+		p2_instance.set_collision_mask_value(5, true)   # P1 Projectiles
+		p2_instance.set_collision_mask_value(7, true)   # Pickups
+		p2_instance.set_collision_mask_value(8, true)   # Hazards
+
+		# P2's hitbox can hit P1
+		if p2_instance.has_node("CombatSystem/HitboxComponent"):
+			var hitbox = p2_instance.get_node("CombatSystem/HitboxComponent")
+			hitbox.set_collision_mask_value(2, true)   # Can hit Player1
+			hitbox.set_collision_mask_value(10, true)  # Can hit PlayerHurtbox
+
+	print("[CoopManager] Collision set to PVP mode (players collide)")
