@@ -24,6 +24,7 @@ signal inventory_changed()
 
 func _ready() -> void:
 	_load_item_database()
+	_connect_p2_signals()
 	print("[InventoryManager] Initialized")
 
 
@@ -452,3 +453,214 @@ func load_save_data(data: Dictionary) -> void:
 
 	inventory_changed.emit()
 	print("[InventoryManager] Loaded inventory from save")
+
+
+# ============ P2 MIRROR INVENTORY SYSTEM (COMMIT 020) ============
+
+# P2's separate inventory
+var p2_inventory: Dictionary = {
+	"consumables": [],  # Separate pool (P2 buys own)
+	"relics": [],       # Mirrors of P1's relics
+	"key_items": []     # Empty placeholders
+}
+
+# P2-specific signals
+signal p2_item_added(item_id: String, category: String)
+signal p2_item_removed(item_id: String, category: String)
+signal p2_item_used(item_id: String)
+signal p2_inventory_changed()
+
+func _connect_p2_signals() -> void:
+	"""Connect P2 mirror sync signals"""
+	item_added.connect(_on_p1_item_added)
+	item_removed.connect(_on_p1_item_removed)
+
+
+func _on_p1_item_added(item_id: String, category: String) -> void:
+	"""When P1 adds item, sync P2's mirror (relics only)"""
+	if category == "relics":
+		_sync_p2_mirror_relic(item_id, true)
+
+
+func _on_p1_item_removed(item_id: String, category: String) -> void:
+	"""When P1 removes item, remove P2's mirror"""
+	if category == "relics":
+		_sync_p2_mirror_relic(item_id, false)
+
+
+func _sync_p2_mirror_relic(original_id: String, add: bool) -> void:
+	"""Sync P2's mirror relic with P1's relic"""
+	var mirror_id = get_mirror_item_id(original_id)
+
+	if mirror_id == "":
+		print("[P2 Mirror] No mirror found for: ", original_id)
+		return
+
+	if add:
+		# Add mirror relic to P2
+		if not mirror_id in p2_inventory["relics"]:
+			p2_inventory["relics"].append(mirror_id)
+			print("[P2 Mirror] Relic added: %s → %s" % [original_id, mirror_id])
+			p2_item_added.emit(mirror_id, "relics")
+			p2_inventory_changed.emit()
+	else:
+		# Remove mirror relic from P2
+		var index = p2_inventory["relics"].find(mirror_id)
+		if index != -1:
+			p2_inventory["relics"].remove_at(index)
+			print("[P2 Mirror] Relic removed: %s" % mirror_id)
+			p2_item_removed.emit(mirror_id, "relics")
+			p2_inventory_changed.emit()
+
+
+func get_mirror_item_id(original_id: String) -> String:
+	"""Find mirror variant of an item"""
+	# Search all items for mirror_of field
+	for category in ["consumables", "relics", "key_items"]:
+		for item_id in item_database[category]:
+			var item = item_database[category][item_id]
+			if item.has("mirror_of") and item["mirror_of"] == original_id:
+				return item_id
+
+	return ""
+
+
+# ============ P2 CONSUMABLE MANAGEMENT (Separate Pool) ============
+
+func add_p2_consumable(item_id: String) -> bool:
+	"""Add consumable to P2's separate pool"""
+	if not item_database["consumables"].has(item_id):
+		push_error("[P2 Inventory] Unknown consumable: " + item_id)
+		return false
+
+	# Check if already owned
+	for entry in p2_inventory["consumables"]:
+		if entry["item_id"] == item_id:
+			entry["count"] += 1
+			p2_inventory_changed.emit()
+			return true
+
+	# New consumable
+	p2_inventory["consumables"].append({
+		"item_id": item_id,
+		"count": 1
+	})
+
+	p2_item_added.emit(item_id, "consumables")
+	p2_inventory_changed.emit()
+	print("[P2 Inventory] Consumable added: ", item_id)
+	return true
+
+
+func use_p2_consumable(item_id: String) -> bool:
+	"""Use P2's consumable"""
+	for i in range(p2_inventory["consumables"].size()):
+		var entry = p2_inventory["consumables"][i]
+		if entry["item_id"] == item_id and entry["count"] > 0:
+			entry["count"] -= 1
+
+			if entry["count"] <= 0:
+				p2_inventory["consumables"].remove_at(i)
+
+			# Apply effect to P2
+			var item_data = get_item_data(item_id)
+			if item_data:
+				_apply_p2_consumable_effect(item_data)
+
+			p2_item_used.emit(item_id)
+			p2_item_removed.emit(item_id, "consumables")
+			p2_inventory_changed.emit()
+			print("[P2 Inventory] Consumable used: ", item_id)
+			return true
+
+	return false
+
+
+func _apply_p2_consumable_effect(item_data: Dictionary) -> void:
+	"""Apply consumable effect to P2"""
+	if not item_data.has("stats"):
+		return
+
+	var stats = item_data["stats"]
+	var p2 = CoopManager.get_p2_instance() if CoopManager else null
+
+	if not p2:
+		push_error("[P2 Inventory] P2 not active")
+		return
+
+	# Instant heal
+	if stats.has("heal_percent"):
+		_apply_percent_heal(p2, stats["heal_percent"])
+
+	# HP regen over time
+	if stats.has("hp_regen_percent_per_sec") and stats.has("duration_sec"):
+		_apply_hp_regen(p2, stats["hp_regen_percent_per_sec"], stats["duration_sec"])
+
+	# Flat HP regen
+	if stats.has("hp_regen_flat") and stats.has("duration_sec"):
+		_apply_flat_hp_regen(p2, stats["hp_regen_flat"], stats["duration_sec"])
+
+	# Mana regen
+	if stats.has("mana_regen_percent_per_sec") and stats.has("duration_sec"):
+		_apply_mana_regen(p2, stats["mana_regen_percent_per_sec"], stats["duration_sec"])
+
+	# Buffs
+	if stats.has("damage_reduction") or stats.has("knockback_reduction") or stats.has("movement_speed_bonus"):
+		EventBus.emit_signal("p2_consumable_buff_applied", item_data)
+
+
+func get_p2_consumable_count(item_id: String) -> int:
+	"""Get P2's consumable count"""
+	for entry in p2_inventory["consumables"]:
+		if entry["item_id"] == item_id:
+			return entry["count"]
+	return 0
+
+
+# ============ P2 KEY ITEMS (Placeholders) ============
+
+func get_p2_key_placeholders() -> Array:
+	"""Get P2's empty key item placeholders"""
+	return [
+		"shadow_key_placeholder_1",
+		"shadow_key_placeholder_2",
+		"shadow_key_placeholder_3",
+		"shadow_key_placeholder_4"
+	]
+
+
+# ============ P2 QUERY METHODS ============
+
+func has_p2_item(item_id: String) -> bool:
+	"""Check if P2 has an item"""
+	# Check consumables
+	for entry in p2_inventory["consumables"]:
+		if entry["item_id"] == item_id:
+			return true
+
+	# Check relics
+	if item_id in p2_inventory["relics"]:
+		return true
+
+	return false
+
+
+func has_relic(item_id: String) -> bool:
+	"""Check if P1 has a relic (for scaling calculation)"""
+	return item_id in inventory["relics"]
+
+
+func get_p2_inventory() -> Dictionary:
+	"""Get P2's full inventory"""
+	return {
+		"consumables": p2_inventory["consumables"],
+		"relics": p2_inventory["relics"],
+		"key_items": get_p2_key_placeholders()
+	}
+
+
+func get_p2_items_by_category(category: String) -> Array:
+	"""Get P2's items by category"""
+	if category == "key_items":
+		return get_p2_key_placeholders()
+	return p2_inventory.get(category, [])
