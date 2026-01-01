@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cg3bhqv0jw878"
+path="res://.godot/imported/Monster 13 Attack - 1.mp3-3a19f8d756c16ab01b70c6e62c47778f.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 2 - Universal Sound Effects/Monster Sound Effects 2 - Universal Sound Effects/MP3/Monster 13 Attack - 1.mp3"
+dest_files=["res://.godot/imported/Monster 13 Attack - 1.mp3-3a19f8d756c16ab01b70c6e62c47778f.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

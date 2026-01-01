@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://cuex05s8jkyib"
+path="res://.godot/imported/Sword Clang - 10.wav-0f337d639e5580e2e556ca02c9d07937.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sword Sound Effects Pack 1/Sword Sound Effects Pack 1/WAV/Sword Clang - 10.wav"
+dest_files=["res://.godot/imported/Sword Clang - 10.wav-0f337d639e5580e2e556ca02c9d07937.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://kvy8oibflr6h"
+path="res://.godot/imported/CPU SFX - 1.wav-a219068876401c5e19b5c9a4396c7e65.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sci-Fi UI SFX Pack 2/Sci-Fi UI SFX Pack 2/WAV/CPU SFX - 1.wav"
+dest_files=["res://.godot/imported/CPU SFX - 1.wav-a219068876401c5e19b5c9a4396c7e65.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

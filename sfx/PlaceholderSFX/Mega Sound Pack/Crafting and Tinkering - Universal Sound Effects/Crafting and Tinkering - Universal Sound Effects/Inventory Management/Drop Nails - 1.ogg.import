@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bpp6pf73yikkw"
+path="res://.godot/imported/Drop Nails - 1.ogg-4f2c2874d9a14bf463cdec7e0a818759.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Crafting and Tinkering - Universal Sound Effects/Crafting and Tinkering - Universal Sound Effects/Inventory Management/Drop Nails - 1.ogg"
+dest_files=["res://.godot/imported/Drop Nails - 1.ogg-4f2c2874d9a14bf463cdec7e0a818759.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

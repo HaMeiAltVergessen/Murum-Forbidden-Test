@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://3wl3hnlyv7w2"
+path="res://.godot/imported/Sword Slash - 5.mp3-fca4945afd54e81d5eef012d0ba7c422.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sword Sound Effects Pack 2/Sword Sound Effects Pack 2/Sword Slash - 5.mp3"
+dest_files=["res://.godot/imported/Sword Slash - 5.mp3-fca4945afd54e81d5eef012d0ba7c422.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://do123p31caks7"
+path="res://.godot/imported/Player Hit - 5.wav-dcb2c114e072d1091624fd2a25cc2f7a.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 3/Game Sound Effects Pack 3/WAV/Player Hit - 5.wav"
+dest_files=["res://.godot/imported/Player Hit - 5.wav-dcb2c114e072d1091624fd2a25cc2f7a.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

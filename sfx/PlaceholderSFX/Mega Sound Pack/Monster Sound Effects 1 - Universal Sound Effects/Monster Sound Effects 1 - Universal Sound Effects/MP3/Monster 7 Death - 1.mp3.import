@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bm0cvdfwuxf3w"
+path="res://.godot/imported/Monster 7 Death - 1.mp3-1f66ef2c8405aefa903c5b3bf8ea928d.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 1 - Universal Sound Effects/Monster Sound Effects 1 - Universal Sound Effects/MP3/Monster 7 Death - 1.mp3"
+dest_files=["res://.godot/imported/Monster 7 Death - 1.mp3-1f66ef2c8405aefa903c5b3bf8ea928d.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

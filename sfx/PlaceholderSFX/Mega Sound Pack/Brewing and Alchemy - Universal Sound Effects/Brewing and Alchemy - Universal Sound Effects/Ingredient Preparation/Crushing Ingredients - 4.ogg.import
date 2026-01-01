@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://b3qq53koxfili"
+path="res://.godot/imported/Crushing Ingredients - 4.ogg-66f612400c4135e55dbbc19cc0e1a0f3.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Brewing and Alchemy - Universal Sound Effects/Brewing and Alchemy - Universal Sound Effects/Ingredient Preparation/Crushing Ingredients - 4.ogg"
+dest_files=["res://.godot/imported/Crushing Ingredients - 4.ogg-66f612400c4135e55dbbc19cc0e1a0f3.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

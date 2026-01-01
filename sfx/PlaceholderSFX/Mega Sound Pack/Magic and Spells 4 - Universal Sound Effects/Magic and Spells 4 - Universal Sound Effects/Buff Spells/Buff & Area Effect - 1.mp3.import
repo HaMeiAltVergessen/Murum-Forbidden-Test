@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://blnbkwx6qcn20"
+path="res://.godot/imported/Buff & Area Effect - 1.mp3-dbe62907c6fcce54a58fb3b1c55dbeaa.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Magic and Spells 4 - Universal Sound Effects/Magic and Spells 4 - Universal Sound Effects/Buff Spells/Buff & Area Effect - 1.mp3"
+dest_files=["res://.godot/imported/Buff & Area Effect - 1.mp3-dbe62907c6fcce54a58fb3b1c55dbeaa.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

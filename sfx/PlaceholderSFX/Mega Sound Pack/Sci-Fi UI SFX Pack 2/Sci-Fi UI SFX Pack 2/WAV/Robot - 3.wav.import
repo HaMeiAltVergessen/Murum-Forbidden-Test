@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://h1k6yoe4e3p1"
+path="res://.godot/imported/Robot - 3.wav-d5b6a83d6a9d78b89d6f3a804002569f.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sci-Fi UI SFX Pack 2/Sci-Fi UI SFX Pack 2/WAV/Robot - 3.wav"
+dest_files=["res://.godot/imported/Robot - 3.wav-d5b6a83d6a9d78b89d6f3a804002569f.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

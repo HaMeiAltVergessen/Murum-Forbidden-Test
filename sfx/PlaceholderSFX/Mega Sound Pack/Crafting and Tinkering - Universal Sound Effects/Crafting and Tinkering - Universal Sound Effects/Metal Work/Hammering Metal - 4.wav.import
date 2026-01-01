@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://l5xpnr7u04fd"
+path="res://.godot/imported/Hammering Metal - 4.wav-e929bc114ab2d7c9a0f1f6d1dd61dc50.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Crafting and Tinkering - Universal Sound Effects/Crafting and Tinkering - Universal Sound Effects/Metal Work/Hammering Metal - 4.wav"
+dest_files=["res://.godot/imported/Hammering Metal - 4.wav-e929bc114ab2d7c9a0f1f6d1dd61dc50.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

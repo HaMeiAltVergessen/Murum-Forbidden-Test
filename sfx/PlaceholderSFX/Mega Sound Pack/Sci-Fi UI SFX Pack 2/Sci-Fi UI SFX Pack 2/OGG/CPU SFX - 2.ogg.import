@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://by11elocw3g4n"
+path="res://.godot/imported/CPU SFX - 2.ogg-fe40cd153ef27a7c3e65095be142cb0c.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sci-Fi UI SFX Pack 2/Sci-Fi UI SFX Pack 2/OGG/CPU SFX - 2.ogg"
+dest_files=["res://.godot/imported/CPU SFX - 2.ogg-fe40cd153ef27a7c3e65095be142cb0c.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

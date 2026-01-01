@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://b21my0trejtl1"
+path="res://.godot/imported/Skill 23.wav-2cce5faadf14e44b59f2efe4aec61073.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Skills Sound Effects Pack 1/Skills Sound Effects Pack 1/Skill 23.wav"
+dest_files=["res://.godot/imported/Skill 23.wav-2cce5faadf14e44b59f2efe4aec61073.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

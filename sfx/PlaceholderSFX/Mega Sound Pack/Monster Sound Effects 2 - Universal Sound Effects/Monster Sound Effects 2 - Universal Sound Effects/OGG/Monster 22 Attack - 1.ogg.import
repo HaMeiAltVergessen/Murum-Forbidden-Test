@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://d18wc7pun527b"
+path="res://.godot/imported/Monster 22 Attack - 1.ogg-9eec80be0b8cf5606c40b5d443e4a97a.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 2 - Universal Sound Effects/Monster Sound Effects 2 - Universal Sound Effects/OGG/Monster 22 Attack - 1.ogg"
+dest_files=["res://.godot/imported/Monster 22 Attack - 1.ogg-9eec80be0b8cf5606c40b5d443e4a97a.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

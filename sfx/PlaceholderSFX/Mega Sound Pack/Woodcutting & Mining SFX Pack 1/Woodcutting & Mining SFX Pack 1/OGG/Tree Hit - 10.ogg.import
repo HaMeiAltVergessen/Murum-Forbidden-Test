@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://v4b31fwkx8eu"
+path="res://.godot/imported/Tree Hit - 10.ogg-0577b6e61a5ed5188827c3c92df804f1.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Woodcutting & Mining SFX Pack 1/Woodcutting & Mining SFX Pack 1/OGG/Tree Hit - 10.ogg"
+dest_files=["res://.godot/imported/Tree Hit - 10.ogg-0577b6e61a5ed5188827c3c92df804f1.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

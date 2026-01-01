@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bk3vbi4o0cp5g"
+path="res://.godot/imported/Slime Jump - 1.mp3-57958982de7a5df21c8276ec5286ecc7.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 3/Game Sound Effects Pack 3/MP3/Slime Jump - 1.mp3"
+dest_files=["res://.godot/imported/Slime Jump - 1.mp3-57958982de7a5df21c8276ec5286ecc7.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

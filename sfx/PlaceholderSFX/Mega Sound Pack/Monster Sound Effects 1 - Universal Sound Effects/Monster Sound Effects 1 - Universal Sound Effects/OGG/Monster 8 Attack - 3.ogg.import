@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bk06hjkqjslj0"
+path="res://.godot/imported/Monster 8 Attack - 3.ogg-aa4dd2241bd7e8eb1be1b9f92e06cbb9.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 1 - Universal Sound Effects/Monster Sound Effects 1 - Universal Sound Effects/OGG/Monster 8 Attack - 3.ogg"
+dest_files=["res://.godot/imported/Monster 8 Attack - 3.ogg-aa4dd2241bd7e8eb1be1b9f92e06cbb9.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

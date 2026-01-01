@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://b8wlxi10lexxs"
+path="res://.godot/imported/Sword Unsheathe - 6.wav-9b725f4f9747dd2fdd0702b24986c623.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sword Sound Effects Pack 1/Sword Sound Effects Pack 1/WAV/Sword Unsheathe - 6.wav"
+dest_files=["res://.godot/imported/Sword Unsheathe - 6.wav-9b725f4f9747dd2fdd0702b24986c623.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

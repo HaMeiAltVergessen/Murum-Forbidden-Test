@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://y5w0tmdsipqp"
+path="res://.godot/imported/Crate Opening 3.ogg-c89757a0f4c66bfd55e6dd0ddfb4e690.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 4/Game Sound Effects Pack 4/OGG/Crate Opening 3.ogg"
+dest_files=["res://.godot/imported/Crate Opening 3.ogg-c89757a0f4c66bfd55e6dd0ddfb4e690.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

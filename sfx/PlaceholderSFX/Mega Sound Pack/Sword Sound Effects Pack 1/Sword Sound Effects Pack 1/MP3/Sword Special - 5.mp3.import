@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dno2wk5qi2mae"
+path="res://.godot/imported/Sword Special - 5.mp3-77e4cc8908699e512287f0acd8d32a29.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sword Sound Effects Pack 1/Sword Sound Effects Pack 1/MP3/Sword Special - 5.mp3"
+dest_files=["res://.godot/imported/Sword Special - 5.mp3-77e4cc8908699e512287f0acd8d32a29.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

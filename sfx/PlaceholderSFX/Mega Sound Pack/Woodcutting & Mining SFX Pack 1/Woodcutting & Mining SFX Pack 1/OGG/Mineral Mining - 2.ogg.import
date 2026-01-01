@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://njv48gf6hous"
+path="res://.godot/imported/Mineral Mining - 2.ogg-4d89a7be193e6d408537c3bc31f9baa8.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Woodcutting & Mining SFX Pack 1/Woodcutting & Mining SFX Pack 1/OGG/Mineral Mining - 2.ogg"
+dest_files=["res://.godot/imported/Mineral Mining - 2.ogg-4d89a7be193e6d408537c3bc31f9baa8.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

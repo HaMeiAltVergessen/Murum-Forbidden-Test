@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://i5y54hc5f7ve"
+path="res://.godot/imported/Sword Fight - 2.mp3-9afda9d57c580a77459f19c51cc51666.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sword Sound Effects Pack 1/Sword Sound Effects Pack 1/MP3/Sword Fight - 2.mp3"
+dest_files=["res://.godot/imported/Sword Fight - 2.mp3-9afda9d57c580a77459f19c51cc51666.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

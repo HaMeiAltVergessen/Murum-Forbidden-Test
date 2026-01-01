@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://h2vc6dpmrf8i"
+path="res://.godot/imported/Sci-Fi Monster - 26.mp3-73c15b2c2df1d0239f75d98cf37ba5e1.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sci-Fi Monsters SFX 2/Sci-Fi Monsters SFX 2/MP3/Sci-Fi Monster - 26.mp3"
+dest_files=["res://.godot/imported/Sci-Fi Monster - 26.mp3-73c15b2c2df1d0239f75d98cf37ba5e1.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

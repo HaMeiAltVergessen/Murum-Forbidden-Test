@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://ulsps2qaan7g"
+path="res://.godot/imported/Mouse Click 4.mp3-29e273cda99f47b83dddf990b1cb173f.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 4/Game Sound Effects Pack 4/MP3/Mouse Click 4.mp3"
+dest_files=["res://.godot/imported/Mouse Click 4.mp3-29e273cda99f47b83dddf990b1cb173f.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

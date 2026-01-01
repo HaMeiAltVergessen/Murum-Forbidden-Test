@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cgax5fddkpkjn"
+path="res://.godot/imported/Magic Spell Pack 6 - 2.mp3-9822e14f7c0dbd3a30c23fd722cca6c1.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Magic & Spells SFX 6/Magic & Spells SFX 6/MP3/Magic Spell Pack 6 - 2.mp3"
+dest_files=["res://.godot/imported/Magic Spell Pack 6 - 2.mp3-9822e14f7c0dbd3a30c23fd722cca6c1.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

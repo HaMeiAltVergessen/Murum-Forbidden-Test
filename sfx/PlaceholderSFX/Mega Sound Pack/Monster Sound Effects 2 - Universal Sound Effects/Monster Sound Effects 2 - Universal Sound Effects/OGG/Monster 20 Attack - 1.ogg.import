@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://dsp8kxdh56bvo"
+path="res://.godot/imported/Monster 20 Attack - 1.ogg-015f3bb6a1a0709fd8db7e2687272f8f.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 2 - Universal Sound Effects/Monster Sound Effects 2 - Universal Sound Effects/OGG/Monster 20 Attack - 1.ogg"
+dest_files=["res://.godot/imported/Monster 20 Attack - 1.ogg-015f3bb6a1a0709fd8db7e2687272f8f.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://xeybjc4602f1"
+path="res://.godot/imported/Mineral Mining - 3 (with Gemstone).wav-181506cbfb7a2acfc7657be9a6858989.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Woodcutting & Mining SFX Pack 1/Woodcutting & Mining SFX Pack 1/WAV/Mineral Mining - 3 (with Gemstone).wav"
+dest_files=["res://.godot/imported/Mineral Mining - 3 (with Gemstone).wav-181506cbfb7a2acfc7657be9a6858989.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://cfixuxsul6v7w"
+path="res://.godot/imported/Magic Spell Pack 7 - 5.wav-8f9b0887adfe24d8fd34d2d01a9d61a5.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Magic & Spells SFX 7/Magic & Spells SFX 7/WAV/Magic Spell Pack 7 - 5.wav"
+dest_files=["res://.godot/imported/Magic Spell Pack 7 - 5.wav-8f9b0887adfe24d8fd34d2d01a9d61a5.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

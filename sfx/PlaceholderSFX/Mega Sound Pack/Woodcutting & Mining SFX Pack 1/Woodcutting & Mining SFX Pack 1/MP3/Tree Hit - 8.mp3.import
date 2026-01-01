@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cj70p17uv0r8o"
+path="res://.godot/imported/Tree Hit - 8.mp3-b145a627061a1a707ad58167cc70c8d4.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Woodcutting & Mining SFX Pack 1/Woodcutting & Mining SFX Pack 1/MP3/Tree Hit - 8.mp3"
+dest_files=["res://.godot/imported/Tree Hit - 8.mp3-b145a627061a1a707ad58167cc70c8d4.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://cjexej7vlsyem"
+path="res://.godot/imported/Pour Liquid - 1.ogg-7fc4f9a498b6fb9eb92a3f5014914d0e.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Brewing and Alchemy - Universal Sound Effects/Brewing and Alchemy - Universal Sound Effects/Brewing Sounds/Pour Liquid - 1.ogg"
+dest_files=["res://.godot/imported/Pour Liquid - 1.ogg-7fc4f9a498b6fb9eb92a3f5014914d0e.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

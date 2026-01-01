@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bbsvjgl1jn5em"
+path="res://.godot/imported/Tree Falling SFX - 3.mp3-1670529aefd6c5209b7fbf915d034f92.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Woodcutting & Mining SFX Pack 1/Woodcutting & Mining SFX Pack 1/MP3/Tree Falling SFX - 3.mp3"
+dest_files=["res://.godot/imported/Tree Falling SFX - 3.mp3-1670529aefd6c5209b7fbf915d034f92.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

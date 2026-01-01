@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://ddnccb3cuqmah"
+path="res://.godot/imported/Wand Swing - 2.ogg-ed593378c07e13e49203486aabe5c4de.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 3/Game Sound Effects Pack 3/OGG/Wand Swing - 2.ogg"
+dest_files=["res://.godot/imported/Wand Swing - 2.ogg-ed593378c07e13e49203486aabe5c4de.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

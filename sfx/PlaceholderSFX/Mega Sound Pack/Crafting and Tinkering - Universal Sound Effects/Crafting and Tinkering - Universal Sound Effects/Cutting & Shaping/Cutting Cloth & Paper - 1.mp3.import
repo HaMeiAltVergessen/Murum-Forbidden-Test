@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://kns7ibl2f6jj"
+path="res://.godot/imported/Cutting Cloth & Paper - 1.mp3-2ff7cf9d5d8b9e0010f9e7242ca6a827.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Crafting and Tinkering - Universal Sound Effects/Crafting and Tinkering - Universal Sound Effects/Cutting & Shaping/Cutting Cloth & Paper - 1.mp3"
+dest_files=["res://.godot/imported/Cutting Cloth & Paper - 1.mp3-2ff7cf9d5d8b9e0010f9e7242ca6a827.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

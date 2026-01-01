@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://dl7yvhtnl0ids"
+path="res://.godot/imported/Monster 6 Attack - 2.ogg-ddf46c8955f065e3f194b1d273776dca.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 1 - Universal Sound Effects/Monster Sound Effects 1 - Universal Sound Effects/OGG/Monster 6 Attack - 2.ogg"
+dest_files=["res://.godot/imported/Monster 6 Attack - 2.ogg-ddf46c8955f065e3f194b1d273776dca.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

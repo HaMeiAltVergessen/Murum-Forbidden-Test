@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://72p0n056urlv"
+path="res://.godot/imported/Hammer - 2 (Single 1).mp3-4a7fb72e0a710e96728af8f8ba49e80f.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Crafting and Tinkering - Universal Sound Effects/Crafting and Tinkering - Universal Sound Effects/Hammering & Sawing/Hammer - 2 (Single 1).mp3"
+dest_files=["res://.godot/imported/Hammer - 2 (Single 1).mp3-4a7fb72e0a710e96728af8f8ba49e80f.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

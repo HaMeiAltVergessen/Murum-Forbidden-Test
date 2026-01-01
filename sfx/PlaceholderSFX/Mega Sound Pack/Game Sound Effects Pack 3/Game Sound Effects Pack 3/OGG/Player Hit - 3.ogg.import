@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://dewn8t83w6o1b"
+path="res://.godot/imported/Player Hit - 3.ogg-44d565ca8279a65338dce46ae466c243.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 3/Game Sound Effects Pack 3/OGG/Player Hit - 3.ogg"
+dest_files=["res://.godot/imported/Player Hit - 3.ogg-44d565ca8279a65338dce46ae466c243.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

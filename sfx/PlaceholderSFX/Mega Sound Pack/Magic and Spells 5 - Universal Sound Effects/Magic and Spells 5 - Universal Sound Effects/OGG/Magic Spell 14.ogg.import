@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://3hken0ukh6np"
+path="res://.godot/imported/Magic Spell 14.ogg-f9e9457c184f16af216ef08bff517461.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Magic and Spells 5 - Universal Sound Effects/Magic and Spells 5 - Universal Sound Effects/OGG/Magic Spell 14.ogg"
+dest_files=["res://.godot/imported/Magic Spell 14.ogg-f9e9457c184f16af216ef08bff517461.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

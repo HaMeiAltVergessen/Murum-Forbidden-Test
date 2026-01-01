@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bw5e13qosgcdt"
+path="res://.godot/imported/Sword Slash - 3.ogg-b0c6c6f02bc34befc7785c663fd3d61b.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sword Sound Effects Pack 2/Sword Sound Effects Pack 2/Sword Slash - 3.ogg"
+dest_files=["res://.godot/imported/Sword Slash - 3.ogg-b0c6c6f02bc34befc7785c663fd3d61b.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

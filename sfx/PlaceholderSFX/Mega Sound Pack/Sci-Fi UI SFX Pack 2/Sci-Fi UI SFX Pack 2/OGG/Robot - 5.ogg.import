@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://y81j0oault8l"
+path="res://.godot/imported/Robot - 5.ogg-583dd963ea105b66e0ede58d4747608e.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sci-Fi UI SFX Pack 2/Sci-Fi UI SFX Pack 2/OGG/Robot - 5.ogg"
+dest_files=["res://.godot/imported/Robot - 5.ogg-583dd963ea105b66e0ede58d4747608e.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://deau42u5vso3q"
+path="res://.godot/imported/Player Grunt - 1.wav-0d6caa1afbbb77d4479a7250828c1625.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 3/Game Sound Effects Pack 3/WAV/Player Grunt - 1.wav"
+dest_files=["res://.godot/imported/Player Grunt - 1.wav-0d6caa1afbbb77d4479a7250828c1625.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

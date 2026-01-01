@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://uyg5wjjhfktp"
+path="res://.godot/imported/Monster 11 Attack - 1.mp3-21f521e325496edd5c9c7dc08e03f42f.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 2 - Universal Sound Effects/Monster Sound Effects 2 - Universal Sound Effects/MP3/Monster 11 Attack - 1.mp3"
+dest_files=["res://.godot/imported/Monster 11 Attack - 1.mp3-21f521e325496edd5c9c7dc08e03f42f.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

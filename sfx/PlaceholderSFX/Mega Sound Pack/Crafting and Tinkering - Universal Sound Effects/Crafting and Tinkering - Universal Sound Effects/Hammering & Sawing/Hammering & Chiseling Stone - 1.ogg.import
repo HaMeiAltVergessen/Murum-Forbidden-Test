@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://cuw5ooa5txnli"
+path="res://.godot/imported/Hammering & Chiseling Stone - 1.ogg-cae9c5b78858edb735eef968e89aa6fd.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Crafting and Tinkering - Universal Sound Effects/Crafting and Tinkering - Universal Sound Effects/Hammering & Sawing/Hammering & Chiseling Stone - 1.ogg"
+dest_files=["res://.godot/imported/Hammering & Chiseling Stone - 1.ogg-cae9c5b78858edb735eef968e89aa6fd.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

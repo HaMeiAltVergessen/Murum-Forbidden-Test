@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://b4cn2axyrmq5t"
+path="res://.godot/imported/Wand Swing - 1.wav-707be4201f07f24a94cfd31a21242c25.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 3/Game Sound Effects Pack 3/WAV/Wand Swing - 1.wav"
+dest_files=["res://.godot/imported/Wand Swing - 1.wav-707be4201f07f24a94cfd31a21242c25.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

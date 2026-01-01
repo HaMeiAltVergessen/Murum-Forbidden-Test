@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://betxfx7migctk"
+path="res://.godot/imported/Keyboard SFX - 1.mp3-4960a6525d4d481c7448c1564007fbd8.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sci-Fi UI SFX Pack 2/Sci-Fi UI SFX Pack 2/MP3/Keyboard SFX - 1.mp3"
+dest_files=["res://.godot/imported/Keyboard SFX - 1.mp3-4960a6525d4d481c7448c1564007fbd8.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

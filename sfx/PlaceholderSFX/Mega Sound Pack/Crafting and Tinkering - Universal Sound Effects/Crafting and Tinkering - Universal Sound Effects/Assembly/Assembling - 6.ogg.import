@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://c6h7ybocu1yhv"
+path="res://.godot/imported/Assembling - 6.ogg-536e22b534a0df1cc403086c2aa5d579.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Crafting and Tinkering - Universal Sound Effects/Crafting and Tinkering - Universal Sound Effects/Assembly/Assembling - 6.ogg"
+dest_files=["res://.godot/imported/Assembling - 6.ogg-536e22b534a0df1cc403086c2aa5d579.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

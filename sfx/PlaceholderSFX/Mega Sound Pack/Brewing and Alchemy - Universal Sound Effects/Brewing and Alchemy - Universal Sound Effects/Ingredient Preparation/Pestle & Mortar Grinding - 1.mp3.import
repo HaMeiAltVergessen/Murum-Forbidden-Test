@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cagy3hovyirny"
+path="res://.godot/imported/Pestle & Mortar Grinding - 1.mp3-278ce555c25736fdadf0c541fb60f065.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Brewing and Alchemy - Universal Sound Effects/Brewing and Alchemy - Universal Sound Effects/Ingredient Preparation/Pestle & Mortar Grinding - 1.mp3"
+dest_files=["res://.godot/imported/Pestle & Mortar Grinding - 1.mp3-278ce555c25736fdadf0c541fb60f065.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

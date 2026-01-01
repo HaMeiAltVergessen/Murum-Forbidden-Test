@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://cja7a7a7gyugl"
+path="res://.godot/imported/Monster Other - 7.ogg-7249dde6141d95c6e57783ccd9bc60db.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 1 - Universal Sound Effects/Monster Sound Effects 1 - Universal Sound Effects/OGG/Monster Other - 7.ogg"
+dest_files=["res://.godot/imported/Monster Other - 7.ogg-7249dde6141d95c6e57783ccd9bc60db.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

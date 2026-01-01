@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://datnhknxirrw6"
+path="res://.godot/imported/Monster 4 Death - 1.mp3-23263b6015b56c1407d0bef373f63308.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 1 - Universal Sound Effects/Monster Sound Effects 1 - Universal Sound Effects/MP3/Monster 4 Death - 1.mp3"
+dest_files=["res://.godot/imported/Monster 4 Death - 1.mp3-23263b6015b56c1407d0bef373f63308.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

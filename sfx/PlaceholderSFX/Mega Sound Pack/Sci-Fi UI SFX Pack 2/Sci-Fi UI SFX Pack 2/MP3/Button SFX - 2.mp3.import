@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://chmnrx1s2t8f"
+path="res://.godot/imported/Button SFX - 2.mp3-2e3123c9aa69ceef416042f79d709e77.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sci-Fi UI SFX Pack 2/Sci-Fi UI SFX Pack 2/MP3/Button SFX - 2.mp3"
+dest_files=["res://.godot/imported/Button SFX - 2.mp3-2e3123c9aa69ceef416042f79d709e77.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

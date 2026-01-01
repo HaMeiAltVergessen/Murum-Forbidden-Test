@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://d3l2x8tm1fpv8"
+path="res://.godot/imported/Crate Opening 2.wav-a05c07d05df06324d68d47f097a9fe4e.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 4/Game Sound Effects Pack 4/WAV/Crate Opening 2.wav"
+dest_files=["res://.godot/imported/Crate Opening 2.wav-a05c07d05df06324d68d47f097a9fe4e.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

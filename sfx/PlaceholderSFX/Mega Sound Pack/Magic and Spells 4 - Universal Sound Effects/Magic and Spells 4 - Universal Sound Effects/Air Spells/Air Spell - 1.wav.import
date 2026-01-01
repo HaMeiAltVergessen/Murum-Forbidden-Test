@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://baudjxs5q3vsr"
+path="res://.godot/imported/Air Spell - 1.wav-3982d48805e03491ca2b0125d18f3d8e.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Magic and Spells 4 - Universal Sound Effects/Magic and Spells 4 - Universal Sound Effects/Air Spells/Air Spell - 1.wav"
+dest_files=["res://.godot/imported/Air Spell - 1.wav-3982d48805e03491ca2b0125d18f3d8e.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dfy62xgk4xlr7"
+path="res://.godot/imported/Mineral Mining - 6.mp3-d75a102b01eb2c4fed8e27e4130ef809.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Woodcutting & Mining SFX Pack 1/Woodcutting & Mining SFX Pack 1/MP3/Mineral Mining - 6.mp3"
+dest_files=["res://.godot/imported/Mineral Mining - 6.mp3-d75a102b01eb2c4fed8e27e4130ef809.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://d01x2m06ser8l"
+path="res://.godot/imported/Cutting Stone - 2 (Single 1).ogg-910283b75df3a3d089286aa557eba757.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Crafting and Tinkering - Universal Sound Effects/Crafting and Tinkering - Universal Sound Effects/Cutting & Shaping/Cutting Stone - 2 (Single 1).ogg"
+dest_files=["res://.godot/imported/Cutting Stone - 2 (Single 1).ogg-910283b75df3a3d089286aa557eba757.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

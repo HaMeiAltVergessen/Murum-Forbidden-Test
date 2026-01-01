@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dd4tw3x6jvm4s"
+path="res://.godot/imported/Monster 32 - 3.mp3-92fda8da603889c53e65b9c581df28d2.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 3/Monster Sound Effects 3/Monster Sound Effects 3/MP3/Monster 32 - 3.mp3"
+dest_files=["res://.godot/imported/Monster 32 - 3.mp3-92fda8da603889c53e65b9c581df28d2.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

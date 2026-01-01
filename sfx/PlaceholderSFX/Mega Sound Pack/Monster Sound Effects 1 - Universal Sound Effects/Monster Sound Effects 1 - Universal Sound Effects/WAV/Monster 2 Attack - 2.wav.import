@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://cbpsy4e1eaob3"
+path="res://.godot/imported/Monster 2 Attack - 2.wav-7db2bf0aae8a3cc3939e9ff2c9f712e0.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 1 - Universal Sound Effects/Monster Sound Effects 1 - Universal Sound Effects/WAV/Monster 2 Attack - 2.wav"
+dest_files=["res://.godot/imported/Monster 2 Attack - 2.wav-7db2bf0aae8a3cc3939e9ff2c9f712e0.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

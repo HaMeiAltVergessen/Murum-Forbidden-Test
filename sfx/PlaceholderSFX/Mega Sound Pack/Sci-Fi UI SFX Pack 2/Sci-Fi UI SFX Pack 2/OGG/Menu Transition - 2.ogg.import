@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://btee7wtqwolaw"
+path="res://.godot/imported/Menu Transition - 2.ogg-70ae231f35ca9b591d53915863e7c50c.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sci-Fi UI SFX Pack 2/Sci-Fi UI SFX Pack 2/OGG/Menu Transition - 2.ogg"
+dest_files=["res://.godot/imported/Menu Transition - 2.ogg-70ae231f35ca9b591d53915863e7c50c.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

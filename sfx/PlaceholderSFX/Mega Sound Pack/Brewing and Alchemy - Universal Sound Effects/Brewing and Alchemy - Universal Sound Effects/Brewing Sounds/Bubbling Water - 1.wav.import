@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://lxed0ki1k5r6"
+path="res://.godot/imported/Bubbling Water - 1.wav-29ca1f1d0e9d2ccba8b505e35a22aba6.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Brewing and Alchemy - Universal Sound Effects/Brewing and Alchemy - Universal Sound Effects/Brewing Sounds/Bubbling Water - 1.wav"
+dest_files=["res://.godot/imported/Bubbling Water - 1.wav-29ca1f1d0e9d2ccba8b505e35a22aba6.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dy8pls5qg8hut"
+path="res://.godot/imported/Skill 25.mp3-f01b6742597c3db2c2db9bd3020400a1.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Skills Sound Effects Pack 1/Skills Sound Effects Pack 1/Skill 25.mp3"
+dest_files=["res://.godot/imported/Skill 25.mp3-f01b6742597c3db2c2db9bd3020400a1.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

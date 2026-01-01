@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://b4obx3nyogwqt"
+path="res://.godot/imported/Monster 10 Death - 1.wav-4b42e54ed4e2aeff29d4deba2fc1504b.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 2 - Universal Sound Effects/Monster Sound Effects 2 - Universal Sound Effects/WAV/Monster 10 Death - 1.wav"
+dest_files=["res://.godot/imported/Monster 10 Death - 1.wav-4b42e54ed4e2aeff29d4deba2fc1504b.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

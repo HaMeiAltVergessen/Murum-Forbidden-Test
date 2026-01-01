@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://r0eikv4kag16"
+path="res://.godot/imported/Scissor Cut - 4.mp3-a0720f4a1bcc47598f7b45b3abcaa809.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Crafting and Tinkering - Universal Sound Effects/Crafting and Tinkering - Universal Sound Effects/Cutting & Shaping/Scissor Cut - 4.mp3"
+dest_files=["res://.godot/imported/Scissor Cut - 4.mp3-a0720f4a1bcc47598f7b45b3abcaa809.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

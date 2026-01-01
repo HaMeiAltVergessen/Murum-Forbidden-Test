@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://21pocyg00vxj"
+path="res://.godot/imported/Monster 22 Attack - 2.mp3-ed9afb57b52ed17dd365b8fcf9a2f116.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 2 - Universal Sound Effects/Monster Sound Effects 2 - Universal Sound Effects/MP3/Monster 22 Attack - 2.mp3"
+dest_files=["res://.godot/imported/Monster 22 Attack - 2.mp3-ed9afb57b52ed17dd365b8fcf9a2f116.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

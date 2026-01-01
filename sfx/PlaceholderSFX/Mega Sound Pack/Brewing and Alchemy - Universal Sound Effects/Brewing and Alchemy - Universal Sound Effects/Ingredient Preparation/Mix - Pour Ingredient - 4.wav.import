@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://do15ou5fha2n"
+path="res://.godot/imported/Mix - Pour Ingredient - 4.wav-bf87d5dcf6355222f27ab935a366b88d.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Brewing and Alchemy - Universal Sound Effects/Brewing and Alchemy - Universal Sound Effects/Ingredient Preparation/Mix - Pour Ingredient - 4.wav"
+dest_files=["res://.godot/imported/Mix - Pour Ingredient - 4.wav-bf87d5dcf6355222f27ab935a366b88d.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

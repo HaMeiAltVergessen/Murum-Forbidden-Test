@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bgkgdwuf3syac"
+path="res://.godot/imported/Pour Liquid - 3.mp3-0a9f5c1fd00bae48cf1cb812f2a88348.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Brewing and Alchemy - Universal Sound Effects/Brewing and Alchemy - Universal Sound Effects/Brewing Sounds/Pour Liquid - 3.mp3"
+dest_files=["res://.godot/imported/Pour Liquid - 3.mp3-0a9f5c1fd00bae48cf1cb812f2a88348.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

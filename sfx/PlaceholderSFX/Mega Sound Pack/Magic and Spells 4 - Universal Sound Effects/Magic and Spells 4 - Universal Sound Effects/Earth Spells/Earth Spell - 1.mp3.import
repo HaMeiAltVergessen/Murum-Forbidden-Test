@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://c7pb55fwbba7n"
+path="res://.godot/imported/Earth Spell - 1.mp3-eb16158184143ed9d4ae62b29fe0ac44.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Magic and Spells 4 - Universal Sound Effects/Magic and Spells 4 - Universal Sound Effects/Earth Spells/Earth Spell - 1.mp3"
+dest_files=["res://.godot/imported/Earth Spell - 1.mp3-eb16158184143ed9d4ae62b29fe0ac44.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cii3l04w5tpgw"
+path="res://.godot/imported/Keyboard 2.mp3-82b28ed2e97092547820ad1cbe422e72.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 4/Game Sound Effects Pack 4/MP3/Keyboard 2.mp3"
+dest_files=["res://.godot/imported/Keyboard 2.mp3-82b28ed2e97092547820ad1cbe422e72.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

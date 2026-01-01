@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://b8gwikrdw3ebg"
+path="res://.godot/imported/Assembling - 3.mp3-26c0c1d1fcd0eecd3ebd858e5a3acf93.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Crafting and Tinkering - Universal Sound Effects/Crafting and Tinkering - Universal Sound Effects/Assembly/Assembling - 3.mp3"
+dest_files=["res://.godot/imported/Assembling - 3.mp3-26c0c1d1fcd0eecd3ebd858e5a3acf93.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

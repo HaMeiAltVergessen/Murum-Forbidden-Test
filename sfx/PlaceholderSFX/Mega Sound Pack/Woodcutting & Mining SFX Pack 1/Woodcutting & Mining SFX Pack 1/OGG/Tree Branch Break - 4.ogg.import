@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://b1bhschhev3yj"
+path="res://.godot/imported/Tree Branch Break - 4.ogg-8f15fd22dd4e0e5a1efef6fec4127982.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Woodcutting & Mining SFX Pack 1/Woodcutting & Mining SFX Pack 1/OGG/Tree Branch Break - 4.ogg"
+dest_files=["res://.godot/imported/Tree Branch Break - 4.ogg-8f15fd22dd4e0e5a1efef6fec4127982.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

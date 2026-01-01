@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://cokc3tlmo1a17"
+path="res://.godot/imported/Monster 32 - 3.ogg-e5b27f1bdee9a40a2124e76635dac9ac.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 3/Monster Sound Effects 3/Monster Sound Effects 3/OGG/Monster 32 - 3.ogg"
+dest_files=["res://.godot/imported/Monster 32 - 3.ogg-e5b27f1bdee9a40a2124e76635dac9ac.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

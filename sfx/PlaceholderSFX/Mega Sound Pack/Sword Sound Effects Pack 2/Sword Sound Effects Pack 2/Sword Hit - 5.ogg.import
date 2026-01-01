@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bqf31i2jxd357"
+path="res://.godot/imported/Sword Hit - 5.ogg-ada8fd233849a8b2040d1e2adc313020.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sword Sound Effects Pack 2/Sword Sound Effects Pack 2/Sword Hit - 5.ogg"
+dest_files=["res://.godot/imported/Sword Hit - 5.ogg-ada8fd233849a8b2040d1e2adc313020.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

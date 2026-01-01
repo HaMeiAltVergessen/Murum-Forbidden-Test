@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://cvcofvk62n31i"
+path="res://.godot/imported/Hammer - 2.ogg-1f700ebbb0e6eb347a3e2b911656a935.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Crafting and Tinkering - Universal Sound Effects/Crafting and Tinkering - Universal Sound Effects/Hammering & Sawing/Hammer - 2.ogg"
+dest_files=["res://.godot/imported/Hammer - 2.ogg-1f700ebbb0e6eb347a3e2b911656a935.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://cihc5oiy8wbkw"
+path="res://.godot/imported/Drop & Fizz - 1.ogg-bd86d967112dd6107f3ec19526cd336a.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Brewing and Alchemy - Universal Sound Effects/Brewing and Alchemy - Universal Sound Effects/Brewing Sounds/Drop & Fizz - 1.ogg"
+dest_files=["res://.godot/imported/Drop & Fizz - 1.ogg-bd86d967112dd6107f3ec19526cd336a.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

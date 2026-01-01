@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://c7pw48h3oak54"
+path="res://.godot/imported/Monster 6 Death - 1.ogg-c809d44c2133ec3d24d4266a6918b0f2.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 1 - Universal Sound Effects/Monster Sound Effects 1 - Universal Sound Effects/OGG/Monster 6 Death - 1.ogg"
+dest_files=["res://.godot/imported/Monster 6 Death - 1.ogg-c809d44c2133ec3d24d4266a6918b0f2.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

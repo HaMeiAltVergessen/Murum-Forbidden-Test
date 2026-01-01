@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://h4hxfc8dfiji"
+path="res://.godot/imported/Magic Spell Pack 7 - 8.mp3-f55f42abf509d2e11520d3c179f2d4bf.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Magic & Spells SFX 7/Magic & Spells SFX 7/MP3/Magic Spell Pack 7 - 8.mp3"
+dest_files=["res://.godot/imported/Magic Spell Pack 7 - 8.mp3-f55f42abf509d2e11520d3c179f2d4bf.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

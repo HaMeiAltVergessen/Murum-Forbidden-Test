@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://brdplpnl61m4b"
+path="res://.godot/imported/Slime Die - 2.mp3-1428a818dc4a75664e546266200165de.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 4/Game Sound Effects Pack 4/MP3/Slime Die - 2.mp3"
+dest_files=["res://.godot/imported/Slime Die - 2.mp3-1428a818dc4a75664e546266200165de.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bp4m6uahg3ao"
+path="res://.godot/imported/Boiling Cauldron - 1.mp3-71c6b3ba3c4bf056c4f474b477ed3d0e.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Brewing and Alchemy - Universal Sound Effects/Brewing and Alchemy - Universal Sound Effects/Brewing Sounds/Boiling Cauldron - 1.mp3"
+dest_files=["res://.godot/imported/Boiling Cauldron - 1.mp3-71c6b3ba3c4bf056c4f474b477ed3d0e.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

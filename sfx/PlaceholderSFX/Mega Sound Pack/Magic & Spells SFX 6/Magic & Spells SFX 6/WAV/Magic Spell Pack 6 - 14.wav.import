@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://c33n322bhxsdg"
+path="res://.godot/imported/Magic Spell Pack 6 - 14.wav-ee0449c4343ccb315ea4713d4ab6c01e.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Magic & Spells SFX 6/Magic & Spells SFX 6/WAV/Magic Spell Pack 6 - 14.wav"
+dest_files=["res://.godot/imported/Magic Spell Pack 6 - 14.wav-ee0449c4343ccb315ea4713d4ab6c01e.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

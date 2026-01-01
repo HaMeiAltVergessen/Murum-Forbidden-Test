@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://vb7rhkgrik2f"
+path="res://.godot/imported/Metal Shaping - 2.ogg-de92e6a3364f983de1f35ff249b07f76.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Crafting and Tinkering - Universal Sound Effects/Crafting and Tinkering - Universal Sound Effects/Metal Work/Metal Shaping - 2.ogg"
+dest_files=["res://.godot/imported/Metal Shaping - 2.ogg-de92e6a3364f983de1f35ff249b07f76.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

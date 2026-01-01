@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bemjwiiddkqk3"
+path="res://.godot/imported/Monster 5 Death - 1.ogg-ecffbba17869de8af25292aa59ee0f5c.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 1 - Universal Sound Effects/Monster Sound Effects 1 - Universal Sound Effects/OGG/Monster 5 Death - 1.ogg"
+dest_files=["res://.godot/imported/Monster 5 Death - 1.ogg-ecffbba17869de8af25292aa59ee0f5c.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

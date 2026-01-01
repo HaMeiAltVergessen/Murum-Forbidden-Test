@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://ck48eioayluy8"
+path="res://.godot/imported/Sword Swing - 4.ogg-d35a9d0d436aad7a38fd8600b626c891.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 3/Game Sound Effects Pack 3/OGG/Sword Swing - 4.ogg"
+dest_files=["res://.godot/imported/Sword Swing - 4.ogg-d35a9d0d436aad7a38fd8600b626c891.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

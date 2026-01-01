@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://bt0f2ba4o6y4s"
+path="res://.godot/imported/Fizzing Liquid - 4.wav-b710b059d98bba718da94d6694800568.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Brewing and Alchemy - Universal Sound Effects/Brewing and Alchemy - Universal Sound Effects/Brewing Sounds/Fizzing Liquid - 4.wav"
+dest_files=["res://.godot/imported/Fizzing Liquid - 4.wav-b710b059d98bba718da94d6694800568.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

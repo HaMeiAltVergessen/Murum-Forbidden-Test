@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://moogrspwnsb1"
+path="res://.godot/imported/Monster 7 Attack - 2.ogg-5277833ed07e9f4edd0619fa3990eaad.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 1 - Universal Sound Effects/Monster Sound Effects 1 - Universal Sound Effects/OGG/Monster 7 Attack - 2.ogg"
+dest_files=["res://.godot/imported/Monster 7 Attack - 2.ogg-5277833ed07e9f4edd0619fa3990eaad.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

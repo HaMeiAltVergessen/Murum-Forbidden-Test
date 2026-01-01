@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://g8s5nxe3kah1"
+path="res://.godot/imported/Monster 12 Attack - 2.ogg-0d9718014a0f209132db1097466da29d.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 2 - Universal Sound Effects/Monster Sound Effects 2 - Universal Sound Effects/OGG/Monster 12 Attack - 2.ogg"
+dest_files=["res://.godot/imported/Monster 12 Attack - 2.ogg-0d9718014a0f209132db1097466da29d.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://ctl5d1n362ajr"
+path="res://.godot/imported/Water Spell 1.ogg-839e6076125b1e1abee8e3e1a5627f4c.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Magic and Spells 4 - Universal Sound Effects/Magic and Spells 4 - Universal Sound Effects/Water Spells/Water Spell 1.ogg"
+dest_files=["res://.godot/imported/Water Spell 1.ogg-839e6076125b1e1abee8e3e1a5627f4c.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

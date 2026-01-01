@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://vmj61vpoey31"
+path="res://.godot/imported/Distiller Dripping - 3.ogg-b1813ebe2c3472ae78dc28da853bdbbf.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Brewing and Alchemy - Universal Sound Effects/Brewing and Alchemy - Universal Sound Effects/Brewing Sounds/Distiller Dripping - 3.ogg"
+dest_files=["res://.godot/imported/Distiller Dripping - 3.ogg-b1813ebe2c3472ae78dc28da853bdbbf.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

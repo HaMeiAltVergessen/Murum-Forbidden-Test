@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://q68omka4hv2e"
+path="res://.godot/imported/Player Grunt - 4.ogg-6202cdbc2e68834b9bce198f339264ff.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 3/Game Sound Effects Pack 3/OGG/Player Grunt - 4.ogg"
+dest_files=["res://.godot/imported/Player Grunt - 4.ogg-6202cdbc2e68834b9bce198f339264ff.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

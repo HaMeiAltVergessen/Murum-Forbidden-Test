@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://sj668otomopw"
+path="res://.godot/imported/Magic Spell 11.wav-1b4d2888c5a1d044730e8569e98af4ed.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Magic and Spells 5 - Universal Sound Effects (1)/Magic and Spells 5 - Universal Sound Effects/WAV/Magic Spell 11.wav"
+dest_files=["res://.godot/imported/Magic Spell 11.wav-1b4d2888c5a1d044730e8569e98af4ed.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

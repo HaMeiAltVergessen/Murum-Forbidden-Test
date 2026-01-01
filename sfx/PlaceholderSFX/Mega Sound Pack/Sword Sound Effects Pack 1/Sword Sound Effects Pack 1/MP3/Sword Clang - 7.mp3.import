@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bh2ap2pniuqny"
+path="res://.godot/imported/Sword Clang - 7.mp3-b0eebccdf639a00645906c07dd4274fc.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sword Sound Effects Pack 1/Sword Sound Effects Pack 1/MP3/Sword Clang - 7.mp3"
+dest_files=["res://.godot/imported/Sword Clang - 7.mp3-b0eebccdf639a00645906c07dd4274fc.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

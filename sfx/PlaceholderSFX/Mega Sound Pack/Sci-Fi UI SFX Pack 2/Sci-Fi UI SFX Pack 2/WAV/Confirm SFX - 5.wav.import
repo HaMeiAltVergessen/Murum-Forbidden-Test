@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://carbrg7esowu2"
+path="res://.godot/imported/Confirm SFX - 5.wav-770093a875ff3d58171f957f244b8df9.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sci-Fi UI SFX Pack 2/Sci-Fi UI SFX Pack 2/WAV/Confirm SFX - 5.wav"
+dest_files=["res://.godot/imported/Confirm SFX - 5.wav-770093a875ff3d58171f957f244b8df9.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

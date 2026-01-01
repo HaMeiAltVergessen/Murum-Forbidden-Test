@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://cwyohyyyv7j4t"
+path="res://.godot/imported/Menu Transition - 1.wav-7ccf7115fccc89c9bc11855be5d10d9f.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sci-Fi UI SFX Pack 2/Sci-Fi UI SFX Pack 2/WAV/Menu Transition - 1.wav"
+dest_files=["res://.godot/imported/Menu Transition - 1.wav-7ccf7115fccc89c9bc11855be5d10d9f.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

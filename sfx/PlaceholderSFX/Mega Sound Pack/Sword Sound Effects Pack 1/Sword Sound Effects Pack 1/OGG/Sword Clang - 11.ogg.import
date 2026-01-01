@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bs3sndf2vh740"
+path="res://.godot/imported/Sword Clang - 11.ogg-06d62040448c5a3adea8d232b3d08fcd.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sword Sound Effects Pack 1/Sword Sound Effects Pack 1/OGG/Sword Clang - 11.ogg"
+dest_files=["res://.godot/imported/Sword Clang - 11.ogg-06d62040448c5a3adea8d232b3d08fcd.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

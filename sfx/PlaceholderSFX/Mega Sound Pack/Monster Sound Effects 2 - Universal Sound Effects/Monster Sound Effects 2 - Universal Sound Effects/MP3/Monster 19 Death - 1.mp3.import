@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dj1pwwi4o7p7q"
+path="res://.godot/imported/Monster 19 Death - 1.mp3-08c808ec48b6dd0875086628cb9781a7.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 2 - Universal Sound Effects/Monster Sound Effects 2 - Universal Sound Effects/MP3/Monster 19 Death - 1.mp3"
+dest_files=["res://.godot/imported/Monster 19 Death - 1.mp3-08c808ec48b6dd0875086628cb9781a7.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

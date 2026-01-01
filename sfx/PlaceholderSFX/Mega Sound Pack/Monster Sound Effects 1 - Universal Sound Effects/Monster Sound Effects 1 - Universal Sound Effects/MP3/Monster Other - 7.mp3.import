@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://co5kok0ewrlya"
+path="res://.godot/imported/Monster Other - 7.mp3-acbab7ca9867145fae6a793b1733ef8f.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 1 - Universal Sound Effects/Monster Sound Effects 1 - Universal Sound Effects/MP3/Monster Other - 7.mp3"
+dest_files=["res://.godot/imported/Monster Other - 7.mp3-acbab7ca9867145fae6a793b1733ef8f.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

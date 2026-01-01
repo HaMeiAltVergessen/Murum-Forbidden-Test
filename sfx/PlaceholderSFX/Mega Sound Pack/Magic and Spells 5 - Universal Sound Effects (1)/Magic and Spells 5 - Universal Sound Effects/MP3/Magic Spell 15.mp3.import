@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://b5q0aj30g43b2"
+path="res://.godot/imported/Magic Spell 15.mp3-8dc41d93a7ad855072d44e5b35b8df36.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Magic and Spells 5 - Universal Sound Effects (1)/Magic and Spells 5 - Universal Sound Effects/MP3/Magic Spell 15.mp3"
+dest_files=["res://.godot/imported/Magic Spell 15.mp3-8dc41d93a7ad855072d44e5b35b8df36.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

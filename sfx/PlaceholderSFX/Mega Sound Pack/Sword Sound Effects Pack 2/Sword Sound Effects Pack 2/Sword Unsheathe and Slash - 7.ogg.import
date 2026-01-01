@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://cb6bor4owjbir"
+path="res://.godot/imported/Sword Unsheathe and Slash - 7.ogg-c99de241cb3c580031a84f151176da08.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sword Sound Effects Pack 2/Sword Sound Effects Pack 2/Sword Unsheathe and Slash - 7.ogg"
+dest_files=["res://.godot/imported/Sword Unsheathe and Slash - 7.ogg-c99de241cb3c580031a84f151176da08.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

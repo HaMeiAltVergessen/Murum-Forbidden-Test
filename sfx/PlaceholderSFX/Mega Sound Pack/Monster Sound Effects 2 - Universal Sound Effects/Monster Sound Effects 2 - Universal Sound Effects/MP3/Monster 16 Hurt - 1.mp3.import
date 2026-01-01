@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cb4ms3oj0xogl"
+path="res://.godot/imported/Monster 16 Hurt - 1.mp3-04842d88080aac30675e284fcb117de9.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 2 - Universal Sound Effects/Monster Sound Effects 2 - Universal Sound Effects/MP3/Monster 16 Hurt - 1.mp3"
+dest_files=["res://.godot/imported/Monster 16 Hurt - 1.mp3-04842d88080aac30675e284fcb117de9.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

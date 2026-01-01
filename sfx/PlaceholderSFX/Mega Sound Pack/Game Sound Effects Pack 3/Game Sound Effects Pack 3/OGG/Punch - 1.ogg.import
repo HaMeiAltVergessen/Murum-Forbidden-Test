@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bdie7a5rc42m6"
+path="res://.godot/imported/Punch - 1.ogg-b87f39f62de5184233076ea50f615bcd.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 3/Game Sound Effects Pack 3/OGG/Punch - 1.ogg"
+dest_files=["res://.godot/imported/Punch - 1.ogg-b87f39f62de5184233076ea50f615bcd.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

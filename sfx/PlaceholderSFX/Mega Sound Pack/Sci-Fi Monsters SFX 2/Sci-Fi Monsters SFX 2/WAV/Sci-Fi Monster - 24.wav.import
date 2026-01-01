@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://c7hxxxq3bwexf"
+path="res://.godot/imported/Sci-Fi Monster - 24.wav-6146a6360c543d5c37a8bf83c3307d2e.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sci-Fi Monsters SFX 2/Sci-Fi Monsters SFX 2/WAV/Sci-Fi Monster - 24.wav"
+dest_files=["res://.godot/imported/Sci-Fi Monster - 24.wav-6146a6360c543d5c37a8bf83c3307d2e.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

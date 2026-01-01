@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://crh241bk8ebbo"
+path="res://.godot/imported/Sword Hit - 4.mp3-ce8791e8974d3552c84609b395dc01a4.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sword Sound Effects Pack 2/Sword Sound Effects Pack 2/Sword Hit - 4.mp3"
+dest_files=["res://.godot/imported/Sword Hit - 4.mp3-ce8791e8974d3552c84609b395dc01a4.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

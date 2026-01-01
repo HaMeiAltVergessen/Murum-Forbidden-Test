@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://rvnqt3cb3ak3"
+path="res://.godot/imported/Bubbling Water - 1.ogg-68e4c58e3c00787694c7ee8e4c3ac824.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Brewing and Alchemy - Universal Sound Effects/Brewing and Alchemy - Universal Sound Effects/Brewing Sounds/Bubbling Water - 1.ogg"
+dest_files=["res://.godot/imported/Bubbling Water - 1.ogg-68e4c58e3c00787694c7ee8e4c3ac824.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

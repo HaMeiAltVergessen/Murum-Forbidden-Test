@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://c5ae1ureorviq"
+path="res://.godot/imported/Hammering Metal - 4.ogg-e9d7b799f991e49ce5f93ebc45341920.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Crafting and Tinkering - Universal Sound Effects/Crafting and Tinkering - Universal Sound Effects/Metal Work/Hammering Metal - 4.ogg"
+dest_files=["res://.godot/imported/Hammering Metal - 4.ogg-e9d7b799f991e49ce5f93ebc45341920.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://dgt66rs6qy2yr"
+path="res://.godot/imported/Hand-Mix Ingredients - 1.ogg-e83842c7cb2d87037456f6bdd2bcdb5f.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Brewing and Alchemy - Universal Sound Effects/Brewing and Alchemy - Universal Sound Effects/Ingredient Preparation/Hand-Mix Ingredients - 1.ogg"
+dest_files=["res://.godot/imported/Hand-Mix Ingredients - 1.ogg-e83842c7cb2d87037456f6bdd2bcdb5f.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

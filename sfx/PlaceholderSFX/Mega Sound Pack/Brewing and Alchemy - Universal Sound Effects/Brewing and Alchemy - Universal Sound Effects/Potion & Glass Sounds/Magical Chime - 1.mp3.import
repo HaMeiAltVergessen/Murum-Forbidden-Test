@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://btxof77uhlb4x"
+path="res://.godot/imported/Magical Chime - 1.mp3-5c701c4a5af61815e2e662c24e8a6927.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Brewing and Alchemy - Universal Sound Effects/Brewing and Alchemy - Universal Sound Effects/Potion & Glass Sounds/Magical Chime - 1.mp3"
+dest_files=["res://.godot/imported/Magical Chime - 1.mp3-5c701c4a5af61815e2e662c24e8a6927.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

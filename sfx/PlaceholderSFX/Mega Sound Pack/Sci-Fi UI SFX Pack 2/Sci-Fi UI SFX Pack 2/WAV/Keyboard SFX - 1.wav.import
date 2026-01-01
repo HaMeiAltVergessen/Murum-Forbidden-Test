@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://bvi2orhg52o0l"
+path="res://.godot/imported/Keyboard SFX - 1.wav-e21eabed1351422ab2ce6c3cf969a02d.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sci-Fi UI SFX Pack 2/Sci-Fi UI SFX Pack 2/WAV/Keyboard SFX - 1.wav"
+dest_files=["res://.godot/imported/Keyboard SFX - 1.wav-e21eabed1351422ab2ce6c3cf969a02d.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

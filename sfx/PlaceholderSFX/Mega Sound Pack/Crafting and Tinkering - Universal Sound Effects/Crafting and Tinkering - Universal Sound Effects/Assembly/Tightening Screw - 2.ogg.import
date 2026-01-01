@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://ixmhxsf3jaay"
+path="res://.godot/imported/Tightening Screw - 2.ogg-50688d97c3eaa02a3e0867e070560dfd.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Crafting and Tinkering - Universal Sound Effects/Crafting and Tinkering - Universal Sound Effects/Assembly/Tightening Screw - 2.ogg"
+dest_files=["res://.godot/imported/Tightening Screw - 2.ogg-50688d97c3eaa02a3e0867e070560dfd.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://qnseb32s56l3"
+path="res://.godot/imported/Monster 10 Attack - 1.wav-b81d0d4ef085a15b945328660775aae2.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 2 - Universal Sound Effects/Monster Sound Effects 2 - Universal Sound Effects/WAV/Monster 10 Attack - 1.wav"
+dest_files=["res://.godot/imported/Monster 10 Attack - 1.wav-b81d0d4ef085a15b945328660775aae2.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

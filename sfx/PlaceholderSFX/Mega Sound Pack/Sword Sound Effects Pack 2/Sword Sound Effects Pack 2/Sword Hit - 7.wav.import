@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://bn6fgyotvaub3"
+path="res://.godot/imported/Sword Hit - 7.wav-9a1e0400be9e919d0eb3a44e32fb32fc.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sword Sound Effects Pack 2/Sword Sound Effects Pack 2/Sword Hit - 7.wav"
+dest_files=["res://.godot/imported/Sword Hit - 7.wav-9a1e0400be9e919d0eb3a44e32fb32fc.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

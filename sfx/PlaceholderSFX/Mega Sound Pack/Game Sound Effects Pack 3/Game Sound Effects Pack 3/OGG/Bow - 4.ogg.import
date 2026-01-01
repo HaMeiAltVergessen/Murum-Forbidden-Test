@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://dpliqpekg7ipl"
+path="res://.godot/imported/Bow - 4.ogg-4009da5dfe5af657dbfee5020074c2fa.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 3/Game Sound Effects Pack 3/OGG/Bow - 4.ogg"
+dest_files=["res://.godot/imported/Bow - 4.ogg-4009da5dfe5af657dbfee5020074c2fa.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

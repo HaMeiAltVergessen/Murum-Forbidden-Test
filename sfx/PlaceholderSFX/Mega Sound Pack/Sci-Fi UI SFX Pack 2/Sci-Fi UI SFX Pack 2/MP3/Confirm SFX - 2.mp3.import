@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cxhyg7okoawif"
+path="res://.godot/imported/Confirm SFX - 2.mp3-01503e21a40b154cb08690d9af9c9a56.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sci-Fi UI SFX Pack 2/Sci-Fi UI SFX Pack 2/MP3/Confirm SFX - 2.mp3"
+dest_files=["res://.godot/imported/Confirm SFX - 2.mp3-01503e21a40b154cb08690d9af9c9a56.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

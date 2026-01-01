@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://cc2dm7a65l3u4"
+path="res://.godot/imported/Sword Special - 6.ogg-982867d291b81aeedce2bc7fee849ca3.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sword Sound Effects Pack 1/Sword Sound Effects Pack 1/OGG/Sword Special - 6.ogg"
+dest_files=["res://.godot/imported/Sword Special - 6.ogg-982867d291b81aeedce2bc7fee849ca3.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

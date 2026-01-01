@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://bh3xii02pe61q"
+path="res://.godot/imported/Water Spell 2.wav-2450d9dbe0798b80e533dc554a3a7885.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Magic and Spells 4 - Universal Sound Effects/Magic and Spells 4 - Universal Sound Effects/Water Spells/Water Spell 2.wav"
+dest_files=["res://.godot/imported/Water Spell 2.wav-2450d9dbe0798b80e533dc554a3a7885.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

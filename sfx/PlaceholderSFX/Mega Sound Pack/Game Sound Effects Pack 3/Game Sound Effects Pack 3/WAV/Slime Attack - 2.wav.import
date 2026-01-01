@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://clyrwtx5sy22i"
+path="res://.godot/imported/Slime Attack - 2.wav-c0a0521f11f387c39af20a7653b8b999.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 3/Game Sound Effects Pack 3/WAV/Slime Attack - 2.wav"
+dest_files=["res://.godot/imported/Slime Attack - 2.wav-c0a0521f11f387c39af20a7653b8b999.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

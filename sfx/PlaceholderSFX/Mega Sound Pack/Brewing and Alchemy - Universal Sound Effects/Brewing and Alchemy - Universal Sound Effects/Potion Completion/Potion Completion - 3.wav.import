@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://byrbyrfxfq6av"
+path="res://.godot/imported/Potion Completion - 3.wav-aeae6bbee2f3a6ba71c2aa4a5a833847.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Brewing and Alchemy - Universal Sound Effects/Brewing and Alchemy - Universal Sound Effects/Potion Completion/Potion Completion - 3.wav"
+dest_files=["res://.godot/imported/Potion Completion - 3.wav-aeae6bbee2f3a6ba71c2aa4a5a833847.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

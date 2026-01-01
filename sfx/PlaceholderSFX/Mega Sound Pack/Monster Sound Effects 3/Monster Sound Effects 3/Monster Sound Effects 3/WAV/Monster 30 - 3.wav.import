@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://chbjq7q3nc56"
+path="res://.godot/imported/Monster 30 - 3.wav-89ec2062cab732555f76fe97d7e68ab9.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 3/Monster Sound Effects 3/Monster Sound Effects 3/WAV/Monster 30 - 3.wav"
+dest_files=["res://.godot/imported/Monster 30 - 3.wav-89ec2062cab732555f76fe97d7e68ab9.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

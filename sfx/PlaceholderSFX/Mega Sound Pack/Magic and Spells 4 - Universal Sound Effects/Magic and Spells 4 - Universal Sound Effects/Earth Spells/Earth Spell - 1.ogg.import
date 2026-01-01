@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://dyb0ssb3hofcj"
+path="res://.godot/imported/Earth Spell - 1.ogg-bac7d827242882d8334beee9d211c925.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Magic and Spells 4 - Universal Sound Effects/Magic and Spells 4 - Universal Sound Effects/Earth Spells/Earth Spell - 1.ogg"
+dest_files=["res://.godot/imported/Earth Spell - 1.ogg-bac7d827242882d8334beee9d211c925.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

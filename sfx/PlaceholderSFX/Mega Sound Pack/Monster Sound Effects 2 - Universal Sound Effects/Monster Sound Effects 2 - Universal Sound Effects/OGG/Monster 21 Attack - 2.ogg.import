@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://c04bjsm471xk7"
+path="res://.godot/imported/Monster 21 Attack - 2.ogg-c8bb2d2c96d11679c2d23b538b845f84.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 2 - Universal Sound Effects/Monster Sound Effects 2 - Universal Sound Effects/OGG/Monster 21 Attack - 2.ogg"
+dest_files=["res://.godot/imported/Monster 21 Attack - 2.ogg-c8bb2d2c96d11679c2d23b538b845f84.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

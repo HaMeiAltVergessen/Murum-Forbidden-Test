@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://p6ba1p46umrs"
+path="res://.godot/imported/Monster 24 - 2.mp3-80fd3421ecfe70233fe38da92c5d8058.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 3/Monster Sound Effects 3/Monster Sound Effects 3/MP3/Monster 24 - 2.mp3"
+dest_files=["res://.godot/imported/Monster 24 - 2.mp3-80fd3421ecfe70233fe38da92c5d8058.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

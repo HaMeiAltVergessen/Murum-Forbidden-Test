@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://ds36o4maico2t"
+path="res://.godot/imported/Tightening Screw - 2.mp3-09b98535b42d74f17673365f1a56ab85.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Crafting and Tinkering - Universal Sound Effects/Crafting and Tinkering - Universal Sound Effects/Assembly/Tightening Screw - 2.mp3"
+dest_files=["res://.godot/imported/Tightening Screw - 2.mp3-09b98535b42d74f17673365f1a56ab85.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

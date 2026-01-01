@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://u1dnj701d7ss"
+path="res://.godot/imported/CPU SFX - 2.mp3-07e5d82fa88103908084a9a5b07aa2e5.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sci-Fi UI SFX Pack 2/Sci-Fi UI SFX Pack 2/MP3/CPU SFX - 2.mp3"
+dest_files=["res://.godot/imported/CPU SFX - 2.mp3-07e5d82fa88103908084a9a5b07aa2e5.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

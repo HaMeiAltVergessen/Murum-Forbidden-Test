@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://bd37rd5ip14yg"
+path="res://.godot/imported/Monster 19 Hurt - 1.wav-48da3041f053bf04e733e4d1525eab28.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 2 - Universal Sound Effects/Monster Sound Effects 2 - Universal Sound Effects/WAV/Monster 19 Hurt - 1.wav"
+dest_files=["res://.godot/imported/Monster 19 Hurt - 1.wav-48da3041f053bf04e733e4d1525eab28.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

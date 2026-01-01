@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://duy41a8nhhew1"
+path="res://.godot/imported/Crate Opening 1.mp3-79f4fc897046a14d0d7ec7ea55b8d619.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 4/Game Sound Effects Pack 4/MP3/Crate Opening 1.mp3"
+dest_files=["res://.godot/imported/Crate Opening 1.mp3-79f4fc897046a14d0d7ec7ea55b8d619.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

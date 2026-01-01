@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://cc5s8f0onp1ki"
+path="res://.godot/imported/Monster 6 Attack - 1.wav-0907648d81d2cb2d7598a14a534b3055.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 1 - Universal Sound Effects/Monster Sound Effects 1 - Universal Sound Effects/WAV/Monster 6 Attack - 1.wav"
+dest_files=["res://.godot/imported/Monster 6 Attack - 1.wav-0907648d81d2cb2d7598a14a534b3055.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

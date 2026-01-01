@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://c75d2wl0wkmlr"
+path="res://.godot/imported/Crushing Ingredients - 4.mp3-b82be84b21a697223002fc6d2f8587bd.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Brewing and Alchemy - Universal Sound Effects/Brewing and Alchemy - Universal Sound Effects/Ingredient Preparation/Crushing Ingredients - 4.mp3"
+dest_files=["res://.godot/imported/Crushing Ingredients - 4.mp3-b82be84b21a697223002fc6d2f8587bd.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

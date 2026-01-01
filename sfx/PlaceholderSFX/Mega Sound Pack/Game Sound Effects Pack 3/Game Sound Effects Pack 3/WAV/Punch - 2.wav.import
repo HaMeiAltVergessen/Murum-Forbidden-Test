@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://6cjs0b8w54sw"
+path="res://.godot/imported/Punch - 2.wav-3103a4934d0135871b0b9eeaaa29b23a.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 3/Game Sound Effects Pack 3/WAV/Punch - 2.wav"
+dest_files=["res://.godot/imported/Punch - 2.wav-3103a4934d0135871b0b9eeaaa29b23a.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

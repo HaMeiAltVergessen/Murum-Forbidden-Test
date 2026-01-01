@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bhe8qmpck6py4"
+path="res://.godot/imported/Monster 21 Hurt - 1.mp3-ea39e73bc602d5d6ffc73c3e3e724b0d.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Monster Sound Effects 2 - Universal Sound Effects/Monster Sound Effects 2 - Universal Sound Effects/MP3/Monster 21 Hurt - 1.mp3"
+dest_files=["res://.godot/imported/Monster 21 Hurt - 1.mp3-ea39e73bc602d5d6ffc73c3e3e724b0d.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

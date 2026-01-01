@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://dce8xbhgj0oud"
+path="res://.godot/imported/Crate Hit 5.wav-e9c6cc7ce02eeda54eef7cdd49a22b38.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 4/Game Sound Effects Pack 4/WAV/Crate Hit 5.wav"
+dest_files=["res://.godot/imported/Crate Hit 5.wav-e9c6cc7ce02eeda54eef7cdd49a22b38.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

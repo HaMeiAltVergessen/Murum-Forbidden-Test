@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://8yadrpte8ff0"
+path="res://.godot/imported/Sawing Wood - 3.wav-2d2cad3d7c98ea129155eb44827fa34b.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Crafting and Tinkering - Universal Sound Effects/Crafting and Tinkering - Universal Sound Effects/Hammering & Sawing/Sawing Wood - 3.wav"
+dest_files=["res://.godot/imported/Sawing Wood - 3.wav-2d2cad3d7c98ea129155eb44827fa34b.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

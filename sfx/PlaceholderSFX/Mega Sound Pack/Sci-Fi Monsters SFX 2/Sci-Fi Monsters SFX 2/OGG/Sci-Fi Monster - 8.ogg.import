@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://cggiudsa02x1j"
+path="res://.godot/imported/Sci-Fi Monster - 8.ogg-7bb60872bf4367ae3c3d0792f2d827f3.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sci-Fi Monsters SFX 2/Sci-Fi Monsters SFX 2/OGG/Sci-Fi Monster - 8.ogg"
+dest_files=["res://.godot/imported/Sci-Fi Monster - 8.ogg-7bb60872bf4367ae3c3d0792f2d827f3.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

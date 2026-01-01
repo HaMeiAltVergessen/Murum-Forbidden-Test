@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://c58j0rnr4fajj"
+path="res://.godot/imported/Button SFX - 1.ogg-90e7619c6478961deb66e98052b263c0.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sci-Fi UI SFX Pack 2/Sci-Fi UI SFX Pack 2/OGG/Button SFX - 1.ogg"
+dest_files=["res://.godot/imported/Button SFX - 1.ogg-90e7619c6478961deb66e98052b263c0.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

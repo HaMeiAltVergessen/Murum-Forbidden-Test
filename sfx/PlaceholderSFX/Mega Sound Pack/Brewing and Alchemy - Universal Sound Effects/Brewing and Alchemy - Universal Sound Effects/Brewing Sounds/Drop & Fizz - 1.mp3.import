@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://catyfw3r8m1nw"
+path="res://.godot/imported/Drop & Fizz - 1.mp3-ebd6e32033541065a77c8b91f247aa00.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Brewing and Alchemy - Universal Sound Effects/Brewing and Alchemy - Universal Sound Effects/Brewing Sounds/Drop & Fizz - 1.mp3"
+dest_files=["res://.godot/imported/Drop & Fizz - 1.mp3-ebd6e32033541065a77c8b91f247aa00.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

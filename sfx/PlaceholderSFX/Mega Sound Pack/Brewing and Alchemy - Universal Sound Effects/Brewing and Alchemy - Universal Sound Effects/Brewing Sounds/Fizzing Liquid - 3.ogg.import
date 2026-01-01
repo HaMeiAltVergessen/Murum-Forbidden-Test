@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://dt6r4b2m8mqhq"
+path="res://.godot/imported/Fizzing Liquid - 3.ogg-9d5eb997369c6872e27320b0ce621e0c.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Brewing and Alchemy - Universal Sound Effects/Brewing and Alchemy - Universal Sound Effects/Brewing Sounds/Fizzing Liquid - 3.ogg"
+dest_files=["res://.godot/imported/Fizzing Liquid - 3.ogg-9d5eb997369c6872e27320b0ce621e0c.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

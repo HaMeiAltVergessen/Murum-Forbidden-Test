@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://dytkfruyverx8"
+path="res://.godot/imported/Sword Slash - 3.wav-c89d6d6b8d19b0ef41e0607d1df90f08.sample"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sword Sound Effects Pack 2/Sword Sound Effects Pack 2/Sword Slash - 3.wav"
+dest_files=["res://.godot/imported/Sword Slash - 3.wav-c89d6d6b8d19b0ef41e0607d1df90f08.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

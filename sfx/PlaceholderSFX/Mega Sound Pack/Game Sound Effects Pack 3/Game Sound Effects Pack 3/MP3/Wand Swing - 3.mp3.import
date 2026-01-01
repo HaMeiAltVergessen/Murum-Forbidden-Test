@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cxknc75siwudq"
+path="res://.godot/imported/Wand Swing - 3.mp3-f3b89126ab8533c189ff18ed1791775e.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 3/Game Sound Effects Pack 3/MP3/Wand Swing - 3.mp3"
+dest_files=["res://.godot/imported/Wand Swing - 3.mp3-f3b89126ab8533c189ff18ed1791775e.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

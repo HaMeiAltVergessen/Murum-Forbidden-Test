@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://c5bam57ujtuov"
+path="res://.godot/imported/Confirm SFX - 2.ogg-b4774083ea62043d45e1a2b232f2fb47.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Sci-Fi UI SFX Pack 2/Sci-Fi UI SFX Pack 2/OGG/Confirm SFX - 2.ogg"
+dest_files=["res://.godot/imported/Confirm SFX - 2.ogg-b4774083ea62043d45e1a2b232f2fb47.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

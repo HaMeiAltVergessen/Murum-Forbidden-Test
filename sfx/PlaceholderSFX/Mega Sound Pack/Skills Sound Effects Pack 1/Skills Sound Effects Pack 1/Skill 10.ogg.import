@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://o6l0qrybv8oe"
+path="res://.godot/imported/Skill 10.ogg-936df647bd3e0349bbd0738d17be092e.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Skills Sound Effects Pack 1/Skills Sound Effects Pack 1/Skill 10.ogg"
+dest_files=["res://.godot/imported/Skill 10.ogg-936df647bd3e0349bbd0738d17be092e.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

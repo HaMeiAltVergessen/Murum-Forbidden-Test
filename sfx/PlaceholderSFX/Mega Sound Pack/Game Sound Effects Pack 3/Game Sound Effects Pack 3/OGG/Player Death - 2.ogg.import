@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bix3h0a6f4li7"
+path="res://.godot/imported/Player Death - 2.ogg-43f046bd078d46d056b6837a79e62b1d.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Game Sound Effects Pack 3/Game Sound Effects Pack 3/OGG/Player Death - 2.ogg"
+dest_files=["res://.godot/imported/Player Death - 2.ogg-43f046bd078d46d056b6837a79e62b1d.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

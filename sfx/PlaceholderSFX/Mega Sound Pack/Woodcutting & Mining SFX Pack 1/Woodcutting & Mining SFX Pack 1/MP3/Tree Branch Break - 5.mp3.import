@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bcrikqu7byk3i"
+path="res://.godot/imported/Tree Branch Break - 5.mp3-6fbb76ebbf787b640e5b41546db8b8b8.mp3str"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Woodcutting & Mining SFX Pack 1/Woodcutting & Mining SFX Pack 1/MP3/Tree Branch Break - 5.mp3"
+dest_files=["res://.godot/imported/Tree Branch Break - 5.mp3-6fbb76ebbf787b640e5b41546db8b8b8.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

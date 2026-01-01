@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://ceknmq728v6lh"
+path="res://.godot/imported/Pestle & Mortar Grinding - 6.ogg-aeb4bfb2179767efd7b2e693483fb982.oggvorbisstr"
+
+[deps]
+
+source_file="res://sfx/PlaceholderSFX/Mega Sound Pack/Brewing and Alchemy - Universal Sound Effects/Brewing and Alchemy - Universal Sound Effects/Ingredient Preparation/Pestle & Mortar Grinding - 6.ogg"
+dest_files=["res://.godot/imported/Pestle & Mortar Grinding - 6.ogg-aeb4bfb2179767efd7b2e693483fb982.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
