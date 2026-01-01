@@ -1,11 +1,10 @@
 [gd_scene load_steps=4 format=3 uid="uid://merchant_base"]
 
 [ext_resource type="Script" path="res://environment/npcs/merchant.gd" id="1_merchant"]
+[ext_resource type="Texture2D" path="res://Assets/Placeholder/Lythrun/Free-City-Trader-Character-Sprite-Sheets-Pixel-Art/Trader_1/Idle.png" id="2_trader"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_interaction"]
 radius = 80.0
-
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Lythrun/Free-City-Trader-Character-Sprite-Sheets-Pixel-Art/Trader_1/Idle.png" id="2_trader"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_merchant"]
 radius = 20.0
