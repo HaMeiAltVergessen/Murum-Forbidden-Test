@@ -174,7 +174,7 @@ func activate_shadow_aesthetic() -> void:
 	print("[Lythrun] Shadow aesthetic activated")
 
 func _register_with_coop_camera() -> void:
-	"""Register P2 with CoopCamera (COMMIT 021)"""
+	"""Register P2 with CoopCamera and HUD (COMMIT 021/022)"""
 	# Wait one frame to ensure all nodes are ready
 	await get_tree().process_frame
 
@@ -183,6 +183,12 @@ func _register_with_coop_camera() -> void:
 	if camera and camera.has_method("set_player2"):
 		camera.set_player2(self)
 		print("[Lythrun] Registered with CoopCamera")
+
+	# Register with HUD Manager (COMMIT 022)
+	var hud_manager = get_node_or_null("/root/HUDManager")
+	if hud_manager and hud_manager.has_method("set_p2_reference"):
+		hud_manager.set_p2_reference(self)
+		print("[Lythrun] Registered with HUD Manager")
 
 # ============ COLLISION LAYERS ============
 

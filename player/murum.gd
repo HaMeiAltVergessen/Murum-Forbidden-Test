@@ -105,7 +105,7 @@ func _register_with_game_manager() -> void:
 
 
 func _register_with_coop_manager() -> void:
-	"""Registers this player with CoopManager and CoopCamera (COMMIT 021)"""
+	"""Registers this player with CoopManager, CoopCamera, and HUD (COMMIT 021/022)"""
 	# Wait one frame to ensure all nodes are ready
 	await get_tree().process_frame
 
@@ -118,6 +118,12 @@ func _register_with_coop_manager() -> void:
 	if camera and camera.has_method("set_player1"):
 		camera.set_player1(self)
 		print("[Murum] Registered with CoopCamera")
+
+	# Register with HUD Manager (COMMIT 022)
+	var hud_manager = get_node_or_null("/root/HUDManager")
+	if hud_manager and hud_manager.has_method("set_p1_reference"):
+		hud_manager.set_p1_reference(self)
+		print("[Murum] Registered with HUD Manager")
 
 
 # ============ SIGNAL HANDLERS ============
