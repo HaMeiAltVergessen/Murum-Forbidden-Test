@@ -6,6 +6,9 @@ class_name CombatSystem
 @onready var player: CharacterBody2D = get_parent()
 @onready var hitbox: Area2D = $HitboxComponent
 @onready var movement_controller: MovementController = player.get_node_or_null("MovementController")
+
+# ============ INPUT CONFIGURATION ============
+@export var input_prefix: String = "p1_"  # P1 by default, P2 uses "p2_"
 @onready var combo_tracker: ComboTracker = null  # Will create dynamically
 @onready var resonance_system: ResonanceSystem = null  # Will create dynamically
 @onready var parry_block_system: ParryBlockSystem = null  # Will create from scene
@@ -79,7 +82,12 @@ func _process(delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("light_attack"):
+	var attack_action = input_prefix + "attack"
+	# Fallback to "light_attack" if p1_attack doesn't exist (backwards compatibility)
+	if not Input.has_action(attack_action):
+		attack_action = "light_attack"
+
+	if event.is_action_pressed(attack_action):
 		_request_attack()
 
 
