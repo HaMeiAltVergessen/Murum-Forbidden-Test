@@ -133,6 +133,10 @@ func start_fight() -> void:
 	is_active = true
 	fight_started.emit()
 
+	# Make boss invulnerable during intro
+	if health_component:
+		health_component.set_invulnerable(true)
+
 	# Show health bar
 	if health_bar:
 		health_bar.show_bar()
@@ -141,10 +145,17 @@ func start_fight() -> void:
 	if camera_controller:
 		camera_controller.activate()
 
-	# Play intro animation (non-blocking)
+	# Play intro animation
 	play_intro_animation()
 
-	# Set initial attack pattern immediately (boss is now attackable)
+	# Wait for intro period (2 seconds of invulnerability)
+	await get_tree().create_timer(2.0).timeout
+
+	# Make boss vulnerable
+	if health_component:
+		health_component.set_invulnerable(false)
+
+	# Now boss is attackable - activate attack patterns
 	if attack_manager:
 		attack_manager.set_pattern(phase_1_pattern)
 		attack_manager.activate()
