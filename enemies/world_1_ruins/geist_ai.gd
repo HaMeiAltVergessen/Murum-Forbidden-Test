@@ -39,6 +39,7 @@ var attack_timer: float = 0.0  # Timer for attack phases
 
 var owner_enemy: CharacterBody2D
 var player: CharacterBody2D
+var base_scale: Vector2 = Vector2.ONE  # Store original sprite scale
 
 # ============================================================================
 # INITIALIZATION
@@ -48,11 +49,15 @@ func _ready() -> void:
 	owner_enemy = owner as CharacterBody2D
 	player = get_tree().get_first_node_in_group("player")
 
+	# Store base scale from sprite
+	if owner_enemy and owner_enemy.animated_sprite:
+		base_scale = owner_enemy.animated_sprite.scale
+
 	# Register with CombatManager
 	if player and owner_enemy:
 		CombatManager.register_enemy(owner_enemy)
 
-	print("[GeistAI] Initialized for %s" % (owner_enemy.name if owner_enemy else "unknown"))
+	print("[GeistAI] Initialized for %s with base_scale %v" % [owner_enemy.name if owner_enemy else "unknown", base_scale])
 
 # ============================================================================
 # AI UPDATE
@@ -163,8 +168,8 @@ func _process_attack_active(delta: float) -> void:
 
 	# Stretch sprite horizontally for extended reach
 	if owner_enemy.animated_sprite:
-		owner_enemy.animated_sprite.scale.x = 2.0  # 2x stretch for more range
-		owner_enemy.animated_sprite.scale.y = 1.0
+		owner_enemy.animated_sprite.scale.x = base_scale.x * 2.0  # 2x stretch for more range
+		owner_enemy.animated_sprite.scale.y = base_scale.y
 
 	# Move slightly forward during attack
 	var direction = (player.global_position - owner_enemy.global_position).normalized()
@@ -187,8 +192,8 @@ func _process_attack_recovery(delta: float) -> void:
 	# Reset sprite scale gradually
 	if owner_enemy.animated_sprite:
 		var t = attack_timer / ATTACK_RECOVERY
-		owner_enemy.animated_sprite.scale.x = lerp(2.0, 1.0, t)
-		owner_enemy.animated_sprite.scale.y = 1.0
+		owner_enemy.animated_sprite.scale.x = lerp(base_scale.x * 2.0, base_scale.x, t)
+		owner_enemy.animated_sprite.scale.y = base_scale.y
 
 	# Slow down
 	owner_enemy.velocity = owner_enemy.velocity * 0.9
@@ -276,9 +281,9 @@ func _enter_cooldown() -> void:
 	attack_cooldown_remaining = ATTACK_COOLDOWN
 	attack_timer = 0.0
 
-	# Ensure sprite is fully reset
+	# Ensure sprite is fully reset to base scale
 	if owner_enemy.animated_sprite:
-		owner_enemy.animated_sprite.scale = Vector2.ONE
+		owner_enemy.animated_sprite.scale = base_scale
 		owner_enemy.animated_sprite.modulate = Color(1.0, 1.0, 1.0, 0.7)
 
 # ============================================================================
@@ -301,9 +306,9 @@ func cancel_attack() -> void:
 		if owner_enemy.hitbox:
 			owner_enemy.hitbox.monitoring = false
 
-		# Reset sprite
+		# Reset sprite to base scale
 		if owner_enemy.animated_sprite:
-			owner_enemy.animated_sprite.scale = Vector2.ONE
+			owner_enemy.animated_sprite.scale = base_scale
 			owner_enemy.animated_sprite.modulate = Color(1.0, 1.0, 1.0, 0.7)
 
 func get_state_name() -> String:
