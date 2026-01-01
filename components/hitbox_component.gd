@@ -64,6 +64,9 @@ func _deal_damage_to(hurtbox: HurtboxComponent) -> void:
 	# Deal damage (pass attacker for parry system)
 	hurtbox.take_damage(damage, knockback_dir * knockback_force, hitstun_duration, attacker)
 
+	# Play hit impact SFX
+	AudioManager.play_sfx("hit_impact", 0.15)
+
 	# Spawn hit effect
 	if spawn_hit_effect:
 		_spawn_hit_effect(hurtbox.global_position)

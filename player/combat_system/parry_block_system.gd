@@ -397,7 +397,7 @@ func _execute_perfect_parry(enemy: Node) -> void:
 	_spawn_parry_flash()
 
 	# Audio
-	AudioManager.play_sfx("player_parry_success", 0.15)
+	AudioManager.play_sfx("parry", 0.15)
 
 	# Camera shake (reduced from 0.25)
 	if player.has_node("PlayerCamera"):
@@ -460,7 +460,7 @@ func _parry_projectile(projectile: Node) -> void:
 	_spawn_parry_flash()
 
 	# Audio
-	AudioManager.play_sfx("player_parry_success", 0.15)
+	AudioManager.play_sfx("parry", 0.15)
 
 	# Camera shake removed (was 0.25 - too much for projectile parry)
 

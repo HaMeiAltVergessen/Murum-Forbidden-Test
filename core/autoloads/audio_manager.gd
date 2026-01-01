@@ -59,30 +59,57 @@ func _create_music_player() -> void:
 
 func _load_audio_library() -> void:
 	"""Loads audio resources into libraries"""
-	# Note: These would load actual audio files in production
-	# For now, this is a placeholder structure
+	# Base path for Gothicvania sounds (best thematic fit)
+	var sfx_base = "res://Assets/Placeholder/Legacy Collection/Assets/Packs/Gothicvania Church/Stomper Asset Files/fx/"
+	var sewers_sfx = "res://Assets/Placeholder/Legacy Collection/Assets/Packs/Sewers pack files/Sounds/"
+	var space_sfx = "res://Assets/Placeholder/Legacy Collection/Assets/Packs/SpaceShooter/Space Shooter files/Sound FX/"
+	var meta_sfx = "res://Assets/Placeholder/Legacy Collection/Assets/Packs/Meta data assets files/sounds/fx/"
 
 	# SFX Library
 	sfx_library = {
-		"attack_1": null,
-		"attack_2": null,
-		"attack_3": null,
-		"player_hurt": null,
-		"player_dash": null,
-		"enemy_hurt": null,
-		"enemy_death": null,
-		"spike_extend": null,
-		"lever_pull": null,
-		"door_open": null,
+		# Player combat
+		"attack_1": load(sfx_base + "attack.wav"),
+		"attack_2": load(sfx_base + "attack.wav"),
+		"attack_3": load(sfx_base + "stomp.wav"),  # Heavier sound for 3rd attack
+		"player_hurt": load(sfx_base + "hurt.wav"),
+		"player_dash": load(sfx_base + "stomp.wav"),
+		"player_death": load(sewers_sfx + "player-death.wav"),
+
+		# Combat impacts
+		"hit_impact": load(sfx_base + "hit.wav"),
+		"block": load(sfx_base + "hit.wav"),
+		"parry": load(space_sfx + "hit.wav"),
+
+		# Enemy
+		"enemy_hurt": load(sfx_base + "hurt.wav"),
+		"enemy_death": load(sfx_base + "enemy_death.wav"),
+		"enemy_attack": load(sfx_base + "attack.wav"),
+
+		# Abilities
+		"ability_machtstoss": load(space_sfx + "shot 1.wav"),
+		"ability_machtbruch": load(sfx_base + "stomp.wav"),
+		"ability_urteil": load(sewers_sfx + "explosion.wav"),
+		"ability_wolkenbruch": load(sewers_sfx + "explosion.wav"),
+		"ability_echo": load(meta_sfx + "shooter.wav"),
+
+		# Environment
+		"spike_extend": load(meta_sfx + "thorn.wav"),
+		"lever_pull": load(meta_sfx + "select.wav"),
+		"door_open": load(sfx_base + "door.wav"),
+		"checkpoint": load(meta_sfx + "complete.ogg"),
+		"pickup_coin": load(sfx_base + "pick.wav"),
+
+		# Projectiles
+		"projectile_fire": load(sewers_sfx + "shot.wav"),
 	}
 
 	# Music Library
 	music_library = {
-		"test_music": null,
-		"combat_music": null,
+		"test_music": load("res://Assets/Placeholder/Legacy Collection/Assets/Packs/Meta data assets files/sounds/music/determination.ogg"),
+		"combat_music": load("res://Assets/Placeholder/Legacy Collection/Assets/Packs/Meta data assets files/sounds/music/ghost-town.ogg"),
 	}
 
-	print("[AudioManager] Audio library structure loaded")
+	print("[AudioManager] Audio library loaded with ", sfx_library.size(), " SFX and ", music_library.size(), " music tracks")
 
 
 # ============ SFX PLAYBACK ============

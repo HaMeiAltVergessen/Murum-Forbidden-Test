@@ -306,6 +306,9 @@ func _execute_explosion(tier: BurstTier) -> void:
 			radius = STRONG_RADIUS
 			trauma = STRONG_CAMERA_TRAUMA
 
+	# Play SFX
+	AudioManager.play_sfx("ability_machtbruch", 0.15)
+
 	print("[Machtbruch] EXPLOSION! Tier: %d, Damage: %d, Radius: %.0f" % [tier, damage, radius])
 
 	# Apply AoE damage to all enemies in radius

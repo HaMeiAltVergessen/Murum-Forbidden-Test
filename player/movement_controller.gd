@@ -6,6 +6,10 @@ class_name MovementController
 @onready var player: CharacterBody2D = get_parent()
 @onready var mana_component: ManaComponent = player.get_node_or_null("ManaComponent")
 
+# ============ SFX ============
+@onready var jump_sfx: AudioStreamPlayer = null
+@onready var dash_sfx: AudioStreamPlayer = null
+
 # ============ MOVEMENT CONFIGURATION ============
 @export var move_speed: float = 300.0
 @export var jump_velocity: float = -800.0  # Powerful but grounded jump
@@ -59,6 +63,9 @@ func _ready() -> void:
 	if collision_shape and collision_shape.shape is CapsuleShape2D:
 		var capsule: CapsuleShape2D = collision_shape.shape as CapsuleShape2D
 		normal_collision_height = capsule.height
+
+	# Setup SFX
+	_setup_sfx()
 
 
 func _physics_process(delta: float) -> void:
@@ -256,9 +263,12 @@ func _perform_jump() -> void:
 	coyote_timer = 0.0
 	jumps_used += 1
 
+	# Play jump SFX
+	if jump_sfx:
+		jump_sfx.play()
+
 	if jumps_used == 2:
 		print("[Movement] Double jump!")
-	# AudioManager.play_sfx("jump")  # Uncomment when audio added
 
 
 func _process_coyote_time(delta: float) -> void:
@@ -477,6 +487,10 @@ func _attempt_dash() -> void:
 	dash_timer = dash_duration
 	dash_cooldown_timer = dash_cooldown
 
+	# Play dash SFX
+	if dash_sfx:
+		dash_sfx.play()
+
 	# Disable collision with enemies during dash (can pass through)
 	# Must change BOTH layer and mask:
 	# - Layer: 2 → 32 (enemies don't see player)
@@ -570,6 +584,26 @@ func _dash_end_explosion() -> void:
 
 	if hit_count > 0:
 		print("[MovementController] Dash explosion hit %d enemies" % hit_count)
+
+
+# ============ SFX SETUP ============
+func _setup_sfx() -> void:
+	"""Creates and configures SFX AudioStreamPlayers"""
+	# Jump SFX
+	jump_sfx = AudioStreamPlayer.new()
+	jump_sfx.name = "JumpSFX"
+	jump_sfx.stream = load("res://Assets/Placeholder/Legacy Collection/Assets/Packs/Gothicvania Church/Stomper Asset Files/fx/jump.wav")
+	jump_sfx.volume_db = -5.0
+	add_child(jump_sfx)
+
+	# Dash SFX
+	dash_sfx = AudioStreamPlayer.new()
+	dash_sfx.name = "DashSFX"
+	dash_sfx.stream = load("res://Assets/Placeholder/Legacy Collection/Assets/Packs/Gothicvania Church/Stomper Asset Files/fx/stomp.wav")
+	dash_sfx.volume_db = -3.0
+	add_child(dash_sfx)
+
+	print("[MovementController] SFX initialized")
 
 
 # ============ GETTERS ============

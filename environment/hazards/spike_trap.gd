@@ -109,7 +109,7 @@ func _enter_warning() -> void:
 
 	# Audio
 	if AudioManager:
-		AudioManager.play_sfx_at_position("environment/trap_warning", global_position, 0.1)
+		AudioManager.play_sfx("spike_extend", 0.1)
 
 	print("[SpikeTrap] Warning (%ds)" % WARNING_DURATION)
 
@@ -131,7 +131,7 @@ func _enter_active() -> void:
 
 	# Audio
 	if AudioManager:
-		AudioManager.play_sfx_at_position("environment/trap_activate", global_position, 0.15)
+		AudioManager.play_sfx("spike_extend", 0.15)
 
 	print("[SpikeTrap] Active (%ds)" % ACTIVE_DURATION)
 

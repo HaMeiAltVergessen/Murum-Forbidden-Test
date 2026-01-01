@@ -58,6 +58,9 @@ func take_damage(damage: int) -> bool:
 
 	current_health = max(0, current_health - final_damage)
 
+	# Play hurt SFX
+	AudioManager.play_sfx("player_hurt", 0.1)
+
 	# Emit signals
 	damage_taken.emit(final_damage)
 	health_changed.emit(current_health, max_health)
@@ -74,6 +77,7 @@ func take_damage(damage: int) -> bool:
 
 	# Check if health depleted
 	if current_health <= 0:
+		AudioManager.play_sfx("player_death")
 		health_depleted.emit()
 
 	return true
