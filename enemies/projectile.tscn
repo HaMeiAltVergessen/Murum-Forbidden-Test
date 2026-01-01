@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://c8vjm4qx1y2n3"]
+[gd_scene load_steps=5 format=3 uid="uid://c8vjm4qx1y2n3"]
 
 [ext_resource type="Script" path="res://enemies/projectile.gd" id="1_projectile"]
 [ext_resource type="Script" path="res://components/hitbox_component.gd" id="2_hitbox"]
+[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Misc/EnemyProjectile/Sprites/frame1.png" id="3_enemy_proj"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_projectile_collision"]
 radius = 8.0
@@ -14,9 +15,9 @@ collision_layer = 8
 collision_mask = 3
 script = ExtResource("1_projectile")
 
-[node name="Sprite2D" type="Polygon2D" parent="."]
-color = Color(0, 1, 1, 0.8)
-polygon = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("3_enemy_proj")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_projectile_collision")

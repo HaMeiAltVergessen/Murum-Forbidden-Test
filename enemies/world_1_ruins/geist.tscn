@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://enemies/world_1_ruins/geist_ai.gd" id="2_geist_ai"]
 [ext_resource type="Script" path="res://components/hurtbox_component.gd" id="3_hurtbox"]
 [ext_resource type="Script" path="res://components/hitbox_component.gd" id="4_hitbox"]
+[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Packs/Gothicvania Cemetery/Characters/Enemies/ghost/Sprites/ghost-1.png" id="5_ghost"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_geist_body"]
 radius = 16.0
@@ -23,9 +24,10 @@ collision_layer = 2
 collision_mask = 1
 script = ExtResource("1_geist")
 
-[node name="AnimatedSprite2D" type="Polygon2D" parent="."]
-color = Color(0.5, 0.8, 1, 0.7)
-polygon = PackedVector2Array(-16, -24, 16, -24, 16, 24, -16, 24)
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.7, 0.9, 1, 0.85)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("5_ghost")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_geist_body")
