@@ -13,8 +13,8 @@ size = Vector2(128, 32)
 script = ExtResource("1_spike_trap")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(0, 8)
-scale = Vector2(2, 2)
+position = Vector2(0, 0)
+scale = Vector2(4, 4)
 texture = ExtResource("2_spikes")
 
 [node name="HitboxComponent" type="Area2D" parent="."]
