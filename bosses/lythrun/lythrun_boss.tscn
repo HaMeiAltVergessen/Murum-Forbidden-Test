@@ -3,9 +3,9 @@
 [ext_resource type="PackedScene" uid="uid://boss_base_001" path="res://bosses/boss_base.tscn" id="1"]
 [ext_resource type="Script" path="res://bosses/lythrun/lythrun_boss.gd" id="2"]
 [ext_resource type="Script" path="res://bosses/lythrun/adaptive_ai.gd" id="3"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/death/Sprites/walk/death-lamp-walk1.png" id="4"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/death/Sprites/walk/death-lamp-walk2.png" id="5"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/death/Sprites/walk/death-lamp-walk3.png" id="6"]
+[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/death/Sprites/No-lamp-walk/death-walk1.png" id="4"]
+[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/death/Sprites/No-lamp-walk/death-walk2.png" id="5"]
+[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/death/Sprites/No-lamp-walk/death-walk3.png" id="6"]
 
 [sub_resource type="SpriteFrames" id="lythrun_sprite_frames"]
 animations = [{

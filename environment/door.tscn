@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://brmqwmhp0lbtt"]
 
 [ext_resource type="Script" path="res://environment/door.gd" id="1_door"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Packs/tiny-rpg-town-files/Battle Backgrounds/Dungeon/Dungeon-door.png" id="2_door"]
+[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Packs/Meta data assets files/Visuals/OBJECTS/sprites/door-blue.png" id="2_door"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
 size = Vector2(64, 96)
@@ -15,7 +15,7 @@ collision_mask = 2
 script = ExtResource("1_door")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(1.5, 1.5)
+scale = Vector2(3, 3)
 texture = ExtResource("2_door")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
