@@ -16,19 +16,19 @@ emission_shape = 1
 emission_sphere_radius = 5.0
 direction = Vector3(0, -1, 0)
 spread = 180.0
-initial_velocity_min = 100.0
-initial_velocity_max = 200.0
+initial_velocity_min = 50.0
+initial_velocity_max = 100.0
 gravity = Vector3(0, 0, 0)
-scale_min = 2.0
-scale_max = 4.0
+scale_min = 0.5
+scale_max = 1.0
 scale_curve = SubResource("Curve_lifetime")
 color_ramp = SubResource("Gradient_color")
 
 [node name="HitSpark" type="GPUParticles2D"]
 emitting = false
-amount = 20
+amount = 8
 process_material = SubResource("ParticleProcessMaterial_hit")
 texture = ExtResource("1_slash")
-lifetime = 0.4
+lifetime = 0.3
 one_shot = true
 explosiveness = 1.0
