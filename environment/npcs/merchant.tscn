@@ -5,8 +5,10 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_interaction"]
 radius = 80.0
 
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_merchant"]
-size = Vector2(32, 32)
+[ext_resource type="Texture2D" path="res://Assets/Placeholder/Lythrun/Free-City-Trader-Character-Sprite-Sheets-Pixel-Art/Trader_1/Idle.png" id="2_trader"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_merchant"]
+radius = 20.0
 
 [node name="Merchant" type="CharacterBody2D"]
 collision_layer = 0
@@ -14,9 +16,10 @@ collision_mask = 0
 script = ExtResource("1_merchant")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-modulate = Color(0.8, 0.7, 0.5, 1)
-scale = Vector2(2, 3)
-texture = SubResource("PlaceholderTexture2D_merchant")
+texture = ExtResource("2_trader")
+hframes = 6
+vframes = 1
+frame = 0
 
 [node name="InteractionArea" type="Area2D" parent="."]
 collision_layer = 0
