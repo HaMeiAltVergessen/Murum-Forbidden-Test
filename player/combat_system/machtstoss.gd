@@ -267,9 +267,6 @@ func _release_charge() -> void:
 
 	print("[Machtstoß] Consumed %d mana" % stage_params.mana)
 
-	# Visual: Raise staff in facing direction
-	_raise_staff_visual()
-
 	# Execute knockback wave with stage parameters
 	_execute_knockback_wave(stage_params)
 
@@ -486,42 +483,6 @@ func _deal_damage_to_enemy(enemy: Node, damage: int) -> void:
 			return
 
 	print("[Machtstoß]   -> WARNING: Could not damage %s (no damage method)" % enemy.name)
-
-# ============================================================================
-# VISUAL EFFECTS
-# ============================================================================
-
-func _raise_staff_visual() -> void:
-	"""Raises staff in facing direction as visual feedback"""
-
-	# Get player sprite
-	var sprite = player.get_node_or_null("Sprite2D")
-	if not sprite:
-		return
-
-	# Get facing direction
-	var player_facing = 1  # Default to right
-	if movement_controller and movement_controller.has_method("get_facing_direction"):
-		player_facing = movement_controller.get_facing_direction()
-
-	print("[Machtstoß] Raising staff %s" % ("RIGHT" if player_facing > 0 else "LEFT"))
-
-	# Create tween for staff raise animation
-	var tween = create_tween()
-	tween.set_ease(Tween.EASE_OUT)
-	tween.set_trans(Tween.TRANS_QUAD)
-
-	# Raise staff to the side (left or right based on facing)
-	# Positive X = right, Negative X = left
-	var staff_offset_x = 30.0 * player_facing  # 30 pixels to the side
-	var staff_offset_y = -40.0  # 40 pixels up
-
-	# Animate: raise staff
-	tween.tween_property(sprite, "position", Vector2(staff_offset_x, staff_offset_y), STAFF_RAISE_DURATION * 0.4)
-	# Hold briefly
-	tween.tween_interval(STAFF_RAISE_DURATION * 0.2)
-	# Return to normal
-	tween.tween_property(sprite, "position", Vector2.ZERO, STAFF_RAISE_DURATION * 0.4)
 
 # ============================================================================
 # VFX

@@ -8,8 +8,8 @@ const MUSIC_FADE_DURATION: float = 1.0
 
 # ============ VOLUME SETTINGS ============
 var master_volume: float = 1.0
-var music_volume: float = 0.7
-var sfx_volume: float = 0.8
+var music_volume: float = 0.4
+var sfx_volume: float = 0.3
 
 # ============ AUDIO PLAYERS ============
 var sfx_pool: Array[AudioStreamPlayer] = []
