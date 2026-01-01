@@ -205,8 +205,8 @@ func _spawn_coin() -> void:
 		coin.global_position = global_position + offset
 		coin.gold_value = 1
 
-		# Add to scene (not as child of enemy)
-		get_tree().root.add_child(coin)
+		# Add to scene (not as child of enemy) - use deferred to avoid physics query flush
+		get_tree().root.call_deferred("add_child", coin)
 
 	print("[Enemy] Spawned %d gold coins at %v" % [coin_count, global_position])
 
