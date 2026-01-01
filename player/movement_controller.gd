@@ -594,6 +594,7 @@ func _setup_sfx() -> void:
 	jump_sfx.name = "JumpSFX"
 	jump_sfx.stream = load("res://Assets/Placeholder/Legacy Collection/Assets/Packs/Gothicvania Church/Stomper Asset Files/fx/jump.wav")
 	jump_sfx.volume_db = -5.0
+	jump_sfx.pitch_scale = 0.6  # Lower pitch for heavier jump sound
 	add_child(jump_sfx)
 
 	# Dash SFX
@@ -601,6 +602,7 @@ func _setup_sfx() -> void:
 	dash_sfx.name = "DashSFX"
 	dash_sfx.stream = load("res://Assets/Placeholder/Legacy Collection/Assets/Packs/Gothicvania Church/Stomper Asset Files/fx/stomp.wav")
 	dash_sfx.volume_db = -3.0
+	dash_sfx.pitch_scale = 0.75  # Match dark fantasy pitch
 	add_child(dash_sfx)
 
 	print("[MovementController] SFX initialized")

@@ -7,14 +7,14 @@
 [ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Packs/Gothicvania Cemetery/Characters/Enemies/ghost/Sprites/ghost-1.png" id="5_ghost"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_geist_body"]
-radius = 16.0
-height = 48.0
+radius = 32.0
+height = 96.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hurtbox"]
-size = Vector2(32, 48)
+size = Vector2(64, 96)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hitbox"]
-size = Vector2(32, 48)
+size = Vector2(64, 96)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_detection"]
 radius = 400.0
@@ -26,7 +26,7 @@ script = ExtResource("1_geist")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(0.7, 0.9, 1, 0.85)
-scale = Vector2(1.5, 1.5)
+scale = Vector2(3.0, 3.0)
 texture = ExtResource("5_ghost")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
