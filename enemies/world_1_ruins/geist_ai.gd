@@ -98,6 +98,10 @@ func _process(delta: float) -> void:
 func _process_idle(delta: float) -> void:
 	"""Idle state - determines next action"""
 
+	# Ensure sprite is at base scale when idle
+	if owner_enemy.animated_sprite and owner_enemy.animated_sprite.scale != base_scale:
+		owner_enemy.animated_sprite.scale = base_scale
+
 	var distance = owner_enemy.global_position.distance_to(player.global_position)
 
 	if distance > DETECTION_RANGE:
@@ -111,6 +115,10 @@ func _process_idle(delta: float) -> void:
 
 func _process_chase(delta: float) -> void:
 	"""Chases player aggressively"""
+
+	# Ensure sprite is at base scale when not attacking
+	if owner_enemy.animated_sprite and owner_enemy.animated_sprite.scale != base_scale:
+		owner_enemy.animated_sprite.scale = base_scale
 
 	var distance = owner_enemy.global_position.distance_to(player.global_position)
 

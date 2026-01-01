@@ -277,9 +277,7 @@ func _release_charge() -> void:
 	AudioManager.play_sfx("player_machtstoss_activate", 0.1)
 
 	# No camera shake - player should feel no knockback at all
-
-	# Hitstop
-	GlobalTimeEffects.hit_stop(SHOCKWAVE_HITSTOP)
+	# No hitstop - player should remain in full control
 
 	# Start cooldown
 	_start_cooldown()
@@ -335,23 +333,7 @@ func _flash_player() -> void:
 	tween.tween_property(sprite, "modulate", Color(2.0, 2.0, 2.0, 1.0), 0.1)
 	tween.tween_property(sprite, "modulate", Color.WHITE, 0.1)
 
-	print("[Machtstoß] Player flash!")
-
-	# Audio
-	AudioManager.play_sfx("player_machtstoss_activate", 0.1)
-
-	# No camera shake - player should feel no knockback at all
-	# Only enemies are affected by the knockback wave
-
-	# Hitstop
-	GlobalTimeEffects.hit_stop(SHOCKWAVE_HITSTOP)
-
-	# Start cooldown
-	_start_cooldown()
-
-	# Emit signal
-	machtstoss_activated.emit(player.global_position)
-	EventBus.machtstoss_activated.emit(player.global_position)
+	print("[Machtstoß] Stage reached - player flash!")
 
 # ============================================================================
 # KNOCKBACK WAVE
