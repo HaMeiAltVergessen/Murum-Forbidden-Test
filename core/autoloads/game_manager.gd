@@ -28,9 +28,15 @@ var world1_arena_cleared: bool = false
 # Generic flag system for boss defeats, unlocks, etc.
 var flags: Dictionary = {}
 
+# ============ CO-OP DATA (P2) ============
+# P2's data is NOT saved, only exists during active session
+var p2_gold: int = 0
+var p2_consumables: Array[String] = []
+
 # ============ SIGNALS ============
 signal arena_cleared
 signal flag_changed(flag_name: String, value: bool)
+signal p2_gold_changed(new_amount: int)
 
 
 func _ready() -> void:
@@ -42,6 +48,9 @@ func _ready() -> void:
 
 	# Connect to scene tree signals
 	get_tree().node_added.connect(_on_node_added)
+
+	# Initialize co-op data
+	_initialize_coop_data()
 
 
 func _input(event: InputEvent) -> void:
@@ -93,6 +102,10 @@ func register_player(player_node: CharacterBody2D, spawn_pos: Vector2) -> void:
 	player = player_node
 	player_spawn_position = spawn_pos
 	print("[GameManager] Player registered at position: ", spawn_pos)
+
+	# Register with CoopManager
+	if CoopManager:
+		CoopManager.set_p1_reference(player_node)
 
 
 func update_spawn_position(new_pos: Vector2) -> void:
@@ -146,8 +159,15 @@ func register_room(room: Node2D) -> void:
 func _on_player_died() -> void:
 	"""Handles player death"""
 	deaths += 1
-	current_state = GameState.GAME_OVER
 	print("[GameManager] Player died. Total deaths: ", deaths)
+
+	# In co-op mode, check if P2 can revive
+	if CoopManager and CoopManager.is_p2_alive():
+		print("[GameManager] P2 is alive, will attempt revive")
+		CoopManager.on_p1_died()
+	else:
+		# Single player or both dead
+		current_state = GameState.GAME_OVER
 
 
 func _on_enemy_died(enemy: Node, _position: Vector2) -> void:
@@ -271,3 +291,52 @@ func clear_flags() -> void:
 	"""Clears all flags (for new game)"""
 	flags.clear()
 	print("[GameManager] All flags cleared")
+
+
+# ============ CO-OP SYSTEM ============
+func _initialize_coop_data() -> void:
+	"""Initialize co-op data"""
+	p2_gold = 0
+	p2_consumables.clear()
+
+func add_p2_gold(amount: int) -> void:
+	"""Add gold to P2's total"""
+	p2_gold += amount
+	p2_gold_changed.emit(p2_gold)
+	print("[GameManager] P2 Gold added: +%d. Total: %d" % [amount, p2_gold])
+
+func spend_p2_gold(amount: int) -> bool:
+	"""Spend P2's gold (returns false if not enough)"""
+	if p2_gold >= amount:
+		p2_gold -= amount
+		p2_gold_changed.emit(p2_gold)
+		print("[GameManager] P2 Gold spent: -%d. Total: %d" % [amount, p2_gold])
+		return true
+	return false
+
+func get_p2_gold() -> int:
+	"""Get P2's current gold"""
+	return p2_gold
+
+func add_p2_consumable(item_id: String) -> void:
+	"""Add consumable to P2's inventory"""
+	p2_consumables.append(item_id)
+	print("[GameManager] P2 Consumable added: %s" % item_id)
+
+func has_p2_consumable(item_id: String) -> bool:
+	"""Check if P2 has a consumable"""
+	return item_id in p2_consumables
+
+func use_p2_consumable(item_id: String) -> bool:
+	"""Use P2's consumable (returns false if not found)"""
+	if has_p2_consumable(item_id):
+		p2_consumables.erase(item_id)
+		print("[GameManager] P2 Consumable used: %s" % item_id)
+		return true
+	return false
+
+func reset_p2_data() -> void:
+	"""Reset P2's data (called when P2 leaves or on load)"""
+	p2_gold = 0
+	p2_consumables.clear()
+	print("[GameManager] P2 data reset")
