@@ -693,7 +693,7 @@ func _check_and_kill_stuck_enemies(tracked_enemies: Array) -> void:
 func _spawn_impact_effects(radius: float) -> void:
 	"""Spawns impact VFX scaled to charge level"""
 
-	# Crater effect
+	# Crater effect - always spawn
 	var crater_scene_path = "res://vfx/particles/wolkenbruch_crater_full.tscn"
 
 	if ResourceLoader.exists(crater_scene_path):
@@ -712,9 +712,8 @@ func _spawn_impact_effects(radius: float) -> void:
 			elif crater.has_property("emitting"):
 				crater.emitting = true
 
-	# Shockwave ring (at higher levels)
-	if charge_level >= 3:
-		_spawn_shockwave(radius)
+	# Shockwave ring - always spawn, scaled by charge level
+	_spawn_shockwave(radius)
 
 
 func _spawn_shockwave(radius: float) -> void:

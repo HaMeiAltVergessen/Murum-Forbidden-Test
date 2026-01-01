@@ -218,9 +218,9 @@ func _release_charge() -> void:
 
 	print("[UrgathonWill] ===== CHARGE RELEASED ===== Level: ", charge_level)
 
-	# Must have at least level 1 charge
-	if charge_level < 1:
-		print("[UrgathonWill] Charge too low - cancelled")
+	# Must be fully charged (level 3)
+	if charge_level < 3:
+		print("[UrgathonWill] Charge not full (Level %d/3) - cancelled" % charge_level)
 		_cancel_charge()
 		return
 
