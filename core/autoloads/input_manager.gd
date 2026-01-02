@@ -83,6 +83,10 @@ func _on_controller_connection_changed(device: int, connected: bool) -> void:
 			p2_leave_requested.emit()
 
 func _input(event: InputEvent) -> void:
+	# CRITICAL DEBUG: Log ALL joypad button events to see if they arrive at InputManager
+	if event is InputEventJoypadButton and event.is_pressed():
+		print("[InputManager _input] JoypadButton RECEIVED: Device=%d Button=%d p2_active=%s p2_device=%d" % [event.device, event.button_index, p2_active, p2_controller_device])
+
 	# ============ P1 INPUT TRACKING ============
 	# CRITICAL: When P2 is active, P1 should ONLY accept Keyboard/Mouse (NO controller)
 	# When P2 is NOT active, P1 can use both Keyboard and Controller

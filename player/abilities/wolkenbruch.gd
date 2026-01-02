@@ -83,6 +83,16 @@ func _ready() -> void:
 # ============================================================================
 
 func _input(event: InputEvent) -> void:
+	# CRITICAL: P1-only ability - Device filtering for co-op
+	if player and player.name == "Lythrun":
+		return  # P2 doesn't use Wolkenbruch
+
+	# P1: Reject controller when P2 active
+	if InputManager and InputManager.p2_active:
+		var is_keyboard_mouse = (event is InputEventKey or event is InputEventMouse or event is InputEventMouseButton)
+		if not is_keyboard_mouse:
+			return  # Reject controller when P2 active
+
 	# Ignore input during auto-release
 	if is_auto_releasing:
 		return
