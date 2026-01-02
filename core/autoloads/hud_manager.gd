@@ -1,7 +1,6 @@
 extends Node
 ## HUDManager - Coordinates all HUD components for dual-player display
 ## Manages P1 HUD, P2 HUD, Gold Display, Join Prompt, and P2 Tutorial
-class_name HUDManager
 
 # ============ HUD REFERENCES ============
 var p1_hud: CanvasLayer = null

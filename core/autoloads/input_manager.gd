@@ -2,7 +2,6 @@ extends Node
 ## InputManager handles hybrid input for local co-op
 ## P1: Keyboard + Mouse (always)
 ## P2: Any Controller (device-agnostic)
-class_name InputManager
 
 # ============ SIGNALS ============
 signal p2_join_requested

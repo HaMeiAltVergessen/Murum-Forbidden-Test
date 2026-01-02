@@ -33,11 +33,12 @@ func show_tutorial() -> void:
 	# Pause game temporarily
 	get_tree().paused = true
 
-	# Fade-in
-	modulate.a = 0.0
-	var tween = create_tween()
-	tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)  # Process even when paused
-	tween.tween_property(self, "modulate:a", 1.0, 0.3)
+	# Fade-in (apply to overlay, not CanvasLayer)
+	if overlay:
+		overlay.modulate.a = 0.0
+		var tween = create_tween()
+		tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)  # Process even when paused
+		tween.tween_property(overlay, "modulate:a", 1.0, 0.3)
 
 	print("[P2 Tutorial] Tutorial shown")
 

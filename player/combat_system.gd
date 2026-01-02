@@ -84,7 +84,7 @@ func _process(delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	var attack_action = input_prefix + "attack"
 	# Fallback to "light_attack" if p1_attack doesn't exist (backwards compatibility)
-	if not Input.has_action(attack_action):
+	if not InputMap.has_action(attack_action):
 		attack_action = "light_attack"
 
 	if event.is_action_pressed(attack_action):
