@@ -106,8 +106,11 @@ func _on_body_entered(body: Node2D) -> void:
 	# Wall hit
 	if body.is_in_group("walls") or body.is_in_group("world"):
 		print("[Shadow Scythe] Wall hit! Returning...")
-		if owner_player:
+		# COMMIT 024: Validate owner before returning
+		if owner_player and is_instance_valid(owner_player):
 			start_return_to_player(owner_player)
+		else:
+			queue_free()  # Owner is invalid, destroy scythe
 		return
 
 	# Enemy hit

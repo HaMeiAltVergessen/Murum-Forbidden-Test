@@ -43,7 +43,7 @@ var base_damage: float = 10.0
 # ============ SHADOW DASH (COMMIT 019.5) ============
 const SHADOW_DASH_DURATION: float = 0.4  # P1: 0.3s
 const SHADOW_DASH_SPEED: float = 450.0  # P1: 400.0
-const SHADOW_DASH_COOLDOWN: float = 2.0  # P1: 1.0s
+const SHADOW_DASH_COOLDOWN: float = 1.5  # P1: 1.0s (COMMIT 024: Reduced from 2.0s)
 const AFTERIMAGE_LIFETIME: float = 1.0
 const AFTERIMAGE_STUN_RADIUS: float = 80.0
 var shadow_dash_active: bool = false
@@ -51,21 +51,25 @@ var shadow_dash_cooldown_active: bool = false
 
 # ============ VOID STRIKE (COMMIT 019.5) ============
 const VOID_STRIKE_COMBO_TIMEOUT: float = 1.5
-const SHOCKWAVE_BASE_DAMAGE: float = 0.5
+const SHOCKWAVE_BASE_DAMAGE: float = 0.4  # COMMIT 024: Reduced from 0.5 (40% instead of 50%)
 const SHOCKWAVE_RADIUS: float = 150.0
 const ATTACK_RECOVERY: float = 0.5
+const INPUT_BUFFER_TIME: float = 0.15  # COMMIT 024: Input buffer for combos (150ms)
 var combo_count: int = 0
 var combo_timer: float = 0.0
 var combo_stacks: int = 0
+var buffered_action: String = ""
+var buffer_timer: float = 0.0
 
 # ============ SHADOW SCYTHE (COMMIT 019.5) ============
-const SCYTHE_SPEED: float = 250.0
+const SCYTHE_SPEED: float = 300.0  # COMMIT 024: Increased from 250.0 (faster travel)
 const SCYTHE_MANA_COST: int = 30
 var scythe_instance = null
 var scythe_thrown: bool = false
 
 # ============ VOID PARRY (COMMIT 019.5) ============
-const VOID_PARRY_WINDOW: float = 0.4
+const VOID_PARRY_WINDOW: float = 0.4  # Total parry window
+const PERFECT_PARRY_WINDOW: float = 0.12  # COMMIT 024: Perfect timing window (reduced from 0.15s)
 const VOID_PARRY_COOLDOWN: float = 3.0
 const PERFECT_PARRY_AOE_RADIUS: float = 220.0
 const PERFECT_PARRY_DAMAGE: float = 40.0
@@ -75,7 +79,7 @@ var void_parry_cooldown_active: bool = false
 var parry_start_time: float = 0.0
 
 # ============ VOID RIFT (COMMIT 019.5) ============
-const VOID_RIFT_MANA_COST: int = 50
+const VOID_RIFT_MANA_COST: int = 40  # COMMIT 024: Reduced from 50 (more affordable)
 const VOID_RIFT_DURATION: float = 3.0
 const VOID_RIFT_MIN_RADIUS: float = 220.0
 const VOID_RIFT_MAX_RADIUS: float = 650.0
@@ -96,14 +100,14 @@ var charging_orb_vfx = null
 # ============ PHASE-SHIFT (COMMIT 019.5) ============
 const PHASE_SHIFT_MANA_COST: int = 60
 const PHASE_SHIFT_DURATION: float = 5.0
-const PHASE_SHIFT_COOLDOWN: float = 15.0
+const PHASE_SHIFT_COOLDOWN: float = 12.0  # COMMIT 024: Reduced from 15.0s (more frequent use)
 var phase_shift_active: bool = false
 var phase_shift_cooldown_active: bool = false
 var phase_shift_armor: bool = false
 var phase_shift_flicker_tween = null
 
 # ============ ABGRUND (COMMIT 019.5) ============
-const ABGRUND_CHARGE_TIME_MAX: float = 2.0
+const ABGRUND_CHARGE_TIME_MAX: float = 1.5  # COMMIT 024: Reduced from 2.0s (less vulnerable)
 const ABGRUND_MIN_RADIUS: float = 220.0
 const ABGRUND_MAX_RADIUS: float = 650.0
 const ABGRUND_DURATION: float = 3.0
@@ -192,22 +196,22 @@ func get_p1_base_stats() -> Dictionary:
 
 	if p1.has_node("HealthComponent"):
 		var hp = p1.get_node("HealthComponent")
-		stats["max_hp"] = hp.max_health if hp.has("max_health") else 100
+		stats["max_hp"] = hp.max_health if "max_health" in hp else 100
 
 	if p1.has_node("ManaComponent"):
 		var mana = p1.get_node("ManaComponent")
-		stats["max_mana"] = mana.max_mana if mana.has("max_mana") else 100
-		stats["mana_regen"] = mana.regeneration_rate if mana.has("regeneration_rate") else 10.0
+		stats["max_mana"] = mana.max_mana if "max_mana" in mana else 100
+		stats["mana_regen"] = mana.regeneration_rate if "regeneration_rate" in mana else 10.0
 
 	if p1.has_node("MovementController"):
 		var movement = p1.get_node("MovementController")
-		stats["movement_speed"] = movement.move_speed if movement.has("move_speed") else 300.0
-		stats["dash_speed"] = movement.dash_distance if movement.has("dash_distance") else 800.0
-		stats["jump_force"] = abs(movement.jump_velocity) if movement.has("jump_velocity") else 800.0
+		stats["movement_speed"] = movement.move_speed if "move_speed" in movement else 300.0
+		stats["dash_speed"] = movement.dash_distance if "dash_distance" in movement else 800.0
+		stats["jump_force"] = abs(movement.jump_velocity) if "jump_velocity" in movement else 800.0
 
 	if p1.has_node("CombatSystem"):
 		var combat = p1.get_node("CombatSystem")
-		if combat.has("attack_damages") and combat.attack_damages.size() > 0:
+		if "attack_damages" in combat and combat.attack_damages.size() > 0:
 			stats["damage"] = combat.attack_damages[0]
 		else:
 			stats["damage"] = 10.0
@@ -833,13 +837,13 @@ func shadow_scythe() -> void:
 	get_tree().current_scene.add_child(scythe_instance)
 
 	scythe_instance.global_position = global_position + Vector2(0, -20)
-	if scythe_instance.has("direction"):
+	if "direction" in scythe_instance:
 		scythe_instance.direction = Vector2.RIGHT if not sprite.flip_h else Vector2.LEFT
-	if scythe_instance.has("damage"):
+	if "damage" in scythe_instance:
 		scythe_instance.damage = base_damage * 3.0
-	if scythe_instance.has("owner_player"):
+	if "owner_player" in scythe_instance:
 		scythe_instance.owner_player = self
-	if scythe_instance.has("can_pierce"):
+	if "can_pierce" in scythe_instance:
 		scythe_instance.can_pierce = true
 
 	scythe_thrown = true
@@ -914,7 +918,7 @@ func _on_parry_hit(attacker) -> void:
 
 	# Calculate if perfect parry
 	var parry_time = (Time.get_ticks_msec() / 1000.0) - parry_start_time
-	var is_perfect = parry_time <= 0.15
+	var is_perfect = parry_time <= PERFECT_PARRY_WINDOW  # COMMIT 024: Use constant (0.12s)
 
 	if is_perfect:
 		perform_perfect_parry()
@@ -1214,6 +1218,10 @@ func stop_phase_shift_flicker() -> void:
 	if phase_shift_flicker_tween:
 		phase_shift_flicker_tween.kill()
 		phase_shift_flicker_tween = null
+
+	# COMMIT 024: Reset opacity to prevent stuck transparency
+	if sprite:
+		sprite.modulate.a = 1.0
 
 func take_damage(damage: float) -> void:
 	"""Override take_damage to handle phase-shift armor"""
