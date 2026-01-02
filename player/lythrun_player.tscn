@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://lythrun_player"]
+[gd_scene load_steps=9 format=3 uid="uid://lythrun_player"]
 
 [ext_resource type="Script" path="res://player/lythrun_player.gd" id="1_lythrun"]
 [ext_resource type="Script" path="res://player/movement_controller.gd" id="2_movement"]
@@ -9,22 +9,14 @@
 [ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="7_hurtbox"]
 [ext_resource type="Script" path="res://player/player_camera.gd" id="8_camera"]
 [ext_resource type="Texture2D" uid="uid://jg4v3jkvbw1b" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Wizard/wizard-sheet.png" id="9_wizard"]
-[ext_resource type="Script" path="res://player/combat_system/staff_controller.gd" id="10_staff"]
-[ext_resource type="Script" path="res://player/combat_system/launcher_system.gd" id="11_launcher"]
-[ext_resource type="Script" path="res://player/combat_system/air_combo_system.gd" id="12_air_combo"]
-[ext_resource type="Script" path="res://player/dodge_roll_system.gd" id="13_dodge"]
-[ext_resource type="Script" path="res://player/combat_system/ende_schwerkraft.gd" id="14_ende_schwerkraft"]
-[ext_resource type="Script" path="res://player/abilities/wolkenbruch.gd" id="15_wolkenbruch"]
-[ext_resource type="Script" path="res://player/abilities/echo_von_urgathon.gd" id="16_echo"]
-[ext_resource type="Script" path="res://player/combat_system/luftgott_system.gd" id="16_luftgott"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 radius = 16.0
 height = 48.0
 
 [node name="Lythrun" type="CharacterBody2D" groups=["player", "player2"]]
-collision_layer = 4
-collision_mask = 153
+collision_layer = 2
+collision_mask = 17
 script = ExtResource("1_lythrun")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
@@ -88,42 +80,8 @@ collision_mask = 71
 damage = 10
 
 [node name="HurtboxComponent" parent="." instance=ExtResource("7_hurtbox")]
-collision_layer = 4
+collision_layer = 2
 collision_mask = 6
-
-[node name="StaffController" type="Node" parent="."]
-script = ExtResource("10_staff")
-
-[node name="LauncherSystem" type="Node" parent="."]
-script = ExtResource("11_launcher")
-launch_force = 600.0
-launch_horizontal_force = 100.0
-launcher_mana_cost = 15
-launcher_damage = 20
-launcher_cooldown = 2.0
-
-[node name="AirComboSystem" type="Node" parent="."]
-script = ExtResource("12_air_combo")
-air_attack_damage = 15
-juggle_force = 400.0
-max_air_combo = 10
-slam_damage_multiplier = 2.0
-slam_force = 800.0
-
-[node name="EndeSchwerkraft" type="Node" parent="."]
-script = ExtResource("14_ende_schwerkraft")
-
-[node name="DodgeRollSystem" type="Node" parent="."]
-script = ExtResource("13_dodge")
-
-[node name="Wolkenbruch" type="Node" parent="."]
-script = ExtResource("15_wolkenbruch")
-
-[node name="EchoVonUrgathon" type="Node" parent="."]
-script = ExtResource("16_echo")
-
-[node name="LuftgottSystem" type="Node" parent="."]
-script = ExtResource("16_luftgott")
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 enabled = false
