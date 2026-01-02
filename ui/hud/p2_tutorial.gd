@@ -105,19 +105,28 @@ func _input(event: InputEvent) -> void:
 	if not visible:
 		return
 
-	# P2 presses START to close tutorial
-	if event.is_action_pressed("p2_join"):
+	# P2 presses any action button to close tutorial
+	if event.is_action_pressed("p2_join") or \
+	   event.is_action_pressed("p2_attack") or \
+	   event.is_action_pressed("p2_jump") or \
+	   event.is_action_pressed("p2_dash"):
 		close_tutorial()
 		get_viewport().set_input_as_handled()
 
 func close_tutorial() -> void:
 	"""Close tutorial and unpause game"""
-	# Fade-out
-	var tween = create_tween()
-	tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-	tween.tween_property(self, "modulate:a", 0.0, 0.3)
-	tween.tween_callback(func():
+	# Fade-out (apply to overlay, not CanvasLayer)
+	if overlay:
+		var tween = create_tween()
+		tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+		tween.tween_property(overlay, "modulate:a", 0.0, 0.3)
+		tween.tween_callback(func():
+			visible = false
+			get_tree().paused = false
+			print("[P2 Tutorial] Tutorial closed, game unpaused")
+		)
+	else:
+		# Fallback: close immediately if no overlay
 		visible = false
 		get_tree().paused = false
 		print("[P2 Tutorial] Tutorial closed, game unpaused")
-	)
