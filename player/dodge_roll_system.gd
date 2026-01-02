@@ -68,6 +68,21 @@ func _ready() -> void:
 # ============================================================================
 
 func _input(event: InputEvent) -> void:
+	# CRITICAL: Device filtering for co-op support
+	# P1 (Murum): Can use dodge with keyboard/mouse (or controller when solo)
+	# P2 (Lythrun): Should NOT use dodge (has Shadow Dash instead)
+
+	# Check if this is P2 - if so, don't process dodge input
+	if player and player.name == "LythrunPlayer":
+		return  # P2 doesn't use dodge system
+
+	# P1 device filtering
+	if InputManager and InputManager.p2_active:
+		# Co-op mode: P1 should ONLY accept keyboard/mouse input
+		var is_keyboard_mouse = (event is InputEventKey or event is InputEventMouse or event is InputEventMouseButton)
+		if not is_keyboard_mouse:
+			return  # Reject controller input when P2 is active
+
 	if event.is_action_pressed("dodge"):
 		attempt_dodge()
 

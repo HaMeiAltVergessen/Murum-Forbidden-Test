@@ -96,15 +96,27 @@ func _input(event: InputEvent) -> void:
 	var p1_should_accept = is_keyboard_mouse or (is_controller and not p2_active)
 
 	if p1_should_accept:
-		# Track all P1 actions
-		var p1_actions = ["attack", "jump", "dash", "staff_throw", "parry", "urgathon", "crouch"]
+		# Track P1 actions
+		# CRITICAL: Some actions don't have p1_ prefix in InputMap!
+		# - With p1_ prefix: jump, attack, dash, block, move_left, move_right
+		# - WITHOUT p1_ prefix: staff_throw, dodge, urgathon_charge, crouch
 
-		for action_name in p1_actions:
+		# Actions WITH p1_ prefix
+		var p1_prefixed_actions = ["jump", "attack", "dash", "block"]
+		for action_name in p1_prefixed_actions:
 			var full_action = "p1_" + action_name
-			if event.is_action(full_action):
-				# Update pressed state
+			if InputMap.has_action(full_action) and event.is_action(full_action):
 				p1_button_states[action_name] = event.is_pressed()
-				# Track just_pressed
+				if event.is_pressed() and not p1_button_just_pressed.get(action_name, false):
+					p1_button_just_pressed[action_name] = true
+				elif not event.is_pressed():
+					p1_button_just_pressed[action_name] = false
+
+		# Actions WITHOUT p1_ prefix (global actions that P1 uses)
+		var p1_global_actions = ["staff_throw", "dodge", "urgathon_charge", "crouch"]
+		for action_name in p1_global_actions:
+			if InputMap.has_action(action_name) and event.is_action(action_name):
+				p1_button_states[action_name] = event.is_pressed()
 				if event.is_pressed() and not p1_button_just_pressed.get(action_name, false):
 					p1_button_just_pressed[action_name] = true
 				elif not event.is_pressed():
@@ -171,7 +183,9 @@ func _update_p1_input_vector() -> void:
 		p1_input_vector = Vector2(x, y).normalized() if (x != 0 or y != 0) else Vector2.ZERO
 	else:
 		# Solo mode - accept both keyboard and controller
-		p1_input_vector = Input.get_vector("p1_move_left", "p1_move_right", "p1_move_up", "p1_move_down")
+		# CRITICAL: InputMap has p1_move_left/right but NOT p1_move_up/down
+		# Use the existing move_left/right/jump/crouch actions
+		p1_input_vector = Input.get_vector("p1_move_left", "p1_move_right", "jump", "crouch")
 
 func can_p2_join() -> bool:
 	"""Check if P2 can join"""
@@ -241,7 +255,13 @@ func is_p1_action_pressed(action: String) -> bool:
 	if p2_active:
 		return p1_button_states.get(action, false)
 	else:
-		return Input.is_action_pressed("p1_" + action)
+		# Try with p1_ prefix first, then try global action name
+		if InputMap.has_action("p1_" + action):
+			return Input.is_action_pressed("p1_" + action)
+		elif InputMap.has_action(action):
+			return Input.is_action_pressed(action)
+		else:
+			return false
 
 func is_p2_action_pressed(action: String) -> bool:
 	"""Check if P2's action is pressed (Controller, device-specific)"""
@@ -259,7 +279,13 @@ func is_p1_action_just_pressed(action: String) -> bool:
 	if p2_active:
 		return p1_button_just_pressed.get(action, false)
 	else:
-		return Input.is_action_just_pressed("p1_" + action)
+		# Try with p1_ prefix first, then try global action name
+		if InputMap.has_action("p1_" + action):
+			return Input.is_action_just_pressed("p1_" + action)
+		elif InputMap.has_action(action):
+			return Input.is_action_just_pressed(action)
+		else:
+			return false
 
 func is_p2_action_just_pressed(action: String) -> bool:
 	"""Check if P2's action was just pressed"""
