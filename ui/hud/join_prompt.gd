@@ -70,19 +70,21 @@ func show_prompt() -> void:
 	is_showing = true
 	show_timer = SHOW_DURATION
 
-	# Fade-in
-	modulate.a = 0.0
-	var tween = create_tween()
-	tween.tween_property(self, "modulate:a", 1.0, 0.3)
+	# Fade-in (apply to panel, not CanvasLayer)
+	if prompt_panel:
+		prompt_panel.modulate.a = 0.0
+		var tween = create_tween()
+		tween.tween_property(prompt_panel, "modulate:a", 1.0, 0.3)
 
 func hide_prompt() -> void:
 	"""Hide the join prompt with fade-out"""
 	is_showing = false
 
-	# Fade-out
-	var tween = create_tween()
-	tween.tween_property(self, "modulate:a", 0.0, 0.3)
-	tween.tween_callback(func(): visible = false)
+	# Fade-out (apply to panel, not CanvasLayer)
+	if prompt_panel:
+		var tween = create_tween()
+		tween.tween_property(prompt_panel, "modulate:a", 0.0, 0.3)
+		tween.tween_callback(func(): visible = false)
 
 func _process(delta: float) -> void:
 	if is_showing:

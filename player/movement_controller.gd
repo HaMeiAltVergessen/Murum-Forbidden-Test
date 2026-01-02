@@ -109,7 +109,7 @@ func _physics_process(delta: float) -> void:
 # ============ CROUCH ============
 func _process_crouch() -> void:
 	"""Handles crouching state"""
-	var crouch_action = input_prefix + "crouch" if Input.has_action(input_prefix + "crouch") else "crouch"
+	var crouch_action = input_prefix + "crouch" if InputMap.has_action(input_prefix + "crouch") else "crouch"
 	var wants_to_crouch: bool = Input.is_action_pressed(crouch_action) and player.is_on_floor()
 
 	if wants_to_crouch and not is_crouching:
