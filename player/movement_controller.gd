@@ -80,8 +80,8 @@ func _is_action_pressed(action: String) -> bool:
 		# So we check if the input event comes from the right device in _input
 		return InputManager.is_p2_action_pressed(action.replace(input_prefix, "")) if InputManager else false
 	else:
-		# P1: Normal keyboard/mouse input
-		return Input.is_action_pressed(action)
+		# P1: Use InputManager (keyboard-only when P2 active, keyboard+controller when solo)
+		return InputManager.is_p1_action_pressed(action.replace(input_prefix, "")) if InputManager else Input.is_action_pressed(action)
 
 func _is_action_just_pressed(action: String) -> bool:
 	"""Check if action was just pressed, with device filtering for P2"""
@@ -89,8 +89,8 @@ func _is_action_just_pressed(action: String) -> bool:
 		# P2: Use InputManager
 		return InputManager.is_p2_action_just_pressed(action.replace(input_prefix, "")) if InputManager else false
 	else:
-		# P1: Normal keyboard/mouse input
-		return Input.is_action_just_pressed(action)
+		# P1: Use InputManager (keyboard-only when P2 active, keyboard+controller when solo)
+		return InputManager.is_p1_action_just_pressed(action.replace(input_prefix, "")) if InputManager else Input.is_action_just_pressed(action)
 
 func _get_input_axis(negative: String, positive: String) -> float:
 	"""Get input axis, with device filtering for P2"""
@@ -103,8 +103,13 @@ func _get_input_axis(negative: String, positive: String) -> float:
 			return vec.y
 		return 0.0
 	else:
-		# P1: Normal keyboard/mouse input
-		return Input.get_axis(negative, positive)
+		# P1: Use InputManager (keyboard-only when P2 active, keyboard+controller when solo)
+		var vec = InputManager.get_p1_input_vector() if InputManager else Vector2.ZERO
+		if "left" in negative or "right" in positive:
+			return vec.x
+		elif "up" in negative or "down" in positive:
+			return vec.y
+		return 0.0
 
 
 func _physics_process(delta: float) -> void:
