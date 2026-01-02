@@ -179,6 +179,22 @@ func _create_circle_points(radius: float, num_points: int) -> PackedVector2Array
 # ============================================================================
 
 func _input(event: InputEvent) -> void:
+	# CRITICAL: Device filtering for co-op support
+	# P1: Can use block with keyboard/mouse (or controller when solo)
+	# P2: Should NOT use this system (has void_parry instead)
+
+	# Check if this is P2 - if so, don't process block input
+	var player = get_parent()
+	if player and player.name == "LythrunPlayer":
+		return  # P2 doesn't use parry/block system
+
+	# P1 device filtering
+	if InputManager and InputManager.p2_active:
+		# Co-op mode: P1 should ONLY accept keyboard/mouse input
+		var is_keyboard_mouse = (event is InputEventKey or event is InputEventMouse or event is InputEventMouseButton)
+		if not is_keyboard_mouse:
+			return  # Reject controller input when P2 is active
+
 	if event.is_action_pressed("block"):
 		_start_blocking()
 
