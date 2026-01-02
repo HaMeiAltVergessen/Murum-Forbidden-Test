@@ -8,6 +8,7 @@ class_name MovementController
 
 # ============ INPUT CONFIGURATION ============
 @export var input_prefix: String = "p1_"  # P1 by default, P2 uses "p2_"
+@export var controller_device_id: int = -1  # -1 = keyboard (P1), 0+ = specific controller (P2)
 
 # ============ MOVEMENT CONFIGURATION ============
 @export var move_speed: float = 300.0
@@ -63,6 +64,48 @@ func _ready() -> void:
 		var capsule: CapsuleShape2D = collision_shape.shape as CapsuleShape2D
 		normal_collision_height = capsule.height
 
+	# CRITICAL: For P2, get controller device from InputManager
+	if input_prefix == "p2_" and InputManager:
+		await get_tree().create_timer(0.1).timeout  # Wait for P2 to be spawned
+		controller_device_id = InputManager.p2_controller_device
+		print("[MovementController P2] Controller device set to: ", controller_device_id)
+
+# ============ DEVICE-FILTERED INPUT ============
+
+func _is_action_pressed(action: String) -> bool:
+	"""Check if action is pressed, with device filtering for P2"""
+	if controller_device_id >= 0:
+		# P2: Check specific controller device only
+		# We can't filter by device directly in Input.is_action_pressed
+		# So we check if the input event comes from the right device in _input
+		return InputManager.is_p2_action_pressed(action.replace(input_prefix, "")) if InputManager else false
+	else:
+		# P1: Normal keyboard/mouse input
+		return Input.is_action_pressed(action)
+
+func _is_action_just_pressed(action: String) -> bool:
+	"""Check if action was just pressed, with device filtering for P2"""
+	if controller_device_id >= 0:
+		# P2: Use InputManager
+		return InputManager.is_p2_action_just_pressed(action.replace(input_prefix, "")) if InputManager else false
+	else:
+		# P1: Normal keyboard/mouse input
+		return Input.is_action_just_pressed(action)
+
+func _get_input_axis(negative: String, positive: String) -> float:
+	"""Get input axis, with device filtering for P2"""
+	if controller_device_id >= 0:
+		# P2: Use InputManager's vector input
+		var vec = InputManager.get_p2_input_vector() if InputManager else Vector2.ZERO
+		if "left" in negative or "right" in positive:
+			return vec.x
+		elif "up" in negative or "down" in positive:
+			return vec.y
+		return 0.0
+	else:
+		# P1: Normal keyboard/mouse input
+		return Input.get_axis(negative, positive)
+
 
 func _physics_process(delta: float) -> void:
 	# CRITICAL: Check for NaN position at start of every frame
@@ -104,7 +147,7 @@ func _physics_process(delta: float) -> void:
 func _process_crouch() -> void:
 	"""Handles crouching state"""
 	var crouch_action = input_prefix + "crouch" if InputMap.has_action(input_prefix + "crouch") else "crouch"
-	var wants_to_crouch: bool = Input.is_action_pressed(crouch_action) and player.is_on_floor()
+	var wants_to_crouch: bool = _is_action_pressed(crouch_action) and player.is_on_floor()
 
 	if wants_to_crouch and not is_crouching:
 		_start_crouch()
@@ -180,7 +223,7 @@ func _process_horizontal_movement() -> void:
 	"""Handles horizontal WASD movement"""
 	var move_left_action = input_prefix + "move_left"
 	var move_right_action = input_prefix + "move_right"
-	var input_direction: float = Input.get_axis(move_left_action, move_right_action)
+	var input_direction: float = _get_input_axis(move_left_action, move_right_action)
 
 	# Apply crouch speed modifier
 	var current_speed: float = move_speed
@@ -238,7 +281,7 @@ func _process_jump() -> void:
 
 	# Check for jump input
 	var jump_action = input_prefix + "jump"
-	if Input.is_action_just_pressed(jump_action):
+	if _is_action_just_pressed(jump_action):
 		# IMPORTANT: Edge climb is checked FIRST, before jump count validation
 		# This allows edge climb to work as a "3rd jump" after double jump is used
 		if _attempt_edge_climb():
@@ -455,7 +498,7 @@ func _perform_edge_climb(target_position: Vector2) -> void:
 func _process_dash_input() -> void:
 	"""Checks for dash input"""
 	var dash_action = input_prefix + "dash"
-	if Input.is_action_just_pressed(dash_action):
+	if _is_action_just_pressed(dash_action):
 		_attempt_dash()
 
 
@@ -471,7 +514,7 @@ func _attempt_dash() -> void:
 
 	# Determine dash direction
 	var input_direction: Vector2 = Vector2(
-		Input.get_axis("move_left", "move_right"),
+		_get_input_axis(input_prefix + "move_left", input_prefix + "move_right"),
 		0.0  # Horizontal only for now
 	)
 
