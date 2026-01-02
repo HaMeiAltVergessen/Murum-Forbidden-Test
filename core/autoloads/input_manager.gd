@@ -135,21 +135,35 @@ func _input(event: InputEvent) -> void:
 	if p2_active and p2_controller_device >= 0:
 		# Only process events from P2's specific controller
 		if event is InputEventJoypadButton and event.device == p2_controller_device:
-			# Track all P2 shadow abilities (no staff_throw, parry, or urgathon - P2 has different abilities)
-			var p2_actions = ["join", "attack", "jump", "dash", "interact", "block",
-				"shadow_scythe", "void_parry", "void_rift", "ultimate", "move_left", "move_right"]
+			# CRITICAL FIX: Map button indices directly instead of using is_action()
+			# is_action() checks InputMap which has device:1, but real controller is device:0
+			# Xbox Controller Standard Mapping:
+			var button_to_action = {
+				0: "jump",           # A button
+				1: "dash",           # B button
+				2: "attack",         # X button
+				3: "shadow_scythe",  # Y button
+				4: "inventory",      # LB button
+				5: "void_rift",      # RB button
+				6: "void_parry",     # LT button (analog trigger, but registered as button)
+				7: "block",          # RT button (analog trigger)
+				9: "ultimate",       # R3 button (right stick press)
+				# D-Pad is handled separately (buttons 12-15)
+			}
 
-			for action_name in p2_actions:
-				var full_action = "p2_" + action_name
-				if event.is_action(full_action):
-					# Update pressed state
-					p2_button_states[action_name] = event.is_pressed()
-					# Track just_pressed (transition from not pressed to pressed)
-					if event.is_pressed() and not p2_button_just_pressed.get(action_name, false):
-						p2_button_just_pressed[action_name] = true
-						print("[InputManager DEBUG] P2 action pressed: ", action_name)
-					elif not event.is_pressed():
-						p2_button_just_pressed[action_name] = false
+			# Check if this button has a mapped action
+			if event.button_index in button_to_action:
+				var action_name = button_to_action[event.button_index]
+
+				# Update pressed state
+				p2_button_states[action_name] = event.is_pressed()
+
+				# Track just_pressed (transition from not pressed to pressed)
+				if event.is_pressed() and not p2_button_just_pressed.get(action_name, false):
+					p2_button_just_pressed[action_name] = true
+					print("[InputManager DEBUG] P2 action pressed: ", action_name)
+				elif not event.is_pressed():
+					p2_button_just_pressed[action_name] = false
 
 	# P2 Join-Request (any controller START button)
 	if not p2_active and event is InputEventJoypadButton:
