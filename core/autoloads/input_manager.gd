@@ -28,6 +28,10 @@ var p2_button_just_pressed: Dictionary = {}  # action_name -> bool (just pressed
 func _ready() -> void:
 	print("[InputManager] Initialized - Hybrid Input (KB+M + Controller)")
 
+	# CRITICAL: Set process priority to run LAST
+	# This ensures all other nodes read just_pressed states before we clear them
+	process_priority = 1000  # Higher number = runs later
+
 	# Detect all available controllers
 	detect_controllers()
 
@@ -146,7 +150,7 @@ func _input(event: InputEvent) -> void:
 				4: "inventory",      # LB button
 				5: "void_rift",      # RB button
 				6: "void_parry",     # LT button (analog trigger, but registered as button)
-				7: "block",          # RT button (analog trigger)
+				7: "block",          # RT button (analog trigger) - used for Void Parry too
 				9: "ultimate",       # R3 button (right stick press)
 				# D-Pad is handled separately (buttons 12-15)
 			}
