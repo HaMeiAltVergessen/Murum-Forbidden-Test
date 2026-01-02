@@ -55,6 +55,10 @@ func _process(delta: float) -> void:
 	if not enabled:
 		return
 
+	# CRITICAL: P1-only ability, device filtering
+	if player and player.name == "LythrunPlayer":
+		return
+
 	# Handle cooldown
 	if is_on_cooldown:
 		cooldown_timer -= delta
@@ -88,11 +92,17 @@ func _can_use_launcher() -> bool:
 
 func _check_launcher_input() -> bool:
 	"""Checks if launcher input is pressed"""
-	# For now, use staff_throw input + holding up
-	var up_held: bool = Input.is_action_pressed("jump")
-	var launcher_pressed: bool = Input.is_action_just_pressed(LAUNCHER_INPUT)
-
-	return launcher_pressed and up_held
+	# Device filtering for P1 when P2 active
+	if InputManager and InputManager.p2_active:
+		# P1 co-op mode: use InputManager
+		var up_held: bool = InputManager.is_p1_action_pressed("jump")
+		var launcher_pressed: bool = InputManager.is_p1_action_just_pressed("staff_throw")
+		return launcher_pressed and up_held
+	else:
+		# P1 solo mode: direct Input
+		var up_held: bool = Input.is_action_pressed("jump")
+		var launcher_pressed: bool = Input.is_action_just_pressed(LAUNCHER_INPUT)
+		return launcher_pressed and up_held
 
 
 func _has_sufficient_mana() -> bool:

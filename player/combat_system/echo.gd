@@ -98,6 +98,15 @@ func _ready() -> void:
 # ============================================================================
 
 func _input(event: InputEvent) -> void:
+	# CRITICAL: P1-only ability, device filtering
+	if player and player.name == "LythrunPlayer":
+		return
+
+	if InputManager and InputManager.p2_active:
+		var is_keyboard_mouse = (event is InputEventKey or event is InputEventMouse or event is InputEventMouseButton)
+		if not is_keyboard_mouse:
+			return
+
 	# Activate on Key 3 press OR RT + A (gamepad)
 	if event.is_action_pressed("ability_3"):
 		if is_active:
