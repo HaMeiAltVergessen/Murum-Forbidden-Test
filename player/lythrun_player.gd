@@ -11,7 +11,6 @@ class_name Lythrun
 @onready var hurtbox: HurtboxComponent = $HurtboxComponent if has_node("HurtboxComponent") else null
 @onready var sprite: Sprite2D = $Sprite2D if has_node("Sprite2D") else null
 @onready var player_camera: PlayerCamera = $PlayerCamera if has_node("PlayerCamera") else null
-@onready var dodge_roll_system: DodgeRollSystem = $DodgeRollSystem if has_node("DodgeRollSystem") else null
 
 # ============ SHADOW VFX ============
 @onready var shadow_trail: GPUParticles2D = $ShadowTrail if has_node("ShadowTrail") else null
@@ -333,11 +332,6 @@ func _connect_signals() -> void:
 	if hurtbox:
 		hurtbox.damage_received.connect(_on_damage_received)
 
-	# Dodge signals
-	if dodge_roll_system:
-		dodge_roll_system.dodge_started.connect(_on_dodge_started)
-		dodge_roll_system.dodge_completed.connect(_on_dodge_completed)
-
 func _on_health_changed(new_health: int, max_health: int) -> void:
 	"""Handle health changes"""
 	print("[Lythrun] HP: %d/%d" % [new_health, max_health])
@@ -394,16 +388,6 @@ func _on_health_depleted() -> void:
 	print("[Lythrun] Player 2 died")
 
 	# CoopManager handles respawn logic (already connected in coop_manager.gd)
-
-func _on_dodge_started(_direction: Vector2) -> void:
-	"""Handle dodge roll start"""
-	if combat_system:
-		combat_system.set_combat_enabled(false)
-
-func _on_dodge_completed() -> void:
-	"""Handle dodge roll completion"""
-	if combat_system:
-		combat_system.set_combat_enabled(true)
 
 # ============ VISUAL FEEDBACK ============
 
