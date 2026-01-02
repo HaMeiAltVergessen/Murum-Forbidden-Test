@@ -1,17 +1,15 @@
 extends CanvasLayer
-## Gold Display - Shows shared gold count for P1 and P2
-## Positioned top-center
+## Gold Display - Shows gold count for P1 and P2
+## P1: Bottom-left, P2: Bottom-right
 
-@onready var p1_gold_label: Label = $MarginContainer/HBoxContainer/P1GoldLabel if has_node("MarginContainer/HBoxContainer/P1GoldLabel") else null
-@onready var p2_gold_label: Label = $MarginContainer/HBoxContainer/P2GoldLabel if has_node("MarginContainer/HBoxContainer/P2GoldLabel") else null
-@onready var separator: Label = $MarginContainer/HBoxContainer/Separator if has_node("MarginContainer/HBoxContainer/Separator") else null
+@onready var p1_gold_label: Label = $P1GoldContainer/P1GoldLabel if has_node("P1GoldContainer/P1GoldLabel") else null
+@onready var p2_gold_label: Label = $P2GoldContainer/P2GoldLabel if has_node("P2GoldContainer/P2GoldLabel") else null
+@onready var p2_gold_container: MarginContainer = $P2GoldContainer if has_node("P2GoldContainer") else null
 
 func _ready() -> void:
-	# Initially show only P1 gold
-	if p2_gold_label:
-		p2_gold_label.visible = false
-	if separator:
-		separator.visible = false
+	# Initially hide P2 gold (only show when P2 joins)
+	if p2_gold_container:
+		p2_gold_container.visible = false
 
 	# Update initial display
 	update_gold_display()
@@ -35,29 +33,25 @@ func update_gold_display() -> void:
 	if not GameManager:
 		return
 
-	# P1 Gold
+	# P1 Gold (always shown)
 	var p1_gold = GameManager.player_gold if "player_gold" in GameManager else 0
 	if p1_gold_label:
-		p1_gold_label.text = "Murum: %d 💰" % p1_gold
+		p1_gold_label.text = "Gold: %d 💰" % p1_gold
 
-	# P2 Gold (if active)
+	# P2 Gold (only if active)
 	if CoopManager and CoopManager.is_p2_active:
 		var p2_gold = GameManager.p2_gold if "p2_gold" in GameManager else 0
 		if p2_gold_label:
-			p2_gold_label.text = "Lythrun: %d 💰" % p2_gold
+			p2_gold_label.text = "Gold: %d 💰" % p2_gold
 
 func _on_p2_joined() -> void:
 	"""Handle P2 joining - show P2 gold"""
-	if p2_gold_label:
-		p2_gold_label.visible = true
-	if separator:
-		separator.visible = true
+	if p2_gold_container:
+		p2_gold_container.visible = true
 
 	update_gold_display()
 
 func _on_p2_left() -> void:
 	"""Handle P2 leaving - hide P2 gold"""
-	if p2_gold_label:
-		p2_gold_label.visible = false
-	if separator:
-		separator.visible = false
+	if p2_gold_container:
+		p2_gold_container.visible = false
