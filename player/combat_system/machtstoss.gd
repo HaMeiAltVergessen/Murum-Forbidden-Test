@@ -116,22 +116,29 @@ func _input(event: InputEvent) -> void:
 		if not is_keyboard_mouse:
 			return
 
-	# Start charging on Key 1 press OR RT + B (gamepad)
+	# Start charging on Key 1 press
 	if event.is_action_pressed("ability_1"):
 		_start_charging()
 	# Release charge on Key 1 release
 	elif event.is_action_released("ability_1"):
 		_release_charge()
-	# Gamepad: RT + B
-	elif event.is_action_pressed("dodge"):
-		if _is_rt_pressed():
-			_start_charging()
-	elif event.is_action_released("dodge"):
-		if is_charging:
-			_release_charge()
+
+	# Gamepad: RT + B (ONLY when P2 is NOT active - P1 uses keyboard when P2 active)
+	elif not (InputManager and InputManager.p2_active):
+		# Only process gamepad input when solo (no P2)
+		if event.is_action_pressed("dodge"):
+			if _is_rt_pressed():
+				_start_charging()
+		elif event.is_action_released("dodge"):
+			if is_charging:
+				_release_charge()
 
 func _is_rt_pressed() -> bool:
 	"""Check if RT is pressed (either as button or analog trigger)"""
+	# ONLY for solo mode (when P2 is not active)
+	if InputManager and InputManager.p2_active:
+		return false  # Don't check controller when P2 active
+
 	# Button 7 (some controllers)
 	if Input.is_action_pressed("gamepad_modifier"):
 		return true
