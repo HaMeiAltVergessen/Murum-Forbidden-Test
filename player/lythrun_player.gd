@@ -464,6 +464,10 @@ func respawn(spawn_position: Vector2) -> void:
 
 func _process(delta: float) -> void:
 	"""Process P2 shadow abilities and timers each frame"""
+	# CRITICAL DEBUG: Print at start to verify _process is running
+	if Engine.get_physics_frames() % 60 == 0:  # Every ~1 second
+		print("[Lythrun _process] Running... Dead:", is_dead, " InputManager:", InputManager != null, " P2 Active:", InputManager.p2_active if InputManager else "N/A")
+
 	if is_dead:
 		return
 
