@@ -463,7 +463,11 @@ func respawn(spawn_position: Vector2) -> void:
 # ============ PROCESS LOOPS (COMMIT 019.5) ============
 
 func _process(delta: float) -> void:
-	"""Update timers and charge mechanics"""
+	"""Process P2 shadow abilities and timers each frame"""
+	if is_dead:
+		return
+
+	# ===== TIMERS AND CHARGE MECHANICS =====
 	# Combo timer
 	if combo_timer > 0:
 		combo_timer -= delta
@@ -482,6 +486,64 @@ func _process(delta: float) -> void:
 		abgrund_charge_time += delta
 		abgrund_charge_time = min(abgrund_charge_time, ABGRUND_CHARGE_TIME_MAX)
 		update_abgrund_charge_vfx(abgrund_charge_time / ABGRUND_CHARGE_TIME_MAX)
+
+	# ===== P2 SHADOW ABILITIES INPUT =====
+	if not InputManager or not InputManager.p2_active:
+		return
+
+	# CRITICAL: Check P2 inputs through InputManager (device-filtered)
+	# Shadow Dash (B Button)
+	if InputManager.is_p2_action_just_pressed("dash"):
+		print("[Lythrun DEBUG] Shadow Dash pressed")
+		shadow_dash()
+
+	# Void Strike (Attack button)
+	if InputManager.is_p2_action_just_pressed("attack"):
+		print("[Lythrun DEBUG] Attack pressed")
+		# Check for Abgrund (Down + Attack in air)
+		if not is_on_floor() and InputManager.get_p2_input_vector().y > 0.5:
+			print("[Lythrun DEBUG] Starting Abgrund charge")
+			start_charging_abgrund()
+		else:
+			void_strike()
+
+	# Release Abgrund
+	if not InputManager.is_p2_action_pressed("attack") and is_charging_abgrund:
+		print("[Lythrun DEBUG] Releasing Abgrund")
+		release_abgrund()
+
+	# Shadow Scythe (Y button / Button 3)
+	if InputManager.is_p2_action_just_pressed("shadow_scythe"):
+		print("[Lythrun DEBUG] Shadow Scythe pressed")
+		if scythe_thrown and scythe_instance:
+			recall_scythe()
+		else:
+			shadow_scythe()
+
+	# Void Parry (LB button / Button 6)
+	if InputManager.is_p2_action_just_pressed("void_parry"):
+		print("[Lythrun DEBUG] Void Parry pressed")
+		void_parry()
+
+	# Void Rift (RB button / Button 5)
+	if InputManager.is_p2_action_just_pressed("void_rift"):
+		print("[Lythrun DEBUG] Void Rift pressed")
+		void_rift()
+
+	# Void Orbs (R3 button / Button 9 - charged attack)
+	if InputManager.is_p2_action_just_pressed("ultimate"):
+		print("[Lythrun DEBUG] Ultimate charge started")
+		start_charging_orb()
+
+	# Release Void Orbs
+	if not InputManager.is_p2_action_pressed("ultimate") and is_charging_orb:
+		print("[Lythrun DEBUG] Ultimate released")
+		release_orb()
+
+	# Phase-Shift (Ultimate + Dash modifier - R3 + B)
+	if InputManager.is_p2_action_just_pressed("ultimate") and InputManager.is_p2_action_pressed("dash"):
+		print("[Lythrun DEBUG] Phase Shift triggered")
+		phase_shift()
 
 func _physics_process(delta: float) -> void:
 	"""Handle physics and movement (COMMIT 019.5 - custom movement)"""
@@ -515,61 +577,6 @@ func _physics_process(delta: float) -> void:
 			var input_vector = InputManager.get_p2_input_vector() if InputManager else Vector2.ZERO
 			velocity.x = input_vector.x * movement_speed
 			move_and_slide()
-
-func _input(event: InputEvent) -> void:
-	"""Handle P2 input for unique abilities (COMMIT 019.5)"""
-	if is_dead or not InputManager:
-		return
-
-	# CRITICAL: Only accept inputs from P2's specific controller device
-	# This prevents P1's keyboard/controller from controlling P2
-	if event is InputEventJoypadButton or event is InputEventJoypadMotion:
-		if event.device != InputManager.p2_controller_device:
-			return  # Wrong controller - ignore
-	elif event is InputEventKey or event is InputEventMouse:
-		# P2 should NEVER respond to keyboard/mouse
-		return
-
-	# Shadow Dash (Shift/B Button)
-	if event.is_action_pressed("p2_dash"):
-		shadow_dash()
-
-	# Void Strike (Attack button)
-	if event.is_action_pressed("p2_attack"):
-		# Check for Abgrund (Down + Attack in air)
-		if not is_on_floor() and InputManager.get_p2_input_vector().y > 0.5:
-			start_charging_abgrund()
-		else:
-			void_strike()
-
-	if event.is_action_released("p2_attack") and is_charging_abgrund:
-		release_abgrund()
-
-	# Shadow Scythe (Y button / Button 3)
-	if event.is_action_pressed("p2_shadow_scythe"):
-		if scythe_thrown and scythe_instance:
-			recall_scythe()
-		else:
-			shadow_scythe()
-
-	# Void Parry (LB button / Button 6)
-	if event.is_action_pressed("p2_void_parry"):
-		void_parry()
-
-	# Void Rift (RB button / Button 5)
-	if event.is_action_pressed("p2_void_rift"):
-		void_rift()
-
-	# Void Orbs (R3 button / Button 9 - charged attack)
-	if event.is_action_pressed("p2_ultimate"):
-		start_charging_orb()
-
-	if event.is_action_released("p2_ultimate"):
-		release_orb()
-
-	# Phase-Shift (Ultimate + Dash modifier - R3 + B)
-	if event.is_action_pressed("p2_ultimate") and Input.is_action_pressed("p2_dash"):
-		phase_shift()
 
 # ============ SHADOW DASH (COMMIT 019.5) ============
 
