@@ -5,6 +5,8 @@ extends Node
 # ============ HUD REFERENCES ============
 var p1_hud: CanvasLayer = null
 var p2_hud: CanvasLayer = null
+var p1_abilities: CanvasLayer = null
+var p2_abilities: CanvasLayer = null
 var gold_display: CanvasLayer = null
 var join_prompt: CanvasLayer = null
 var p2_tutorial: CanvasLayer = null
@@ -52,6 +54,24 @@ func load_huds() -> void:
 	else:
 		print("[HUDManager] WARNING: P2 HUD scene not found")
 
+	# P1 Abilities Display
+	var p1_abilities_scene = load("res://ui/hud/p1_abilities.tscn")
+	if p1_abilities_scene:
+		p1_abilities = p1_abilities_scene.instantiate()
+		current_scene.add_child(p1_abilities)
+		print("[HUDManager] P1 Abilities loaded")
+	else:
+		print("[HUDManager] WARNING: P1 Abilities scene not found")
+
+	# P2 Abilities Display
+	var p2_abilities_scene = load("res://ui/hud/p2_abilities.tscn")
+	if p2_abilities_scene:
+		p2_abilities = p2_abilities_scene.instantiate()
+		current_scene.add_child(p2_abilities)
+		print("[HUDManager] P2 Abilities loaded")
+	else:
+		print("[HUDManager] WARNING: P2 Abilities scene not found")
+
 	# Gold Display
 	var gold_display_scene = load("res://ui/hud/gold_display.tscn")
 	if gold_display_scene:
@@ -89,11 +109,21 @@ func set_p1_reference(player: CharacterBody2D) -> void:
 		p1_hud.set_player(player)
 		print("[HUDManager] P1 reference set")
 
+	# Set P1 abilities reference
+	if p1_abilities and p1_abilities.has_method("set_player"):
+		p1_abilities.set_player(player)
+		print("[HUDManager] P1 abilities reference set")
+
 func set_p2_reference(player: CharacterBody2D) -> void:
 	"""Set P2 reference for HUD"""
 	if p2_hud and p2_hud.has_method("set_player"):
 		p2_hud.set_player(player)
 		print("[HUDManager] P2 reference set")
+
+	# Set P2 abilities reference
+	if p2_abilities and p2_abilities.has_method("set_player"):
+		p2_abilities.set_player(player)
+		print("[HUDManager] P2 abilities reference set")
 
 # ============ SIGNALS ============
 
@@ -115,6 +145,10 @@ func hide_all_hud() -> void:
 		p1_hud.visible = false
 	if p2_hud:
 		p2_hud.visible = false
+	if p1_abilities:
+		p1_abilities.visible = false
+	if p2_abilities:
+		p2_abilities.visible = false
 	if gold_display:
 		gold_display.visible = false
 	if join_prompt:
@@ -129,6 +163,13 @@ func show_all_hud() -> void:
 
 	if p2_hud and CoopManager and CoopManager.is_p2_active:
 		p2_hud.visible = true
+
+	if p1_abilities:
+		p1_abilities.visible = true
+
+	if p2_abilities:
+		# P2 abilities handles its own visibility based on p2_joined signal
+		pass
 
 	if gold_display:
 		gold_display.visible = true
