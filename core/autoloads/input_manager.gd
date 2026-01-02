@@ -113,7 +113,7 @@ func _input(event: InputEvent) -> void:
 					p1_button_just_pressed[action_name] = false
 
 		# Actions WITHOUT p1_ prefix (global actions that P1 uses)
-		var p1_global_actions = ["staff_throw", "dodge", "urgathon_charge", "crouch"]
+		var p1_global_actions = ["staff_throw", "dodge", "urgathon_charge", "crouch", "ability_1", "ability_2", "ability_3"]
 		for action_name in p1_global_actions:
 			if InputMap.has_action(action_name) and event.is_action(action_name):
 				p1_button_states[action_name] = event.is_pressed()
@@ -143,6 +143,7 @@ func _input(event: InputEvent) -> void:
 					# Track just_pressed (transition from not pressed to pressed)
 					if event.is_pressed() and not p2_button_just_pressed.get(action_name, false):
 						p2_button_just_pressed[action_name] = true
+						print("[InputManager DEBUG] P2 action pressed: ", action_name)
 					elif not event.is_pressed():
 						p2_button_just_pressed[action_name] = false
 
