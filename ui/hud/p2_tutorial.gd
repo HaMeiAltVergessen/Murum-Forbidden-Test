@@ -11,6 +11,9 @@ var tutorial_shown: bool = false
 func _ready() -> void:
 	visible = false
 
+	# CRITICAL: Process inputs even when game is paused
+	process_mode = Node.PROCESS_MODE_ALWAYS
+
 	# Connect to CoopManager
 	if CoopManager:
 		CoopManager.p2_joined.connect(_on_p2_joined)

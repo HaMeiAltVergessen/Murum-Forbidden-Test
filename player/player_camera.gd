@@ -22,8 +22,10 @@ func _ready() -> void:
 	# Set initial zoom
 	zoom = Vector2(zoom_level, zoom_level)
 
-	# Make this camera current
-	make_current()
+	# Make this camera current (only if enabled)
+	# P2's camera will be disabled by lythrun_player.gd, so skip make_current()
+	if enabled:
+		make_current()
 
 	# Connect to combo system for shake effects
 	if CombatManager:
