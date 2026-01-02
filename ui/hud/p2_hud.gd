@@ -37,18 +37,18 @@ func set_player(p: CharacterBody2D) -> void:
 	if not player:
 		return
 
-	# Connect to HealthComponent
+	# Connect to HealthComponent (check if not already connected)
 	if player.has_node("HealthComponent"):
 		var health_comp = player.get_node("HealthComponent")
-		if health_comp.has_signal("health_changed"):
+		if health_comp.has_signal("health_changed") and not health_comp.health_changed.is_connected(_on_health_changed):
 			health_comp.health_changed.connect(_on_health_changed)
-		if health_comp.has_signal("damage_taken"):
+		if health_comp.has_signal("damage_taken") and not health_comp.damage_taken.is_connected(_on_damage_taken):
 			health_comp.damage_taken.connect(_on_damage_taken)
 
-	# Connect to ManaComponent
+	# Connect to ManaComponent (check if not already connected)
 	if player.has_node("ManaComponent"):
 		var mana_comp = player.get_node("ManaComponent")
-		if mana_comp.has_signal("mana_changed"):
+		if mana_comp.has_signal("mana_changed") and not mana_comp.mana_changed.is_connected(_on_mana_changed):
 			mana_comp.mana_changed.connect(_on_mana_changed)
 
 	# Initial update
@@ -63,11 +63,8 @@ func _on_p2_joined() -> void:
 	"""Handle P2 joining"""
 	visible = true
 
-	# Get P2 reference
-	if CoopManager:
-		player = CoopManager.get_p2_instance()
-		if player:
-			set_player(player)
+	# Note: HUDManager will call set_player() via set_p2_reference()
+	# So we don't need to call it here to avoid duplicate signal connections
 
 func _on_p2_left() -> void:
 	"""Handle P2 leaving"""
