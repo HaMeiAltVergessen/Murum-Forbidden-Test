@@ -14,6 +14,11 @@ var p2_controller_device: int = -1  # Which controller is P2?
 # ============ CONTROLLER DETECTION ============
 var detected_controllers: Array[int] = []
 
+# ============ P2 INPUT STATE TRACKING ============
+# Track button states for P2's specific controller to prevent keyboard/P1 controller interference
+var p2_button_states: Dictionary = {}  # action_name -> bool (pressed this frame?)
+var p2_button_just_pressed: Dictionary = {}  # action_name -> bool (just pressed this frame?)
+
 func _ready() -> void:
 	print("[InputManager] Initialized - Hybrid Input (KB+M + Controller)")
 
@@ -22,6 +27,15 @@ func _ready() -> void:
 
 	# Connect to controller hotplug signals
 	Input.joy_connection_changed.connect(_on_controller_connection_changed)
+
+func _process(_delta: float) -> void:
+	"""Clear just_pressed states each frame (after they've been read)"""
+	# Reset just_pressed states at the end of each frame
+	# This ensures just_pressed only returns true for one frame
+	for action in p2_button_just_pressed.keys():
+		if p2_button_just_pressed[action]:
+			# Mark as consumed for next frame
+			p2_button_just_pressed[action] = false
 
 func detect_controllers() -> void:
 	"""Detect all connected controllers"""
@@ -53,6 +67,25 @@ func _on_controller_connection_changed(device: int, connected: bool) -> void:
 			p2_leave_requested.emit()
 
 func _input(event: InputEvent) -> void:
+	# CRITICAL: Track P2 button states ONLY from P2's specific controller device
+	if p2_active and p2_controller_device >= 0:
+		# Only process events from P2's specific controller
+		if event is InputEventJoypadButton and event.device == p2_controller_device:
+			# Track all P2 actions
+			var p2_actions = ["join", "attack", "jump", "dash", "staff_throw", "parry", "urgathon",
+				"shadow_scythe", "void_parry", "void_rift", "ultimate", "move_left", "move_right"]
+
+			for action_name in p2_actions:
+				var full_action = "p2_" + action_name
+				if event.is_action(full_action):
+					# Update pressed state
+					p2_button_states[action_name] = event.is_pressed()
+					# Track just_pressed (transition from not pressed to pressed)
+					if event.is_pressed() and not p2_button_just_pressed.get(action_name, false):
+						p2_button_just_pressed[action_name] = true
+					elif not event.is_pressed():
+						p2_button_just_pressed[action_name] = false
+
 	# P2 Join-Request (any controller START button)
 	if not p2_active and event is InputEventJoypadButton:
 		if event.is_pressed() and event.button_index == JOY_BUTTON_START:
@@ -91,6 +124,9 @@ func set_p2_active(active: bool) -> void:
 
 	if not active:
 		p2_controller_device = -1
+		# Clear tracked button states
+		p2_button_states.clear()
+		p2_button_just_pressed.clear()
 
 	print("[InputManager] P2 active: %s (Device: %d)" % [p2_active, p2_controller_device])
 
@@ -126,8 +162,9 @@ func is_p2_action_pressed(action: String) -> bool:
 	if p2_controller_device == -1:
 		return false
 
-	# Check if the specific controller has this button pressed
-	return Input.is_action_pressed("p2_" + action)
+	# CRITICAL: Use tracked button state from P2's specific controller ONLY
+	# This prevents keyboard/mouse and other controllers from controlling P2
+	return p2_button_states.get(action, false)
 
 func is_p1_action_just_pressed(action: String) -> bool:
 	"""Check if P1's action was just pressed"""
@@ -138,7 +175,9 @@ func is_p2_action_just_pressed(action: String) -> bool:
 	if p2_controller_device == -1:
 		return false
 
-	return Input.is_action_just_pressed("p2_" + action)
+	# CRITICAL: Use tracked just_pressed state from P2's specific controller ONLY
+	# This prevents keyboard/mouse and other controllers from controlling P2
+	return p2_button_just_pressed.get(action, false)
 
 func is_p1_action_just_released(action: String) -> bool:
 	"""Check if P1's action was just released"""

@@ -537,6 +537,15 @@ func _input(event: InputEvent) -> void:
 	if is_dead or not InputManager:
 		return
 
+	# CRITICAL: Only accept inputs from P2's specific controller device
+	# This prevents P1's keyboard/controller from controlling P2
+	if event is InputEventJoypadButton or event is InputEventJoypadMotion:
+		if event.device != InputManager.p2_controller_device:
+			return  # Wrong controller - ignore
+	elif event is InputEventKey or event is InputEventMouse:
+		# P2 should NEVER respond to keyboard/mouse
+		return
+
 	# Shadow Dash (Shift/B Button)
 	if event.is_action_pressed("p2_dash"):
 		shadow_dash()
