@@ -28,6 +28,7 @@ InventoryManager="*res://core/autoloads/inventory_manager.gd"
 ShopManager="*res://core/autoloads/shop_manager.gd"
 InputManager="*res://core/autoloads/input_manager.gd"
 CoopManager="*res://core/autoloads/coop_manager.gd"
+HUDManager="*res://core/autoloads/hud_manager.gd"
 InventoryUI="*res://ui/inventory/inventory.tscn"
 HUD="*res://ui/hud.tscn"
 

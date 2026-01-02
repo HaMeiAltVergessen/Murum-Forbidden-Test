@@ -51,6 +51,7 @@ texture_scale = 2.0
 
 [node name="MovementController" type="Node" parent="."]
 script = ExtResource("2_movement")
+input_prefix = "p2_"
 move_speed = 300.0
 jump_velocity = -800.0
 gravity = 1800.0
@@ -75,6 +76,7 @@ regen_delay_after_use = 1.0
 
 [node name="CombatSystem" type="Node2D" parent="."]
 script = ExtResource("5_combat")
+input_prefix = "p2_"
 attack_damages = Array[int]([10, 12, 15])
 attack_durations = Array[float]([0.3, 0.35, 0.4])
 combo_window = 0.5

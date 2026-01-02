@@ -1,0 +1,180 @@
+{
+  "version": "1.0",
+  "description": "Shadow mirror items for Player 2 (Lythrun)",
+  "items": [
+    {
+      "id": "shadow_titanenblut_stein",
+      "name": "Schattenblut-Splitter",
+      "type": "consumable",
+      "world": 1,
+      "category": "heal",
+      "description": "Kalter Stein, der Wärme aus Erinnerungen zieht",
+      "icon": "res://assets/items/icons/shadow_titanenblut_stein.png",
+      "price": 20,
+      "effect": "Sehr langsame Lebensregeneration (+0.8% max. Leben/Sek.)",
+      "duration": "30 Sek.",
+      "mirror_of": "titanenblut_stein",
+      "stats": {
+        "hp_regen_percent_per_sec": 0.008,
+        "duration_sec": 30
+      }
+    },
+    {
+      "id": "shadow_staub_einkehr",
+      "name": "Asche der Vergessenheit",
+      "type": "consumable",
+      "world": 1,
+      "category": "buff",
+      "description": "Feine Asche, die Schmerz in Nebel hüllt",
+      "icon": "res://assets/items/icons/shadow_staub_einkehr.png",
+      "price": 25,
+      "effect": "Reduziert eingehenden Schaden (−10%)",
+      "duration": "20 Sek.",
+      "mirror_of": "staub_einkehr",
+      "stats": {
+        "damage_reduction": 0.1,
+        "duration_sec": 20
+      }
+    },
+    {
+      "id": "shadow_splitter_erdung",
+      "name": "Fragment der Schwere",
+      "type": "consumable",
+      "world": 1,
+      "category": "buff",
+      "description": "Schwerer Splitter, der an die Tiefe bindet",
+      "icon": "res://assets/items/icons/shadow_splitter_erdung.png",
+      "price": 30,
+      "effect": "Reduziert Rückstoß & Luftschleudern (−30% Knockback)",
+      "duration": "25 Sek.",
+      "mirror_of": "splitter_erdung",
+      "stats": {
+        "knockback_reduction": 0.3,
+        "duration_sec": 25
+      }
+    },
+    {
+      "id": "shadow_resonanzstaub",
+      "name": "Echo-Partikel",
+      "type": "consumable",
+      "world": 2,
+      "category": "buff",
+      "description": "Vibrierende Partikel aus vergessenen Schlachten",
+      "icon": "res://assets/items/icons/shadow_resonanzstaub.png",
+      "price": 40,
+      "effect": "Erhöht Resonanzaufbau (+25% Trefferwertung)",
+      "duration": "20 Sek.",
+      "mirror_of": "resonanzstaub",
+      "stats": {
+        "resonance_gain_bonus": 0.25,
+        "duration_sec": 20
+      }
+    },
+    {
+      "id": "shadow_heilkraeuter",
+      "name": "Schattenessenz",
+      "type": "consumable",
+      "world": 1,
+      "category": "heal",
+      "description": "Dunkle Essenz, die Leben aus Schatten zieht",
+      "icon": "res://assets/items/icons/shadow_heilkraeuter.png",
+      "price": 50,
+      "effect": "Stelle 40% HP wieder her",
+      "duration": "Sofort",
+      "mirror_of": "heilkraeuter",
+      "stats": {
+        "heal_percent": 0.4
+      }
+    },
+    {
+      "id": "shadow_auge_xy",
+      "name": "Linse der Finsternis",
+      "type": "relic",
+      "world": 1,
+      "category": "parry",
+      "description": "Versteinertes Auge aus dem Schatten eines Heiligen",
+      "lore": "Auge eines vergessenen Beschützers.",
+      "icon": "res://assets/items/icons/shadow_auge_xy.png",
+      "mirror_of": "auge_xy",
+      "stats": {
+        "parry_window_bonus": 0.1,
+        "parry_slow_duration": 0.5,
+        "parry_slow_strength": 0.3
+      }
+    },
+    {
+      "id": "shadow_splitter_xa",
+      "name": "Fragment der Leere",
+      "type": "relic",
+      "world": 1,
+      "category": "damage",
+      "description": "Knochensplitter eines verschollenen Kriegers",
+      "lore": "Knochensplitter eines gefallenen Märtyrers.",
+      "icon": "res://assets/items/icons/shadow_splitter_xa.png",
+      "mirror_of": "splitter_xa",
+      "stats": {
+        "group_damage_bonus": 0.15,
+        "group_enemy_threshold": 3
+      }
+    },
+    {
+      "id": "shadow_urtraene",
+      "name": "Träne des Abgrunds",
+      "type": "relic",
+      "world": 1,
+      "category": "mana",
+      "description": "Kristallisierte Träne aus dem Schoß der Zerstörung",
+      "lore": "Verzweiflung in der Hoffnung. Eine Träne aus dem Abgrund.",
+      "icon": "res://assets/items/icons/shadow_urtraene.png",
+      "mirror_of": "urtraene",
+      "stats": {
+        "mana_regen_interval": 20,
+        "mana_regen_percent": 0.15
+      }
+    },
+    {
+      "id": "shadow_key_placeholder_1",
+      "name": "???",
+      "type": "key_item",
+      "world": 0,
+      "category": "placeholder",
+      "description": "Ein Echo von etwas Realem. Unerreichbar für Schatten.",
+      "lore": "Die Form ist da, aber nicht die Substanz.",
+      "icon": "res://assets/items/icons/shadow_key_empty.png",
+      "stats": {}
+    },
+    {
+      "id": "shadow_key_placeholder_2",
+      "name": "Vergessener Schlüssel",
+      "type": "key_item",
+      "world": 0,
+      "category": "placeholder",
+      "description": "Du erinnerst dich an seine Form, aber nicht an seine Bedeutung.",
+      "lore": "Türen öffnen sich nicht für Verfolger.",
+      "icon": "res://assets/items/icons/shadow_key_empty.png",
+      "stats": {}
+    },
+    {
+      "id": "shadow_key_placeholder_3",
+      "name": "Schatten eines Zugangs",
+      "type": "key_item",
+      "world": 0,
+      "category": "placeholder",
+      "description": "Die Tür ist da, aber der Schlüssel ist nur ein Traum.",
+      "lore": "Manche Wege sind nicht für dich bestimmt.",
+      "icon": "res://assets/items/icons/shadow_key_empty.png",
+      "stats": {}
+    },
+    {
+      "id": "shadow_key_placeholder_4",
+      "name": "Phantom-Fragment",
+      "type": "key_item",
+      "world": 0,
+      "category": "placeholder",
+      "description": "Du siehst die Form, aber sie löst sich auf wenn du versuchst sie zu greifen.",
+      "lore": "Ein Schatten kann keine Türen öffnen.",
+      "icon": "res://assets/items/icons/shadow_key_empty.png",
+      "stats": {}
+    }
+  ]
+}

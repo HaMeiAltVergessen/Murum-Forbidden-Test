@@ -6,6 +6,8 @@ class_name MovementController
 @onready var player: CharacterBody2D = get_parent()
 @onready var mana_component: ManaComponent = player.get_node_or_null("ManaComponent")
 
+# ============ INPUT CONFIGURATION ============
+@export var input_prefix: String = "p1_"  # P1 by default, P2 uses "p2_"
 # ============ SFX ============
 @onready var jump_sfx: AudioStreamPlayer = null
 @onready var dash_sfx: AudioStreamPlayer = null
@@ -107,7 +109,8 @@ func _physics_process(delta: float) -> void:
 # ============ CROUCH ============
 func _process_crouch() -> void:
 	"""Handles crouching state"""
-	var wants_to_crouch: bool = Input.is_action_pressed("crouch") and player.is_on_floor()
+	var crouch_action = input_prefix + "crouch" if Input.has_action(input_prefix + "crouch") else "crouch"
+	var wants_to_crouch: bool = Input.is_action_pressed(crouch_action) and player.is_on_floor()
 
 	if wants_to_crouch and not is_crouching:
 		_start_crouch()
@@ -181,7 +184,9 @@ func _can_stand_up() -> bool:
 # ============ MOVEMENT ============
 func _process_horizontal_movement() -> void:
 	"""Handles horizontal WASD movement"""
-	var input_direction: float = Input.get_axis("move_left", "move_right")
+	var move_left_action = input_prefix + "move_left"
+	var move_right_action = input_prefix + "move_right"
+	var input_direction: float = Input.get_axis(move_left_action, move_right_action)
 
 	# Apply crouch speed modifier
 	var current_speed: float = move_speed
@@ -238,7 +243,8 @@ func _process_jump() -> void:
 		return
 
 	# Check for jump input
-	if Input.is_action_just_pressed("jump"):
+	var jump_action = input_prefix + "jump"
+	if Input.is_action_just_pressed(jump_action):
 		# IMPORTANT: Edge climb is checked FIRST, before jump count validation
 		# This allows edge climb to work as a "3rd jump" after double jump is used
 		if _attempt_edge_climb():
@@ -457,7 +463,8 @@ func _perform_edge_climb(target_position: Vector2) -> void:
 # ============ DASH SYSTEM ============
 func _process_dash_input() -> void:
 	"""Checks for dash input"""
-	if Input.is_action_just_pressed("dash"):
+	var dash_action = input_prefix + "dash"
+	if Input.is_action_just_pressed(dash_action):
 		_attempt_dash()
 
 
