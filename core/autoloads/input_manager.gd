@@ -132,7 +132,7 @@ func _input(event: InputEvent) -> void:
 		# Only process events from P2's specific controller
 		if event is InputEventJoypadButton and event.device == p2_controller_device:
 			# Track all P2 shadow abilities (no staff_throw, parry, or urgathon - P2 has different abilities)
-			var p2_actions = ["join", "attack", "jump", "dash",
+			var p2_actions = ["join", "attack", "jump", "dash", "interact", "block",
 				"shadow_scythe", "void_parry", "void_rift", "ultimate", "move_left", "move_right"]
 
 			for action_name in p2_actions:

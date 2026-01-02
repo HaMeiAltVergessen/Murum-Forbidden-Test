@@ -47,6 +47,17 @@ signal throw_failed(reason: String)
 # ============================================================================
 
 func _input(event: InputEvent) -> void:
+	# CRITICAL: Device filtering for co-op support
+	# This is P1-only ability - P2 doesn't use staff
+	if player and player.name == "LythrunPlayer":
+		return  # P2 doesn't use staff
+
+	# P1 device filtering
+	if InputManager and InputManager.p2_active:
+		var is_keyboard_mouse = (event is InputEventKey or event is InputEventMouse or event is InputEventMouseButton)
+		if not is_keyboard_mouse:
+			return  # Reject controller when P2 active
+
 	if event.is_action_pressed("staff_throw"):
 		attempt_throw()
 	# Gamepad: RT + X (X = light_attack button)
