@@ -89,5 +89,5 @@ autowrap_mode = 3
 [node name="CloseButton" type="Label" parent="Overlay/CenterContainer/PanelContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "Press START to continue"
+text = "Press any action button to continue"
 horizontal_alignment = 1

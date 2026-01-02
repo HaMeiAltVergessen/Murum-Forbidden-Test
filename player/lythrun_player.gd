@@ -550,30 +550,30 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_released("p2_attack") and is_charging_abgrund:
 		release_abgrund()
 
-	# Shadow Scythe (Special attack button / Staff throw equivalent)
-	if event.is_action_pressed("p2_staff_throw"):
+	# Shadow Scythe (Y button / Button 3)
+	if event.is_action_pressed("p2_shadow_scythe"):
 		if scythe_thrown and scythe_instance:
 			recall_scythe()
 		else:
 			shadow_scythe()
 
-	# Void Parry (Parry button)
-	if event.is_action_pressed("p2_parry"):
+	# Void Parry (LB button / Button 6)
+	if event.is_action_pressed("p2_void_parry"):
 		void_parry()
 
-	# Void Rift (Power Thrust equivalent)
-	if event.is_action_pressed("p2_power_thrust"):
+	# Void Rift (RB button / Button 5)
+	if event.is_action_pressed("p2_void_rift"):
 		void_rift()
 
-	# Void Orbs (Ultimate button - charged attack)
-	if event.is_action_pressed("p2_urgathon"):
+	# Void Orbs (R3 button / Button 9 - charged attack)
+	if event.is_action_pressed("p2_ultimate"):
 		start_charging_orb()
 
-	if event.is_action_released("p2_urgathon"):
+	if event.is_action_released("p2_ultimate"):
 		release_orb()
 
-	# Phase-Shift (Ultimate modifier - Shift + Ultimate)
-	if event.is_action_pressed("p2_urgathon") and Input.is_action_pressed("p2_dash"):
+	# Phase-Shift (Ultimate + Dash modifier - R3 + B)
+	if event.is_action_pressed("p2_ultimate") and Input.is_action_pressed("p2_dash"):
 		phase_shift()
 
 # ============ SHADOW DASH (COMMIT 019.5) ============
