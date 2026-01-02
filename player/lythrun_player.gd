@@ -1148,6 +1148,8 @@ func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
 	# Move orb
 	var lifetime = 0.0
 	while lifetime < 5.0 and not hit:
+		if not is_instance_valid(orb):
+			break  # Orb was destroyed externally
 		orb.global_position += orb_velocity * get_process_delta_time()
 		lifetime += get_process_delta_time()
 		await get_tree().process_frame
