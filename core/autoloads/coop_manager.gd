@@ -34,7 +34,11 @@ func _on_p2_join_requested() -> void:
 		print("[CoopManager] P2 already active, ignoring join request")
 		return
 
+	# CRITICAL: Set flag IMMEDIATELY to prevent multiple spawns from START button spam
+	is_p2_active = true
+
 	if not can_join():
+		is_p2_active = false  # Reset if blocked
 		show_join_blocked_message()
 		return
 
@@ -67,8 +71,7 @@ func show_join_blocked_message() -> void:
 
 func spawn_p2() -> void:
 	"""Spawn Player 2 (Lythrun)"""
-	if is_p2_active:
-		return
+	# Note: is_p2_active is already set to true in _on_p2_join_requested()
 
 	print("[CoopManager] Spawning Player 2 (Lythrun)...")
 
