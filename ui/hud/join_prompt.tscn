@@ -35,6 +35,11 @@ layout_mode = 2
 text = "Press START to join as Lythrun"
 horizontal_alignment = 1
 
+[node name="WarningLabel" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "⚠ No controller detected"
+horizontal_alignment = 1
+
 [node name="MarginContainer" type="MarginContainer" parent="CenterContainer/PanelContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 20

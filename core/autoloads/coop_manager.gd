@@ -24,6 +24,7 @@ func _ready() -> void:
 	# Connect to InputManager signals
 	if InputManager:
 		InputManager.p2_join_requested.connect(_on_p2_join_requested)
+		InputManager.p2_leave_requested.connect(_on_p2_controller_disconnected)  # COMMIT 022.5: Controller hotplug
 
 # ============ P2 JOIN/LEAVE SYSTEM ============
 
@@ -174,6 +175,14 @@ func despawn_p2() -> void:
 	InputManager.set_p2_active(false)
 
 	p2_left.emit()
+
+func _on_p2_controller_disconnected() -> void:
+	"""Handle P2's controller being disconnected (COMMIT 022.5)"""
+	if is_p2_active:
+		print("[CoopManager] P2's controller disconnected - despawning P2")
+		# TODO: Show notification when NotificationManager exists
+		# NotificationManager.show("Player 2's controller disconnected", 3.0)
+		despawn_p2()
 
 # ============ RESPAWN SYSTEM ============
 
