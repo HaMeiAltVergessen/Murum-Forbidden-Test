@@ -251,9 +251,11 @@ func print_scaled_stats(p1_stats: Dictionary, scaled_stats: Dictionary) -> void:
 
 func activate_shadow_aesthetic() -> void:
 	"""Activate shadow-themed visual effects"""
-	# Sprite modulation (dark violet)
+	# Sprite modulation (dark violet) - Make it much darker/more purple for distinction
 	if sprite:
-		sprite.modulate = Color(0.7, 0.5, 0.9, 1.0)
+		sprite.modulate = Color(0.4, 0.2, 0.7, 1.0)  # Much more purple and darker
+		# Also flip sprite horizontally for visual distinction
+		sprite.flip_h = not sprite.flip_h
 
 	# Shadow trail particles
 	if shadow_trail:
