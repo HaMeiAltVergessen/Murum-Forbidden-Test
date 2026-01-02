@@ -23,8 +23,10 @@ func _ready() -> void:
 func _on_p2_joined() -> void:
 	"""Handle P2 joining - show tutorial on first join"""
 	if not tutorial_shown:
-		show_tutorial()
+		# TEMPORARY FIX: Skip tutorial entirely to unblock gameplay
+		# show_tutorial()
 		tutorial_shown = true
+		print("[P2 Tutorial] Skipped (temporary fix)")
 
 func show_tutorial() -> void:
 	"""Show tutorial popup"""
