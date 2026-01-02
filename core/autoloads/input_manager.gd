@@ -113,7 +113,7 @@ func _input(event: InputEvent) -> void:
 					p1_button_just_pressed[action_name] = false
 
 		# Actions WITHOUT p1_ prefix (global actions that P1 uses)
-		var p1_global_actions = ["staff_throw", "dodge", "urgathon_charge", "crouch", "ability_1", "ability_2", "ability_3"]
+		var p1_global_actions = ["staff_throw", "dodge", "urgathon_charge", "crouch", "ability_1", "ability_2", "ability_3", "interact"]
 		for action_name in p1_global_actions:
 			if InputMap.has_action(action_name) and event.is_action(action_name):
 				p1_button_states[action_name] = event.is_pressed()
@@ -223,6 +223,8 @@ func set_p2_active(active: bool) -> void:
 		p1_input_vector = Vector2.ZERO
 
 		print("[InputManager] P2 left - P1 can now use controller again")
+	else:
+		print("[InputManager] *** P2 JOINED *** Device: %d" % p2_controller_device)
 
 	print("[InputManager] P2 active: %s (Device: %d)" % [p2_active, p2_controller_device])
 

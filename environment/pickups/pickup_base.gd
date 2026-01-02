@@ -35,6 +35,16 @@ func _input(event: InputEvent) -> void:
 	if not player_in_range or is_picked_up:
 		return
 
+	# CRITICAL: Device filtering for co-op
+	# Only P1 (keyboard/mouse) should pick up items via interact
+	# P2's controller should NOT trigger P1's item pickup
+	var is_keyboard_mouse = (event is InputEventKey or event is InputEventMouse or event is InputEventMouseButton)
+
+	# If P2 is active, ONLY accept keyboard/mouse for interact
+	if InputManager and InputManager.p2_active:
+		if not is_keyboard_mouse:
+			return  # Reject controller inputs when P2 active
+
 	# Check for pickup input
 	if event.is_action_pressed("interact"):
 		_pickup_item()
