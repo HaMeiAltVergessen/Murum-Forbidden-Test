@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://binp7pg1w71xh"
+path="res://.godot/imported/Welt 2 Rise (1).mp3-2ee3da45fd5d270948e79a60ffca5e1e.mp3str"
+
+[deps]
+
+source_file="res://Music/Welt 2 Rise (1).mp3"
+dest_files=["res://.godot/imported/Welt 2 Rise (1).mp3-2ee3da45fd5d270948e79a60ffca5e1e.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

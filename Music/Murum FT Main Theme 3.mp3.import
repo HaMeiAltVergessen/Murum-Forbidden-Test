@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://c6nj6qe6g54"
+path="res://.godot/imported/Murum FT Main Theme 3.mp3-1f4bc470f3bdfbc2b23698c1aa09d1e3.mp3str"
+
+[deps]
+
+source_file="res://Music/Murum FT Main Theme 3.mp3"
+dest_files=["res://.godot/imported/Murum FT Main Theme 3.mp3-1f4bc470f3bdfbc2b23698c1aa09d1e3.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://trn1xv5brmwo"
+path="res://.godot/imported/Lythrun Boss Theme 5.mp3-60f9660808dee20bbb5a50086a586320.mp3str"
+
+[deps]
+
+source_file="res://Music/Lythrun Boss Theme 5.mp3"
+dest_files=["res://.godot/imported/Lythrun Boss Theme 5.mp3-60f9660808dee20bbb5a50086a586320.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
