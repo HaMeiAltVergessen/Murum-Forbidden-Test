@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://dmqxgb7cyujwa" path="res://components/hitbox_component.tscn" id="6_hitbox"]
 [ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="7_hurtbox"]
 [ext_resource type="Script" path="res://player/player_camera.gd" id="8_camera"]
-[ext_resource type="Texture2D" uid="uid://cpp88cwljuymx" path="res://Assets/AIPlaceholder/Char/Murum/Murum.png" id="9_murum_sprite"]
+[ext_resource type="SpriteFrames" uid="uid://murum_sprite_frames" path="res://Assets/AIPlaceholder/Char/Murum/murum_frames.tres" id="9_murum_sprite"]
 [ext_resource type="Script" path="res://player/combat_system/staff_controller.gd" id="10_staff"]
 [ext_resource type="Script" path="res://player/combat_system/launcher_system.gd" id="11_launcher"]
 [ext_resource type="Script" path="res://player/combat_system/air_combo_system.gd" id="12_air_combo"]
@@ -17,6 +17,7 @@
 [ext_resource type="Script" path="res://player/abilities/wolkenbruch.gd" id="15_wolkenbruch"]
 [ext_resource type="Script" path="res://player/abilities/echo_von_urgathon.gd" id="16_echo"]
 [ext_resource type="Script" path="res://player/combat_system/luftgott_system.gd" id="16_luftgott"]
+[ext_resource type="Script" path="res://player/murum_animator.gd" id="17_animator"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 radius = 16.0
@@ -27,13 +28,10 @@ collision_layer = 2
 collision_mask = 17
 script = ExtResource("1_murum")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("9_murum_sprite")
-hframes = 1
-vframes = 1
-frame = 0
-region_enabled = true
-region_rect = Rect2(0, 0, 96, 96)
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = ExtResource("9_murum_sprite")
+animation = &"idle"
+autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_player")
@@ -110,6 +108,9 @@ script = ExtResource("15_wolkenbruch")
 script = ExtResource("16_echo")
 [node name="LuftgottSystem" type="Node" parent="."]
 script = ExtResource("16_luftgott")
+
+[node name="MurumAnimator" type="Node" parent="."]
+script = ExtResource("17_animator")
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 offset = Vector2(0, -150)

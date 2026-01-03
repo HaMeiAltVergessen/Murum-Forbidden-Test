@@ -8,7 +8,7 @@ class_name Murum
 @onready var health_component: HealthComponent = $HealthComponent
 @onready var mana_component: ManaComponent = $ManaComponent
 @onready var hurtbox: HurtboxComponent = $HurtboxComponent
-@onready var sprite: Sprite2D = $Sprite2D
+@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var player_camera: PlayerCamera = $PlayerCamera
 @onready var dodge_roll_system: DodgeRollSystem = $DodgeRollSystem
 
