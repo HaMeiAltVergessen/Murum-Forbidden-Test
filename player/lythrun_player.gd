@@ -545,14 +545,19 @@ func _physics_process(delta: float) -> void:
 
 	# Normal movement (if not disabled by abilities)
 	if not shadow_dash_active and not is_attacking:
-		if movement_controller:
-			# Let movement controller handle movement
-			pass
-		else:
-			# Manual movement fallback
-			var input_vector = InputManager.get_p2_input_vector() if InputManager else Vector2.ZERO
+		# FIXED: P2 uses manual movement (no MovementController reliance)
+		var input_vector = InputManager.get_p2_input_vector() if InputManager else Vector2.ZERO
+
+		if input_vector.x != 0:
 			velocity.x = input_vector.x * movement_speed
-			move_and_slide()
+			# Update sprite direction
+			if sprite:
+				sprite.flip_h = input_vector.x < 0
+		else:
+			# Decelerate when no input
+			velocity.x = move_toward(velocity.x, 0, movement_speed * delta * 10)
+
+		move_and_slide()
 
 # ============ SHADOW DASH (COMMIT 019.5) ============
 
@@ -640,14 +645,27 @@ func spawn_stun_afterimage() -> void:
 
 	# Collision setup
 	stun_area.collision_layer = 0
+	stun_area.set_collision_layer_value(6, true)  # P2 Projectiles
 	stun_area.collision_mask = 0
 	stun_area.set_collision_mask_value(4, true)  # Enemies
 
+	# CRITICAL: Enable monitoring
+	stun_area.monitoring = true
+	stun_area.monitorable = true
+
 	# Stun on contact
 	stun_area.body_entered.connect(func(body):
+		print("[Shadow Dash Afterimage] Hit: %s" % body.name)
 		if body.has_method("apply_stun"):
 			body.apply_stun(0.5)
 			spawn_stun_vfx(body.global_position)
+			print("[Shadow Dash Afterimage] Stunned %s for 0.5s" % body.name)
+		elif body.has_method("stun"):
+			body.stun(0.5)
+			spawn_stun_vfx(body.global_position)
+			print("[Shadow Dash Afterimage] Stunned %s for 0.5s (via stun method)" % body.name)
+		else:
+			print("[Shadow Dash Afterimage] %s has no stun method!" % body.name)
 	)
 
 	# Fade out
@@ -742,26 +760,45 @@ func spawn_attack_hitbox(damage: float) -> void:
 	hitbox.set_collision_mask_value(4, true)  # Enemies
 	hitbox.set_collision_mask_value(2, true)  # P1 (in PvP)
 
+	# CRITICAL: Enable monitoring for Area2D
+	hitbox.monitoring = true
+	hitbox.monitorable = true
+
+	print("[Void Strike] Hitbox created - Layer: %d, Mask: %d, Monitoring: %s" % [
+		hitbox.collision_layer,
+		hitbox.collision_mask,
+		hitbox.monitoring
+	])
+
 	# Damage on hit with debug
 	hitbox.body_entered.connect(func(body):
-		print("[Void Strike] Hit: ", body.name)
+		print("[Void Strike] Hit detected! Body: %s, Groups: %s, Layers: body=%d, hitbox=%d" % [
+			body.name,
+			body.get_groups(),
+			body.collision_layer if body is CollisionObject2D else -1,
+			hitbox.collision_layer
+		])
 		var damage_dealt = false
 
 		# Try direct take_damage method first
 		if body.has_method("take_damage"):
 			body.take_damage(damage)
 			damage_dealt = true
-			print("[Void Strike] Dealt %.1f damage to %s (direct)" % [damage, body.name])
+			print("[Void Strike SUCCESS] Dealt %.1f damage to %s (direct method)" % [damage, body.name])
 		# Try HealthComponent
 		elif body.has_node("HealthComponent"):
 			var health = body.get_node("HealthComponent")
 			if health.has_method("take_damage"):
 				health.take_damage(int(damage))
 				damage_dealt = true
-				print("[Void Strike] Dealt %.1f damage to %s (HealthComponent)" % [damage, body.name])
+				print("[Void Strike SUCCESS] Dealt %.1f damage to %s (HealthComponent)" % [damage, body.name])
 
 		if not damage_dealt:
-			print("[Void Strike ERROR] %s has no damage method!" % body.name)
+			print("[Void Strike ERROR] %s has no damage method! Has take_damage: %s, Has HealthComponent: %s" % [
+				body.name,
+				body.has_method("take_damage"),
+				body.has_node("HealthComponent")
+			])
 	)
 
 	# Remove after 0.1s
@@ -789,9 +826,19 @@ func spawn_void_shockwave() -> void:
 
 	# Collision setup
 	shockwave.collision_layer = 0
-	shockwave.set_collision_layer_value(6, true)
+	shockwave.set_collision_layer_value(6, true)  # P2 Projectiles
 	shockwave.collision_mask = 0
-	shockwave.set_collision_mask_value(4, true)
+	shockwave.set_collision_mask_value(4, true)  # Enemies
+
+	# CRITICAL: Enable monitoring
+	shockwave.monitoring = true
+	shockwave.monitorable = true
+
+	print("[Void Shockwave] Created - Damage: %.1f, Stacks: %d, Radius: %.0f" % [
+		shockwave_damage,
+		combo_stacks,
+		SHOCKWAVE_RADIUS
+	])
 
 	# Damage all overlapping enemies
 	var enemies = shockwave.get_overlapping_bodies()
@@ -932,31 +979,45 @@ func create_placeholder_scythe() -> void:
 	scythe.collision_mask = 0
 	scythe.set_collision_mask_value(4, true)  # Enemies
 
+	# CRITICAL: Enable monitoring
+	scythe.monitoring = true
+	scythe.monitorable = true
+
 	# Direction
 	var direction = Vector2.RIGHT if not sprite.flip_h else Vector2.LEFT
 	var velocity = direction * SCYTHE_SPEED
 	var damage = base_damage * 3.0
 
+	print("[Shadow Scythe Placeholder] Created - Damage: %.1f, Layer: %d, Mask: %d" % [
+		damage,
+		scythe.collision_layer,
+		scythe.collision_mask
+	])
+
 	# Hit detection with debug output
 	scythe.body_entered.connect(func(body):
-		print("[Shadow Scythe] Hit: ", body.name)
+		print("[Shadow Scythe] Hit detected! Body: %s, Groups: %s" % [body.name, body.get_groups()])
 		var damage_dealt = false
 
 		# Try direct take_damage
 		if body.has_method("take_damage"):
 			body.take_damage(damage)
 			damage_dealt = true
-			print("[Shadow Scythe] Dealt %.1f damage to %s (direct)" % [damage, body.name])
+			print("[Shadow Scythe SUCCESS] Dealt %.1f damage to %s (direct method)" % [damage, body.name])
 		# Try HealthComponent
 		elif body.has_node("HealthComponent"):
 			var health = body.get_node("HealthComponent")
 			if health.has_method("take_damage"):
 				health.take_damage(int(damage))
 				damage_dealt = true
-				print("[Shadow Scythe] Dealt %.1f damage to %s (HealthComponent)" % [damage, body.name])
+				print("[Shadow Scythe SUCCESS] Dealt %.1f damage to %s (HealthComponent)" % [damage, body.name])
 
 		if not damage_dealt:
-			print("[Shadow Scythe ERROR] %s has no damage method!" % body.name)
+			print("[Shadow Scythe ERROR] %s has no damage method! Has take_damage: %s, Has HealthComponent: %s" % [
+				body.name,
+				body.has_method("take_damage"),
+				body.has_node("HealthComponent")
+			])
 	)
 
 	# Store reference
@@ -1092,8 +1153,15 @@ func perform_perfect_parry() -> void:
 
 	# Collision setup
 	aoe.collision_layer = 0
+	aoe.set_collision_layer_value(6, true)  # P2 Projectiles
 	aoe.collision_mask = 0
-	aoe.set_collision_mask_value(4, true)
+	aoe.set_collision_mask_value(4, true)  # Enemies
+
+	# CRITICAL: Enable monitoring
+	aoe.monitoring = true
+	aoe.monitorable = true
+
+	print("[Perfect Parry] AoE created - Damage: %.1f, Radius: %.0f" % [PERFECT_PARRY_DAMAGE, PERFECT_PARRY_AOE_RADIUS])
 
 	# Damage and stun all enemies in radius
 	var enemies = aoe.get_overlapping_bodies()
@@ -1188,6 +1256,18 @@ func create_placeholder_rift() -> void:
 
 	rift.global_position = global_position
 
+	# Collision setup
+	rift.collision_layer = 0
+	rift.set_collision_layer_value(6, true)  # P2 Projectiles
+	rift.collision_mask = 0
+	rift.set_collision_mask_value(4, true)  # Enemies
+
+	# CRITICAL: Enable monitoring
+	rift.monitoring = true
+	rift.monitorable = true
+
+	print("[Void Rift Placeholder] Created - Damage: %.1f, Duration: %.1fs" % [VOID_RIFT_DAMAGE, VOID_RIFT_DURATION])
+
 	# Grow over time - FIXED: Use proper delta tracking
 	var elapsed = 0.0
 	var start_time = Time.get_ticks_msec() / 1000.0
@@ -1280,21 +1360,32 @@ func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
 
 	# Collision setup
 	orb.collision_layer = 0
-	orb.set_collision_layer_value(6, true)
+	orb.set_collision_layer_value(6, true)  # P2 Projectiles
 	orb.collision_mask = 0
-	orb.set_collision_mask_value(4, true)
-	orb.set_collision_mask_value(1, true)
+	orb.set_collision_mask_value(4, true)  # Enemies
+	orb.set_collision_mask_value(1, true)  # World (for wall hits)
+
+	# CRITICAL: Enable monitoring
+	orb.monitoring = true
+	orb.monitorable = true
 
 	# Movement
 	var direction = Vector2.RIGHT if not sprite.flip_h else Vector2.LEFT
 	var orb_velocity = direction * VOID_ORB_SPEED
+
+	print("[Void Orb] Created - Damage: %.1f, Charge: %.0f%%, Layer: %d, Mask: %d" % [
+		damage,
+		charge_factor * 100,
+		orb.collision_layer,
+		orb.collision_mask
+	])
 
 	# Hit detection
 	var hit = false
 	orb.body_entered.connect(func(body):
 		if not hit:
 			hit = true
-			print("[Void Orb] Hit: ", body.name)
+			print("[Void Orb] Hit detected! Body: %s, Groups: %s" % [body.name, body.get_groups()])
 
 			# Direct hit damage
 			if body.has_method("take_damage"):
