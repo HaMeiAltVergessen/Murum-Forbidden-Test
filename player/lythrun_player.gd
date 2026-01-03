@@ -877,8 +877,83 @@ func shadow_scythe() -> void:
 func create_placeholder_scythe() -> void:
 	"""Create placeholder scythe if scene doesn't exist"""
 	print("[Shadow Scythe] Creating placeholder scythe")
-	# TODO: Implement placeholder or create actual scene
-	scythe_thrown = false
+
+	# Create simple projectile as placeholder
+	var scythe = Area2D.new()
+	var collision = CollisionShape2D.new()
+	var shape = CircleShape2D.new()
+	shape.radius = 20.0
+
+	collision.shape = shape
+	scythe.add_child(collision)
+
+	# Add visual (simple colored sprite)
+	var visual = Sprite2D.new()
+	visual.texture = PlaceholderTexture2D.new()
+	if visual.texture is PlaceholderTexture2D:
+		visual.texture.size = Vector2(40, 40)
+	visual.modulate = Color(0.5, 0, 0.8)  # Purple
+	scythe.add_child(visual)
+
+	if get_parent():
+		get_parent().add_child(scythe)
+	else:
+		print("[Shadow Scythe ERROR] No parent!")
+		scythe.queue_free()
+		scythe_thrown = false
+		return
+
+	scythe.global_position = global_position + Vector2(0, -20)
+
+	# Collision setup
+	scythe.collision_layer = 0
+	scythe.set_collision_layer_value(6, true)  # P2 Projectiles
+	scythe.collision_mask = 0
+	scythe.set_collision_mask_value(4, true)  # Enemies
+
+	# Direction
+	var direction = Vector2.RIGHT if not sprite.flip_h else Vector2.LEFT
+	var velocity = direction * SCYTHE_SPEED
+	var damage = base_damage * 3.0
+
+	# Hit detection
+	scythe.body_entered.connect(func(body):
+		if body.has_method("take_damage"):
+			body.take_damage(damage)
+	)
+
+	# Store reference
+	scythe_instance = scythe
+	scythe_thrown = true
+	scythe_instance.tree_exiting.connect(_on_scythe_destroyed)
+
+	# Move scythe
+	_move_placeholder_scythe(scythe, velocity)
+
+func _move_placeholder_scythe(scythe: Area2D, velocity: Vector2) -> void:
+	"""Move placeholder scythe"""
+	var start_time = Time.get_ticks_msec() / 1000.0
+	var max_distance = 800.0  # Max travel distance
+	var distance_traveled = 0.0
+	var last_frame_time = start_time
+
+	while distance_traveled < max_distance:
+		if not is_instance_valid(scythe):
+			break
+		await get_tree().process_frame
+		if not is_instance_valid(scythe):
+			break
+
+		var current_time = Time.get_ticks_msec() / 1000.0
+		var delta = current_time - last_frame_time
+		last_frame_time = current_time
+
+		var movement = velocity * delta
+		scythe.global_position += movement
+		distance_traveled += movement.length()
+
+	if is_instance_valid(scythe):
+		scythe.queue_free()
 
 func recall_scythe() -> void:
 	"""Recall thrown scythe"""
@@ -1170,13 +1245,16 @@ func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
 			orb.queue_free()
 	)
 
-	# Move orb - FIXED: Use proper time tracking
+	# Move orb - FIXED: Use proper time tracking + check validity after await
 	var start_time = Time.get_ticks_msec() / 1000.0
 	var last_frame_time = start_time
 	while (Time.get_ticks_msec() / 1000.0 - start_time) < 5.0 and not hit:
 		if not is_instance_valid(orb):
 			break  # Orb was destroyed externally
 		await get_tree().process_frame
+		# CRITICAL: Check again after await! Orb can be freed during await (in body_entered callback)
+		if not is_instance_valid(orb):
+			break
 		var current_time = Time.get_ticks_msec() / 1000.0
 		var delta = current_time - last_frame_time
 		last_frame_time = current_time
