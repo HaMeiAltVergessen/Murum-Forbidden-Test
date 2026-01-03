@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://dmqxgb7cyujwa" path="res://components/hitbox_component.tscn" id="6_hitbox"]
 [ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="7_hurtbox"]
 [ext_resource type="Script" path="res://player/player_camera.gd" id="8_camera"]
-[ext_resource type="Texture2D" uid="uid://c3ttcrjybllm1" path="res://Assets/AIPlaceholder/Char/Murum/35155320-0782-4f9e-8819-d3013edf3641.jpg" id="9_murum_sprite"]
+[ext_resource type="Texture2D" uid="uid://cpp88cwljuymx" path="res://Assets/AIPlaceholder/Char/Murum/Murum.png" id="9_murum_sprite"]
 [ext_resource type="Script" path="res://player/combat_system/staff_controller.gd" id="10_staff"]
 [ext_resource type="Script" path="res://player/combat_system/launcher_system.gd" id="11_launcher"]
 [ext_resource type="Script" path="res://player/combat_system/air_combo_system.gd" id="12_air_combo"]
@@ -17,6 +17,7 @@
 [ext_resource type="Script" path="res://player/abilities/wolkenbruch.gd" id="15_wolkenbruch"]
 [ext_resource type="Script" path="res://player/abilities/echo_von_urgathon.gd" id="16_echo"]
 [ext_resource type="Script" path="res://player/combat_system/luftgott_system.gd" id="16_luftgott"]
+[ext_resource type="Script" path="res://player/murum_animator.gd" id="17_murum_animator"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 radius = 16.0
@@ -29,8 +30,8 @@ script = ExtResource("1_murum")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("9_murum_sprite")
-hframes = 4
-vframes = 4
+hframes = 5
+vframes = 3
 frame = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -108,6 +109,9 @@ script = ExtResource("15_wolkenbruch")
 script = ExtResource("16_echo")
 [node name="LuftgottSystem" type="Node" parent="."]
 script = ExtResource("16_luftgott")
+
+[node name="MurumAnimator" type="Node" parent="."]
+script = ExtResource("17_murum_animator")
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 offset = Vector2(0, -150)
