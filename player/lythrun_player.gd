@@ -607,22 +607,21 @@ func shadow_dash() -> void:
 	if shadow_trail:
 		shadow_trail.emitting = true
 
-	# Movement with afterimages
-	var dash_timer = 0.0
-	var afterimage_spawn_timer = 0.0
+	# Movement with afterimages - FIXED: Use proper time tracking
+	var start_time = Time.get_ticks_msec() / 1000.0
+	var last_afterimage_time = start_time
 
-	while dash_timer < SHADOW_DASH_DURATION:
+	while (Time.get_ticks_msec() / 1000.0 - start_time) < SHADOW_DASH_DURATION:
 		velocity.x = dash_direction.x * SHADOW_DASH_SPEED
 		velocity.y = 0  # Disable gravity during dash
 		move_and_slide()
 
 		# Spawn afterimage every 0.05s
-		afterimage_spawn_timer += get_process_delta_time()
-		if afterimage_spawn_timer >= 0.05:
-			afterimage_spawn_timer = 0.0
+		var current_time = Time.get_ticks_msec() / 1000.0
+		if current_time - last_afterimage_time >= 0.05:
+			last_afterimage_time = current_time
 			spawn_stun_afterimage()
 
-		dash_timer += get_process_delta_time()
 		await get_tree().process_frame
 
 	velocity.x = 0
@@ -1006,7 +1005,13 @@ func void_rift() -> void:
 	if ResourceLoader.exists(rift_path):
 		var rift_scene = load(rift_path)
 		var rift = rift_scene.instantiate()
-		get_tree().current_scene.add_child(rift)
+		# CRITICAL FIX: Use get_parent() instead of get_tree().current_scene (more reliable)
+		if get_parent():
+			get_parent().add_child(rift)
+		else:
+			print("[Void Rift ERROR] No parent node!")
+			void_rift_active = false
+			return
 
 		rift.global_position = global_position
 		if rift.has_method("setup"):
@@ -1036,13 +1041,14 @@ func create_placeholder_rift() -> void:
 
 	rift.global_position = global_position
 
-	# Grow over time
+	# Grow over time - FIXED: Use proper delta tracking
 	var elapsed = 0.0
+	var start_time = Time.get_ticks_msec() / 1000.0
 	while elapsed < VOID_RIFT_DURATION:
-		elapsed += get_process_delta_time()
-		var growth_factor = elapsed / VOID_RIFT_DURATION
-		shape.radius = lerp(VOID_RIFT_MIN_RADIUS, VOID_RIFT_MAX_RADIUS, growth_factor)
 		await get_tree().process_frame
+		elapsed = (Time.get_ticks_msec() / 1000.0) - start_time
+		var growth_factor = min(elapsed / VOID_RIFT_DURATION, 1.0)
+		shape.radius = lerp(VOID_RIFT_MIN_RADIUS, VOID_RIFT_MAX_RADIUS, growth_factor)
 
 	# Explode
 	var enemies = rift.get_overlapping_bodies()
@@ -1050,7 +1056,8 @@ func create_placeholder_rift() -> void:
 		if enemy.has_method("take_damage"):
 			enemy.take_damage(VOID_RIFT_DAMAGE)
 
-	rift.queue_free()
+	if is_instance_valid(rift):
+		rift.queue_free()
 	void_rift_active = false
 
 # ============ VOID ORBS (COMMIT 019.5) ============
@@ -1145,14 +1152,17 @@ func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
 			orb.queue_free()
 	)
 
-	# Move orb
-	var lifetime = 0.0
-	while lifetime < 5.0 and not hit:
+	# Move orb - FIXED: Use proper time tracking
+	var start_time = Time.get_ticks_msec() / 1000.0
+	var last_frame_time = start_time
+	while (Time.get_ticks_msec() / 1000.0 - start_time) < 5.0 and not hit:
 		if not is_instance_valid(orb):
 			break  # Orb was destroyed externally
-		orb.global_position += orb_velocity * get_process_delta_time()
-		lifetime += get_process_delta_time()
 		await get_tree().process_frame
+		var current_time = Time.get_ticks_msec() / 1000.0
+		var delta = current_time - last_frame_time
+		last_frame_time = current_time
+		orb.global_position += orb_velocity * delta
 
 	if is_instance_valid(orb):
 		orb.queue_free()
@@ -1189,10 +1199,9 @@ func phase_shift() -> void:
 	if AudioManager and AudioManager.has_method("play_sfx"):
 		AudioManager.play_sfx("phase_shift_activate")
 
-	# Duration or until hit
-	var timer = 0.0
-	while timer < PHASE_SHIFT_DURATION and phase_shift_armor:
-		timer += get_process_delta_time()
+	# Duration or until hit - FIXED: Use proper time tracking
+	var start_time = Time.get_ticks_msec() / 1000.0
+	while (Time.get_ticks_msec() / 1000.0 - start_time) < PHASE_SHIFT_DURATION and phase_shift_armor:
 		await get_tree().process_frame
 
 	# Deactivate
