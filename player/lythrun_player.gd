@@ -600,8 +600,11 @@ func shadow_dash() -> void:
 	var dash_direction = Vector2.RIGHT if not sprite.flip_h else Vector2.LEFT
 
 	# Animation
-	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("shadow_dash"):
-		sprite.play("shadow_dash")
+	# CRITICAL FIX: Sprite2D doesn't have sprite_frames, only AnimatedSprite2D does
+	# P2 uses static Sprite2D, so skip animation attempts
+	if sprite and sprite is AnimatedSprite2D:
+		if sprite.sprite_frames and sprite.sprite_frames.has_animation("shadow_dash"):
+			sprite.play("shadow_dash")
 
 	# VFX: Shadow trail
 	if shadow_trail:

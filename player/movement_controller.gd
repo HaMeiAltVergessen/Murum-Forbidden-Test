@@ -286,7 +286,14 @@ func _process_jump() -> void:
 
 	# Check for jump input
 	var jump_action = input_prefix + "jump"
-	if _is_action_just_pressed(jump_action):
+	var jump_pressed = _is_action_just_pressed(jump_action)
+
+	# CRITICAL DEBUG: Log ALL jump attempts
+	if jump_pressed:
+		var player_name = "P1" if controller_device_id < 0 else "P2"
+		print("[Jump DEBUG %s] Button pressed! jumps_used=%d on_floor=%s coyote=%.2f" % [player_name, jumps_used, player.is_on_floor(), coyote_timer])
+
+	if jump_pressed:
 		# IMPORTANT: Edge climb is checked FIRST, before jump count validation
 		# This allows edge climb to work as a "3rd jump" after double jump is used
 		if _attempt_edge_climb():
@@ -299,13 +306,20 @@ func _process_jump() -> void:
 			# Attempt jump if conditions are met
 			if player.is_on_floor() or coyote_timer > 0:
 				_perform_jump()
+			else:
+				print("[Jump DEBUG] First jump BLOCKED - not on floor and no coyote")
 		# Double jump: can jump in air if jumps remaining
 		elif jumps_used < max_jumps:
 			_perform_jump()
+		else:
+			print("[Jump DEBUG] Jump BLOCKED - max jumps used (%d/%d)" % [jumps_used, max_jumps])
 
 
 func _perform_jump() -> void:
 	"""Executes the jump"""
+	var player_name = "P1" if controller_device_id < 0 else "P2"
+	print("[Jump SUCCESS %s] Jump executed! jumps_used: %d -> %d" % [player_name, jumps_used, jumps_used + 1])
+
 	player.velocity.y = jump_velocity
 	jump_buffer_timer = 0.0
 	coyote_timer = 0.0
