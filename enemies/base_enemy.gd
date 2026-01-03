@@ -113,6 +113,22 @@ func _process(delta: float) -> void:
 		# Skip AI during stun - AI checks is_stunned
 
 
+# ============ DAMAGE API ============
+func take_damage(damage: int, attacker: Node = null) -> void:
+	"""
+	Public API for taking damage (used by P2 abilities)
+	Delegates to HealthComponent
+	"""
+	if is_dead:
+		return
+
+	if health_component and health_component.has_method("take_damage"):
+		health_component.take_damage(damage)
+		print("[BaseEnemy] %s took %d damage from %s" % [name, damage, attacker.name if attacker else "unknown"])
+	else:
+		push_warning("[BaseEnemy] %s has no HealthComponent!" % name)
+
+
 # ============ SIGNAL HANDLERS ============
 func _on_damage_taken(damage: int) -> void:
 	"""Handles damage taken"""
