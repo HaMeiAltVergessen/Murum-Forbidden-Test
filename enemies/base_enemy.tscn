@@ -15,8 +15,8 @@ radius = 300.0
 size = Vector2(32, 32)
 
 [node name="BaseEnemy" type="CharacterBody2D" groups=["enemies"]]
-collision_layer = 16
-collision_mask = 3
+collision_layer = 8
+collision_mask = 7
 script = ExtResource("1_base")
 max_health = 400
 move_speed = 100.0
@@ -45,20 +45,20 @@ invulnerability_duration = 0.3
 
 [node name="HitboxComponent" parent="." instance=ExtResource("4_hitbox")]
 position = Vector2(24, 0)
-collision_layer = 32
-collision_mask = 8
+collision_layer = 128
+collision_mask = 1030
 damage = 10
 
 [node name="HurtboxComponent" parent="." instance=ExtResource("5_hurtbox")]
-collision_layer = 64
-collision_mask = 4
+collision_layer = 1024
+collision_mask = 48
 
 [node name="KnockbackComponent" type="Node" parent="."]
 script = ExtResource("7_knockback")
 
 [node name="DetectionArea" type="Area2D" parent="."]
 collision_layer = 0
-collision_mask = 2
+collision_mask = 6
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
 shape = SubResource("CircleShape2D_detection")

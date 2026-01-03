@@ -20,8 +20,8 @@ size = Vector2(64, 96)
 radius = 400.0
 
 [node name="Geist" type="CharacterBody2D" groups=["enemies", "geist"]]
-collision_layer = 2
-collision_mask = 1
+collision_layer = 8
+collision_mask = 7
 script = ExtResource("1_geist")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
@@ -33,16 +33,16 @@ texture = ExtResource("5_ghost")
 shape = SubResource("CapsuleShape2D_geist_body")
 
 [node name="HurtboxComponent" type="Area2D" parent="."]
-collision_layer = 64
-collision_mask = 4
+collision_layer = 1024
+collision_mask = 48
 script = ExtResource("3_hurtbox")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]
 shape = SubResource("RectangleShape2D_hurtbox")
 
 [node name="HitboxComponent" type="Area2D" parent="."]
-collision_layer = 4
-collision_mask = 8
+collision_layer = 128
+collision_mask = 1030
 script = ExtResource("4_hitbox")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
@@ -50,7 +50,7 @@ shape = SubResource("RectangleShape2D_hitbox")
 
 [node name="DetectionArea" type="Area2D" parent="."]
 collision_layer = 0
-collision_mask = 1
+collision_mask = 6
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
 shape = SubResource("CircleShape2D_detection")
