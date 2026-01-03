@@ -253,8 +253,7 @@ func activate_shadow_aesthetic() -> void:
 	# Sprite modulation (dark violet) - Make it much darker/more purple for distinction
 	if sprite:
 		sprite.modulate = Color(0.4, 0.2, 0.7, 1.0)  # Much more purple and darker
-		# Also flip sprite horizontally for visual distinction
-		sprite.flip_h = not sprite.flip_h
+		# Note: Don't flip sprite - it messes up direction logic for abilities!
 
 	# Shadow trail particles
 	if shadow_trail:
@@ -687,10 +686,12 @@ func spawn_stun_afterimage() -> void:
 
 func void_strike() -> void:
 	"""3-hit combo attack with shockwave on 3rd hit"""
-	if is_attacking or is_dashing:
+	# Allow attacking while dashing for faster combos
+	if is_attacking:
 		return
 
 	is_attacking = true
+	print("[Void Strike] Starting attack...")
 
 	# Advance combo
 	combo_count = (combo_count + 1) % 3
@@ -734,7 +735,7 @@ func void_strike() -> void:
 		is_attacking = false
 
 func spawn_attack_hitbox(damage: float) -> void:
-	"""Spawn basic attack hitbox"""
+	"""Spawn basic attack hitbox with visual effect"""
 	# Simple hitbox in front of player
 	var hitbox = Area2D.new()
 	var collision = CollisionShape2D.new()
@@ -748,6 +749,19 @@ func spawn_attack_hitbox(damage: float) -> void:
 	# Position in front
 	hitbox.position = Vector2(40 if not sprite.flip_h else -40, 0)
 
+	# Add visual effect (purple slash)
+	var visual = Sprite2D.new()
+	visual.texture = PlaceholderTexture2D.new()
+	if visual.texture is PlaceholderTexture2D:
+		visual.texture.size = Vector2(60, 40)
+	visual.modulate = Color(0.6, 0.1, 0.9, 0.7)  # Semi-transparent purple
+	hitbox.add_child(visual)
+
+	# Animate slash (scale up then fade)
+	var tween = visual.create_tween()
+	tween.tween_property(visual, "scale", Vector2(1.5, 1.5), 0.1)
+	tween.parallel().tween_property(visual, "modulate:a", 0.0, 0.1)
+
 	# Collision setup
 	hitbox.collision_layer = 0
 	hitbox.set_collision_layer_value(6, true)  # P2 Projectiles
@@ -755,10 +769,12 @@ func spawn_attack_hitbox(damage: float) -> void:
 	hitbox.set_collision_mask_value(4, true)  # Enemies
 	hitbox.set_collision_mask_value(2, true)  # P1 (in PvP)
 
-	# Damage on hit
+	# Damage on hit with debug
 	hitbox.body_entered.connect(func(body):
+		print("[Void Strike] Hit: ", body.name)
 		if body.has_method("take_damage"):
 			body.take_damage(damage)
+			print("[Void Strike] Dealt %.1f damage to %s" % [damage, body.name])
 	)
 
 	# Remove after 0.1s
@@ -887,13 +903,18 @@ func create_placeholder_scythe() -> void:
 	collision.shape = shape
 	scythe.add_child(collision)
 
-	# Add visual (simple colored sprite)
+	# Add visual with rotating animation
 	var visual = Sprite2D.new()
 	visual.texture = PlaceholderTexture2D.new()
 	if visual.texture is PlaceholderTexture2D:
 		visual.texture.size = Vector2(40, 40)
-	visual.modulate = Color(0.5, 0, 0.8)  # Purple
+	visual.modulate = Color(0.5, 0, 0.8)  # Purple shadow scythe color
 	scythe.add_child(visual)
+
+	# Rotate sprite for scythe effect
+	var rotation_tween = visual.create_tween()
+	rotation_tween.set_loops()
+	rotation_tween.tween_property(visual, "rotation", TAU, 0.5)  # Full rotation every 0.5s
 
 	if get_parent():
 		get_parent().add_child(scythe)
@@ -916,10 +937,14 @@ func create_placeholder_scythe() -> void:
 	var velocity = direction * SCYTHE_SPEED
 	var damage = base_damage * 3.0
 
-	# Hit detection
+	# Hit detection with debug output
 	scythe.body_entered.connect(func(body):
+		print("[Shadow Scythe] Hit: ", body.name)
 		if body.has_method("take_damage"):
 			body.take_damage(damage)
+			print("[Shadow Scythe] Dealt %.1f damage to %s" % [damage, body.name])
+		else:
+			print("[Shadow Scythe] Body has no take_damage method: ", body.name)
 	)
 
 	# Store reference
