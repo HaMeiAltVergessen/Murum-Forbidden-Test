@@ -279,6 +279,12 @@ func _on_resonance_full() -> void:
 # ============ PARRY/BLOCK SYSTEM ============
 func _create_parry_block_system() -> void:
 	"""Creates the spatial parry/block system component."""
+	# CRITICAL: P2 (Lythrun) uses void_parry(), NOT ParryBlockSystem!
+	# Only create ParryBlockSystem for P1 (Murum)
+	if input_prefix == "p2_":
+		print("[CombatSystem] Skipping ParryBlockSystem for P2 (uses void_parry() instead)")
+		return
+
 	# Load the ParryBlockSystem scene
 	var parry_block_scene = preload("res://player/combat_system/parry_block_system.tscn")
 	parry_block_system = parry_block_scene.instantiate()

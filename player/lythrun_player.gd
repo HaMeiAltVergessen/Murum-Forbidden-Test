@@ -995,12 +995,21 @@ func _move_placeholder_scythe(scythe: Area2D, velocity: Vector2) -> void:
 func recall_scythe() -> void:
 	"""Recall thrown scythe"""
 	if not scythe_instance or not is_instance_valid(scythe_instance):
+		scythe_thrown = false  # Reset flag if instance is invalid
 		return
 
 	print("[Shadow Scythe] Recalling...")
 
+	# If scythe has recall method, use it
 	if scythe_instance.has_method("start_return_to_player"):
 		scythe_instance.start_return_to_player(self)
+	else:
+		# Placeholder doesn't have recall - just destroy it and reset flags
+		print("[Shadow Scythe] Placeholder recall - destroying")
+		scythe_instance.queue_free()
+		scythe_instance = null
+		scythe_thrown = false
+		return
 
 	if AudioManager and AudioManager.has_method("play_sfx"):
 		AudioManager.play_sfx("scythe_recall")
@@ -1008,7 +1017,7 @@ func recall_scythe() -> void:
 func _on_scythe_destroyed() -> void:
 	"""Handle scythe destruction"""
 	scythe_instance = null
-	scythe_thrown = false
+	scythe_thrown = false  # CRITICAL: Reset flag when scythe is destroyed
 
 func on_scythe_returned() -> void:
 	"""Called when scythe returns to player"""

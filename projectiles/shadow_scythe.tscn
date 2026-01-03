@@ -1,13 +1,24 @@
-[gd_scene load_steps=2 format=3 uid="uid://c1v2x3y4z5a6b7c8"]
+[gd_scene load_steps=3 format=3 uid="uid://c1v2x3y4z5a6b7c8"]
 
 [ext_resource type="Script" path="res://projectiles/shadow_scythe.gd" id="1_shadow_scythe"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_scythe"]
 radius = 20.0
 
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_trail"]
+particle_flag_disable_z = true
+direction = Vector3(0, 0, 0)
+spread = 10.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 10.0
+initial_velocity_max = 20.0
+scale_min = 0.5
+scale_max = 1.5
+color = Color(0.3, 0, 0.6, 0.5)
+
 [node name="ShadowScythe" type="Area2D"]
 collision_layer = 0
-collision_mask = 0
+collision_mask = 4
 script = ExtResource("1_shadow_scythe")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -28,14 +39,3 @@ enabled = true
 color = Color(0.5, 0, 0.8, 1)
 energy = 0.5
 texture_scale = 2.0
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_trail"]
-particle_flag_disable_z = true
-direction = Vector3(0, 0, 0)
-spread = 10.0
-gravity = Vector3(0, 0, 0)
-initial_velocity_min = 10.0
-initial_velocity_max = 20.0
-scale_min = 0.5
-scale_max = 1.5
-color = Color(0.3, 0, 0.6, 0.5)
