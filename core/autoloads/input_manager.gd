@@ -28,9 +28,10 @@ var p2_button_just_pressed: Dictionary = {}  # action_name -> bool (just pressed
 func _ready() -> void:
 	print("[InputManager] Initialized - Hybrid Input (KB+M + Controller)")
 
-	# CRITICAL: Set process priority to run LAST
+	# CRITICAL: Set process priority to run LAST in both _process and _physics_process
 	# This ensures all other nodes read just_pressed states before we clear them
 	process_priority = 1000  # Higher number = runs later
+	physics_process_priority = 1000  # Same for physics
 
 	# Detect all available controllers
 	detect_controllers()
@@ -39,12 +40,16 @@ func _ready() -> void:
 	Input.joy_connection_changed.connect(_on_controller_connection_changed)
 
 func _process(_delta: float) -> void:
-	"""Update input vectors and clear just_pressed states each frame"""
+	"""Update input vectors each frame"""
 	# Update P1 input vector every frame (critical for co-op mode keyboard-only filtering)
 	_update_p1_input_vector()
 
-	# Reset just_pressed states at the end of each frame
-	# This ensures just_pressed only returns true for one frame
+func _physics_process(_delta: float) -> void:
+	"""Clear just_pressed states at the END of each physics tick"""
+	# CRITICAL: Clear just_pressed in _physics_process instead of _process
+	# This ensures MovementController (which runs in _physics_process) can read the states
+	# before they're cleared. If we clear in _process, visual frames can clear the flags
+	# before physics ticks get a chance to read them.
 
 	# P1 just_pressed cleanup
 	for action in p1_button_just_pressed.keys():
@@ -54,7 +59,7 @@ func _process(_delta: float) -> void:
 	# P2 just_pressed cleanup
 	for action in p2_button_just_pressed.keys():
 		if p2_button_just_pressed[action]:
-			# Mark as consumed for next frame
+			# Mark as consumed for next physics tick
 			p2_button_just_pressed[action] = false
 
 func detect_controllers() -> void:
