@@ -28,10 +28,10 @@ var p2_button_just_pressed: Dictionary = {}  # action_name -> bool (just pressed
 func _ready() -> void:
 	print("[InputManager] Initialized - Hybrid Input (KB+M + Controller)")
 
-	# CRITICAL: Set process priority to run LAST in both _process and _physics_process
-	# This ensures all other nodes read just_pressed states before we clear them
+	# CRITICAL: Set process priority high so we run late
+	# This helps ensure other nodes can read just_pressed states
+	# Note: Godot 4.x doesn't have physics_process_priority, only process_priority
 	process_priority = 1000  # Higher number = runs later
-	physics_process_priority = 1000  # Same for physics
 
 	# Detect all available controllers
 	detect_controllers()
