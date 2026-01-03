@@ -294,12 +294,6 @@ func _process_jump() -> void:
 		print("[Jump DEBUG %s] Button pressed! jumps_used=%d on_floor=%s coyote=%.2f" % [player_name, jumps_used, player.is_on_floor(), coyote_timer])
 
 	if jump_pressed:
-		# IMPORTANT: Edge climb is checked FIRST, before jump count validation
-		# This allows edge climb to work as a "3rd jump" after double jump is used
-		if _attempt_edge_climb():
-			print("[Movement] Edge climb successful (jumps_used: %d)" % jumps_used)
-			return
-
 		# First jump: use coyote time and jump buffer
 		if jumps_used == 0:
 			jump_buffer_timer = jump_buffer_time
@@ -311,6 +305,10 @@ func _process_jump() -> void:
 		# Double jump: can jump in air if jumps remaining
 		elif jumps_used < max_jumps:
 			_perform_jump()
+		# Edge climb: ONLY if all jumps are used (acts as "3rd jump")
+		elif _attempt_edge_climb():
+			print("[Movement] Edge climb successful (jumps_used: %d)" % jumps_used)
+			return
 		else:
 			print("[Jump DEBUG] Jump BLOCKED - max jumps used (%d/%d)" % [jumps_used, max_jumps])
 
