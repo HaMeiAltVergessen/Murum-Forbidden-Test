@@ -829,17 +829,35 @@ func shadow_scythe() -> void:
 	# Consume mana
 	consume_mana(SCYTHE_MANA_COST)
 
-	# Check if scythe scene exists
+	# Check if scythe scene exists and can be loaded
 	var scythe_path = "res://projectiles/shadow_scythe.tscn"
 	if not ResourceLoader.exists(scythe_path):
 		print("[Shadow Scythe] Scene not found, using placeholder")
 		create_placeholder_scythe()
 		return
 
-	# Spawn scythe
+	# Try to load scythe scene - CRITICAL: check for null!
 	var scythe_scene = load(scythe_path)
+	if not scythe_scene:
+		print("[Shadow Scythe ERROR] Failed to load scene (corrupted?), using placeholder")
+		create_placeholder_scythe()
+		return
+
+	# Try to instantiate - CRITICAL: check for null!
 	scythe_instance = scythe_scene.instantiate()
-	get_tree().current_scene.add_child(scythe_instance)
+	if not scythe_instance:
+		print("[Shadow Scythe ERROR] Failed to instantiate scene, using placeholder")
+		create_placeholder_scythe()
+		return
+
+	# Add to scene tree - CRITICAL: use get_parent() not current_scene
+	if get_parent():
+		get_parent().add_child(scythe_instance)
+	else:
+		print("[Shadow Scythe ERROR] No parent node!")
+		scythe_instance.queue_free()
+		create_placeholder_scythe()
+		return
 
 	scythe_instance.global_position = global_position + Vector2(0, -20)
 	if "direction" in scythe_instance:
