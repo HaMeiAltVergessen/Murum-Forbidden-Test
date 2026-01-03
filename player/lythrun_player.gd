@@ -619,13 +619,10 @@ func spawn_stun_afterimage() -> void:
 	if not sprite:
 		return
 
-	# Create afterimage sprite
-	var afterimage = Sprite2D.new()
-	afterimage.texture = sprite.texture
-	if sprite.hframes > 1:
-		afterimage.hframes = sprite.hframes
-	if sprite.vframes > 1:
-		afterimage.vframes = sprite.vframes
+	# Create afterimage - use AnimatedSprite2D to copy current frame
+	var afterimage = AnimatedSprite2D.new()
+	afterimage.sprite_frames = sprite.sprite_frames
+	afterimage.animation = sprite.animation
 	afterimage.frame = sprite.frame
 	afterimage.flip_h = sprite.flip_h
 	afterimage.modulate = Color(0.3, 0, 0.6, 0.7)  # Dark violet
