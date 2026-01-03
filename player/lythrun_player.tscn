@@ -8,7 +8,8 @@
 [ext_resource type="PackedScene" uid="uid://dmqxgb7cyujwa" path="res://components/hitbox_component.tscn" id="6_hitbox"]
 [ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="7_hurtbox"]
 [ext_resource type="Script" path="res://player/player_camera.gd" id="8_camera"]
-[ext_resource type="Texture2D" uid="uid://brdes58sjjhf0" path="res://Assets/AIPlaceholder/Char/Lythrun/ded85b86-31ed-4fa6-b2bd-fcb77ad8dc24.jpg" id="9_lythrun_sprite"]
+[ext_resource type="Texture2D" uid="uid://blh57lb00l77x" path="res://Assets/AIPlaceholder/Char/Lythrun/Lythrun.png" id="9_lythrun_sprite"]
+[ext_resource type="Script" path="res://player/lythrun_animator.gd" id="10_lythrun_animator"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 radius = 16.0
@@ -23,7 +24,7 @@ script = ExtResource("1_lythrun")
 modulate = Color(0.7, 0.5, 0.9, 1)
 texture = ExtResource("9_lythrun_sprite")
 hframes = 5
-vframes = 5
+vframes = 4
 frame = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -82,6 +83,9 @@ damage = 10
 [node name="HurtboxComponent" parent="." instance=ExtResource("7_hurtbox")]
 collision_layer = 1024
 collision_mask = 40
+
+[node name="LythrunAnimator" type="Node" parent="."]
+script = ExtResource("10_lythrun_animator")
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 enabled = false
