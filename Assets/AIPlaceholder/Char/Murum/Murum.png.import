@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://brdes58sjjhf0"
-path="res://.godot/imported/ded85b86-31ed-4fa6-b2bd-fcb77ad8dc24.jpg-97ab7021aa19a959a1f962f1897ce877.ctex"
+uid="uid://cpp88cwljuymx"
+path="res://.godot/imported/Murum.png-320c1238a07ced9cc82b241f44454b3d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/AIPlaceholder/Char/Lythrun/ded85b86-31ed-4fa6-b2bd-fcb77ad8dc24.jpg"
-dest_files=["res://.godot/imported/ded85b86-31ed-4fa6-b2bd-fcb77ad8dc24.jpg-97ab7021aa19a959a1f962f1897ce877.ctex"]
+source_file="res://Assets/AIPlaceholder/Char/Murum/Murum.png"
+dest_files=["res://.godot/imported/Murum.png-320c1238a07ced9cc82b241f44454b3d.ctex"]
 
 [params]
 
@@ -31,4 +31,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=0
+detect_3d/compress_to=1

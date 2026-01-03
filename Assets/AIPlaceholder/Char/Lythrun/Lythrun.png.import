@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c3ttcrjybllm1"
-path="res://.godot/imported/35155320-0782-4f9e-8819-d3013edf3641.jpg-55122060e95d2925aa4265bd839b56a0.ctex"
+uid="uid://blh57lb00l77x"
+path="res://.godot/imported/Lythrun.png-2286326a39517ce08ea4cba734aeccd2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/AIPlaceholder/Char/Murum/35155320-0782-4f9e-8819-d3013edf3641.jpg"
-dest_files=["res://.godot/imported/35155320-0782-4f9e-8819-d3013edf3641.jpg-55122060e95d2925aa4265bd839b56a0.ctex"]
+source_file="res://Assets/AIPlaceholder/Char/Lythrun/Lythrun.png"
+dest_files=["res://.godot/imported/Lythrun.png-2286326a39517ce08ea4cba734aeccd2.ctex"]
 
 [params]
 
@@ -31,4 +31,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=0
+detect_3d/compress_to=1
