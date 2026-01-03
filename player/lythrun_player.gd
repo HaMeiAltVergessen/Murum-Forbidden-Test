@@ -561,7 +561,7 @@ func shadow_dash() -> void:
 	if shadow_dash_active or shadow_dash_cooldown_active:
 		return
 
-	if is_attacking or is_charging_orb or is_charging_abgrund:
+	if is_attacking or is_charging_orb:
 		return
 
 	shadow_dash_active = true
