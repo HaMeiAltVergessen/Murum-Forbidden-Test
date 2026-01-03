@@ -17,7 +17,6 @@
 [ext_resource type="Script" path="res://player/abilities/wolkenbruch.gd" id="15_wolkenbruch"]
 [ext_resource type="Script" path="res://player/abilities/echo_von_urgathon.gd" id="16_echo"]
 [ext_resource type="Script" path="res://player/combat_system/luftgott_system.gd" id="16_luftgott"]
-[ext_resource type="Script" path="res://player/murum_animator.gd" id="17_murum_animator"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 radius = 16.0
@@ -30,9 +29,11 @@ script = ExtResource("1_murum")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("9_murum_sprite")
-hframes = 5
-vframes = 3
+hframes = 1
+vframes = 1
 frame = 0
+region_enabled = true
+region_rect = Rect2(0, 0, 96, 96)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_player")
@@ -109,9 +110,6 @@ script = ExtResource("15_wolkenbruch")
 script = ExtResource("16_echo")
 [node name="LuftgottSystem" type="Node" parent="."]
 script = ExtResource("16_luftgott")
-
-[node name="MurumAnimator" type="Node" parent="."]
-script = ExtResource("17_murum_animator")
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 offset = Vector2(0, -150)

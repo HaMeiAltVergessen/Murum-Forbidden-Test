@@ -74,22 +74,22 @@ func _process(delta: float) -> void:
 func _update_animation_state() -> void:
 	var new_animation: String = "idle"
 
-	# Check Lythrun-specific states
-	if player.has("shadow_dash_active") and player.shadow_dash_active:
+	# Check Lythrun-specific states using "property" in object syntax
+	if "shadow_dash_active" in player and player.shadow_dash_active:
 		new_animation = "dash"
-	elif player.has("is_attacking") and player.is_attacking:
+	elif "is_attacking" in player and player.is_attacking:
 		if current_animation.begins_with("attack"):
 			return
 		new_animation = "attack_1"
-	elif player.has("is_void_parrying") and player.is_void_parrying:
+	elif "is_void_parrying" in player and player.is_void_parrying:
 		new_animation = "parry"
-	elif player.has("scythe_thrown") and player.scythe_thrown:
+	elif "scythe_thrown" in player and player.scythe_thrown:
 		new_animation = "scythe_throw"
-	elif player.has("is_charging_orb") and player.is_charging_orb:
+	elif "is_charging_orb" in player and player.is_charging_orb:
 		new_animation = "special_2"
-	elif player.has("phase_shift_active") and player.phase_shift_active:
+	elif "phase_shift_active" in player and player.phase_shift_active:
 		new_animation = "ultimate"
-	elif player.has("void_rift_active") and player.void_rift_active:
+	elif "void_rift_active" in player and player.void_rift_active:
 		new_animation = "special_1"
 	elif not player.is_on_floor():
 		if player.velocity.y < -100:
