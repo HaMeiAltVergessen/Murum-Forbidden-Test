@@ -15,8 +15,8 @@ radius = 16.0
 height = 48.0
 
 [node name="Lythrun" type="CharacterBody2D" groups=["player", "player2"]]
-collision_layer = 2
-collision_mask = 17
+collision_layer = 4
+collision_mask = 217
 script = ExtResource("1_lythrun")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
@@ -75,13 +75,13 @@ combo_window = 0.5
 
 [node name="HitboxComponent" parent="CombatSystem" instance=ExtResource("6_hitbox")]
 position = Vector2(50, 0)
-collision_layer = 3
-collision_mask = 71
+collision_layer = 32
+collision_mask = 8
 damage = 10
 
 [node name="HurtboxComponent" parent="." instance=ExtResource("7_hurtbox")]
-collision_layer = 2
-collision_mask = 6
+collision_layer = 1024
+collision_mask = 40
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 enabled = false

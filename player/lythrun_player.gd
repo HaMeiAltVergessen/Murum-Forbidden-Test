@@ -290,15 +290,15 @@ func set_coop_collision() -> void:
 	set_collision_mask_value(7, true)   # Pickups
 	set_collision_mask_value(8, true)   # Hazards
 
-	# Update hitbox collision (P2's attacks hit enemies and P1)
+	# Update hitbox collision (P2's attacks hit enemies ONLY in co-op)
 	if combat_system and combat_system.has_node("HitboxComponent"):
 		var hitbox = combat_system.get_node("HitboxComponent")
 		hitbox.collision_layer = 0
-		hitbox.set_collision_layer_value(9, true)  # PlayerHitbox layer
+		hitbox.set_collision_layer_value(6, true)  # P2 Projectiles layer
 		hitbox.collision_mask = 0
 		hitbox.set_collision_mask_value(4, true)   # Enemies
-		hitbox.set_collision_mask_value(2, true)   # P1 (can hit P1 in co-op)
 		hitbox.set_collision_mask_value(10, true)  # PlayerHurtbox
+		# NOTE: P1 collision only in PvP mode, handled by CoopManager.set_pvp_collision()
 
 	print("[Lythrun] Co-op collision layers set")
 
@@ -758,7 +758,8 @@ func spawn_attack_hitbox(damage: float) -> void:
 	hitbox.set_collision_layer_value(6, true)  # P2 Projectiles
 	hitbox.collision_mask = 0
 	hitbox.set_collision_mask_value(4, true)  # Enemies
-	hitbox.set_collision_mask_value(2, true)  # P1 (in PvP)
+	# NOTE: P1 collision (Layer 2) only in PvP mode - not in co-op!
+	# CoopManager.set_pvp_collision() handles this
 
 	# CRITICAL: Enable monitoring for Area2D
 	hitbox.monitoring = true
