@@ -105,17 +105,6 @@ var phase_shift_cooldown_active: bool = false
 var phase_shift_armor: bool = false
 var phase_shift_flicker_tween = null
 
-# ============ ABGRUND (COMMIT 019.5) ============
-const ABGRUND_CHARGE_TIME_MAX: float = 1.5  # COMMIT 024: Reduced from 2.0s (less vulnerable)
-const ABGRUND_MIN_RADIUS: float = 220.0
-const ABGRUND_MAX_RADIUS: float = 650.0
-const ABGRUND_DURATION: float = 3.0
-const ABGRUND_SUCTION_STRENGTH: float = 200.0
-const ABGRUND_DAMAGE_PER_TICK: float = 5.0
-var is_charging_abgrund: bool = false
-var abgrund_charge_time: float = 0.0
-var abgrund_charge_vfx = null
-
 func _ready() -> void:
 	print("[Lythrun] Initializing Player 2...")
 
@@ -484,12 +473,6 @@ func _process(delta: float) -> void:
 		orb_charge_time = min(orb_charge_time, VOID_ORB_CHARGE_TIME)
 		update_charging_orb_vfx(orb_charge_time / VOID_ORB_CHARGE_TIME)
 
-	# Abgrund charging
-	if is_charging_abgrund:
-		abgrund_charge_time += delta
-		abgrund_charge_time = min(abgrund_charge_time, ABGRUND_CHARGE_TIME_MAX)
-		update_abgrund_charge_vfx(abgrund_charge_time / ABGRUND_CHARGE_TIME_MAX)
-
 	# ===== P2 SHADOW ABILITIES INPUT =====
 	if not InputManager or not InputManager.p2_active:
 		return
@@ -503,17 +486,7 @@ func _process(delta: float) -> void:
 	# Void Strike (Attack button)
 	if InputManager.is_p2_action_just_pressed("attack"):
 		print("[Lythrun DEBUG] Attack pressed")
-		# Check for Abgrund (Down + Attack in air)
-		if not is_on_floor() and InputManager.get_p2_input_vector().y > 0.5:
-			print("[Lythrun DEBUG] Starting Abgrund charge")
-			start_charging_abgrund()
-		else:
-			void_strike()
-
-	# Release Abgrund
-	if not InputManager.is_p2_action_pressed("attack") and is_charging_abgrund:
-		print("[Lythrun DEBUG] Releasing Abgrund")
-		release_abgrund()
+		void_strike()
 
 	# Shadow Scythe (Y button / Button 3)
 	if InputManager.is_p2_action_just_pressed("shadow_scythe"):
@@ -558,7 +531,7 @@ func _physics_process(delta: float) -> void:
 		current_mana = mana_component.current_mana
 
 	# Gravity
-	if not is_on_floor() and not is_charging_abgrund:
+	if not is_on_floor():
 		velocity.y += GRAVITY * delta
 
 	# Movement during Void Orb charging (restricted)
@@ -571,7 +544,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	# Normal movement (if not disabled by abilities)
-	if not shadow_dash_active and not is_attacking and not is_charging_abgrund:
+	if not shadow_dash_active and not is_attacking:
 		if movement_controller:
 			# Let movement controller handle movement
 			pass
@@ -772,9 +745,23 @@ func spawn_attack_hitbox(damage: float) -> void:
 	# Damage on hit with debug
 	hitbox.body_entered.connect(func(body):
 		print("[Void Strike] Hit: ", body.name)
+		var damage_dealt = false
+
+		# Try direct take_damage method first
 		if body.has_method("take_damage"):
 			body.take_damage(damage)
-			print("[Void Strike] Dealt %.1f damage to %s" % [damage, body.name])
+			damage_dealt = true
+			print("[Void Strike] Dealt %.1f damage to %s (direct)" % [damage, body.name])
+		# Try HealthComponent
+		elif body.has_node("HealthComponent"):
+			var health = body.get_node("HealthComponent")
+			if health.has_method("take_damage"):
+				health.take_damage(int(damage))
+				damage_dealt = true
+				print("[Void Strike] Dealt %.1f damage to %s (HealthComponent)" % [damage, body.name])
+
+		if not damage_dealt:
+			print("[Void Strike ERROR] %s has no damage method!" % body.name)
 	)
 
 	# Remove after 0.1s
@@ -809,8 +796,20 @@ func spawn_void_shockwave() -> void:
 	# Damage all overlapping enemies
 	var enemies = shockwave.get_overlapping_bodies()
 	for enemy in enemies:
+		var damage_dealt = false
+		# Try direct take_damage
 		if enemy.has_method("take_damage"):
 			enemy.take_damage(shockwave_damage)
+			damage_dealt = true
+		# Try HealthComponent
+		elif enemy.has_node("HealthComponent"):
+			var health = enemy.get_node("HealthComponent")
+			if health.has_method("take_damage"):
+				health.take_damage(int(shockwave_damage))
+				damage_dealt = true
+
+		if damage_dealt:
+			print("[Void Shockwave] Dealt %.1f damage to %s" % [shockwave_damage, enemy.name])
 
 	# VFX
 	spawn_shockwave_vfx(shockwave.global_position)
@@ -839,7 +838,8 @@ func shadow_scythe() -> void:
 		print("[Shadow Scythe] Not enough mana!")
 		return
 
-	if is_attacking or is_dashing:
+	# REMOVED: Don't block by is_attacking - Shadow Scythe should be castable anytime
+	if is_dashing:
 		return
 
 	# Consume mana
@@ -940,11 +940,23 @@ func create_placeholder_scythe() -> void:
 	# Hit detection with debug output
 	scythe.body_entered.connect(func(body):
 		print("[Shadow Scythe] Hit: ", body.name)
+		var damage_dealt = false
+
+		# Try direct take_damage
 		if body.has_method("take_damage"):
 			body.take_damage(damage)
-			print("[Shadow Scythe] Dealt %.1f damage to %s" % [damage, body.name])
-		else:
-			print("[Shadow Scythe] Body has no take_damage method: ", body.name)
+			damage_dealt = true
+			print("[Shadow Scythe] Dealt %.1f damage to %s (direct)" % [damage, body.name])
+		# Try HealthComponent
+		elif body.has_node("HealthComponent"):
+			var health = body.get_node("HealthComponent")
+			if health.has_method("take_damage"):
+				health.take_damage(int(damage))
+				damage_dealt = true
+				print("[Shadow Scythe] Dealt %.1f damage to %s (HealthComponent)" % [damage, body.name])
+
+		if not damage_dealt:
+			print("[Shadow Scythe ERROR] %s has no damage method!" % body.name)
 	)
 
 	# Store reference
@@ -1077,8 +1089,16 @@ func perform_perfect_parry() -> void:
 	# Damage and stun all enemies in radius
 	var enemies = aoe.get_overlapping_bodies()
 	for enemy in enemies:
+		# Damage
 		if enemy.has_method("take_damage"):
 			enemy.take_damage(PERFECT_PARRY_DAMAGE)
+			print("[Void Parry] Perfect parry damage to %s" % enemy.name)
+		elif enemy.has_node("HealthComponent"):
+			var health = enemy.get_node("HealthComponent")
+			if health.has_method("take_damage"):
+				health.take_damage(int(PERFECT_PARRY_DAMAGE))
+				print("[Void Parry] Perfect parry damage (HealthComponent) to %s" % enemy.name)
+		# Stun
 		if enemy.has_method("apply_stun"):
 			enemy.apply_stun(PERFECT_PARRY_STUN_DURATION)
 
@@ -1173,6 +1193,12 @@ func create_placeholder_rift() -> void:
 	for enemy in enemies:
 		if enemy.has_method("take_damage"):
 			enemy.take_damage(VOID_RIFT_DAMAGE)
+			print("[Void Rift] Damage to %s" % enemy.name)
+		elif enemy.has_node("HealthComponent"):
+			var health = enemy.get_node("HealthComponent")
+			if health.has_method("take_damage"):
+				health.take_damage(int(VOID_RIFT_DAMAGE))
+				print("[Void Rift] Damage (HealthComponent) to %s" % enemy.name)
 
 	if is_instance_valid(rift):
 		rift.queue_free()
@@ -1259,14 +1285,31 @@ func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
 	orb.body_entered.connect(func(body):
 		if not hit:
 			hit = true
-			# Explosion
+			print("[Void Orb] Hit: ", body.name)
+
+			# Direct hit damage
 			if body.has_method("take_damage"):
 				body.take_damage(damage)
+				print("[Void Orb] Direct hit: %.1f damage" % damage)
+			elif body.has_node("HealthComponent"):
+				var health = body.get_node("HealthComponent")
+				if health.has_method("take_damage"):
+					health.take_damage(int(damage))
+					print("[Void Orb] Direct hit (HealthComponent): %.1f damage" % damage)
+
 			# AoE explosion
 			var explosion_enemies = orb.get_overlapping_bodies()
 			for enemy in explosion_enemies:
-				if enemy != body and enemy.has_method("take_damage"):
-					enemy.take_damage(damage * 0.5)
+				if enemy != body:
+					if enemy.has_method("take_damage"):
+						enemy.take_damage(damage * 0.5)
+						print("[Void Orb] AoE hit: %.1f damage to %s" % [damage * 0.5, enemy.name])
+					elif enemy.has_node("HealthComponent"):
+						var health = enemy.get_node("HealthComponent")
+						if health.has_method("take_damage"):
+							health.take_damage(int(damage * 0.5))
+							print("[Void Orb] AoE hit (HealthComponent): %.1f damage to %s" % [damage * 0.5, enemy.name])
+
 			orb.queue_free()
 	)
 
@@ -1384,89 +1427,6 @@ func take_damage(damage: float) -> void:
 	if health_component and health_component.has_method("take_damage"):
 		health_component.take_damage(damage)
 
-# ============ ABGRUND (COMMIT 019.5) ============
-
-func start_charging_abgrund() -> void:
-	"""Start charging aerial slam"""
-	if is_charging_abgrund or is_attacking or is_dashing:
-		return
-
-	if is_on_floor():
-		return
-
-	is_charging_abgrund = true
-	abgrund_charge_time = 0.0
-
-	print("[Abgrund] Charging...")
-
-	# Freeze in air
-	velocity.y = 0
-
-	# VFX
-	spawn_abgrund_charge_vfx()
-
-	# Audio
-	if AudioManager and AudioManager.has_method("play_sfx"):
-		AudioManager.play_sfx("abgrund_charge")
-
-func release_abgrund() -> void:
-	"""Release aerial slam"""
-	if not is_charging_abgrund:
-		return
-
-	is_charging_abgrund = false
-
-	print("[Abgrund] Slamming!")
-
-	# Slam downward
-	velocity.y = 1200.0
-
-	# Wait until ground hit
-	while not is_on_floor():
-		move_and_slide()
-		await get_tree().process_frame
-
-	# Impact
-	perform_abgrund_impact()
-
-	# Clear VFX
-	clear_abgrund_charge_vfx()
-
-func perform_abgrund_impact() -> void:
-	"""Execute abgrund impact"""
-	var charge_factor = abgrund_charge_time / ABGRUND_CHARGE_TIME_MAX
-	var abgrund_radius = lerp(ABGRUND_MIN_RADIUS, ABGRUND_MAX_RADIUS, charge_factor)
-
-	print("[Abgrund] IMPACT! Charge: %.1f%% | Radius: %.0fpx" % [charge_factor * 100, abgrund_radius])
-
-	# Try to load abgrund scene
-	var abgrund_path = "res://abilities/abgrund.tscn"
-	if ResourceLoader.exists(abgrund_path):
-		var abgrund_scene = load(abgrund_path)
-		var abgrund = abgrund_scene.instantiate()
-		get_tree().current_scene.add_child(abgrund)
-
-		abgrund.global_position = global_position + Vector2(0, 20)
-		if abgrund.has_method("setup"):
-			abgrund.setup(abgrund_radius, ABGRUND_DURATION, ABGRUND_SUCTION_STRENGTH, ABGRUND_DAMAGE_PER_TICK)
-	else:
-		print("[Abgrund] Scene not found, using placeholder")
-		create_placeholder_abgrund(abgrund_radius)
-
-	# Audio
-	if AudioManager and AudioManager.has_method("play_sfx"):
-		AudioManager.play_sfx("abgrund_impact")
-
-	# Camera shake
-	var camera = get_viewport().get_camera_2d()
-	if camera and camera.has_method("shake"):
-		camera.shake(20.0 * charge_factor, 0.8)
-
-func create_placeholder_abgrund(radius: float) -> void:
-	"""Create placeholder abgrund"""
-	# Simple suction area
-	print("[Abgrund] Creating placeholder abgrund with radius %.0f" % radius)
-	# TODO: Implement placeholder
 
 # ============ HELPER FUNCTIONS (COMMIT 019.5) ============
 
@@ -1547,17 +1507,3 @@ func spawn_phase_shift_absorb_vfx() -> void:
 		tween.tween_property(flash, "modulate:a", 0.0, 0.3)
 		tween.tween_callback(flash.queue_free)
 
-func spawn_abgrund_charge_vfx() -> void:
-	"""Spawn abgrund charging VFX"""
-	# Placeholder
-	print("[VFX] Abgrund charging started")
-
-func update_abgrund_charge_vfx(charge_factor: float) -> void:
-	"""Update abgrund charging VFX"""
-	# Placeholder
-	pass
-
-func clear_abgrund_charge_vfx() -> void:
-	"""Clear abgrund charging VFX"""
-	# Placeholder
-	print("[VFX] Abgrund charging cleared")
