@@ -18,12 +18,14 @@ var detected_controllers: Array[int] = []
 # Track button/key states for P1 (keyboard/mouse only when P2 active, keyboard+controller when solo)
 var p1_button_states: Dictionary = {}  # action_name -> bool (pressed this frame?)
 var p1_button_just_pressed: Dictionary = {}  # action_name -> bool (just pressed this frame?)
+var p1_button_just_pressed_frame: Dictionary = {}  # action_name -> int (frame when pressed)
 var p1_input_vector: Vector2 = Vector2.ZERO  # Movement input
 
 # ============ P2 INPUT STATE TRACKING ============
 # Track button states for P2's specific controller to prevent keyboard/P1 controller interference
 var p2_button_states: Dictionary = {}  # action_name -> bool (pressed this frame?)
 var p2_button_just_pressed: Dictionary = {}  # action_name -> bool (just pressed this frame?)
+var p2_button_just_pressed_frame: Dictionary = {}  # action_name -> int (frame when pressed)
 
 func _ready() -> void:
 	print("[InputManager] Initialized - Hybrid Input (KB+M + Controller)")
@@ -40,27 +42,28 @@ func _ready() -> void:
 	Input.joy_connection_changed.connect(_on_controller_connection_changed)
 
 func _process(_delta: float) -> void:
-	"""Update input vectors each frame"""
+	"""Update input vectors and clean up old just_pressed states"""
 	# Update P1 input vector every frame (critical for co-op mode keyboard-only filtering)
 	_update_p1_input_vector()
 
-func _physics_process(_delta: float) -> void:
-	"""Clear just_pressed states at the END of each physics tick"""
-	# CRITICAL: Clear just_pressed in _physics_process instead of _process
-	# This ensures MovementController (which runs in _physics_process) can read the states
-	# before they're cleared. If we clear in _process, visual frames can clear the flags
-	# before physics ticks get a chance to read them.
+	# CRITICAL: Clean up just_pressed states that are from PREVIOUS frames
+	# This allows states to persist for one full frame (through _physics_process)
+	# Without this delay, _process() would clear states before _physics_process() reads them
+	var current_frame = Engine.get_process_frames()
 
-	# P1 just_pressed cleanup
+	# P1 just_pressed cleanup - only clear if NOT set in current frame
 	for action in p1_button_just_pressed.keys():
 		if p1_button_just_pressed[action]:
-			p1_button_just_pressed[action] = false
+			var frame_set = p1_button_just_pressed_frame.get(action, 0)
+			if frame_set < current_frame:
+				p1_button_just_pressed[action] = false
 
-	# P2 just_pressed cleanup
+	# P2 just_pressed cleanup - only clear if NOT set in current frame
 	for action in p2_button_just_pressed.keys():
 		if p2_button_just_pressed[action]:
-			# Mark as consumed for next physics tick
-			p2_button_just_pressed[action] = false
+			var frame_set = p2_button_just_pressed_frame.get(action, 0)
+			if frame_set < current_frame:
+				p2_button_just_pressed[action] = false
 
 func detect_controllers() -> void:
 	"""Detect all connected controllers"""
@@ -122,6 +125,7 @@ func _input(event: InputEvent) -> void:
 				p1_button_states[action_name] = event.is_pressed()
 				if event.is_pressed() and not p1_button_just_pressed.get(action_name, false):
 					p1_button_just_pressed[action_name] = true
+					p1_button_just_pressed_frame[action_name] = Engine.get_process_frames()  # Track frame
 				elif not event.is_pressed():
 					p1_button_just_pressed[action_name] = false
 
@@ -132,6 +136,7 @@ func _input(event: InputEvent) -> void:
 				p1_button_states[action_name] = event.is_pressed()
 				if event.is_pressed() and not p1_button_just_pressed.get(action_name, false):
 					p1_button_just_pressed[action_name] = true
+					p1_button_just_pressed_frame[action_name] = Engine.get_process_frames()  # Track frame
 				elif not event.is_pressed():
 					p1_button_just_pressed[action_name] = false
 
@@ -170,6 +175,7 @@ func _input(event: InputEvent) -> void:
 				# Track just_pressed (transition from not pressed to pressed)
 				if event.is_pressed() and not p2_button_just_pressed.get(action_name, false):
 					p2_button_just_pressed[action_name] = true
+					p2_button_just_pressed_frame[action_name] = Engine.get_process_frames()  # Track frame
 					print("[InputManager DEBUG] P2 action pressed: ", action_name)
 				elif not event.is_pressed():
 					p2_button_just_pressed[action_name] = false
