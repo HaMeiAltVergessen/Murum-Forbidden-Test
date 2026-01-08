@@ -9,7 +9,7 @@ class_name Lythrun
 @onready var health_component: HealthComponent = $HealthComponent if has_node("HealthComponent") else null
 @onready var mana_component: ManaComponent = $ManaComponent if has_node("ManaComponent") else null
 @onready var hurtbox: HurtboxComponent = $HurtboxComponent if has_node("HurtboxComponent") else null
-@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D if has_node("AnimatedSprite2D") else null
+@onready var sprite: Sprite2D = $Sprite2D
 @onready var player_camera: PlayerCamera = $PlayerCamera if has_node("PlayerCamera") else null
 
 # ============ SHADOW VFX ============
