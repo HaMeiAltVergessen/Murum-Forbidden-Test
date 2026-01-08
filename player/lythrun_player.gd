@@ -657,8 +657,9 @@ func dodge() -> void:
 	print("[Dodge] Started - Direction: %s" % dodge_direction)
 
 	# Disable hurtbox during dodge (i-frames)
-	if hurtbox_component:
-		hurtbox_component.set_deferred("monitoring", false)
+	var hurtbox = get_node_or_null("HurtboxComponent")
+	if hurtbox and hurtbox.has_method("set_monitoring"):
+		hurtbox.set_deferred("monitoring", false)
 
 	# Perform dodge movement
 	var start_time = Time.get_ticks_msec() / 1000.0
@@ -668,8 +669,8 @@ func dodge() -> void:
 		await get_tree().process_frame
 
 	# Re-enable hurtbox
-	if hurtbox_component:
-		hurtbox_component.set_deferred("monitoring", true)
+	if hurtbox and hurtbox.has_method("set_monitoring"):
+		hurtbox.set_deferred("monitoring", true)
 
 	velocity = Vector2.ZERO
 	is_dodging = false
