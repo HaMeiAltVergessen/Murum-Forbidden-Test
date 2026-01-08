@@ -73,16 +73,24 @@ const SCYTHE_MANA_COST: int = 30
 var scythe_instance = null
 var scythe_thrown: bool = false
 
-# ============ VOID PARRY (COMMIT 019.5) ============
-const VOID_PARRY_WINDOW: float = 0.4  # Total parry window
-const PERFECT_PARRY_WINDOW: float = 0.12  # COMMIT 024: Perfect timing window (reduced from 0.15s)
-const VOID_PARRY_COOLDOWN: float = 3.0
-const PERFECT_PARRY_AOE_RADIUS: float = 220.0
+# ============ VOID PARRY (COMMIT 019.5 - REVISED to match P1 hold system) ============
+# Hold-based parry system matching P1's ParryBlockSystem
+const VOID_PARRY_WINDOW: float = 0.3  # Perfect parry window (matches P1)
+const VOID_PARRY_COOLDOWN: float = 0.3  # Brief cooldown after releasing (matches P1)
+const PARRY_BLOCK_RADIUS: float = 70.0  # Detection radius (matches P1)
+const BLOCK_MANA_DRAIN_INTERVAL: float = 1.5  # Mana drain when blocking (matches P1)
+const BLOCK_MANA_DRAIN_AMOUNT: float = 1.0  # Mana per drain tick
+const PERFECT_PARRY_AOE_RADIUS: float = 220.0  # AoE damage radius on perfect parry
 const PERFECT_PARRY_DAMAGE: float = 40.0
 const PERFECT_PARRY_STUN_DURATION: float = 1.5
-var is_void_parrying: bool = false
+
+enum VoidParryState { IDLE, PARRY_WINDOW, BLOCKING }
+var void_parry_state: VoidParryState = VoidParryState.IDLE
 var void_parry_cooldown_active: bool = false
+var void_parry_window_timer: float = 0.0
+var parry_mana_drain_timer: float = 0.0
 var parry_start_time: float = 0.0
+var parry_area: Area2D = null  # Detection area for attacks
 
 # ============ VOID RIFT (COMMIT 019.5) ============
 const VOID_RIFT_MANA_COST: int = 40  # COMMIT 024: Reduced from 50 (more affordable)
@@ -480,6 +488,28 @@ func _process(delta: float) -> void:
 		orb_charge_time = min(orb_charge_time, VOID_ORB_CHARGE_TIME)
 		update_charging_orb_vfx(orb_charge_time / VOID_ORB_CHARGE_TIME)
 
+	# Void Parry state management (hold system)
+	if void_parry_state == VoidParryState.PARRY_WINDOW:
+		void_parry_window_timer -= delta
+		if void_parry_window_timer <= 0:
+			# Transition to blocking state
+			_transition_to_blocking()
+	elif void_parry_state == VoidParryState.BLOCKING:
+		# Drain mana while blocking
+		parry_mana_drain_timer += delta
+		if parry_mana_drain_timer >= BLOCK_MANA_DRAIN_INTERVAL:
+			parry_mana_drain_timer = 0.0
+			if current_mana >= BLOCK_MANA_DRAIN_AMOUNT:
+				consume_mana(BLOCK_MANA_DRAIN_AMOUNT)
+			else:
+				# Out of mana - auto-stop blocking
+				print("[Void Parry] Out of mana - stopping block")
+				stop_void_parry()
+
+	# Cooldown timer
+	if void_parry_cooldown_active:
+		# Cooldown is handled by timer, not delta loop
+
 	# ===== P2 SHADOW ABILITIES INPUT =====
 	if not InputManager or not InputManager.p2_active:
 		return
@@ -513,10 +543,13 @@ func _process(delta: float) -> void:
 		else:
 			shadow_scythe()
 
-	# Void Parry (LT button / Button 6)
+	# Void Parry (LT trigger - HOLD system like P1)
 	if InputManager.is_p2_action_just_pressed("void_parry"):
-		print("[Lythrun DEBUG] Void Parry pressed")
-		void_parry()
+		print("[Lythrun DEBUG] Void Parry (LT) pressed - starting parry")
+		start_void_parry()
+	elif not InputManager.is_p2_action_pressed("void_parry") and void_parry_state != VoidParryState.IDLE:
+		print("[Lythrun DEBUG] Void Parry (LT) released - stopping parry")
+		stop_void_parry()
 
 	# Phase-Shift (RB button / Button 5)
 	if InputManager.is_p2_action_just_pressed("phase_shift"):
@@ -1153,16 +1186,29 @@ func on_scythe_returned() -> void:
 
 # ============ VOID PARRY (COMMIT 019.5) ============
 
-func void_parry() -> void:
-	"""Parry with perfect-parry AoE stun"""
-	if is_attacking or is_dashing or void_parry_cooldown_active:
+func start_void_parry() -> void:
+	"""Start void parry (LT pressed) - HOLD system like P1"""
+	if void_parry_state != VoidParryState.IDLE:
+		print("[Void Parry] Already parrying/blocking")
 		return
 
-	is_void_parrying = true
-	void_parry_cooldown_active = true
+	if void_parry_cooldown_active:
+		print("[Void Parry] Cooldown active")
+		return
+
+	if is_attacking or is_dashing or is_dodging:
+		print("[Void Parry] Blocked by other action")
+		return
+
+	print("[Void Parry] ===== PARRY WINDOW STARTED (%.2fs) =====" % VOID_PARRY_WINDOW)
+
+	# Enter PARRY_WINDOW state
+	void_parry_state = VoidParryState.PARRY_WINDOW
+	void_parry_window_timer = VOID_PARRY_WINDOW
 	parry_start_time = Time.get_ticks_msec() / 1000.0
 
-	print("[Void Parry] Activated!")
+	# Create detection area
+	_create_parry_area()
 
 	# VFX
 	spawn_void_parry_shield()
@@ -1171,32 +1217,95 @@ func void_parry() -> void:
 	if AudioManager and AudioManager.has_method("play_sfx"):
 		AudioManager.play_sfx("void_parry_activate")
 
-	# Parry window
-	await get_tree().create_timer(VOID_PARRY_WINDOW).timeout
-	if is_instance_valid(self):
-		is_void_parrying = false
+	# Make player invulnerable during parry (like P1)
+	var hurtbox = get_node_or_null("HurtboxComponent")
+	if hurtbox and hurtbox.has_method("set_monitoring"):
+		hurtbox.set_deferred("monitoring", false)
 
-	# Cooldown
+func _transition_to_blocking() -> void:
+	"""Transition from parry window to blocking state"""
+	print("[Void Parry] ===== PARRY WINDOW EXPIRED -> BLOCKING STATE =====")
+
+	void_parry_state = VoidParryState.BLOCKING
+	parry_mana_drain_timer = 0.0
+
+	# Visual feedback change (parry window expired, now just blocking)
+	# TODO: Change visual indicator color/opacity
+
+func stop_void_parry() -> void:
+	"""Stop void parry (LT released)"""
+	if void_parry_state == VoidParryState.IDLE:
+		return
+
+	print("[Void Parry] Stopped")
+
+	void_parry_state = VoidParryState.IDLE
+	void_parry_window_timer = 0.0
+	parry_mana_drain_timer = 0.0
+
+	# Destroy detection area
+	if parry_area and is_instance_valid(parry_area):
+		parry_area.queue_free()
+		parry_area = null
+
+	# Re-enable hurtbox
+	var hurtbox = get_node_or_null("HurtboxComponent")
+	if hurtbox and hurtbox.has_method("set_monitoring"):
+		hurtbox.set_deferred("monitoring", true)
+
+	# Start cooldown
+	void_parry_cooldown_active = true
 	await get_tree().create_timer(VOID_PARRY_COOLDOWN).timeout
 	if is_instance_valid(self):
 		void_parry_cooldown_active = false
 		print("[Void Parry] Cooldown complete")
 
-func _on_parry_hit(attacker) -> void:
-	"""Called when parry successfully blocks attack"""
-	if not is_void_parrying:
-		return
+func _create_parry_area() -> void:
+	"""Create Area2D for detecting incoming attacks"""
+	parry_area = Area2D.new()
+	var collision = CollisionShape2D.new()
+	var shape = CircleShape2D.new()
+	shape.radius = PARRY_BLOCK_RADIUS
 
-	# Calculate if perfect parry
-	var parry_time = (Time.get_ticks_msec() / 1000.0) - parry_start_time
-	var is_perfect = parry_time <= PERFECT_PARRY_WINDOW  # COMMIT 024: Use constant (0.12s)
+	collision.shape = shape
+	parry_area.add_child(collision)
+	add_child(parry_area)
 
-	if is_perfect:
+	# Collision setup - detect enemy hitboxes
+	parry_area.collision_layer = 0
+	parry_area.collision_mask = 0
+	parry_area.set_collision_mask_value(3, true)  # Enemy projectiles (Layer 3)
+	parry_area.set_collision_mask_value(4, true)  # Enemy hitboxes (Layer 4)
+
+	parry_area.monitoring = true
+	parry_area.monitorable = false
+
+	# Connect signal
+	parry_area.area_entered.connect(_on_parry_area_entered)
+
+	print("[Void Parry] Detection area created - Radius: %.0f" % PARRY_BLOCK_RADIUS)
+
+func _on_parry_area_entered(area: Area2D) -> void:
+	"""Called when enemy attack enters parry area"""
+	print("[Void Parry] ===== ATTACK DETECTED =====")
+	print("[Void Parry] Area: %s, State: %s" % [area.name, VoidParryState.keys()[void_parry_state]])
+
+	if void_parry_state == VoidParryState.PARRY_WINDOW:
+		# Perfect parry!
+		print("[Void Parry] PERFECT PARRY!")
 		perform_perfect_parry()
-	else:
-		# Normal parry
-		if AudioManager and AudioManager.has_method("play_sfx"):
-			AudioManager.play_sfx("void_parry_success")
+	elif void_parry_state == VoidParryState.BLOCKING:
+		# Normal block - costs mana
+		var mana_cost = 15.0  # Default normal attack cost
+		if current_mana >= mana_cost:
+			consume_mana(mana_cost)
+			print("[Void Parry] Blocked! Mana cost: %.0f" % mana_cost)
+			if AudioManager and AudioManager.has_method("play_sfx"):
+				AudioManager.play_sfx("void_parry_block")
+		else:
+			# Not enough mana - block fails
+			print("[Void Parry] Not enough mana to block!")
+			stop_void_parry()
 
 func perform_perfect_parry() -> void:
 	"""Execute perfect parry AoE"""
