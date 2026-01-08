@@ -23,7 +23,9 @@ func _ready() -> void:
 	monitoring = false
 	monitorable = false
 
-	print("[HitboxComponent] Ready - Layer: ", collision_layer, " Mask: ", collision_mask)
+	var owner_name = owner.name if owner else (get_parent().name if get_parent() else "null")
+	print("[HitboxComponent] Ready - Owner: ", owner_name,
+		  " Layer: ", collision_layer, " Mask: ", collision_mask)
 
 
 # ============ DETECTION ============
@@ -120,7 +122,16 @@ func activate() -> void:
 	monitoring = true
 	monitorable = true
 	visible = true
-	print("[HitboxComponent] ACTIVATED - Monitoring: ", monitoring, " Layer: ", collision_layer, " Mask: ", collision_mask)
+	var owner_name = owner.name if owner else (get_parent().name if get_parent() else "null")
+	print("[HitboxComponent] ACTIVATED - Owner: ", owner_name,
+		  " Monitoring: ", monitoring, " Layer: ", collision_layer, " Mask: ", collision_mask)
+
+	# DEBUG: Check what areas are currently overlapping
+	await get_tree().process_frame  # Wait for physics
+	var overlapping = get_overlapping_areas()
+	print("[HitboxComponent] Overlapping areas count: ", overlapping.size())
+	for area in overlapping:
+		print("  -> ", area.name, " (", area.get_class(), ") Layer:", area.collision_layer, " Mask:", area.collision_mask)
 
 
 func deactivate() -> void:

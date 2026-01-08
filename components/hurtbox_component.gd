@@ -26,6 +26,12 @@ func _ready() -> void:
 	monitoring = false
 	monitorable = true
 
+	# DEBUG: Log collision settings
+	var owner_name = get_parent().name if get_parent() else "null"
+	print("[HurtboxComponent] Ready - Owner: ", owner_name,
+		  " Layer: ", collision_layer, " Mask: ", collision_mask,
+		  " Monitoring: ", monitoring, " Monitorable: ", monitorable)
+
 
 # ============ DAMAGE RECEPTION ============
 func take_damage(damage: int, knockback: Vector2, hitstun: float, attacker: Node = null) -> bool:
