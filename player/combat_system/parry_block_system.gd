@@ -676,7 +676,7 @@ func _set_player_invulnerable(invulnerable: bool) -> void:
 	var health = player.get_node("HealthComponent")
 
 	# CRITICAL FIX: Stop the invulnerability timer to prevent it from overriding our manual control
-	if health.has("invulnerability_timer") and health.invulnerability_timer:
+	if health.invulnerability_timer:
 		health.invulnerability_timer.stop()
 		print("[ParryBlockSystem] Stopped HealthComponent invulnerability_timer")
 
