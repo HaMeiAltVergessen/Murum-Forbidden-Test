@@ -39,6 +39,13 @@ var max_mana: float = 100.0
 var movement_speed: float = 300.0
 var base_damage: float = 10.0
 
+# ============ DODGE (Simple i-frame roll) ============
+const DODGE_DURATION: float = 0.5  # Quick dodge roll
+const DODGE_SPEED: float = 300.0  # Moderate speed
+const DODGE_COOLDOWN: float = 1.0  # Same as P1
+var is_dodging: bool = false
+var dodge_cooldown_active: bool = false
+
 # ============ SHADOW DASH (COMMIT 019.5) ============
 const SHADOW_DASH_DURATION: float = 0.4  # P1: 0.3s
 const SHADOW_DASH_SPEED: float = 450.0  # P1: 400.0
@@ -478,9 +485,14 @@ func _process(delta: float) -> void:
 		return
 
 	# CRITICAL: Check P2 inputs through InputManager (device-filtered)
-	# Shadow Dash (B Button)
+	# Dodge (B Button)
+	if InputManager.is_p2_action_just_pressed("dodge"):
+		print("[Lythrun DEBUG] Dodge (B) pressed")
+		dodge()
+
+	# Shadow Dash (LB Button)
 	if InputManager.is_p2_action_just_pressed("dash"):
-		print("[Lythrun DEBUG] Shadow Dash pressed")
+		print("[Lythrun DEBUG] Shadow Dash (LB) pressed")
 		shadow_dash()
 
 	# Void Rift (Attack + Down in air - like P1's Wolkenbruch)
@@ -549,7 +561,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	# Normal movement (if not disabled by abilities)
-	if not shadow_dash_active and not is_attacking:
+	if not shadow_dash_active and not is_attacking and not is_dodging:
 		# FIXED: P2 uses manual movement (no MovementController reliance)
 		var input_vector = InputManager.get_p2_input_vector() if InputManager else Vector2.ZERO
 
@@ -618,6 +630,56 @@ func shadow_dash() -> void:
 	await get_tree().create_timer(SHADOW_DASH_COOLDOWN).timeout
 	shadow_dash_cooldown_active = false
 	print("[Shadow Dash] Cooldown complete")
+
+func dodge() -> void:
+	"""Simple dodge roll with i-frames (mapped to B button)"""
+	if is_dodging or dodge_cooldown_active:
+		print("[Dodge] Cooldown active or already dodging")
+		return
+
+	if is_attacking or is_charging_orb or shadow_dash_active:
+		print("[Dodge] Blocked by other action")
+		return
+
+	is_dodging = true
+	dodge_cooldown_active = true
+
+	# Dodge direction (prefer movement input, fall back to facing direction)
+	var input_vector = InputManager.get_p2_input_vector() if InputManager else Vector2.ZERO
+	var dodge_direction = Vector2.ZERO
+
+	if input_vector.length() > 0.1:
+		dodge_direction = input_vector.normalized()
+	else:
+		# No input - dodge in facing direction
+		dodge_direction = Vector2.RIGHT if not sprite.flip_h else Vector2.LEFT
+
+	print("[Dodge] Started - Direction: %s" % dodge_direction)
+
+	# Disable hurtbox during dodge (i-frames)
+	if hurtbox_component:
+		hurtbox_component.set_deferred("monitoring", false)
+
+	# Perform dodge movement
+	var start_time = Time.get_ticks_msec() / 1000.0
+	while (Time.get_ticks_msec() / 1000.0 - start_time) < DODGE_DURATION:
+		velocity = dodge_direction * DODGE_SPEED
+		move_and_slide()
+		await get_tree().process_frame
+
+	# Re-enable hurtbox
+	if hurtbox_component:
+		hurtbox_component.set_deferred("monitoring", true)
+
+	velocity = Vector2.ZERO
+	is_dodging = false
+
+	print("[Dodge] Completed")
+
+	# Cooldown
+	await get_tree().create_timer(DODGE_COOLDOWN).timeout
+	dodge_cooldown_active = false
+	print("[Dodge] Cooldown complete")
 
 func spawn_stun_afterimage() -> void:
 	"""Spawn afterimage with stun hitbox"""
@@ -1225,20 +1287,24 @@ func void_rift() -> void:
 	var rift_path = "res://abilities/void_rift.tscn"
 	if ResourceLoader.exists(rift_path):
 		var rift_scene = load(rift_path)
-		var rift = rift_scene.instantiate()
-		# CRITICAL FIX: Use get_parent() instead of get_tree().current_scene (more reliable)
-		if get_parent():
-			get_parent().add_child(rift)
+		if rift_scene:
+			var rift = rift_scene.instantiate()
+			# CRITICAL FIX: Use get_parent() instead of get_tree().current_scene (more reliable)
+			if get_parent():
+				get_parent().add_child(rift)
+			else:
+				print("[Void Rift ERROR] No parent node!")
+				void_rift_active = false
+				return
+
+			rift.global_position = global_position
+			if rift.has_method("setup"):
+				rift.setup(VOID_RIFT_MIN_RADIUS, VOID_RIFT_MAX_RADIUS, VOID_RIFT_DURATION, VOID_RIFT_DAMAGE)
+
+			rift.tree_exiting.connect(func(): void_rift_active = false)
 		else:
-			print("[Void Rift ERROR] No parent node!")
-			void_rift_active = false
-			return
-
-		rift.global_position = global_position
-		if rift.has_method("setup"):
-			rift.setup(VOID_RIFT_MIN_RADIUS, VOID_RIFT_MAX_RADIUS, VOID_RIFT_DURATION, VOID_RIFT_DAMAGE)
-
-		rift.tree_exiting.connect(func(): void_rift_active = false)
+			print("[Void Rift] Failed to load scene, using placeholder")
+			create_placeholder_rift()
 	else:
 		# Placeholder rift
 		print("[Void Rift] Scene not found, using placeholder")

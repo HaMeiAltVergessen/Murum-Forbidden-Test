@@ -150,20 +150,19 @@ func _input(event: InputEvent) -> void:
 	# ============ P2 INPUT TRACKING ============
 	# CRITICAL: Track P2 button states ONLY from P2's specific controller device
 	if p2_active and p2_controller_device >= 0:
-		# Only process events from P2's specific controller
+		# Process BUTTONS from P2's controller
 		if event is InputEventJoypadButton and event.device == p2_controller_device:
-			# UPDATED MAPPING (2026-01-03):
-			# Based on user requirements for symmetric P1/P2 controls
+			# CORRECTED MAPPING - Xbox Controller Layout:
+			# B = Dodge, LB = Dash (not the other way around!)
 			var button_to_action = {
 				0: "jump",           # A button
-				1: "dash",           # B button (Shadow Dash)
+				1: "dodge",          # B button - CORRECTED!
 				2: "attack",         # X button (Void Strike)
 				3: "shadow_scythe",  # Y button
-				4: "inventory",      # LB button
-				5: "phase_shift",    # RB button (Phase-Shift, was ultimate)
-				6: "void_parry",     # LT button
-				7: "ultimate",       # RT button (Void Orbs, was button 9)
-				8: "inventory",      # Back/Select button (alternative)
+				4: "dash",           # LB button (Left Bumper) - CORRECTED!
+				5: "phase_shift",    # RB button (Right Bumper)
+				6: "inventory",      # Back/Select button - CORRECTED!
+				# Note: LT/RT are TRIGGERS (axes), not buttons - handled below
 				# Note: Void Rift is Attack+Down combo, handled in lythrun_player.gd
 			}
 
@@ -181,6 +180,40 @@ func _input(event: InputEvent) -> void:
 					print("[InputManager DEBUG] P2 action pressed: %s (time=%d)" % [action_name, Time.get_ticks_msec()])
 				elif not event.is_pressed():
 					p2_button_just_pressed[action_name] = false
+
+		# Process TRIGGERS (LT/RT are axes, not buttons!)
+		if event is InputEventJoypadMotion and event.device == p2_controller_device:
+			const TRIGGER_THRESHOLD = 0.5  # Trigger must be pressed > 50%
+
+			# LT = Left Trigger = Axis 6 = Void Parry
+			if event.axis == JOY_AXIS_TRIGGER_LEFT:
+				var was_pressed = p2_button_states.get("void_parry", false)
+				var is_pressed = event.axis_value > TRIGGER_THRESHOLD
+
+				p2_button_states["void_parry"] = is_pressed
+
+				# Track just_pressed
+				if is_pressed and not was_pressed:
+					p2_button_just_pressed["void_parry"] = true
+					p2_button_just_pressed_time["void_parry"] = Time.get_ticks_msec()
+					print("[InputManager DEBUG] P2 LT (void_parry) pressed: %.2f" % event.axis_value)
+				elif not is_pressed and was_pressed:
+					p2_button_just_pressed["void_parry"] = false
+
+			# RT = Right Trigger = Axis 7 = Void Orbs (Ultimate)
+			elif event.axis == JOY_AXIS_TRIGGER_RIGHT:
+				var was_pressed = p2_button_states.get("ultimate", false)
+				var is_pressed = event.axis_value > TRIGGER_THRESHOLD
+
+				p2_button_states["ultimate"] = is_pressed
+
+				# Track just_pressed
+				if is_pressed and not was_pressed:
+					p2_button_just_pressed["ultimate"] = true
+					p2_button_just_pressed_time["ultimate"] = Time.get_ticks_msec()
+					print("[InputManager DEBUG] P2 RT (ultimate) pressed: %.2f" % event.axis_value)
+				elif not is_pressed and was_pressed:
+					p2_button_just_pressed["ultimate"] = false
 
 	# P2 Join-Request (any controller START button)
 	if not p2_active and event is InputEventJoypadButton:
