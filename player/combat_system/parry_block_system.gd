@@ -229,7 +229,9 @@ func _start_blocking() -> void:
 	print("[ParryBlockSystem] BlockArea radius: %.1f" % block_collision.shape.radius)
 
 	# Enable invulnerability immediately
+	print("[ParryBlockSystem] About to set player invulnerable to TRUE")
 	_set_player_invulnerable(true)
+	print("[ParryBlockSystem] Finished setting player invulnerable")
 
 	# Visual feedback (gold pulsing during parry window)
 	_show_parry_window_indicators()
@@ -672,6 +674,12 @@ func _set_player_invulnerable(invulnerable: bool) -> void:
 		return
 
 	var health = player.get_node("HealthComponent")
+
+	# CRITICAL FIX: Stop the invulnerability timer to prevent it from overriding our manual control
+	if health.has("invulnerability_timer") and health.invulnerability_timer:
+		health.invulnerability_timer.stop()
+		print("[ParryBlockSystem] Stopped HealthComponent invulnerability_timer")
+
 	health.is_invulnerable = invulnerable
 	print("[ParryBlockSystem] Player invulnerability set to: %s (current value: %s)" % [invulnerable, health.is_invulnerable])
 
