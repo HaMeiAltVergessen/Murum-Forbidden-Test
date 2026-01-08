@@ -8,8 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://dmqxgb7cyujwa" path="res://components/hitbox_component.tscn" id="6_hitbox"]
 [ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="7_hurtbox"]
 [ext_resource type="Script" path="res://player/player_camera.gd" id="8_camera"]
-[ext_resource type="SpriteFrames" uid="uid://lythrun_sprite_frames" path="res://Assets/AIPlaceholder/Char/Lythrun/lythrun_frames.tres" id="9_lythrun_sprite"]
-[ext_resource type="Script" path="res://player/lythrun_animator.gd" id="10_animator"]
+[ext_resource type="Texture2D" uid="uid://jg4v3jkvbw1b" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Wizard/wizard-sheet.png" id="9_wizard"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 radius = 16.0
@@ -20,11 +19,12 @@ collision_layer = 4
 collision_mask = 217
 script = ExtResource("1_lythrun")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(0.7, 0.5, 0.9, 1)
-sprite_frames = ExtResource("9_lythrun_sprite")
-animation = &"idle"
-autoplay = "idle"
+texture = ExtResource("9_wizard")
+hframes = 6
+vframes = 1
+frame = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_player")
@@ -81,10 +81,7 @@ damage = 10
 
 [node name="HurtboxComponent" parent="." instance=ExtResource("7_hurtbox")]
 collision_layer = 1024
-collision_mask = 160
-
-[node name="LythrunAnimator" type="Node" parent="."]
-script = ExtResource("10_animator")
+collision_mask = 128
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 enabled = false
