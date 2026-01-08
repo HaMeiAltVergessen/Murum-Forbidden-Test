@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" path="res://levels/test_room.gd" id="1_test_room_script"]
 [ext_resource type="PackedScene" uid="uid://b1k5wfkqxc8yx" path="res://player/murum.tscn" id="2_murum_scene"]
-[ext_resource type="PackedScene" uid="uid://lythrun_player" path="res://player/lythrun_player.tscn" id="2_lythrun_scene"]
 [ext_resource type="PackedScene" uid="uid://dkc8y7x0ij6nw" path="res://enemies/untote.tscn" id="3_untote_scene"]
 [ext_resource type="PackedScene" uid="uid://bx7k2qn8m9v4p" path="res://enemies/world_1_ruins/geist.tscn" id="3_geist_scene"]
 [ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="4_spike_trap_scene"]
@@ -124,9 +123,6 @@ gizmo_extents = 32.0
 
 [node name="Murum" parent="." instance=ExtResource("2_murum_scene")]
 position = Vector2(200, 900)
-
-[node name="Lythrun" parent="." instance=ExtResource("2_lythrun_scene")]
-position = Vector2(300, 900)
 
 [node name="Enemies" type="Node2D" parent="."]
 

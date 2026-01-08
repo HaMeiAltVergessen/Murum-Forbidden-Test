@@ -91,26 +91,26 @@ func _is_same_team(hurtbox: HurtboxComponent) -> bool:
 	var my_owner: Node = owner if owner else my_parent
 	var their_owner: Node = hurtbox.owner if hurtbox.owner else their_parent
 
+	print("[Hitbox] Team check: my_owner=", my_owner.name if my_owner else "null",
+		  " their_owner=", their_owner.name if their_owner else "null")
+
 	# Don't hit yourself
 	if my_owner == their_owner:
+		print("[Hitbox] Same entity (self-hit), ignoring")
 		return true
 
 	# Check if both belong to same team using groups
-	# Players are in "player" or "player2" groups
-	# Enemies are in "enemies" group
 	var i_am_player = my_owner.is_in_group("player") or my_owner.is_in_group("player2")
 	var they_are_player = their_owner.is_in_group("player") or their_owner.is_in_group("player2")
-	var i_am_enemy = my_owner.is_in_group("enemies")
-	var they_are_enemy = their_owner.is_in_group("enemies")
 
-	# Players shouldn't hit other players
+	# Players shouldn't hit other players (co-op friendly fire OFF)
 	if i_am_player and they_are_player:
+		print("[Hitbox] Both players, ignoring")
 		return true
 
-	# Enemies shouldn't hit other enemies (friendly fire OFF)
-	if i_am_enemy and they_are_enemy:
-		return true
-
+	# Enemies CAN hit other enemies (friendly fire ON for enemies)
+	# Different teams can always hit each other
+	print("[Hitbox] Different teams, allowing hit")
 	return false
 
 
