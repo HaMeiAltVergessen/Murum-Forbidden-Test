@@ -483,8 +483,13 @@ func _process(delta: float) -> void:
 		print("[Lythrun DEBUG] Shadow Dash pressed")
 		shadow_dash()
 
-	# Void Strike (Attack button)
-	if InputManager.is_p2_action_just_pressed("attack"):
+	# Void Rift (Attack + Down in air - like P1's Wolkenbruch)
+	var input_vector = InputManager.get_p2_input_vector() if InputManager else Vector2.ZERO
+	if InputManager.is_p2_action_just_pressed("attack") and not is_on_floor() and input_vector.y > 0.5:
+		print("[Lythrun DEBUG] Void Rift (Attack+Down in air) triggered")
+		void_rift()
+	# Void Strike (Attack button - normal ground/air attack)
+	elif InputManager.is_p2_action_just_pressed("attack"):
 		print("[Lythrun DEBUG] Attack pressed")
 		void_strike()
 
@@ -496,17 +501,17 @@ func _process(delta: float) -> void:
 		else:
 			shadow_scythe()
 
-	# Void Parry (LB button / Button 6)
+	# Void Parry (LT button / Button 6)
 	if InputManager.is_p2_action_just_pressed("void_parry"):
 		print("[Lythrun DEBUG] Void Parry pressed")
 		void_parry()
 
-	# Void Rift (RB button / Button 5)
-	if InputManager.is_p2_action_just_pressed("void_rift"):
-		print("[Lythrun DEBUG] Void Rift pressed")
-		void_rift()
+	# Phase-Shift (RB button / Button 5)
+	if InputManager.is_p2_action_just_pressed("phase_shift"):
+		print("[Lythrun DEBUG] Phase Shift pressed")
+		phase_shift()
 
-	# Void Orbs (R3 button / Button 9 - charged attack)
+	# Void Orbs (RT button / Button 7 - charged attack)
 	if InputManager.is_p2_action_just_pressed("ultimate"):
 		print("[Lythrun DEBUG] Ultimate charge started")
 		start_charging_orb()
@@ -1360,8 +1365,7 @@ func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
 	orb.collision_layer = 0
 	orb.set_collision_layer_value(6, true)  # P2 Projectiles
 	orb.collision_mask = 0
-	orb.set_collision_mask_value(4, true)  # Enemies
-	orb.set_collision_mask_value(1, true)  # World (for wall hits)
+	orb.set_collision_mask_value(4, true)  # Enemies only (no walls - should pass through)
 
 	# CRITICAL: Enable monitoring
 	orb.monitoring = true
@@ -1553,9 +1557,25 @@ func spawn_shockwave_vfx(pos: Vector2) -> void:
 	print("[VFX] Shockwave at ", pos)
 
 func spawn_void_parry_shield() -> void:
-	"""Spawn void parry shield VFX"""
-	# Placeholder
-	print("[VFX] Void parry shield")
+	"""Spawn void parry shield VFX (same as P1's parry flash)"""
+	# Use P1's parry flash VFX
+	if not ResourceLoader.exists("res://vfx/particles/parry_flash.tscn"):
+		print("[Void Parry] Parry flash VFX not found, skipping")
+		return
+
+	var flash_scene = load("res://vfx/particles/parry_flash.tscn")
+	var flash = flash_scene.instantiate()
+
+	if get_tree() and get_tree().root:
+		get_tree().root.add_child(flash)
+		flash.global_position = global_position
+
+		# Auto-cleanup after 1 second
+		await get_tree().create_timer(1.0).timeout
+		if is_instance_valid(flash):
+			flash.queue_free()
+
+	print("[VFX] Void parry shield spawned")
 
 func spawn_perfect_parry_flash() -> void:
 	"""Spawn perfect parry screen flash"""
