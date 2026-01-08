@@ -669,19 +669,21 @@ func _set_player_invulnerable(invulnerable: bool) -> void:
 		print("[ParryBlockSystem] ERROR: Cannot set invulnerability - player is null!")
 		return
 
-	if not player.has_node("HealthComponent"):
-		print("[ParryBlockSystem] ERROR: Cannot set invulnerability - HealthComponent not found!")
+	# CRITICAL FIX: Set invulnerability on HURTBOX, not HealthComponent!
+	# HurtboxComponent.take_damage() checks its own is_invulnerable
+	if not player.has_node("HurtboxComponent"):
+		print("[ParryBlockSystem] ERROR: Cannot set invulnerability - HurtboxComponent not found!")
 		return
 
-	var health = player.get_node("HealthComponent")
+	var hurtbox = player.get_node("HurtboxComponent")
 
-	# CRITICAL FIX: Stop the invulnerability timer to prevent it from overriding our manual control
-	if health.invulnerability_timer:
-		health.invulnerability_timer.stop()
-		print("[ParryBlockSystem] Stopped HealthComponent invulnerability_timer")
+	# Stop the hurtbox's invulnerability timer
+	if hurtbox.invulnerability_timer:
+		hurtbox.invulnerability_timer.stop()
+		print("[ParryBlockSystem] Stopped HurtboxComponent invulnerability_timer")
 
-	health.is_invulnerable = invulnerable
-	print("[ParryBlockSystem] Player invulnerability set to: %s (current value: %s)" % [invulnerable, health.is_invulnerable])
+	hurtbox.is_invulnerable = invulnerable
+	print("[ParryBlockSystem] Player invulnerability set to: %s (current value: %s)" % [invulnerable, hurtbox.is_invulnerable])
 
 func _drain_mana_on_hit(cost: float) -> void:
 	"""Drains mana when blocking an attack"""
