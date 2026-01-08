@@ -152,20 +152,19 @@ func _input(event: InputEvent) -> void:
 	if p2_active and p2_controller_device >= 0:
 		# Only process events from P2's specific controller
 		if event is InputEventJoypadButton and event.device == p2_controller_device:
-			# CRITICAL FIX: Map button indices directly instead of using is_action()
-			# is_action() checks InputMap which has device:1, but real controller is device:0
-			# Xbox Controller Standard Mapping:
+			# UPDATED MAPPING (2026-01-03):
+			# Based on user requirements for symmetric P1/P2 controls
 			var button_to_action = {
 				0: "jump",           # A button
-				1: "dash",           # B button
-				2: "attack",         # X button
+				1: "dash",           # B button (Shadow Dash)
+				2: "attack",         # X button (Void Strike)
 				3: "shadow_scythe",  # Y button
 				4: "inventory",      # LB button
-				5: "void_rift",      # RB button
-				6: "void_parry",     # LT button (analog trigger, but registered as button)
-				7: "block",          # RT button (analog trigger) - used for Void Parry too
-				9: "ultimate",       # R3 button (right stick press)
-				# D-Pad is handled separately (buttons 12-15)
+				5: "phase_shift",    # RB button (Phase-Shift, was ultimate)
+				6: "void_parry",     # LT button
+				7: "ultimate",       # RT button (Void Orbs, was button 9)
+				8: "inventory",      # Back/Select button (alternative)
+				# Note: Void Rift is Attack+Down combo, handled in lythrun_player.gd
 			}
 
 			# Check if this button has a mapped action
