@@ -32,6 +32,21 @@ func _ready() -> void:
 		  " Layer: ", collision_layer, " Mask: ", collision_mask,
 		  " Monitoring: ", monitoring, " Monitorable: ", monitorable)
 
+	# DEBUG: Check CollisionShape
+	var collision_shape = get_node_or_null("CollisionShape2D")
+	if collision_shape:
+		print("[HurtboxComponent] CollisionShape found - Disabled: ", collision_shape.disabled,
+			  " Shape: ", collision_shape.shape)
+		if collision_shape.shape and collision_shape.shape is RectangleShape2D:
+			print("[HurtboxComponent] RectangleShape2D size: ", collision_shape.shape.size)
+
+		# CRITICAL FIX: Force enable CollisionShape
+		if collision_shape.disabled:
+			print("[HurtboxComponent] FIXING: CollisionShape was disabled, enabling it!")
+			collision_shape.disabled = false
+	else:
+		print("[HurtboxComponent] ERROR: No CollisionShape2D child found!")
+
 
 # ============ DAMAGE RECEPTION ============
 func take_damage(damage: int, knockback: Vector2, hitstun: float, attacker: Node = null) -> bool:
