@@ -87,17 +87,29 @@ func _is_same_team(hurtbox: HurtboxComponent) -> bool:
 	var my_parent: Node = get_parent()
 	var their_parent: Node = hurtbox.get_parent()
 
-	# Compare collision layers
-	# Player hitbox (layer 3) shouldn't hit player hurtbox (layer 4)
-	# Enemy hitbox (layer 6) shouldn't hit enemy hurtbox (layer 7)
+	# Get actual owners (handle nested components like CombatSystem/HitboxComponent)
+	var my_owner: Node = owner if owner else my_parent
+	var their_owner: Node = hurtbox.owner if hurtbox.owner else their_parent
 
-	# For now, simple check: same parent type
-	if my_parent is CharacterBody2D and their_parent is CharacterBody2D:
-		# Both are characters, check if same type
-		if my_parent.name.begins_with("Murum") and their_parent.name.begins_with("Murum"):
-			return true
-		if my_parent.name.begins_with("Untote") and their_parent.name.begins_with("Untote"):
-			return true
+	# Don't hit yourself
+	if my_owner == their_owner:
+		return true
+
+	# Check if both belong to same team using groups
+	# Players are in "player" or "player2" groups
+	# Enemies are in "enemies" group
+	var i_am_player = my_owner.is_in_group("player") or my_owner.is_in_group("player2")
+	var they_are_player = their_owner.is_in_group("player") or their_owner.is_in_group("player2")
+	var i_am_enemy = my_owner.is_in_group("enemies")
+	var they_are_enemy = their_owner.is_in_group("enemies")
+
+	# Players shouldn't hit other players
+	if i_am_player and they_are_player:
+		return true
+
+	# Enemies shouldn't hit other enemies (friendly fire OFF)
+	if i_am_enemy and they_are_enemy:
+		return true
 
 	return false
 
