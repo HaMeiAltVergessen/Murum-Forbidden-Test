@@ -46,7 +46,7 @@ invulnerability_duration = 0.3
 [node name="HitboxComponent" parent="." instance=ExtResource("4_hitbox")]
 position = Vector2(24, 0)
 collision_layer = 128
-collision_mask = 1030
+collision_mask = 1024
 damage = 10
 
 [node name="HurtboxComponent" parent="." instance=ExtResource("5_hurtbox")]
