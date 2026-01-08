@@ -159,9 +159,10 @@ func _on_health_depleted() -> void:
 
 func _on_detection_body_entered(body: Node2D) -> void:
 	"""Detects player entering range"""
-	if body is Murum:
+	# Detect both P1 (Murum) and P2 (Lythrun) using groups
+	if body.is_in_group("player") or body.is_in_group("player2"):
 		target_player = body as CharacterBody2D
-		print("[Enemy] Player detected by ", name)
+		print("[Enemy] Player detected by ", name, " (", body.name, ")")
 
 
 func _on_detection_body_exited(body: Node2D) -> void:
