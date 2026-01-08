@@ -91,6 +91,7 @@ var void_parry_window_timer: float = 0.0
 var parry_mana_drain_timer: float = 0.0
 var parry_start_time: float = 0.0
 var parry_area: Area2D = null  # Detection area for attacks
+var parry_visual_indicator: Polygon2D = null  # Visual shield indicator
 
 # ============ VOID RIFT (COMMIT 019.5) ============
 const VOID_RIFT_MANA_COST: int = 40  # COMMIT 024: Reduced from 50 (more affordable)
@@ -505,10 +506,6 @@ func _process(delta: float) -> void:
 				# Out of mana - auto-stop blocking
 				print("[Void Parry] Out of mana - stopping block")
 				stop_void_parry()
-
-	# Cooldown timer
-	if void_parry_cooldown_active:
-		# Cooldown is handled by timer, not delta loop
 
 	# ===== P2 SHADOW ABILITIES INPUT =====
 	if not InputManager or not InputManager.p2_active:
@@ -1213,8 +1210,8 @@ func start_void_parry() -> void:
 	# Create detection area
 	_create_parry_area()
 
-	# VFX
-	spawn_void_parry_shield()
+	# VFX - Create visual shield indicator
+	_create_parry_visual_indicator()
 
 	# Audio
 	if AudioManager and AudioManager.has_method("play_sfx"):
@@ -1233,7 +1230,7 @@ func _transition_to_blocking() -> void:
 	parry_mana_drain_timer = 0.0
 
 	# Visual feedback change (parry window expired, now just blocking)
-	# TODO: Change visual indicator color/opacity
+	_update_parry_visual_to_blocking()
 
 func stop_void_parry() -> void:
 	"""Stop void parry (LT released)"""
@@ -1250,6 +1247,9 @@ func stop_void_parry() -> void:
 	if parry_area and is_instance_valid(parry_area):
 		parry_area.queue_free()
 		parry_area = null
+
+	# Destroy visual indicator
+	_destroy_parry_visual()
 
 	# Re-enable hurtbox
 	var hurtbox = get_node_or_null("HurtboxComponent")
@@ -1287,6 +1287,48 @@ func _create_parry_area() -> void:
 	parry_area.area_entered.connect(_on_parry_area_entered)
 
 	print("[Void Parry] Detection area created - Radius: %.0f" % PARRY_BLOCK_RADIUS)
+
+func _create_parry_visual_indicator() -> void:
+	"""Create visual shield indicator (placeholder circle like P1)"""
+	parry_visual_indicator = Polygon2D.new()
+
+	# Create circle shape (8 segments for performance)
+	var points: PackedVector2Array = []
+	var segments = 8
+	for i in range(segments):
+		var angle = (PI * 2.0 * i) / segments
+		var point = Vector2(cos(angle), sin(angle)) * PARRY_BLOCK_RADIUS
+		points.append(point)
+
+	parry_visual_indicator.polygon = points
+
+	# Gold color for parry window (matches P1)
+	parry_visual_indicator.color = Color(1.0, 0.84, 0.0, 0.5)  # Gold, 50% opacity
+
+	add_child(parry_visual_indicator)
+
+	# Pulsing animation during parry window
+	var tween = create_tween().set_loops()
+	tween.tween_property(parry_visual_indicator, "modulate:a", 0.7, 0.15)
+	tween.tween_property(parry_visual_indicator, "modulate:a", 1.0, 0.15)
+
+	print("[Void Parry] Visual indicator created (gold pulsing)")
+
+func _update_parry_visual_to_blocking() -> void:
+	"""Change visual to blocking state (violet/purple, dimmer)"""
+	if parry_visual_indicator and is_instance_valid(parry_visual_indicator):
+		# Stop pulsing animation
+		var tween = parry_visual_indicator.get_tree().create_tween()
+		# Change to purple/violet for blocking (matches P2's shadow theme)
+		parry_visual_indicator.color = Color(0.6, 0.0, 0.8, 0.3)  # Purple, dimmer
+		print("[Void Parry] Visual changed to blocking mode (purple)")
+
+func _destroy_parry_visual() -> void:
+	"""Destroy visual shield indicator"""
+	if parry_visual_indicator and is_instance_valid(parry_visual_indicator):
+		parry_visual_indicator.queue_free()
+		parry_visual_indicator = null
+		print("[Void Parry] Visual indicator destroyed")
 
 func _on_parry_area_entered(area: Area2D) -> void:
 	"""Called when enemy attack enters parry area"""
@@ -1341,8 +1383,12 @@ func perform_perfect_parry() -> void:
 
 	print("[Perfect Parry] AoE created - Damage: %.1f, Radius: %.0f" % [PERFECT_PARRY_DAMAGE, PERFECT_PARRY_AOE_RADIUS])
 
+	# Wait one frame for physics to register the area
+	await get_tree().process_frame
+
 	# Damage and stun all enemies in radius
 	var enemies = aoe.get_overlapping_bodies()
+	print("[Perfect Parry] Found %d enemies in radius" % enemies.size())
 	for enemy in enemies:
 		# Damage
 		if enemy.has_method("take_damage"):
