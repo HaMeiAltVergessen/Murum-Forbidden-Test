@@ -34,6 +34,23 @@ var target_zoom: float = 1.5
 var is_transitioning: bool = false
 
 func _ready() -> void:
+	# Make this the current camera immediately
+	make_current()
+
+	# Wait for scene to be ready
+	await get_tree().process_frame
+
+	# Try to find P1 in the scene
+	var p1_nodes = get_tree().get_nodes_in_group("player")
+	if p1_nodes.size() > 0:
+		player1 = p1_nodes[0]
+		print("[CoopCamera] P1 found in scene: ", player1.name)
+
+	# Get P1 from CoopManager if available (fallback)
+	if not player1 and CoopManager and CoopManager.p1_instance:
+		player1 = CoopManager.p1_instance
+		print("[CoopCamera] P1 reference acquired from CoopManager")
+
 	# Co-op Manager Signals
 	if CoopManager:
 		CoopManager.p2_joined.connect(_on_p2_joined)
@@ -260,6 +277,7 @@ func set_player2(player: CharacterBody2D) -> void:
 func _on_p2_joined() -> void:
 	"""Handle P2 joining"""
 	if CoopManager:
+		player1 = CoopManager.p1_instance
 		player2 = CoopManager.get_p2_instance()
 		set_mode(CameraMode.SHARED_SCREEN)
 

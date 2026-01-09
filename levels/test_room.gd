@@ -50,12 +50,11 @@ func activate() -> void:
 		player.global_position = player_spawn.global_position
 		GameManager.register_player(player, player_spawn.global_position)
 
-	# Clear camera bounds so camera always follows player
-	if player:
-		var player_camera = player.get_node_or_null("PlayerCamera")
-		if player_camera and player_camera.has_method("clear_room_bounds"):
-			player_camera.clear_room_bounds()
-			print("[TestRoom] Camera limits cleared - free following")
+	# Setup camera bounds (COMMIT 021: Co-op Camera)
+	var camera = get_viewport().get_camera_2d()
+	if camera and camera.has_method("clear_room_bounds"):
+		camera.clear_room_bounds()
+		print("[TestRoom] Camera limits cleared - free following")
 
 
 func deactivate() -> void:
