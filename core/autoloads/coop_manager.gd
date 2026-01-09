@@ -150,14 +150,17 @@ func play_shadow_spawn_animation() -> void:
 		p2_instance.set_invulnerable(false)
 
 func connect_p2_signals() -> void:
-	"""Connect P2 signals"""
-	# Connect death signal
-	if p2_instance.has_signal("health_depleted"):
-		# Try to connect to health component
-		if p2_instance.has_node("HealthComponent"):
-			var health_comp = p2_instance.get_node("HealthComponent")
-			if health_comp.has_signal("health_depleted"):
-				health_comp.health_depleted.connect(_on_p2_died)
+	"""Connect P2 signals (COMMIT 021: Fixed - never worked before!)"""
+	# Connect death signal from HealthComponent
+	if p2_instance.has_node("HealthComponent"):
+		var health_comp = p2_instance.get_node("HealthComponent")
+		if health_comp.has_signal("health_depleted"):
+			health_comp.health_depleted.connect(_on_p2_died)
+			print("[CoopManager] P2 death signal connected successfully")
+		else:
+			print("[CoopManager] WARNING: HealthComponent has no health_depleted signal")
+	else:
+		print("[CoopManager] WARNING: P2 has no HealthComponent")
 
 	# Connect gold collection (if needed)
 	# TODO: Implement when gold collection system is in place
