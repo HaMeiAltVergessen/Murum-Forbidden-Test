@@ -132,9 +132,12 @@ func _process(_delta: float) -> void:
 	var inventory_toggle_pressed = false
 
 	if InputManager and InputManager.p2_active:
-		# Co-op mode: Only keyboard "I" key for P1 (manual just_pressed detection)
+		# Co-op mode: Check BOTH P1 (keyboard) AND P2 (controller via InputManager)
 		var i_key_is_pressed = Input.is_key_pressed(KEY_I)
-		inventory_toggle_pressed = i_key_is_pressed and not i_key_was_pressed
+		var p1_pressed = i_key_is_pressed and not i_key_was_pressed
+		var p2_pressed = InputManager.is_p2_action_just_pressed("inventory")
+
+		inventory_toggle_pressed = p1_pressed or p2_pressed
 		i_key_was_pressed = i_key_is_pressed
 	else:
 		# Solo mode: Allow keyboard + controller
