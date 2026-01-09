@@ -73,16 +73,27 @@ func _physics_process(delta: float) -> void:
 			_collect()
 
 func _check_for_player() -> void:
-	"""Checks for nearby player to attract coin"""
+	"""Checks for nearby player to attract coin (P1 or P2)"""
 
-	var player_node = get_tree().get_first_node_in_group("player")
-	if not player_node:
+	# Find CLOSEST player (P1 or P2)
+	var players = get_tree().get_nodes_in_group("player")
+	if players.is_empty():
 		return
 
-	var distance = global_position.distance_to(player_node.global_position)
+	var closest_player = null
+	var closest_distance = pickup_radius
 
-	if distance < pickup_radius:
-		player = player_node
+	for p in players:
+		if not p or not is_instance_valid(p):
+			continue
+
+		var distance = global_position.distance_to(p.global_position)
+		if distance < closest_distance:
+			closest_player = p
+			closest_distance = distance
+
+	if closest_player:
+		player = closest_player
 		is_being_attracted = true
 
 # ============================================================================

@@ -325,11 +325,12 @@ func _process(delta: float) -> void:
 		var attack_pressed = false
 
 		if InputManager:
-			down_pressed = InputManager.is_p1_action_pressed("crouch")  # S key / Down
+			# Down = S key (physical key check for proper detection)
+			down_pressed = Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN)
 			attack_pressed = InputManager.is_p1_action_pressed("attack")
 		else:
 			# Fallback (shouldn't happen)
-			down_pressed = Input.is_action_pressed("wolkenbruch_slam")
+			down_pressed = Input.is_action_pressed("wolkenbruch_slam") or Input.is_physical_key_pressed(KEY_S)
 			attack_pressed = Input.is_action_pressed("light_attack")
 
 		# Start charging when both are pressed and we're in IDLE
