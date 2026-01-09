@@ -1399,53 +1399,39 @@ func _execute_perfect_parry() -> void:
 	# Screen flash
 	spawn_perfect_parry_flash()
 
-	# AoE damage + stun - create area
-	var aoe = Area2D.new()
-	var collision = CollisionShape2D.new()
-	var shape = CircleShape2D.new()
-	shape.radius = PERFECT_PARRY_AOE_RADIUS
+	# AoE damage + stun - use overlapping areas IMMEDIATELY
+	var player_pos = global_position
+	var enemies_in_range = []
 
-	collision.shape = shape
-	aoe.add_child(collision)
+	# Get all enemies in the game
+	var all_enemies = get_tree().get_nodes_in_group("enemies")
+	for enemy in all_enemies:
+		if enemy and is_instance_valid(enemy):
+			var distance = player_pos.distance_to(enemy.global_position)
+			if distance <= PERFECT_PARRY_AOE_RADIUS:
+				enemies_in_range.append(enemy)
 
-	# Collision setup
-	aoe.collision_layer = 0
-	aoe.set_collision_layer_value(6, true)  # P2 Projectiles
-	aoe.collision_mask = 0
-	aoe.set_collision_mask_value(4, true)  # Enemies
-	aoe.monitoring = true
-	aoe.monitorable = true
+	print("[Perfect Parry] Found %d enemies in radius %.0f" % [enemies_in_range.size(), PERFECT_PARRY_AOE_RADIUS])
 
-	# Add to scene tree (now safe because we're not in physics callback!)
-	get_parent().add_child(aoe)
-	aoe.global_position = global_position
-
-	print("[Perfect Parry] AoE created - Damage: %.1f, Radius: %.0f" % [PERFECT_PARRY_DAMAGE, PERFECT_PARRY_AOE_RADIUS])
-
-	# Wait one frame for physics to register the area
-	await get_tree().process_frame
-
-	if not is_instance_valid(aoe):
-		return
-
-	# Damage and stun all enemies in radius
-	var enemies = aoe.get_overlapping_bodies()
-	for enemy in enemies:
+	# Damage and stun all enemies in range
+	for enemy in enemies_in_range:
 		# Damage
 		if enemy.has_method("take_damage"):
 			enemy.take_damage(PERFECT_PARRY_DAMAGE)
-			print("[Void Parry] Perfect parry damage to %s" % enemy.name)
+			print("[Void Parry] Perfect parry damage (direct) to %s" % enemy.name)
 		elif enemy.has_node("HealthComponent"):
 			var health = enemy.get_node("HealthComponent")
 			if health.has_method("take_damage"):
 				health.take_damage(int(PERFECT_PARRY_DAMAGE))
 				print("[Void Parry] Perfect parry damage (HealthComponent) to %s" % enemy.name)
+
 		# Stun
 		if enemy.has_method("apply_stun"):
 			enemy.apply_stun(PERFECT_PARRY_STUN_DURATION)
+			print("[Void Parry] Stunned %s for %.1fs" % [enemy.name, PERFECT_PARRY_STUN_DURATION])
 
 	# VFX
-	spawn_void_parry_explosion_vfx(aoe.global_position)
+	spawn_void_parry_explosion_vfx(player_pos)
 
 	# Audio
 	if AudioManager and AudioManager.has_method("play_sfx"):
@@ -1455,11 +1441,6 @@ func _execute_perfect_parry() -> void:
 	var camera = get_viewport().get_camera_2d()
 	if camera and camera.has_method("shake"):
 		camera.shake(12.0, 0.5)
-
-	# Cleanup
-	await get_tree().create_timer(0.3).timeout
-	if is_instance_valid(aoe):
-		aoe.queue_free()
 
 # ============ VOID RIFT (COMMIT 019.5) ============
 
@@ -1859,8 +1840,31 @@ func spawn_perfect_parry_flash() -> void:
 
 func spawn_void_parry_explosion_vfx(pos: Vector2) -> void:
 	"""Spawn void parry explosion VFX"""
-	# Placeholder
 	print("[VFX] Void parry explosion at ", pos)
+
+	# Visual placeholder - expanding purple circle
+	var explosion = Polygon2D.new()
+
+	# Create circle polygon
+	var points: PackedVector2Array = []
+	var num_points = 32
+	for i in range(num_points):
+		var angle = (i / float(num_points)) * TAU
+		points.append(Vector2(cos(angle), sin(angle)) * 10)  # Start small
+
+	explosion.polygon = points
+	explosion.position = pos
+	explosion.z_index = 10  # Above everything
+	explosion.color = Color(0.8, 0.3, 1.0, 0.7)  # Bright purple
+
+	get_parent().add_child(explosion)
+
+	# Animate: Expand and fade
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(explosion, "scale", Vector2(22, 22), 0.4)  # 220px radius
+	tween.tween_property(explosion, "modulate:a", 0.0, 0.4)
+	tween.tween_callback(explosion.queue_free)
 
 func spawn_charging_orb_vfx() -> void:
 	"""Spawn charging orb VFX"""
