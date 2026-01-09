@@ -93,6 +93,10 @@ var parry_window_timer: float = 0.0
 var void_parry_indicator: Polygon2D = null
 var void_parry_indicator_tween: Tween = null
 
+# Parry Detection Area (like P1's BlockArea)
+var void_parry_area: Area2D = null
+var void_parry_collision: CollisionShape2D = null
+
 # ============ VOID RIFT (COMMIT 019.5) ============
 const VOID_RIFT_MANA_COST: int = 40  # COMMIT 024: Reduced from 50 (more affordable)
 const VOID_RIFT_DURATION: float = 3.0
@@ -322,7 +326,9 @@ func set_coop_collision() -> void:
 	print("[Lythrun] Co-op collision layers set")
 
 func _setup_void_parry_indicator() -> void:
-	"""Creates visual indicator for void parry (like P1's block_indicator)"""
+	"""Creates visual indicator AND detection area for void parry (like P1's ParryBlockSystem)"""
+
+	# ========== VISUAL INDICATOR ==========
 	void_parry_indicator = Polygon2D.new()
 
 	# Create circle polygon (same radius as P1)
@@ -342,6 +348,33 @@ func _setup_void_parry_indicator() -> void:
 
 	add_child(void_parry_indicator)
 	print("[Lythrun] Void parry visual indicator created")
+
+	# ========== DETECTION AREA (for Perfect Parry Counter) ==========
+	void_parry_area = Area2D.new()
+	void_parry_area.name = "VoidParryArea"
+
+	# Create collision shape
+	void_parry_collision = CollisionShape2D.new()
+	var shape = CircleShape2D.new()
+	shape.radius = VOID_PARRY_RADIUS  # Same as visual indicator
+	void_parry_collision.shape = shape
+
+	void_parry_area.add_child(void_parry_collision)
+	add_child(void_parry_area)
+
+	# Collision setup (detect Enemy Hitboxes on Layer 128)
+	void_parry_area.collision_layer = 0  # Don't interact as a hurtbox
+	void_parry_area.collision_mask = 0
+	void_parry_area.set_collision_mask_value(8, true)  # Enemy Hitboxes (Layer 128 = 2^7 = bit 8, 1-indexed)
+
+	# CRITICAL: monitoring disabled by default, enabled during parry
+	void_parry_area.monitoring = false
+	void_parry_area.monitorable = false
+
+	# Connect signal for parry counter
+	void_parry_area.area_entered.connect(_on_void_parry_area_entered)
+
+	print("[Lythrun] Void parry detection area created - Radius: %.0f, Mask: %d" % [VOID_PARRY_RADIUS, void_parry_area.collision_mask])
 
 # ============ SIGNAL HANDLERS ============
 
@@ -1225,6 +1258,11 @@ func _start_void_parry() -> void:
 	parry_window_timer = VOID_PARRY_WINDOW
 	parry_start_time = Time.get_ticks_msec() / 1000.0
 
+	# Enable detection area (for Perfect Parry Counter)
+	if void_parry_area:
+		void_parry_area.monitoring = true
+		print("[Void Parry] Detection area enabled - Radius: %.0f" % VOID_PARRY_RADIUS)
+
 	# Enable invulnerability immediately (CRITICAL FIX)
 	print("[Void Parry] About to set player invulnerable to TRUE")
 	_set_void_parry_invulnerable(true)
@@ -1255,6 +1293,10 @@ func _stop_void_parry() -> void:
 
 	# Return to IDLE
 	void_parry_state = VoidParryState.IDLE
+
+	# Disable detection area
+	if void_parry_area:
+		void_parry_area.monitoring = false
 
 	# Disable invulnerability
 	_set_void_parry_invulnerable(false)
@@ -1336,19 +1378,34 @@ func _hide_void_parry_indicators() -> void:
 		# Reset modulate
 		void_parry_indicator.modulate.a = 1.0
 
-func _on_parry_hit(attacker) -> void:
-	"""Called when parry successfully blocks attack (TODO: Wire up Area2D detection)"""
+func _on_void_parry_area_entered(area: Area2D) -> void:
+	"""Called when enemy hitbox enters void parry detection area"""
+	print("[Void Parry] ===== AREA ENTERED SIGNAL FIRED =====")
+	print("[Void Parry] Area: ", area.name if area else "null")
+
+	# CRITICAL: Safe owner check to prevent crash on freed objects
+	var owner_name = "null"
+	if area and is_instance_valid(area.owner):
+		owner_name = area.owner.name
+	print("[Void Parry] Area owner: ", owner_name)
+
+	# Safety check
 	if void_parry_state == VoidParryState.IDLE:
+		print("[Void Parry] State is IDLE, ignoring")
 		return
+
+	print("[Void Parry] Enemy hitbox detected during ", "PARRY_WINDOW" if void_parry_state == VoidParryState.PARRY_WINDOW else "BLOCKING")
 
 	# Calculate if perfect parry (only during PARRY_WINDOW state)
 	var parry_time = (Time.get_ticks_msec() / 1000.0) - parry_start_time
 	var is_perfect = (void_parry_state == VoidParryState.PARRY_WINDOW) and (parry_time <= PERFECT_PARRY_WINDOW)
 
 	if is_perfect:
+		print("[Void Parry] ===== PERFECT PARRY ===== (%.3fs)" % parry_time)
 		perform_perfect_parry()
 	else:
-		# Normal parry
+		# Normal block (no counter)
+		print("[Void Parry] Normal block (no counter)")
 		if AudioManager and AudioManager.has_method("play_sfx"):
 			AudioManager.play_sfx("void_parry_success")
 
