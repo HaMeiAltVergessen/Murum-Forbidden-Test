@@ -515,6 +515,13 @@ func _process(delta: float) -> void:
 		update_charging_orb_vfx(orb_charge_time / VOID_ORB_CHARGE_TIME)
 
 	# ===== VOID PARRY STATE MACHINE (like P1's ParryBlockSystem) =====
+	# CRITICAL: Check if LT is still held (for both PARRY_WINDOW and BLOCKING states)
+	if void_parry_state != VoidParryState.IDLE:
+		# If LT is no longer pressed, stop parry/blocking
+		if InputManager and not InputManager.is_p2_action_pressed("void_parry"):
+			print("[Lythrun DEBUG] Void Parry released (no longer pressed)")
+			_stop_void_parry()
+
 	if void_parry_state == VoidParryState.PARRY_WINDOW:
 		# Count down parry window timer
 		parry_window_timer -= delta
@@ -556,13 +563,11 @@ func _process(delta: float) -> void:
 			shadow_scythe()
 
 	# Void Parry (LT button / Button 6) - HOLD-BASED like P1
+	# NOTE: Only check for press here, release is handled in State Machine above
+	# (Triggers don't work well with just_released, so we check is_p2_action_pressed continuously)
 	if InputManager.is_p2_action_just_pressed("void_parry"):
 		print("[Lythrun DEBUG] Void Parry pressed")
 		_start_void_parry()
-
-	if InputManager.is_p2_action_just_released("void_parry"):
-		print("[Lythrun DEBUG] Void Parry released")
-		_stop_void_parry()
 
 	# Phase-Shift (RB button / Button 5)
 	if InputManager.is_p2_action_just_pressed("phase_shift"):
