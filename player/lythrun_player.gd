@@ -1595,32 +1595,49 @@ func release_orb() -> void:
 		AudioManager.play_sfx("void_orb_release")
 
 func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
-	"""Spawn void orb projectile"""
-	# Simple projectile
-	var orb = Area2D.new()
-	var collision = CollisionShape2D.new()
-	var shape = CircleShape2D.new()
-	shape.radius = 15.0 + (charge_factor * 10.0)
+	"""Spawn void orb projectile (COMMIT 021: Use proper scene with visuals)"""
+	# Load void orb scene (has AnimatedSprite2D)
+	var orb_scene = load("res://projectiles/void_orb.tscn")
+	if not orb_scene:
+		push_error("[Void Orb] Failed to load void_orb.tscn!")
+		return
 
-	collision.shape = shape
-	orb.add_child(collision)
+	var orb = orb_scene.instantiate()
 	get_parent().add_child(orb)
 
 	orb.global_position = global_position + Vector2(0, -40)
 
-	# Collision setup
+	# Set damage and properties
+	orb.damage = damage
+	orb.speed = VOID_ORB_SPEED
+
+	# Collision setup (CRITICAL FIX: Enemy Hurtbox is Layer 11 = 1024)
 	orb.collision_layer = 0
-	orb.set_collision_layer_value(6, true)  # P2 Projectiles
+	orb.set_collision_layer_value(6, true)  # P2 Projectiles (Layer 6 = 32)
 	orb.collision_mask = 0
-	orb.set_collision_mask_value(4, true)  # Enemies only (no walls - should pass through)
+	orb.set_collision_mask_value(11, true)  # Enemy Hurtbox (Layer 11 = 1024)
 
 	# CRITICAL: Enable monitoring
 	orb.monitoring = true
 	orb.monitorable = true
 
-	# Movement
+	# Set direction (void_orb.gd handles movement)
 	var direction = Vector2.RIGHT if not sprite.flip_h else Vector2.LEFT
-	var orb_velocity = direction * VOID_ORB_SPEED
+	orb.set_direction(direction)
+
+	# Find nearest enemy for homing
+	var enemies = get_tree().get_nodes_in_group("enemies")
+	if enemies.size() > 0:
+		var nearest_enemy = null
+		var nearest_distance = 999999.0
+		for enemy in enemies:
+			if enemy and is_instance_valid(enemy):
+				var distance = global_position.distance_to(enemy.global_position)
+				if distance < nearest_distance:
+					nearest_distance = distance
+					nearest_enemy = enemy
+		if nearest_enemy:
+			orb.set_target(nearest_enemy)
 
 	print("[Void Orb] Created - Damage: %.1f, Charge: %.0f%%, Layer: %d, Mask: %d" % [
 		damage,
@@ -1628,57 +1645,6 @@ func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
 		orb.collision_layer,
 		orb.collision_mask
 	])
-
-	# Hit detection
-	var hit = false
-	orb.body_entered.connect(func(body):
-		if not hit:
-			hit = true
-			print("[Void Orb] Hit detected! Body: %s, Groups: %s" % [body.name, body.get_groups()])
-
-			# Direct hit damage
-			if body.has_method("take_damage"):
-				body.take_damage(damage)
-				print("[Void Orb] Direct hit: %.1f damage" % damage)
-			elif body.has_node("HealthComponent"):
-				var health = body.get_node("HealthComponent")
-				if health.has_method("take_damage"):
-					health.take_damage(int(damage))
-					print("[Void Orb] Direct hit (HealthComponent): %.1f damage" % damage)
-
-			# AoE explosion
-			var explosion_enemies = orb.get_overlapping_bodies()
-			for enemy in explosion_enemies:
-				if enemy != body:
-					if enemy.has_method("take_damage"):
-						enemy.take_damage(damage * 0.5)
-						print("[Void Orb] AoE hit: %.1f damage to %s" % [damage * 0.5, enemy.name])
-					elif enemy.has_node("HealthComponent"):
-						var health = enemy.get_node("HealthComponent")
-						if health.has_method("take_damage"):
-							health.take_damage(int(damage * 0.5))
-							print("[Void Orb] AoE hit (HealthComponent): %.1f damage to %s" % [damage * 0.5, enemy.name])
-
-			orb.queue_free()
-	)
-
-	# Move orb - FIXED: Use proper time tracking + check validity after await
-	var start_time = Time.get_ticks_msec() / 1000.0
-	var last_frame_time = start_time
-	while (Time.get_ticks_msec() / 1000.0 - start_time) < 5.0 and not hit:
-		if not is_instance_valid(orb):
-			break  # Orb was destroyed externally
-		await get_tree().process_frame
-		# CRITICAL: Check again after await! Orb can be freed during await (in body_entered callback)
-		if not is_instance_valid(orb):
-			break
-		var current_time = Time.get_ticks_msec() / 1000.0
-		var delta = current_time - last_frame_time
-		last_frame_time = current_time
-		orb.global_position += orb_velocity * delta
-
-	if is_instance_valid(orb):
-		orb.queue_free()
 
 # ============ PHASE-SHIFT (COMMIT 019.5) ============
 
