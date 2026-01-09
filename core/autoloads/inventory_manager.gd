@@ -31,10 +31,23 @@ func _ready() -> void:
 # ============ DATABASE LOADING ============
 func _load_item_database() -> void:
 	"""Loads all item data from unified database"""
-	var file = FileAccess.open("res://data/items/item_database.json", FileAccess.READ)
+	# Load main item database
+	_load_database_file("res://data/items/item_database.json")
+
+	# Load shadow items database
+	_load_database_file("res://data/items/shadow_items.json")
+
+	print("[InventoryManager] Loaded ", item_database["consumables"].size(), " consumables")
+	print("[InventoryManager] Loaded ", item_database["relics"].size(), " relics")
+	print("[InventoryManager] Loaded ", item_database["key_items"].size(), " key items")
+
+
+func _load_database_file(file_path: String) -> void:
+	"""Helper to load a single database file"""
+	var file = FileAccess.open(file_path, FileAccess.READ)
 
 	if not file:
-		push_error("[InventoryManager] Failed to load item database")
+		push_error("[InventoryManager] Failed to load: " + file_path)
 		return
 
 	var json_string = file.get_as_text()
@@ -44,13 +57,13 @@ func _load_item_database() -> void:
 	var parse_result = json.parse(json_string)
 
 	if parse_result != OK:
-		push_error("[InventoryManager] Failed to parse item database JSON")
+		push_error("[InventoryManager] Failed to parse JSON: " + file_path)
 		return
 
 	var data = json.get_data()
 
 	if not data.has("items"):
-		push_error("[InventoryManager] Database missing 'items' array")
+		push_error("[InventoryManager] Database missing 'items' array: " + file_path)
 		return
 
 	# Categorize items by type
@@ -71,10 +84,6 @@ func _load_item_database() -> void:
 				item_database["key_items"][item_id] = item
 			_:
 				push_warning("[InventoryManager] Unknown item type: " + item_type + " for " + item_id)
-
-	print("[InventoryManager] Loaded ", item_database["consumables"].size(), " consumables")
-	print("[InventoryManager] Loaded ", item_database["relics"].size(), " relics")
-	print("[InventoryManager] Loaded ", item_database["key_items"].size(), " key items")
 
 
 # ============ ITEM MANAGEMENT ============
@@ -477,15 +486,19 @@ func _connect_p2_signals() -> void:
 
 
 func _on_p1_item_added(item_id: String, category: String) -> void:
-	"""When P1 adds item, sync P2's mirror (relics only)"""
+	"""When P1 adds item, sync P2's mirror (relics and consumables)"""
 	if category == "relics":
 		_sync_p2_mirror_relic(item_id, true)
+	elif category == "consumables":
+		_sync_p2_mirror_consumable(item_id, true)
 
 
 func _on_p1_item_removed(item_id: String, category: String) -> void:
 	"""When P1 removes item, remove P2's mirror"""
 	if category == "relics":
 		_sync_p2_mirror_relic(item_id, false)
+	elif category == "consumables":
+		_sync_p2_mirror_consumable(item_id, false)
 
 
 func _sync_p2_mirror_relic(original_id: String, add: bool) -> void:
@@ -513,6 +526,41 @@ func _sync_p2_mirror_relic(original_id: String, add: bool) -> void:
 			p2_inventory_changed.emit()
 
 
+func _sync_p2_mirror_consumable(original_id: String, add: bool) -> void:
+	"""Sync P2's mirror consumable with P1's consumable"""
+	var mirror_id = get_mirror_item_id(original_id)
+
+	if mirror_id == "":
+		print("[P2 Mirror] No mirror consumable found for: ", original_id, " - P2 will not receive mirror")
+		return
+
+	if add:
+		# Add one mirror consumable to P2 (without syncing back to prevent loop)
+		add_p2_consumable(mirror_id, false)
+		print("[P2 Mirror] Consumable added: %s → %s" % [original_id, mirror_id])
+	else:
+		# Remove one mirror consumable from P2
+		_remove_p2_consumable(mirror_id)
+		print("[P2 Mirror] Consumable removed: %s" % mirror_id)
+
+
+func _remove_p2_consumable(item_id: String) -> bool:
+	"""Remove one P2 consumable (internal, does not emit used signal)"""
+	for i in range(p2_inventory["consumables"].size()):
+		var entry = p2_inventory["consumables"][i]
+		if entry["item_id"] == item_id:
+			entry["count"] -= 1
+
+			if entry["count"] <= 0:
+				p2_inventory["consumables"].remove_at(i)
+
+			p2_item_removed.emit(item_id, "consumables")
+			p2_inventory_changed.emit()
+			return true
+
+	return false
+
+
 func get_mirror_item_id(original_id: String) -> String:
 	"""Find mirror variant of an item"""
 	# Search all items for mirror_of field
@@ -525,9 +573,17 @@ func get_mirror_item_id(original_id: String) -> String:
 	return ""
 
 
+func get_original_item_id(mirror_id: String) -> String:
+	"""Find original item from a mirror variant"""
+	var item_data = get_item_data(mirror_id)
+	if item_data.has("mirror_of"):
+		return item_data["mirror_of"]
+	return ""
+
+
 # ============ P2 CONSUMABLE MANAGEMENT (Separate Pool) ============
 
-func add_p2_consumable(item_id: String) -> bool:
+func add_p2_consumable(item_id: String, sync_to_p1: bool = true) -> bool:
 	"""Add consumable to P2's separate pool"""
 	if not item_database["consumables"].has(item_id):
 		push_error("[P2 Inventory] Unknown consumable: " + item_id)
@@ -549,6 +605,14 @@ func add_p2_consumable(item_id: String) -> bool:
 	p2_item_added.emit(item_id, "consumables")
 	p2_inventory_changed.emit()
 	print("[P2 Inventory] Consumable added: ", item_id)
+
+	# Sync to P1 if this is a mirror item
+	if sync_to_p1:
+		var original_id = get_original_item_id(item_id)
+		if original_id != "":
+			_add_consumable(original_id)
+			print("[P2 → P1 Mirror] P1 received original: %s ← %s" % [original_id, item_id])
+
 	return true
 
 
