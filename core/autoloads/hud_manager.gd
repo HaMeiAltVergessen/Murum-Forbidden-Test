@@ -29,19 +29,16 @@ func _ready() -> void:
 		CoopManager.p2_left.connect(_on_p2_left)
 
 func load_huds() -> void:
-	"""Load all HUD components"""
-	var current_scene = get_tree().current_scene
-
-	if not current_scene:
-		push_error("[HUDManager] No current scene found!")
-		return
+	"""Load all HUD components (COMMIT 021: Persistent HUDs across scenes)"""
+	# CRITICAL FIX: Add HUDs to HUDManager (autoload) instead of current_scene
+	# This makes HUDs persist across scene transitions
 
 	# P1 HUD
 	var p1_hud_scene = load("res://ui/hud/p1_hud.tscn")
 	if p1_hud_scene:
 		p1_hud = p1_hud_scene.instantiate()
-		current_scene.add_child(p1_hud)
-		print("[HUDManager] P1 HUD loaded")
+		add_child(p1_hud)  # Add to HUDManager (persistent)
+		print("[HUDManager] P1 HUD loaded (persistent)")
 	else:
 		print("[HUDManager] WARNING: P1 HUD scene not found")
 
@@ -49,8 +46,8 @@ func load_huds() -> void:
 	var p2_hud_scene = load("res://ui/hud/p2_hud.tscn")
 	if p2_hud_scene:
 		p2_hud = p2_hud_scene.instantiate()
-		current_scene.add_child(p2_hud)
-		print("[HUDManager] P2 HUD loaded")
+		add_child(p2_hud)  # Add to HUDManager (persistent)
+		print("[HUDManager] P2 HUD loaded (persistent)")
 	else:
 		print("[HUDManager] WARNING: P2 HUD scene not found")
 
@@ -58,8 +55,8 @@ func load_huds() -> void:
 	var p1_abilities_scene = load("res://ui/hud/p1_abilities.tscn")
 	if p1_abilities_scene:
 		p1_abilities = p1_abilities_scene.instantiate()
-		current_scene.add_child(p1_abilities)
-		print("[HUDManager] P1 Abilities loaded")
+		add_child(p1_abilities)  # Add to HUDManager (persistent)
+		print("[HUDManager] P1 Abilities loaded (persistent)")
 	else:
 		print("[HUDManager] WARNING: P1 Abilities scene not found")
 
@@ -67,8 +64,8 @@ func load_huds() -> void:
 	var p2_abilities_scene = load("res://ui/hud/p2_abilities.tscn")
 	if p2_abilities_scene:
 		p2_abilities = p2_abilities_scene.instantiate()
-		current_scene.add_child(p2_abilities)
-		print("[HUDManager] P2 Abilities loaded")
+		add_child(p2_abilities)  # Add to HUDManager (persistent)
+		print("[HUDManager] P2 Abilities loaded (persistent)")
 	else:
 		print("[HUDManager] WARNING: P2 Abilities scene not found")
 
@@ -76,8 +73,8 @@ func load_huds() -> void:
 	var gold_display_scene = load("res://ui/hud/gold_display.tscn")
 	if gold_display_scene:
 		gold_display = gold_display_scene.instantiate()
-		current_scene.add_child(gold_display)
-		print("[HUDManager] Gold Display loaded")
+		add_child(gold_display)  # Add to HUDManager (persistent)
+		print("[HUDManager] Gold Display loaded (persistent)")
 	else:
 		print("[HUDManager] WARNING: Gold Display scene not found")
 
@@ -85,8 +82,8 @@ func load_huds() -> void:
 	var join_prompt_scene = load("res://ui/hud/join_prompt.tscn")
 	if join_prompt_scene:
 		join_prompt = join_prompt_scene.instantiate()
-		current_scene.add_child(join_prompt)
-		print("[HUDManager] Join Prompt loaded")
+		add_child(join_prompt)  # Add to HUDManager (persistent)
+		print("[HUDManager] Join Prompt loaded (persistent)")
 	else:
 		print("[HUDManager] WARNING: Join Prompt scene not found")
 
@@ -94,8 +91,8 @@ func load_huds() -> void:
 	var p2_tutorial_scene = load("res://ui/hud/p2_tutorial.tscn")
 	if p2_tutorial_scene:
 		p2_tutorial = p2_tutorial_scene.instantiate()
-		current_scene.add_child(p2_tutorial)
-		print("[HUDManager] P2 Tutorial loaded")
+		add_child(p2_tutorial)  # Add to HUDManager (persistent)
+		print("[HUDManager] P2 Tutorial loaded (persistent)")
 	else:
 		print("[HUDManager] WARNING: P2 Tutorial scene not found")
 
