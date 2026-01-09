@@ -87,6 +87,314 @@
       }
     },
     {
+      "id": "shadow_energiesplitter",
+      "name": "Leere-Splitter",
+      "type": "consumable",
+      "world": 2,
+      "category": "buff",
+      "description": "Hohler Energiestein mit flüsterndem Nichts",
+      "icon": "res://assets/items/icons/shadow_energiesplitter.png",
+      "price": 35,
+      "effect": "Langsame Mana-Regeneration (+1% max. Mana/Sek.)",
+      "duration": "25 Sek.",
+      "mirror_of": "energiesplitter",
+      "stats": {
+        "mana_regen_percent_per_sec": 0.01,
+        "duration_sec": 25
+      }
+    },
+    {
+      "id": "shadow_impulsdraht",
+      "name": "Geisterdraht",
+      "type": "consumable",
+      "world": 2,
+      "category": "buff",
+      "description": "Verblasster Draht aus verlorenen Signalen",
+      "icon": "res://assets/items/icons/shadow_impulsdraht.png",
+      "price": 30,
+      "effect": "Erhöht Bewegungsgeschwindigkeit (+10%)",
+      "duration": "10 Sek.",
+      "mirror_of": "impulsdraht",
+      "stats": {
+        "movement_speed_bonus": 0.1,
+        "duration_sec": 10
+      }
+    },
+    {
+      "id": "shadow_kondensatorfragment",
+      "name": "Entladenes Fragment",
+      "type": "consumable",
+      "world": 2,
+      "category": "buff",
+      "description": "Ausgebrannter Speicher voller Echos",
+      "icon": "res://assets/items/icons/shadow_kondensatorfragment.png",
+      "price": 45,
+      "effect": "Erhöht max. Mana (+10%)",
+      "duration": "30 Sek.",
+      "mirror_of": "kondensatorfragment",
+      "stats": {
+        "max_mana_bonus": 0.1,
+        "duration_sec": 30
+      }
+    },
+    {
+      "id": "shadow_fragment_beharrlichkeit",
+      "name": "Fragment des Vergessens",
+      "type": "consumable",
+      "world": 3,
+      "category": "buff",
+      "description": "Eisiges Bruchstück aus erstarrter Zeit",
+      "icon": "res://assets/items/icons/shadow_fragment_beharrlichkeit.png",
+      "price": 50,
+      "effect": "Reduziert Umwelt- & Felddamage (−20%)",
+      "duration": "30 Sek.",
+      "mirror_of": "fragment_beharrlichkeit",
+      "stats": {
+        "environmental_damage_reduction": 0.2,
+        "duration_sec": 30
+      }
+    },
+    {
+      "id": "shadow_glas_gleichgewicht",
+      "name": "Schatten-Glas",
+      "type": "consumable",
+      "world": 1,
+      "category": "buff",
+      "description": "Unsichtbares Glas aus gefrorenen Träumen",
+      "icon": "res://assets/items/icons/shadow_glas_gleichgewicht.png",
+      "price": 80,
+      "effect": "+0.5s Parry-Fenster",
+      "duration": "2 Level",
+      "mirror_of": "glas_gleichgewicht",
+      "stats": {
+        "parry_window_bonus": 0.5,
+        "duration_levels": 2
+      }
+    },
+    {
+      "id": "shadow_schimmernde_essenz",
+      "name": "Trübe Essenz",
+      "type": "consumable",
+      "world": 1,
+      "category": "buff",
+      "description": "Mattschwarze Flüssigkeit aus vergessenen Wunden",
+      "icon": "res://assets/items/icons/shadow_schimmernde_essenz.png",
+      "price": 100,
+      "effect": "HP-Regen (5 HP/5s)",
+      "duration": "3 Minuten",
+      "mirror_of": "schimmernde_essenz",
+      "stats": {
+        "hp_regen_flat": 1,
+        "duration_sec": 180
+      }
+    },
+    {
+      "id": "shadow_zerbrochene_muenze",
+      "name": "Leere Münze",
+      "type": "consumable",
+      "world": 1,
+      "category": "buff",
+      "description": "Gesichtslose Münze ohne Wert",
+      "icon": "res://assets/items/icons/shadow_zerbrochene_muenze.png",
+      "price": 60,
+      "effect": "+10% Münz-Drops",
+      "duration": "3 Level",
+      "mirror_of": "zerbrochene_muenze",
+      "stats": {
+        "gold_drop_bonus": 0.1,
+        "duration_levels": 3
+      }
+    },
+    {
+      "id": "shadow_funken_gnade",
+      "name": "Funken der Finsternis",
+      "type": "consumable",
+      "world": 1,
+      "category": "revive",
+      "description": "Dunkler Funke, der den Schatten zurückholt",
+      "icon": "res://assets/items/icons/shadow_funken_gnade.png",
+      "price": 200,
+      "effect": "Respawn an Todesort",
+      "duration": "Permanent",
+      "mirror_of": "funken_gnade",
+      "stats": {
+        "revive_on_death": true,
+        "revive_hp_percent": 0.25
+      }
+    },
+    {
+      "id": "shadow_nanofluid_patch",
+      "name": "Schattenfluid-Patch",
+      "type": "consumable",
+      "world": 2,
+      "category": "heal",
+      "description": "Kybernetischer Patch mit dunklen Nano-Partikeln",
+      "icon": "res://assets/items/icons/shadow_nanofluid_patch.png",
+      "price": 110,
+      "effect": "Heile 50% HP",
+      "duration": "3 Nutzungen",
+      "mirror_of": "nanofluid_patch",
+      "stats": {
+        "heal_percent": 0.5,
+        "max_uses": 3
+      }
+    },
+    {
+      "id": "shadow_stabilitaet_modul",
+      "name": "Instabilitäts-Modul",
+      "type": "consumable",
+      "world": 2,
+      "category": "buff",
+      "description": "Verzerrtes Modul aus gebrochener Realität",
+      "icon": "res://assets/items/icons/shadow_stabilitaet_modul.png",
+      "price": 150,
+      "effect": "−25% Genommener Schaden",
+      "duration": "3 Level",
+      "mirror_of": "stabilitaet_modul",
+      "stats": {
+        "damage_reduction": 0.25,
+        "duration_levels": 3
+      }
+    },
+    {
+      "id": "shadow_neural_booster",
+      "name": "Phantom-Booster",
+      "type": "consumable",
+      "world": 2,
+      "category": "buff",
+      "description": "Schattenhafter Neurostimulator aus der Leere",
+      "icon": "res://assets/items/icons/shadow_neural_booster.png",
+      "price": 130,
+      "effect": "+10% Angriffsgeschwindigkeit",
+      "duration": "5 Minuten",
+      "mirror_of": "neural_booster",
+      "stats": {
+        "attack_speed_bonus": 0.1,
+        "duration_sec": 300
+      }
+    },
+    {
+      "id": "shadow_katalysatorchip",
+      "name": "Verblassungs-Chip",
+      "type": "consumable",
+      "world": 2,
+      "category": "buff",
+      "description": "Defekter Chip mit flackernder Energie",
+      "icon": "res://assets/items/icons/shadow_katalysatorchip.png",
+      "price": 140,
+      "effect": "Mana-Regen bei Hit",
+      "duration": "2 Level",
+      "mirror_of": "katalysatorchip",
+      "stats": {
+        "mana_on_hit": 5,
+        "duration_levels": 2
+      }
+    },
+    {
+      "id": "shadow_core_reconstructor",
+      "name": "Schatten-Core",
+      "type": "consumable",
+      "world": 2,
+      "category": "revive",
+      "description": "Fragmentierter Core aus dunkler Materie",
+      "icon": "res://assets/items/icons/shadow_core_reconstructor.png",
+      "price": 220,
+      "effect": "Revive + 10s Schadens-Buff",
+      "duration": "Permanent",
+      "mirror_of": "core_reconstructor",
+      "stats": {
+        "revive_on_death": true,
+        "revive_hp_percent": 0.2,
+        "revive_damage_buff": 0.15,
+        "revive_buff_duration": 10
+      }
+    },
+    {
+      "id": "shadow_blut_vergessens",
+      "name": "Essenz der Leere",
+      "type": "consumable",
+      "world": 3,
+      "category": "heal",
+      "description": "Schwarzes Blut aus dem tiefsten Abgrund",
+      "icon": "res://assets/items/icons/shadow_blut_vergessens.png",
+      "price": 150,
+      "effect": "Volle Heilung",
+      "duration": "Sofort",
+      "mirror_of": "blut_vergessens",
+      "stats": {
+        "heal_percent": 1.0
+      }
+    },
+    {
+      "id": "shadow_zerfallener_segen",
+      "name": "Fluch der Vergessenheit",
+      "type": "consumable",
+      "world": 3,
+      "category": "buff",
+      "description": "Verdorbener Rest göttlichen Schutzes",
+      "icon": "res://assets/items/icons/shadow_zerfallener_segen.png",
+      "price": 180,
+      "effect": "Ignoriere ersten genommenen Hit",
+      "duration": "3 Level",
+      "mirror_of": "zerfallener_segen",
+      "stats": {
+        "block_next_hit": true,
+        "duration_levels": 3
+      }
+    },
+    {
+      "id": "shadow_zeitlose_scherbe",
+      "name": "Splitter der Ewigkeit",
+      "type": "consumable",
+      "world": 3,
+      "category": "buff",
+      "description": "Fragment aus eingefrorener Dunkelheit",
+      "icon": "res://assets/items/icons/shadow_zeitlose_scherbe.png",
+      "price": 200,
+      "effect": "Verlangsame Gegner 3s nach Parry",
+      "duration": "Permanent",
+      "mirror_of": "zeitlose_scherbe",
+      "stats": {
+        "parry_slow_duration": 3,
+        "parry_slow_strength": 0.5
+      }
+    },
+    {
+      "id": "shadow_echo_relikt",
+      "name": "Phantom-Relikt",
+      "type": "consumable",
+      "world": 3,
+      "category": "buff",
+      "description": "Verblassende Erinnerung an vergessene Macht",
+      "icon": "res://assets/items/icons/shadow_echo_relikt.png",
+      "price": 160,
+      "effect": "+5% Schaden",
+      "duration": "Permanent",
+      "mirror_of": "echo_relikt",
+      "stats": {
+        "damage_bonus": 0.05
+      }
+    },
+    {
+      "id": "shadow_traene_erwachens",
+      "name": "Träne der Dunkelheit",
+      "type": "consumable",
+      "world": 3,
+      "category": "revive",
+      "description": "Träne aus dem Moment des Falls in die Finsternis",
+      "icon": "res://assets/items/icons/shadow_traene_erwachens.png",
+      "price": 240,
+      "effect": "Revive mit vollem Mana, −50% Max HP",
+      "duration": "Permanent",
+      "mirror_of": "traene_erwachens",
+      "stats": {
+        "revive_on_death": true,
+        "revive_hp_percent": 0.5,
+        "revive_mana_percent": 1.0,
+        "revive_max_hp_penalty": 0.5
+      }
+    },
+    {
       "id": "shadow_auge_xy",
       "name": "Linse der Finsternis",
       "type": "relic",
