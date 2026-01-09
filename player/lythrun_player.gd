@@ -1165,7 +1165,12 @@ func void_parry() -> void:
 	void_parry_cooldown_active = true
 	parry_start_time = Time.get_ticks_msec() / 1000.0
 
-	print("[Void Parry] Activated!")
+	print("[Void Parry] ===== PARRY WINDOW STARTED (%.2fs) =====" % VOID_PARRY_WINDOW)
+
+	# CRITICAL FIX: Set invulnerability during parry (same as P1's ParryBlockSystem)
+	print("[Void Parry] About to set player invulnerable to TRUE")
+	_set_void_parry_invulnerable(true)
+	print("[Void Parry] Finished setting player invulnerable")
 
 	# VFX
 	spawn_void_parry_shield()
@@ -1179,11 +1184,32 @@ func void_parry() -> void:
 	if is_instance_valid(self):
 		is_void_parrying = false
 
+		# Disable invulnerability when parry window ends
+		print("[Void Parry] Parry window ended, disabling invulnerability")
+		_set_void_parry_invulnerable(false)
+
 	# Cooldown
 	await get_tree().create_timer(VOID_PARRY_COOLDOWN).timeout
 	if is_instance_valid(self):
 		void_parry_cooldown_active = false
 		print("[Void Parry] Cooldown complete")
+
+func _set_void_parry_invulnerable(invulnerable: bool) -> void:
+	"""Sets player invulnerability state during void parry (same as P1's ParryBlockSystem)"""
+	if not hurtbox:
+		print("[Void Parry] ERROR: Cannot set invulnerability - hurtbox is null!")
+		return
+
+	# CRITICAL FIX: Set invulnerability on HURTBOX, not HealthComponent!
+	# HurtboxComponent.take_damage() checks its own is_invulnerable
+
+	# Stop the hurtbox's invulnerability timer to prevent override
+	if hurtbox.invulnerability_timer:
+		hurtbox.invulnerability_timer.stop()
+		print("[Void Parry] Stopped HurtboxComponent invulnerability_timer")
+
+	hurtbox.is_invulnerable = invulnerable
+	print("[Void Parry] Player invulnerability set to: %s (current value: %s)" % [invulnerable, hurtbox.is_invulnerable])
 
 func _on_parry_hit(attacker) -> void:
 	"""Called when parry successfully blocks attack"""
