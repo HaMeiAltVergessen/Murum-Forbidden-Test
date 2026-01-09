@@ -303,8 +303,36 @@ func _reposition_p2_in_scene(scene: Node) -> void:
 	if p2.has_method("apply_floor_snap"):
 		p2.apply_floor_snap()
 
+	# CRITICAL: Re-initialize P2's input system after scene transition
+	# _ready() is NOT called again when re-adding to tree, so we must manually restore controller references
+	_reinitialize_p2_input_system(p2)
+
 	print("[GameManager] P2 repositioned in scene: ", scene.name)
 	print("[GameManager] Position: ", p2.global_position, " | z_index: ", p2.z_index)
+
+
+func _reinitialize_p2_input_system(p2: CharacterBody2D) -> void:
+	"""Re-initialize P2's input system after scene transition (COMMIT 021 - Co-op Fix)"""
+	if not p2 or not is_instance_valid(p2):
+		return
+
+	print("[GameManager] Re-initializing P2's input system...")
+
+	# Re-set MovementController's controller_device_id
+	if p2.has_node("MovementController"):
+		var movement = p2.get_node("MovementController")
+		if InputManager and InputManager.p2_controller_device >= 0:
+			movement.controller_device_id = InputManager.p2_controller_device
+			print("[GameManager] P2 MovementController device restored: ", movement.controller_device_id)
+
+	# Re-set CombatSystem's controller_device_id (if it has one)
+	if p2.has_node("CombatSystem"):
+		var combat = p2.get_node("CombatSystem")
+		if "controller_device_id" in combat and InputManager and InputManager.p2_controller_device >= 0:
+			combat.controller_device_id = InputManager.p2_controller_device
+			print("[GameManager] P2 CombatSystem device restored: ", combat.controller_device_id)
+
+	print("[GameManager] P2 input system re-initialized successfully")
 
 
 # ============ STATISTICS ============
