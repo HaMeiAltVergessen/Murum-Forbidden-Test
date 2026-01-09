@@ -161,6 +161,8 @@ position = Vector2(800, 450)
 
 [node name="DoorFromRoom02" parent="Doors" instance=ExtResource("4_door")]
 position = Vector2(100, 780)
+target_scene = "res://worlds/world_1_ruins/rooms/room_02_corridor.tscn"
+spawn_position = Vector2(1130, 600)
 
 [node name="DoorToRoom04" parent="Doors" instance=ExtResource("4_door")]
 position = Vector2(800, 780)
