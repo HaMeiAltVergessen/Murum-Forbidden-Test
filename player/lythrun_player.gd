@@ -91,6 +91,7 @@ var parry_window_timer: float = 0.0
 
 # Visual Indicator (like P1's block_indicator)
 var void_parry_indicator: Polygon2D = null
+var void_parry_indicator_tween: Tween = null
 
 # ============ VOID RIFT (COMMIT 019.5) ============
 const VOID_RIFT_MANA_COST: int = 40  # COMMIT 024: Reduced from 50 (more affordable)
@@ -559,7 +560,7 @@ func _process(delta: float) -> void:
 		print("[Lythrun DEBUG] Void Parry pressed")
 		_start_void_parry()
 
-	if InputManager.is_p2_action_released("void_parry"):
+	if InputManager.is_p2_action_just_released("void_parry"):
 		print("[Lythrun DEBUG] Void Parry released")
 		_stop_void_parry()
 
@@ -1286,27 +1287,49 @@ func _set_void_parry_invulnerable(invulnerable: bool) -> void:
 
 func _show_void_parry_window_indicators() -> void:
 	"""Shows indicator during parry window (gold pulsing, like P1)"""
-	if void_parry_indicator:
-		void_parry_indicator.visible = true
-		# Gold color for parry window
-		void_parry_indicator.color = Color(1.0, 0.84, 0.0, 0.5)  # Gold
+	if not void_parry_indicator:
+		return
 
-		# Bright pulsing animation during parry window
-		var tween = create_tween().set_loops()
-		tween.tween_property(void_parry_indicator, "modulate:a", 0.9, 0.15)
-		tween.tween_property(void_parry_indicator, "modulate:a", 1.0, 0.15)
+	# Stop any existing tween
+	if void_parry_indicator_tween and void_parry_indicator_tween.is_valid():
+		void_parry_indicator_tween.kill()
+
+	void_parry_indicator.visible = true
+	# Gold color for parry window
+	void_parry_indicator.color = Color(1.0, 0.84, 0.0, 0.5)  # Gold
+
+	# Bright pulsing animation during parry window
+	void_parry_indicator_tween = create_tween().set_loops()
+	void_parry_indicator_tween.tween_property(void_parry_indicator, "modulate:a", 0.9, 0.15)
+	void_parry_indicator_tween.tween_property(void_parry_indicator, "modulate:a", 1.0, 0.15)
 
 func _show_void_blocking_indicators() -> void:
 	"""Shows indicator for normal blocking (purple shadow theme)"""
-	if void_parry_indicator:
-		void_parry_indicator.visible = true
-		# Purple color for P2's shadow blocking
-		void_parry_indicator.color = Color(0.6, 0.2, 0.8, 0.3)  # Purple, dimmer
+	if not void_parry_indicator:
+		return
+
+	# Stop any existing tween (stop pulsing)
+	if void_parry_indicator_tween and void_parry_indicator_tween.is_valid():
+		void_parry_indicator_tween.kill()
+		void_parry_indicator_tween = null
+
+	void_parry_indicator.visible = true
+	# Purple color for P2's shadow blocking
+	void_parry_indicator.color = Color(0.6, 0.2, 0.8, 0.3)  # Purple, dimmer
+	# Reset modulate (in case it was mid-pulse)
+	void_parry_indicator.modulate.a = 1.0
 
 func _hide_void_parry_indicators() -> void:
 	"""Hides visual indicator"""
+	# Stop any existing tween
+	if void_parry_indicator_tween and void_parry_indicator_tween.is_valid():
+		void_parry_indicator_tween.kill()
+		void_parry_indicator_tween = null
+
 	if void_parry_indicator:
 		void_parry_indicator.visible = false
+		# Reset modulate
+		void_parry_indicator.modulate.a = 1.0
 
 func _on_parry_hit(attacker) -> void:
 	"""Called when parry successfully blocks attack (TODO: Wire up Area2D detection)"""
