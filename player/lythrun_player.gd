@@ -1124,11 +1124,11 @@ func create_placeholder_scythe() -> void:
 
 	scythe.global_position = global_position + Vector2(0, -20)
 
-	# Collision setup
+	# Collision setup (COMMIT 021: Fixed - traf P2 selbst)
 	scythe.collision_layer = 0
-	scythe.set_collision_layer_value(6, true)  # P2 Projectiles
+	scythe.set_collision_layer_value(6, true)  # P2 Projectiles (Layer 6 = 32)
 	scythe.collision_mask = 0
-	scythe.set_collision_mask_value(4, true)  # Enemies
+	scythe.set_collision_mask_value(11, true)  # Enemy Hurtbox ONLY (Layer 11 = 1024)
 
 	# CRITICAL: Enable monitoring
 	scythe.monitoring = true
@@ -1145,30 +1145,25 @@ func create_placeholder_scythe() -> void:
 		scythe.collision_mask
 	])
 
-	# Hit detection with debug output
-	scythe.body_entered.connect(func(body):
-		print("[Shadow Scythe] Hit detected! Body: %s, Groups: %s" % [body.name, body.get_groups()])
-		var damage_dealt = false
+	# Hit detection with hurtboxes (COMMIT 021: area_entered instead of body_entered)
+	scythe.area_entered.connect(func(area):
+		# Get enemy from hurtbox
+		var enemy = area.get_parent()
+		if not enemy or not is_instance_valid(enemy):
+			return
 
-		# Try direct take_damage
-		if body.has_method("take_damage"):
-			body.take_damage(damage)
-			damage_dealt = true
-			print("[Shadow Scythe SUCCESS] Dealt %.1f damage to %s (direct method)" % [damage, body.name])
-		# Try HealthComponent
-		elif body.has_node("HealthComponent"):
-			var health = body.get_node("HealthComponent")
+		# CRITICAL: Only hit enemies, NOT players
+		if not enemy.is_in_group("enemies"):
+			return
+
+		print("[Shadow Scythe] Hit %s" % enemy.name)
+
+		# Deal damage through HealthComponent
+		if enemy.has_node("HealthComponent"):
+			var health = enemy.get_node("HealthComponent")
 			if health.has_method("take_damage"):
 				health.take_damage(int(damage))
-				damage_dealt = true
-				print("[Shadow Scythe SUCCESS] Dealt %.1f damage to %s (HealthComponent)" % [damage, body.name])
-
-		if not damage_dealt:
-			print("[Shadow Scythe ERROR] %s has no damage method! Has take_damage: %s, Has HealthComponent: %s" % [
-				body.name,
-				body.has_method("take_damage"),
-				body.has_node("HealthComponent")
-			])
+				print("[Shadow Scythe] Dealt %.1f damage to %s" % [damage, enemy.name])
 	)
 
 	# Store reference
@@ -1599,7 +1594,24 @@ func release_orb() -> void:
 		AudioManager.play_sfx("void_orb_release")
 
 func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
-	"""Screen-wide AoE attack (COMMIT 021: Simplified to instant AoE)"""
+	"""Screen-wide AoE attack (COMMIT 021: Simplified to instant AoE with visuals)"""
+
+	# Create visual expanding circle sprite
+	var visual = Sprite2D.new()
+	var circle_texture = load("res://Assets/Placeholder/Legacy Collection/Assets/Packs/Meta data assets files/Visuals/OBJECTS/items/orb-blue/orb-blue1.png")
+	if circle_texture:
+		visual.texture = circle_texture
+		visual.modulate = Color(0.5, 0.2, 0.8, 0.6)  # Dark purple, semi-transparent
+		visual.scale = Vector2(charge_factor * 30, charge_factor * 30)  # Scale based on charge (max 30x at 9s)
+		get_parent().add_child(visual)
+		visual.global_position = global_position
+		visual.z_index = 10
+
+		# Expand animation
+		var tween = create_tween()
+		tween.tween_property(visual, "scale", visual.scale * 1.3, 0.3)
+		tween.parallel().tween_property(visual, "modulate:a", 0.0, 0.3)
+		tween.tween_callback(visual.queue_free)
 
 	# Create screen-wide AoE
 	var aoe = Area2D.new()
@@ -1637,19 +1649,16 @@ func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
 	var hit_areas = aoe.get_overlapping_areas()
 	var enemies_hit = 0
 
-	print("[Void Orb AoE DEBUG] Found %d overlapping areas" % hit_areas.size())
-
 	for area in hit_areas:
 		if not area or not is_instance_valid(area):
 			continue
-
-		print("[Void Orb AoE DEBUG] Area: %s, Parent: %s" % [area.name, area.get_parent().name if area.get_parent() else "null"])
 
 		# Get enemy from hurtbox
 		var enemy = area.get_parent()
 		if not enemy or not is_instance_valid(enemy):
 			continue
 
+		# CRITICAL: Only hit enemies, NOT players
 		if enemy.is_in_group("enemies"):
 			# Deal damage through HealthComponent
 			if enemy.has_node("HealthComponent"):
@@ -1855,18 +1864,34 @@ func spawn_void_parry_explosion_vfx(pos: Vector2) -> void:
 	tween.tween_callback(explosion.queue_free)
 
 func spawn_charging_orb_vfx() -> void:
-	"""Spawn charging orb VFX"""
-	# Placeholder
-	print("[VFX] Void orb charging started")
+	"""Spawn charging orb VFX (COMMIT 021: Growing orb above head)"""
+	# Create charging orb sprite
+	charging_orb_vfx = Sprite2D.new()
+	var orb_texture = load("res://Assets/Placeholder/Legacy Collection/Assets/Packs/Meta data assets files/Visuals/OBJECTS/items/orb-blue/orb-blue1.png")
+	if orb_texture:
+		charging_orb_vfx.texture = orb_texture
+		charging_orb_vfx.modulate = Color(0.5, 0.2, 0.8, 0.8)  # Dark purple
+		charging_orb_vfx.scale = Vector2(0.5, 0.5)  # Start small
+		add_child(charging_orb_vfx)
+		charging_orb_vfx.position = Vector2(0, -60)  # Above head
+		charging_orb_vfx.z_index = 10
+		print("[VFX] Void orb charging started")
 
 func update_charging_orb_vfx(charge_factor: float) -> void:
-	"""Update charging orb VFX"""
-	# Placeholder
-	pass
+	"""Update charging orb VFX (COMMIT 021: Scale 0.5 → 5.0 over 9 seconds)"""
+	if charging_orb_vfx and is_instance_valid(charging_orb_vfx):
+		# Scale from 0.5 to 5.0 based on charge (0-100%)
+		var scale_value = 0.5 + (charge_factor * 4.5)
+		charging_orb_vfx.scale = Vector2(scale_value, scale_value)
+
+		# Pulsating effect
+		charging_orb_vfx.modulate.a = 0.6 + sin(Time.get_ticks_msec() * 0.01) * 0.2
 
 func clear_charging_orb_vfx() -> void:
-	"""Clear charging orb VFX"""
-	# Placeholder
+	"""Clear charging orb VFX (COMMIT 021: Remove sprite)"""
+	if charging_orb_vfx and is_instance_valid(charging_orb_vfx):
+		charging_orb_vfx.queue_free()
+		charging_orb_vfx = null
 	print("[VFX] Void orb charging cleared")
 
 func spawn_phase_shift_absorb_vfx() -> void:
