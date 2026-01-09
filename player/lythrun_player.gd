@@ -74,9 +74,8 @@ var scythe_instance = null
 var scythe_thrown: bool = false
 
 # ============ VOID PARRY (COMMIT 019.5 - Hold-based like P1) ============
-const VOID_PARRY_WINDOW: float = 0.3  # Parry window (same as P1)
-const PERFECT_PARRY_WINDOW: float = 0.12  # COMMIT 024: Perfect timing window (reduced from 0.15s)
-const VOID_PARRY_COOLDOWN: float = 3.0
+const VOID_PARRY_WINDOW: float = 0.6  # Parry window (DOUBLED from 0.3s)
+const PERFECT_PARRY_WINDOW: float = 0.24  # Perfect timing window (DOUBLED from 0.12s)
 const VOID_PARRY_RADIUS: float = 70.0  # Detection radius (same as P1)
 const PERFECT_PARRY_AOE_RADIUS: float = 220.0
 const PERFECT_PARRY_DAMAGE: float = 40.0
@@ -85,7 +84,6 @@ const PERFECT_PARRY_STUN_DURATION: float = 1.5
 # State Machine (like P1's ParryBlockSystem)
 enum VoidParryState { IDLE, PARRY_WINDOW, BLOCKING }
 var void_parry_state: VoidParryState = VoidParryState.IDLE
-var void_parry_cooldown_active: bool = false
 var parry_start_time: float = 0.0
 var parry_window_timer: float = 0.0
 
@@ -1246,11 +1244,6 @@ func _start_void_parry() -> void:
 		print("[Void Parry] Already active, ignoring")
 		return
 
-	# Check cooldown
-	if void_parry_cooldown_active:
-		print("[Void Parry] Cooldown active, cannot parry")
-		return
-
 	print("[Void Parry] ===== PARRY WINDOW STARTED (%.2fs) =====" % VOID_PARRY_WINDOW)
 
 	# Enter PARRY_WINDOW state
@@ -1303,17 +1296,6 @@ func _stop_void_parry() -> void:
 
 	# Hide visual indicator
 	_hide_void_parry_indicators()
-
-	# Start cooldown
-	_start_void_parry_cooldown()
-
-func _start_void_parry_cooldown() -> void:
-	"""Starts parry cooldown"""
-	void_parry_cooldown_active = true
-	await get_tree().create_timer(VOID_PARRY_COOLDOWN).timeout
-	if is_instance_valid(self):
-		void_parry_cooldown_active = false
-		print("[Void Parry] Cooldown complete")
 
 func _set_void_parry_invulnerable(invulnerable: bool) -> void:
 	"""Sets player invulnerability state during void parry (same as P1's ParryBlockSystem)"""
