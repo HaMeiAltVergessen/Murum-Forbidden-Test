@@ -17,7 +17,6 @@ const BOSS_SCENE_PATH: String = "res://bosses/lythrun/lythrun_boss.tscn"
 @onready var boss_spawn: Marker2D = $Spawns/BossSpawn
 @onready var exit_door: Area2D = $Doors/ExitDoor if has_node("Doors/ExitDoor") else null
 @onready var arena_boundary: Node2D = $ArenaBoundary if has_node("ArenaBoundary") else null
-@onready var camera: Camera2D = $Camera2D if has_node("Camera2D") else null
 
 # ============================================================================
 # STATE

@@ -11,6 +11,8 @@
 [ext_resource type="PackedScene" uid="uid://cnwm5dx2vx7b4" path="res://ui/death_screen.tscn" id="8_death_screen_scene"]
 [ext_resource type="PackedScene" uid="uid://inventory_scene" path="res://ui/inventory/inventory.tscn" id="9_inventory_scene"]
 [ext_resource type="PackedScene" uid="uid://pickup_base_scene" path="res://environment/pickups/pickup_base.tscn" id="10_pickup_scene"]
+[ext_resource type="PackedScene" uid="uid://coop_camera_scene" path="res://camera/coop_camera.tscn" id="11_coop_camera"]
+[ext_resource type="PackedScene" uid="uid://split_screen_manager" path="res://camera/split_screen_manager.tscn" id="12_split_screen"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_floor"]
 texture_region_size = Vector2i(32, 32)
@@ -172,3 +174,8 @@ position = Vector2(1200, 950)
 item_id = "schluessel_ruinen"
 
 [node name="DeathScreen" parent="." instance=ExtResource("8_death_screen_scene")]
+
+[node name="CoopCamera" parent="." instance=ExtResource("11_coop_camera")]
+position = Vector2(960, 540)
+
+[node name="SplitScreenManager" parent="." instance=ExtResource("12_split_screen")]

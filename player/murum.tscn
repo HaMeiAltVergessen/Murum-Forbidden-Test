@@ -116,6 +116,7 @@ script = ExtResource("16_luftgott")
 script = ExtResource("17_animator")
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
+enabled = false
 offset = Vector2(0, -150)
 position_smoothing_enabled = true
 position_smoothing_speed = 5.0

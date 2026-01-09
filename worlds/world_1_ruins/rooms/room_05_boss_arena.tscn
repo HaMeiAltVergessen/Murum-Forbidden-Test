@@ -4,6 +4,8 @@
 [ext_resource type="Texture2D" path="res://Assets/Placeholder/Background/Environments/HauntedForest/Layers/back.png" id="1_background"]
 [ext_resource type="Texture2D" path="res://Assets/Placeholder/Background/Environments/HauntedForest/Layers/middle.png" id="2_middle"]
 [ext_resource type="Texture2D" path="res://Assets/Placeholder/Background/Environments/HauntedForest/Layers/tileset.png" id="1_tileset"]
+[ext_resource type="PackedScene" uid="uid://coop_camera_scene" path="res://camera/coop_camera.tscn" id="4_coop_camera"]
+[ext_resource type="PackedScene" uid="uid://split_screen_manager" path="res://camera/split_screen_manager.tscn" id="5_split_screen"]
 
 [sub_resource type="CircleShape2D" id="boundary_shape"]
 radius = 350.0
@@ -96,5 +98,6 @@ color = Color(0.4, 0.3, 0.5, 1)
 
 [node name="Atmosphere" type="Node2D" parent="."]
 
-[node name="Camera2D" type="Camera2D" parent="."]
-enabled = false
+[node name="CoopCamera" parent="." instance=ExtResource("4_coop_camera")]
+
+[node name="SplitScreenManager" parent="." instance=ExtResource("5_split_screen")]
