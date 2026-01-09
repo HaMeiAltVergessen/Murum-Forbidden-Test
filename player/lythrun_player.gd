@@ -1628,16 +1628,22 @@ func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
 		VOID_ORB_SCREEN_RADIUS
 	])
 
-	# Wait one frame for Area2D to detect overlaps
+	# CRITICAL: Wait multiple frames for collision detection to register
+	await get_tree().process_frame
+	await get_tree().process_frame
 	await get_tree().process_frame
 
 	# Damage all enemies in range
 	var hit_areas = aoe.get_overlapping_areas()
 	var enemies_hit = 0
 
+	print("[Void Orb AoE DEBUG] Found %d overlapping areas" % hit_areas.size())
+
 	for area in hit_areas:
 		if not area or not is_instance_valid(area):
 			continue
+
+		print("[Void Orb AoE DEBUG] Area: %s, Parent: %s" % [area.name, area.get_parent().name if area.get_parent() else "null"])
 
 		# Get enemy from hurtbox
 		var enemy = area.get_parent()
@@ -1654,10 +1660,6 @@ func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
 					print("[Void Orb AoE] Hit %s for %.1f damage" % [enemy.name, damage])
 
 	print("[Void Orb AoE] Total enemies hit: %d" % enemies_hit)
-
-	# VFX: Screen flash/wave effect
-	if VFXManager and VFXManager.has_method("spawn_screen_flash"):
-		VFXManager.spawn_screen_flash(global_position, Color(0.5, 0.2, 0.8, 0.3))
 
 	# Cleanup
 	aoe.queue_free()
