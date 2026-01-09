@@ -184,6 +184,12 @@ func _on_node_added(node: Node) -> void:
 		if player.get_parent() == get_tree().root:
 			call_deferred("_reposition_player_in_scene", node)
 
+		# Also reposition P2 if active (COMMIT 021 - Co-op)
+		if CoopManager and CoopManager.is_p2_active:
+			var p2 = CoopManager.get_p2_instance()
+			if p2 and is_instance_valid(p2) and p2.get_parent() == get_tree().root:
+				call_deferred("_reposition_p2_in_scene", node)
+
 
 func _reposition_player_in_scene(scene: Node) -> void:
 	"""Repositions player in the new scene after a transition"""
@@ -240,6 +246,65 @@ func _reposition_player_in_scene(scene: Node) -> void:
 	print("[GameManager] Player repositioned in scene: ", scene.name)
 	print("[GameManager] Position: ", player.global_position, " | z_index: ", player.z_index)
 	print("[GameManager] Child index: ", player.get_index(), " of ", scene.get_child_count())
+
+
+func _reposition_p2_in_scene(scene: Node) -> void:
+	"""Repositions P2 in the new scene after a transition (COMMIT 021 - Co-op)"""
+	if not CoopManager or not CoopManager.is_p2_active:
+		return
+
+	var p2 = CoopManager.get_p2_instance()
+	if not p2 or not is_instance_valid(p2):
+		print("[GameManager] Cannot reposition P2: Invalid")
+		return
+
+	if not scene or not is_instance_valid(scene):
+		print("[GameManager] Cannot reposition P2: Scene invalid")
+		return
+
+	# If P2 is already a child of the target scene, just reposition
+	if p2.get_parent() == scene:
+		print("[GameManager] P2 already in target scene, just repositioning")
+		p2.global_position = player_spawn_position + Vector2(50, 0)  # Spawn next to P1
+		p2.z_index = 10
+		if "velocity" in p2:
+			p2.velocity = Vector2.ZERO
+		return
+
+	print("[GameManager] Repositioning P2. Current parent: ", p2.get_parent())
+	print("[GameManager] Target scene: ", scene.name)
+
+	# Remove from current parent (whether root or another scene)
+	var current_parent = p2.get_parent()
+	if current_parent:
+		current_parent.remove_child(p2)
+		print("[GameManager] Removed P2 from: ", current_parent.name)
+
+	# Add to new scene as LAST child (renders on top of all existing nodes)
+	scene.add_child(p2)
+
+	# Force P2 to absolute end of children list
+	scene.move_child(p2, scene.get_child_count() - 1)
+
+	# High z_index to ensure rendering above everything
+	p2.z_index = 100
+	p2.z_as_relative = false  # Absolute z-ordering
+
+	# Position at spawn point (offset from P1)
+	p2.global_position = player_spawn_position + Vector2(50, 0)
+
+	# Reset velocity and physics state
+	if p2.has_method("reset_velocity"):
+		p2.reset_velocity()
+	elif "velocity" in p2:
+		p2.velocity = Vector2.ZERO
+
+	# Force P2 to be on floor (not falling)
+	if p2.has_method("apply_floor_snap"):
+		p2.apply_floor_snap()
+
+	print("[GameManager] P2 repositioned in scene: ", scene.name)
+	print("[GameManager] Position: ", p2.global_position, " | z_index: ", p2.z_index)
 
 
 # ============ STATISTICS ============
