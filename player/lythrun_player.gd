@@ -103,12 +103,13 @@ const VOID_RIFT_MAX_RADIUS: float = 650.0
 const VOID_RIFT_DAMAGE: float = 80.0
 var void_rift_active: bool = false
 
-# ============ VOID ORBS (COMMIT 021 - Screen-wide AoE) ============
+# ============ VOID ORBS (COMMIT 021 - Scaling AoE) ============
 const VOID_ORB_CHARGE_TIME: float = 9.0  # Max charge time (9 seconds)
 const VOID_ORB_MANA_COST: int = 20
 const VOID_ORB_BASE_DAMAGE: float = 30.0  # Base damage at 0s
 const VOID_ORB_DAMAGE_PER_SECOND: float = 15.0  # Additional damage per second charged
-const VOID_ORB_SCREEN_RADIUS: float = 2000.0  # Covers entire screen
+const VOID_ORB_BASE_RADIUS: float = 30.0  # Starting radius at 0s
+const VOID_ORB_RADIUS_PER_SECOND: float = 30.0  # +30px per second (30-300px range)
 var is_charging_orb: bool = false
 var orb_charge_time: float = 0.0
 var movement_disabled_by_orb: bool = false
@@ -1594,7 +1595,11 @@ func release_orb() -> void:
 		AudioManager.play_sfx("void_orb_release")
 
 func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
-	"""Screen-wide AoE attack (COMMIT 021: Simplified to instant AoE with visuals)"""
+	"""Scaling AoE attack (COMMIT 021: Radius grows with charge time)"""
+
+	# Calculate radius: 30px base + 30px per second (30-300px range)
+	var orb_radius = VOID_ORB_BASE_RADIUS + (orb_charge_time * VOID_ORB_RADIUS_PER_SECOND)
+	orb_radius = min(orb_radius, 300.0)  # Cap at 300px (9 seconds)
 
 	# Create visual expanding circle sprite
 	var visual = Sprite2D.new()
@@ -1602,7 +1607,9 @@ func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
 	if circle_texture:
 		visual.texture = circle_texture
 		visual.modulate = Color(0.5, 0.2, 0.8, 0.6)  # Dark purple, semi-transparent
-		visual.scale = Vector2(charge_factor * 30, charge_factor * 30)  # Scale based on charge (max 30x at 9s)
+		# Scale based on actual radius (orb sprite is ~16px, so scale = radius / 8)
+		var visual_scale = orb_radius / 8.0
+		visual.scale = Vector2(visual_scale, visual_scale)
 		get_parent().add_child(visual)
 		visual.global_position = global_position
 		visual.z_index = 10
@@ -1613,11 +1620,11 @@ func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
 		tween.parallel().tween_property(visual, "modulate:a", 0.0, 0.3)
 		tween.tween_callback(visual.queue_free)
 
-	# Create screen-wide AoE
+	# Create scaling AoE
 	var aoe = Area2D.new()
 	var collision = CollisionShape2D.new()
 	var shape = CircleShape2D.new()
-	shape.radius = VOID_ORB_SCREEN_RADIUS  # 2000px - covers entire screen
+	shape.radius = orb_radius  # Scales with charge time
 
 	collision.shape = shape
 	aoe.add_child(collision)
@@ -1634,10 +1641,10 @@ func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
 	aoe.monitoring = true
 	aoe.monitorable = false
 
-	print("[Void Orb AoE] Released! Charge: %.0fs | Damage: %.1f | Radius: %.0f" % [
+	print("[Void Orb AoE] Released! Charge: %.1fs | Damage: %.1f | Radius: %.0fpx" % [
 		orb_charge_time,
 		damage,
-		VOID_ORB_SCREEN_RADIUS
+		orb_radius
 	])
 
 	# CRITICAL: Wait multiple frames for collision detection to register
