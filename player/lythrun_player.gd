@@ -1384,21 +1384,22 @@ func _on_void_parry_area_entered(area: Area2D) -> void:
 
 	if is_perfect:
 		print("[Void Parry] ===== PERFECT PARRY ===== (%.3fs)" % parry_time)
-		perform_perfect_parry()
+		# CRITICAL: Call deferred to avoid physics callback issues
+		call_deferred("_execute_perfect_parry")
 	else:
 		# Normal block (no counter)
 		print("[Void Parry] Normal block (no counter)")
 		if AudioManager and AudioManager.has_method("play_sfx"):
 			AudioManager.play_sfx("void_parry_success")
 
-func perform_perfect_parry() -> void:
-	"""Execute perfect parry AoE"""
-	print("[Void Parry] PERFECT PARRY!")
+func _execute_perfect_parry() -> void:
+	"""Execute perfect parry AoE (called via call_deferred to avoid physics callback issues)"""
+	print("[Void Parry] Executing Perfect Parry AoE...")
 
 	# Screen flash
 	spawn_perfect_parry_flash()
 
-	# AoE damage + stun
+	# AoE damage + stun - create area
 	var aoe = Area2D.new()
 	var collision = CollisionShape2D.new()
 	var shape = CircleShape2D.new()
@@ -1407,27 +1408,21 @@ func perform_perfect_parry() -> void:
 	collision.shape = shape
 	aoe.add_child(collision)
 
-	# Collision setup (BEFORE adding to scene)
+	# Collision setup
 	aoe.collision_layer = 0
 	aoe.set_collision_layer_value(6, true)  # P2 Projectiles
 	aoe.collision_mask = 0
 	aoe.set_collision_mask_value(4, true)  # Enemies
+	aoe.monitoring = true
+	aoe.monitorable = true
 
-	# CRITICAL: Set monitoring/monitorable BEFORE adding to scene tree
-	aoe.monitoring = false  # Start disabled
-	aoe.monitorable = false
-
-	# Add to scene tree
+	# Add to scene tree (now safe because we're not in physics callback!)
 	get_parent().add_child(aoe)
 	aoe.global_position = global_position
 
-	# CRITICAL FIX: Enable monitoring with call_deferred (we're in a physics signal callback!)
-	aoe.call_deferred("set_monitoring", true)
-	aoe.call_deferred("set_monitorable", true)
-
 	print("[Perfect Parry] AoE created - Damage: %.1f, Radius: %.0f" % [PERFECT_PARRY_DAMAGE, PERFECT_PARRY_AOE_RADIUS])
 
-	# Wait one frame for physics to update, then get overlapping bodies
+	# Wait one frame for physics to register the area
 	await get_tree().process_frame
 
 	if not is_instance_valid(aoe):
