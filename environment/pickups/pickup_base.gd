@@ -31,24 +31,21 @@ func _ready() -> void:
 	print("[Pickup] Created: ", item_id)
 
 
-func _input(event: InputEvent) -> void:
+func _process(_delta: float) -> void:
 	if not player_in_range or is_picked_up:
 		return
 
-	# CRITICAL: Device filtering for co-op
-	# Only P1 (keyboard/mouse) should pick up items via interact
-	# P2's controller should NOT trigger P1's item pickup
-	var is_keyboard_mouse = (event is InputEventKey or event is InputEventMouse or event is InputEventMouseButton)
+	# CRITICAL: Filter input through InputManager (P1 = keyboard-only when P2 active)
+	var interact_pressed = false
 
-	# If P2 is active, ONLY accept keyboard/mouse for interact
-	if InputManager and InputManager.p2_active:
-		if not is_keyboard_mouse:
-			return  # Reject controller inputs when P2 active
+	if InputManager:
+		interact_pressed = InputManager.is_p1_action_just_pressed("interact")
+	else:
+		# Fallback if InputManager missing
+		interact_pressed = Input.is_action_just_pressed("interact")
 
-	# Check for pickup input
-	if event.is_action_pressed("interact"):
+	if interact_pressed:
 		_pickup_item()
-		get_viewport().set_input_as_handled()
 
 
 func _on_body_entered(body: Node2D) -> void:

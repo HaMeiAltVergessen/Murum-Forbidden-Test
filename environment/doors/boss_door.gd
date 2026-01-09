@@ -121,13 +121,22 @@ func _on_body_exited(body: Node2D) -> void:
 			prompt_label.visible = false
 
 
-func _input(event: InputEvent) -> void:
+func _process(_delta: float) -> void:
 	"""Handles player interaction"""
 
 	if not player_in_range:
 		return
 
-	if event.is_action_pressed("interact"):
+	# CRITICAL: Filter input through InputManager (P1 = keyboard-only when P2 active)
+	var interact_pressed = false
+
+	if InputManager:
+		interact_pressed = InputManager.is_p1_action_just_pressed("interact")
+	else:
+		# Fallback if InputManager missing
+		interact_pressed = Input.is_action_just_pressed("interact")
+
+	if interact_pressed:
 		if not locked:
 			_enter_boss_arena()
 		else:
