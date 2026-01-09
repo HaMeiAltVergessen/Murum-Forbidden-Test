@@ -34,9 +34,6 @@ var target_zoom: float = 1.5
 var is_transitioning: bool = false
 
 func _ready() -> void:
-	# Make this the current camera immediately
-	make_current()
-
 	# Wait for scene to be ready
 	await get_tree().process_frame
 
@@ -56,12 +53,18 @@ func _ready() -> void:
 		CoopManager.p2_joined.connect(_on_p2_joined)
 		CoopManager.p2_left.connect(_on_p2_left)
 
-	# Initial: Single-Player-Mode
-	set_mode(CameraMode.SINGLE_PLAYER)
+		# Check if P2 is already active (scene loaded with P2 already present)
+		if CoopManager.is_p2_active:
+			player2 = CoopManager.get_p2_instance()
+			activate_coop_camera()
 
-	print("[CoopCamera] Initialized in SINGLE_PLAYER mode")
+	print("[CoopCamera] Initialized (inactive, waiting for P2)")
 
 func _process(delta: float) -> void:
+	# Only update if this camera is active
+	if not enabled:
+		return
+
 	match current_mode:
 		CameraMode.SINGLE_PLAYER:
 			update_single_player_camera(delta)
@@ -272,6 +275,39 @@ func set_player2(player: CharacterBody2D) -> void:
 	player2 = player
 	print("[CoopCamera] Player 2 set: ", player.name if player else "null")
 
+# ============ CAMERA ACTIVATION ============
+
+func activate_coop_camera() -> void:
+	"""Activate CoopCamera and deactivate P1's PlayerCamera"""
+	# Deactivate P1's PlayerCamera
+	if player1 and is_instance_valid(player1):
+		var p1_camera = player1.get_node_or_null("PlayerCamera")
+		if p1_camera and p1_camera is Camera2D:
+			p1_camera.enabled = false
+			print("[CoopCamera] P1's PlayerCamera deactivated")
+
+	# Activate this camera
+	enabled = true
+	make_current()
+	set_mode(CameraMode.SHARED_SCREEN)
+
+	print("[CoopCamera] Activated - Co-op mode started")
+
+func deactivate_coop_camera() -> void:
+	"""Deactivate CoopCamera and reactivate P1's PlayerCamera"""
+	# Deactivate this camera
+	enabled = false
+
+	# Reactivate P1's PlayerCamera
+	if player1 and is_instance_valid(player1):
+		var p1_camera = player1.get_node_or_null("PlayerCamera")
+		if p1_camera and p1_camera is Camera2D:
+			p1_camera.enabled = true
+			p1_camera.make_current()
+			print("[CoopCamera] P1's PlayerCamera reactivated")
+
+	print("[CoopCamera] Deactivated - Back to singleplayer")
+
 # ============ SIGNALS ============
 
 func _on_p2_joined() -> void:
@@ -279,12 +315,12 @@ func _on_p2_joined() -> void:
 	if CoopManager:
 		player1 = CoopManager.p1_instance
 		player2 = CoopManager.get_p2_instance()
-		set_mode(CameraMode.SHARED_SCREEN)
+		activate_coop_camera()
 
 func _on_p2_left() -> void:
 	"""Handle P2 leaving"""
 	player2 = null
-	set_mode(CameraMode.SINGLE_PLAYER)
+	deactivate_coop_camera()
 
 # ============ UTILITY ============
 
