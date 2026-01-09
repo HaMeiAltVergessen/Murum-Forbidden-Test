@@ -82,33 +82,7 @@ func _ready() -> void:
 # INPUT
 # ============================================================================
 
-func _input(event: InputEvent) -> void:
-	# CRITICAL: P1-only ability - Device filtering for co-op
-	if player and player.name == "Lythrun":
-		return  # P2 doesn't use Wolkenbruch
-
-	# P1: Reject controller when P2 active
-	if InputManager and InputManager.p2_active:
-		var is_keyboard_mouse = (event is InputEventKey or event is InputEventMouse or event is InputEventMouseButton)
-		if not is_keyboard_mouse:
-			return  # Reject controller when P2 active
-
-	# Ignore input during auto-release
-	if is_auto_releasing:
-		return
-
-	# Start charging when Down pressed (and X is held) OR X pressed (and Down is held)
-	if event.is_action_pressed("wolkenbruch_slam"):
-		if Input.is_action_pressed("light_attack"):
-			_try_start_charge()
-	elif event.is_action_pressed("light_attack"):
-		if Input.is_action_pressed("wolkenbruch_slam"):
-			_try_start_charge()
-
-	# Release charge when S/Down is released OR attack is released
-	if event.is_action_released("wolkenbruch_slam") or event.is_action_released("light_attack"):
-		if current_state == State.CHARGING:
-			_release_charge()
+# NOTE: Input handling moved to main _process() function below to avoid duplicate _process() functions
 
 # ============================================================================
 # CHARGING
@@ -128,8 +102,14 @@ func _try_start_charge() -> void:
 		print("[Wolkenbruch] Player is on floor")
 		return
 
-	# Must have Attack pressed
-	if not Input.is_action_pressed("light_attack"):
+	# Must have Attack pressed (through InputManager)
+	var attack_pressed = false
+	if InputManager:
+		attack_pressed = InputManager.is_p1_action_pressed("attack")
+	else:
+		attack_pressed = Input.is_action_pressed("light_attack")
+
+	if not attack_pressed:
 		print("[Wolkenbruch] Attack not pressed")
 		return
 
@@ -335,14 +315,35 @@ func _push_enemies_sideways() -> void:
 # ============================================================================
 
 func _process(delta: float) -> void:
+	# CRITICAL: P1-only ability - check inputs every frame via InputManager
+	if player and player.name == "Lythrun":
+		return  # P2 doesn't use Wolkenbruch
+
+	# Check for charge start/release in IDLE or CHARGING states
+	if not is_auto_releasing:
+		var down_pressed = false
+		var attack_pressed = false
+
+		if InputManager:
+			down_pressed = InputManager.is_p1_action_pressed("crouch")  # S key / Down
+			attack_pressed = InputManager.is_p1_action_pressed("attack")
+		else:
+			# Fallback (shouldn't happen)
+			down_pressed = Input.is_action_pressed("wolkenbruch_slam")
+			attack_pressed = Input.is_action_pressed("light_attack")
+
+		# Start charging when both are pressed and we're in IDLE
+		if down_pressed and attack_pressed and current_state == State.IDLE:
+			if not player.is_on_floor():
+				_try_start_charge()
+
+		# Release charge when either is released
+		if current_state == State.CHARGING:
+			if not down_pressed or not attack_pressed:
+				_release_charge()
+
+	# State processing
 	match current_state:
-		State.IDLE:
-			# Kontinuierliche Prüfung: Wenn S gehalten wird und Spieler in Luft ist
-			# NICHT während Auto-Release
-			if not is_auto_releasing:
-				if Input.is_action_pressed("wolkenbruch_slam") and Input.is_action_pressed("light_attack"):
-					if not player.is_on_floor():
-						_try_start_charge()
 		State.CHARGING:
 			_process_charging(delta)
 

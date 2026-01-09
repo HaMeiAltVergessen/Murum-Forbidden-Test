@@ -86,30 +86,7 @@ func _process(delta: float) -> void:
 			_try_execute()
 
 
-func _input(event: InputEvent) -> void:
-	# NOTE: Debug logging removed to prevent console spam on every input event
-
-	# CRITICAL: Only process P1's inputs! Filter out P2's controller events
-	if InputManager and InputManager.p2_active:
-		# In co-op mode, ignore controller events (P1 uses keyboard only)
-		if event is InputEventJoypadButton or event is InputEventJoypadMotion:
-			return
-
-	if event.is_action_pressed("light_attack"):
-		# Keyboard: Check if W key is physically pressed
-		var keyboard_combo = Input.is_physical_key_pressed(KEY_W)
-		# Gamepad: Only check when P2 is NOT active (solo play)
-		var gamepad_combo = false
-		if not InputManager or not InputManager.p2_active:
-			var dpad_combo = Input.is_joy_button_pressed(0, JOY_BUTTON_DPAD_UP)
-			var stick_combo = Input.get_joy_axis(0, JOY_AXIS_LEFT_Y) < -0.5
-			gamepad_combo = dpad_combo or stick_combo
-
-		if keyboard_combo or gamepad_combo:
-			_try_execute()
-
-			# Consume the event to prevent combat system from processing it
-			get_viewport().set_input_as_handled()
+# NOTE: _input() removed - using _process() with InputManager instead for proper filtering
 
 # ============================================================================
 # EXECUTION
