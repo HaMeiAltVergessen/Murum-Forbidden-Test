@@ -1406,21 +1406,32 @@ func perform_perfect_parry() -> void:
 
 	collision.shape = shape
 	aoe.add_child(collision)
-	get_parent().add_child(aoe)
 
-	aoe.global_position = global_position
-
-	# Collision setup
+	# Collision setup (BEFORE adding to scene)
 	aoe.collision_layer = 0
 	aoe.set_collision_layer_value(6, true)  # P2 Projectiles
 	aoe.collision_mask = 0
 	aoe.set_collision_mask_value(4, true)  # Enemies
 
-	# CRITICAL: Enable monitoring
-	aoe.monitoring = true
-	aoe.monitorable = true
+	# CRITICAL: Set monitoring/monitorable BEFORE adding to scene tree
+	aoe.monitoring = false  # Start disabled
+	aoe.monitorable = false
+
+	# Add to scene tree
+	get_parent().add_child(aoe)
+	aoe.global_position = global_position
+
+	# CRITICAL FIX: Enable monitoring with call_deferred (we're in a physics signal callback!)
+	aoe.call_deferred("set_monitoring", true)
+	aoe.call_deferred("set_monitorable", true)
 
 	print("[Perfect Parry] AoE created - Damage: %.1f, Radius: %.0f" % [PERFECT_PARRY_DAMAGE, PERFECT_PARRY_AOE_RADIUS])
+
+	# Wait one frame for physics to update, then get overlapping bodies
+	await get_tree().process_frame
+
+	if not is_instance_valid(aoe):
+		return
 
 	# Damage and stun all enemies in radius
 	var enemies = aoe.get_overlapping_bodies()
