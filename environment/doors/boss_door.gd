@@ -146,6 +146,32 @@ func _enter_boss_arena() -> void:
 	if player and player.has_method("disable_movement"):
 		player.disable_movement()
 
+	# Preserve P1 across scene transitions (COMMIT 021 - Co-op)
+	if GameManager.player and is_instance_valid(GameManager.player):
+		var p1 = GameManager.player
+
+		# Remove P1 from current scene (but don't free it)
+		if p1.get_parent():
+			p1.get_parent().remove_child(p1)
+
+		# Add P1 to root temporarily (persists across scene change)
+		get_tree().root.add_child(p1)
+
+		print("[BossDoor] P1 preserved for boss arena transition")
+
+	# Preserve P2 across scene transitions (COMMIT 021 - Co-op)
+	if CoopManager and CoopManager.is_p2_active:
+		var p2 = CoopManager.get_p2_instance()
+		if p2 and is_instance_valid(p2):
+			# Remove P2 from current scene (but don't free it)
+			if p2.get_parent():
+				p2.get_parent().remove_child(p2)
+
+			# Add P2 to root temporarily (persists across scene change)
+			get_tree().root.add_child(p2)
+
+			print("[BossDoor] P2 preserved for boss arena transition")
+
 	# Fade transition (if SceneManager exists)
 	if has_node("/root/SceneManager"):
 		var scene_manager = get_node("/root/SceneManager")
