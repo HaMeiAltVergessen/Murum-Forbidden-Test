@@ -73,16 +73,24 @@ const SCYTHE_MANA_COST: int = 30
 var scythe_instance = null
 var scythe_thrown: bool = false
 
-# ============ VOID PARRY (COMMIT 019.5) ============
-const VOID_PARRY_WINDOW: float = 0.4  # Total parry window
+# ============ VOID PARRY (COMMIT 019.5 - Hold-based like P1) ============
+const VOID_PARRY_WINDOW: float = 0.3  # Parry window (same as P1)
 const PERFECT_PARRY_WINDOW: float = 0.12  # COMMIT 024: Perfect timing window (reduced from 0.15s)
 const VOID_PARRY_COOLDOWN: float = 3.0
+const VOID_PARRY_RADIUS: float = 70.0  # Detection radius (same as P1)
 const PERFECT_PARRY_AOE_RADIUS: float = 220.0
 const PERFECT_PARRY_DAMAGE: float = 40.0
 const PERFECT_PARRY_STUN_DURATION: float = 1.5
-var is_void_parrying: bool = false
+
+# State Machine (like P1's ParryBlockSystem)
+enum VoidParryState { IDLE, PARRY_WINDOW, BLOCKING }
+var void_parry_state: VoidParryState = VoidParryState.IDLE
 var void_parry_cooldown_active: bool = false
 var parry_start_time: float = 0.0
+var parry_window_timer: float = 0.0
+
+# Visual Indicator (like P1's block_indicator)
+var void_parry_indicator: Polygon2D = null
 
 # ============ VOID RIFT (COMMIT 019.5) ============
 const VOID_RIFT_MANA_COST: int = 40  # COMMIT 024: Reduced from 50 (more affordable)
@@ -123,6 +131,9 @@ func _ready() -> void:
 
 	# Activate shadow aesthetic
 	activate_shadow_aesthetic()
+
+	# Setup void parry visual indicator (like P1's block_indicator)
+	_setup_void_parry_indicator()
 
 	# Connect signals
 	_connect_signals()
@@ -309,6 +320,28 @@ func set_coop_collision() -> void:
 
 	print("[Lythrun] Co-op collision layers set")
 
+func _setup_void_parry_indicator() -> void:
+	"""Creates visual indicator for void parry (like P1's block_indicator)"""
+	void_parry_indicator = Polygon2D.new()
+
+	# Create circle polygon (same radius as P1)
+	var points: PackedVector2Array = []
+	var num_points = 48
+	for i in range(num_points):
+		var angle = (i / float(num_points)) * TAU
+		points.append(Vector2(cos(angle), sin(angle)) * VOID_PARRY_RADIUS)
+
+	void_parry_indicator.polygon = points
+	void_parry_indicator.position = Vector2.ZERO  # Centered on player
+	void_parry_indicator.z_index = 0
+	void_parry_indicator.visible = false  # Hidden by default
+
+	# Purple color for P2 (shadow theme)
+	void_parry_indicator.color = Color(0.6, 0.2, 0.8, 0.5)  # Purple
+
+	add_child(void_parry_indicator)
+	print("[Lythrun] Void parry visual indicator created")
+
 # ============ SIGNAL HANDLERS ============
 
 func _connect_signals() -> void:
@@ -480,6 +513,14 @@ func _process(delta: float) -> void:
 		orb_charge_time = min(orb_charge_time, VOID_ORB_CHARGE_TIME)
 		update_charging_orb_vfx(orb_charge_time / VOID_ORB_CHARGE_TIME)
 
+	# ===== VOID PARRY STATE MACHINE (like P1's ParryBlockSystem) =====
+	if void_parry_state == VoidParryState.PARRY_WINDOW:
+		# Count down parry window timer
+		parry_window_timer -= delta
+		if parry_window_timer <= 0:
+			# Transition to BLOCKING state
+			_transition_to_blocking()
+
 	# ===== P2 SHADOW ABILITIES INPUT =====
 	if not InputManager or not InputManager.p2_active:
 		return
@@ -513,10 +554,14 @@ func _process(delta: float) -> void:
 		else:
 			shadow_scythe()
 
-	# Void Parry (LT button / Button 6)
+	# Void Parry (LT button / Button 6) - HOLD-BASED like P1
 	if InputManager.is_p2_action_just_pressed("void_parry"):
 		print("[Lythrun DEBUG] Void Parry pressed")
-		void_parry()
+		_start_void_parry()
+
+	if InputManager.is_p2_action_released("void_parry"):
+		print("[Lythrun DEBUG] Void Parry released")
+		_stop_void_parry()
 
 	# Phase-Shift (RB button / Button 5)
 	if InputManager.is_p2_action_just_pressed("phase_shift"):
@@ -1154,41 +1199,69 @@ func on_scythe_returned() -> void:
 	print("[Shadow Scythe] Returned!")
 	scythe_thrown = false
 
-# ============ VOID PARRY (COMMIT 019.5) ============
+# ============ VOID PARRY (COMMIT 019.5 - Hold-based like P1's ParryBlockSystem) ============
 
-func void_parry() -> void:
-	"""Parry with perfect-parry AoE stun"""
-	if is_attacking or is_dashing or void_parry_cooldown_active:
+func _start_void_parry() -> void:
+	"""Starts void parry window (LT pressed) - HOLD-BASED"""
+	if void_parry_state != VoidParryState.IDLE:
+		print("[Void Parry] Already active, ignoring")
 		return
 
-	is_void_parrying = true
-	void_parry_cooldown_active = true
-	parry_start_time = Time.get_ticks_msec() / 1000.0
+	# Check cooldown
+	if void_parry_cooldown_active:
+		print("[Void Parry] Cooldown active, cannot parry")
+		return
 
 	print("[Void Parry] ===== PARRY WINDOW STARTED (%.2fs) =====" % VOID_PARRY_WINDOW)
 
-	# CRITICAL FIX: Set invulnerability during parry (same as P1's ParryBlockSystem)
+	# Enter PARRY_WINDOW state
+	void_parry_state = VoidParryState.PARRY_WINDOW
+	parry_window_timer = VOID_PARRY_WINDOW
+	parry_start_time = Time.get_ticks_msec() / 1000.0
+
+	# Enable invulnerability immediately (CRITICAL FIX)
 	print("[Void Parry] About to set player invulnerable to TRUE")
 	_set_void_parry_invulnerable(true)
 	print("[Void Parry] Finished setting player invulnerable")
 
-	# VFX
-	spawn_void_parry_shield()
+	# Show visual indicator (gold pulsing during parry window)
+	_show_void_parry_window_indicators()
 
 	# Audio
 	if AudioManager and AudioManager.has_method("play_sfx"):
 		AudioManager.play_sfx("void_parry_activate")
 
-	# Parry window
-	await get_tree().create_timer(VOID_PARRY_WINDOW).timeout
-	if is_instance_valid(self):
-		is_void_parrying = false
+func _transition_to_blocking() -> void:
+	"""Transitions from parry window to normal blocking (like P1)"""
+	print("[Void Parry] ===== PARRY WINDOW EXPIRED -> BLOCKING STATE =====")
 
-		# Disable invulnerability when parry window ends
-		print("[Void Parry] Parry window ended, disabling invulnerability")
-		_set_void_parry_invulnerable(false)
+	void_parry_state = VoidParryState.BLOCKING
 
-	# Cooldown
+	# Change visual indicator (purple for blocking)
+	_show_void_blocking_indicators()
+
+func _stop_void_parry() -> void:
+	"""Stops void parry/blocking (LT released)"""
+	if void_parry_state == VoidParryState.IDLE:
+		return
+
+	print("[Void Parry] Blocking ended")
+
+	# Return to IDLE
+	void_parry_state = VoidParryState.IDLE
+
+	# Disable invulnerability
+	_set_void_parry_invulnerable(false)
+
+	# Hide visual indicator
+	_hide_void_parry_indicators()
+
+	# Start cooldown
+	_start_void_parry_cooldown()
+
+func _start_void_parry_cooldown() -> void:
+	"""Starts parry cooldown"""
+	void_parry_cooldown_active = true
 	await get_tree().create_timer(VOID_PARRY_COOLDOWN).timeout
 	if is_instance_valid(self):
 		void_parry_cooldown_active = false
@@ -1211,14 +1284,38 @@ func _set_void_parry_invulnerable(invulnerable: bool) -> void:
 	hurtbox.is_invulnerable = invulnerable
 	print("[Void Parry] Player invulnerability set to: %s (current value: %s)" % [invulnerable, hurtbox.is_invulnerable])
 
+func _show_void_parry_window_indicators() -> void:
+	"""Shows indicator during parry window (gold pulsing, like P1)"""
+	if void_parry_indicator:
+		void_parry_indicator.visible = true
+		# Gold color for parry window
+		void_parry_indicator.color = Color(1.0, 0.84, 0.0, 0.5)  # Gold
+
+		# Bright pulsing animation during parry window
+		var tween = create_tween().set_loops()
+		tween.tween_property(void_parry_indicator, "modulate:a", 0.9, 0.15)
+		tween.tween_property(void_parry_indicator, "modulate:a", 1.0, 0.15)
+
+func _show_void_blocking_indicators() -> void:
+	"""Shows indicator for normal blocking (purple shadow theme)"""
+	if void_parry_indicator:
+		void_parry_indicator.visible = true
+		# Purple color for P2's shadow blocking
+		void_parry_indicator.color = Color(0.6, 0.2, 0.8, 0.3)  # Purple, dimmer
+
+func _hide_void_parry_indicators() -> void:
+	"""Hides visual indicator"""
+	if void_parry_indicator:
+		void_parry_indicator.visible = false
+
 func _on_parry_hit(attacker) -> void:
-	"""Called when parry successfully blocks attack"""
-	if not is_void_parrying:
+	"""Called when parry successfully blocks attack (TODO: Wire up Area2D detection)"""
+	if void_parry_state == VoidParryState.IDLE:
 		return
 
-	# Calculate if perfect parry
+	# Calculate if perfect parry (only during PARRY_WINDOW state)
 	var parry_time = (Time.get_ticks_msec() / 1000.0) - parry_start_time
-	var is_perfect = parry_time <= PERFECT_PARRY_WINDOW  # COMMIT 024: Use constant (0.12s)
+	var is_perfect = (void_parry_state == VoidParryState.PARRY_WINDOW) and (parry_time <= PERFECT_PARRY_WINDOW)
 
 	if is_perfect:
 		perform_perfect_parry()
