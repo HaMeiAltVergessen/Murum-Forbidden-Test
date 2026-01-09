@@ -19,8 +19,18 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	if player_in_area and Input.is_action_just_pressed("interact"):
-		_load_scene()
+	# CRITICAL: Filter input through InputManager (P1 = keyboard-only when P2 active)
+	if player_in_area:
+		var interact_pressed = false
+
+		if InputManager:
+			interact_pressed = InputManager.is_p1_action_just_pressed("interact")
+		else:
+			# Fallback if InputManager missing
+			interact_pressed = Input.is_action_just_pressed("interact")
+
+		if interact_pressed:
+			_load_scene()
 
 
 func _on_body_entered(body: Node2D) -> void:

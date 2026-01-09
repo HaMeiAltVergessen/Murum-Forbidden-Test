@@ -54,9 +54,18 @@ func _process(delta: float) -> void:
 	if interaction_cooldown > 0:
 		interaction_cooldown -= delta
 
-	# Controller support - check for interact button when player is in range
+	# Check for interact button when player is in range
 	if player_in_range and interaction_cooldown <= 0:
-		if Input.is_action_just_pressed("interact"):
+		# CRITICAL: Filter input through InputManager (P1 = keyboard-only when P2 active)
+		var interact_pressed = false
+
+		if InputManager:
+			interact_pressed = InputManager.is_p1_action_just_pressed("interact")
+		else:
+			# Fallback if InputManager missing
+			interact_pressed = Input.is_action_just_pressed("interact")
+
+		if interact_pressed:
 			_attempt_open_shop()
 
 func _load_shop_data() -> void:

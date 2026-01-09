@@ -71,11 +71,20 @@ func _ready() -> void:
 # INTERACTION
 # ============================================================================
 
-func _input(event: InputEvent) -> void:
+func _process(_delta: float) -> void:
 	if not player_in_range:
 		return
 
-	if event.is_action_pressed("interact"):
+	# CRITICAL: Filter input through InputManager (P1 = keyboard-only when P2 active)
+	var interact_pressed = false
+
+	if InputManager:
+		interact_pressed = InputManager.is_p1_action_just_pressed("interact")
+	else:
+		# Fallback if InputManager missing
+		interact_pressed = Input.is_action_just_pressed("interact")
+
+	if interact_pressed:
 		toggle()
 
 func toggle() -> void:

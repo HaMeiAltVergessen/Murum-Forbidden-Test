@@ -50,6 +50,7 @@ const TAB_GRID_COLUMNS = {
 var current_tab: Tab = Tab.CONSUMABLES
 var is_open: bool = false
 var pending_use_item: Dictionary = {}
+var i_key_was_pressed: bool = false  # Track I key state for just_pressed detection
 
 # Grid references
 var grids: Array[GridContainer] = []
@@ -125,11 +126,26 @@ func _setup_grids() -> void:
 	print("  ConsumablesGrid has methods: ", consumables_grid.has_method("populate_items"))
 
 
-func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("inventory_toggle"):
-		toggle_inventory()
-		get_viewport().set_input_as_handled()
+func _process(_delta: float) -> void:
+	# CRITICAL: Filter inventory toggle through InputManager (P1 = keyboard-only when P2 active)
+	# Use direct key check for "I" key when P2 active, since inventory_toggle action includes controller
+	var inventory_toggle_pressed = false
 
+	if InputManager and InputManager.p2_active:
+		# Co-op mode: Only keyboard "I" key for P1 (manual just_pressed detection)
+		var i_key_is_pressed = Input.is_key_pressed(KEY_I)
+		inventory_toggle_pressed = i_key_is_pressed and not i_key_was_pressed
+		i_key_was_pressed = i_key_is_pressed
+	else:
+		# Solo mode: Allow keyboard + controller
+		inventory_toggle_pressed = Input.is_action_just_pressed("inventory_toggle")
+		i_key_was_pressed = false  # Reset when not in co-op
+
+	if inventory_toggle_pressed:
+		toggle_inventory()
+
+
+func _input(event: InputEvent) -> void:
 	if not is_open:
 		return
 
