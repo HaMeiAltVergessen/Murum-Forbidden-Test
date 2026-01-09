@@ -16,7 +16,7 @@ var join_blocked_cutscene: bool = false
 var join_blocked_boss_fight: bool = false
 
 # ============ RESPAWN TIMERS ============
-const RESPAWN_DELAY: float = 3.0
+const RESPAWN_DELAY: float = 4.0  # COMMIT 021: 4 seconds as requested
 
 func _ready() -> void:
 	print("[CoopManager] Initialized")
@@ -220,11 +220,10 @@ func respawn_p2_at_p1() -> void:
 	# Play spawn animation
 	await play_shadow_spawn_animation()
 
-	# Heal P2 to 50% HP
+	# Heal P2 to FULL HP (COMMIT 021: 100% instead of 50%)
 	if p2_instance.has_node("HealthComponent"):
 		var health_comp = p2_instance.get_node("HealthComponent")
-		var half_health = health_comp.max_health / 2
-		health_comp.heal(half_health)
+		health_comp.heal(health_comp.max_health)
 
 	# Reset dead flag
 	if "is_dead" in p2_instance:

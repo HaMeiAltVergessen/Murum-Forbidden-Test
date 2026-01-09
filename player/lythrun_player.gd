@@ -103,12 +103,12 @@ const VOID_RIFT_MAX_RADIUS: float = 650.0
 const VOID_RIFT_DAMAGE: float = 80.0
 var void_rift_active: bool = false
 
-# ============ VOID ORBS (COMMIT 019.5) ============
-const VOID_ORB_CHARGE_TIME: float = 3.0
-const VOID_ORB_MANA_COST: int = 15
-const VOID_ORB_SPEED: float = 200.0
-const VOID_ORB_EXPLOSION_RADIUS: float = 150.0
-const VOID_ORB_DAMAGE: float = 35.0
+# ============ VOID ORBS (COMMIT 021 - Screen-wide AoE) ============
+const VOID_ORB_CHARGE_TIME: float = 9.0  # Max charge time (9 seconds)
+const VOID_ORB_MANA_COST: int = 20
+const VOID_ORB_BASE_DAMAGE: float = 30.0  # Base damage at 0s
+const VOID_ORB_DAMAGE_PER_SECOND: float = 15.0  # Additional damage per second charged
+const VOID_ORB_SCREEN_RADIUS: float = 2000.0  # Covers entire screen
 var is_charging_orb: bool = false
 var orb_charge_time: float = 0.0
 var movement_disabled_by_orb: bool = false
@@ -1578,11 +1578,15 @@ func release_orb() -> void:
 	is_charging_orb = false
 	movement_disabled_by_orb = false
 
-	# Calculate damage based on charge time
-	var charge_factor = orb_charge_time / VOID_ORB_CHARGE_TIME
-	var orb_damage = VOID_ORB_DAMAGE * (1.0 + charge_factor)
+	# Calculate damage: Base + (seconds charged * damage per second)
+	var orb_damage = VOID_ORB_BASE_DAMAGE + (orb_charge_time * VOID_ORB_DAMAGE_PER_SECOND)
+	var charge_factor = orb_charge_time / VOID_ORB_CHARGE_TIME  # For logging
 
-	print("[Void Orb] Released! Charge: %.1f%% | Damage: %.1f" % [charge_factor * 100, orb_damage])
+	print("[Void Orb] Released! Charge: %.1fs (%.0f%%) | Damage: %.1f" % [
+		orb_charge_time,
+		charge_factor * 100,
+		orb_damage
+	])
 
 	# Spawn orb (simplified projectile)
 	spawn_void_orb_projectile(orb_damage, charge_factor)
@@ -1595,56 +1599,72 @@ func release_orb() -> void:
 		AudioManager.play_sfx("void_orb_release")
 
 func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
-	"""Spawn void orb projectile (COMMIT 021: Use proper scene with visuals)"""
-	# Load void orb scene (has AnimatedSprite2D)
-	var orb_scene = load("res://projectiles/void_orb.tscn")
-	if not orb_scene:
-		push_error("[Void Orb] Failed to load void_orb.tscn!")
-		return
+	"""Screen-wide AoE attack (COMMIT 021: Simplified to instant AoE)"""
 
-	var orb = orb_scene.instantiate()
-	get_parent().add_child(orb)
+	# Create screen-wide AoE
+	var aoe = Area2D.new()
+	var collision = CollisionShape2D.new()
+	var shape = CircleShape2D.new()
+	shape.radius = VOID_ORB_SCREEN_RADIUS  # 2000px - covers entire screen
 
-	orb.global_position = global_position + Vector2(0, -40)
+	collision.shape = shape
+	aoe.add_child(collision)
+	get_parent().add_child(aoe)
 
-	# Set damage and properties
-	orb.damage = damage
-	orb.speed = VOID_ORB_SPEED
+	aoe.global_position = global_position
 
-	# Collision setup (CRITICAL FIX: Enemy Hurtbox is Layer 11 = 1024)
-	orb.collision_layer = 0
-	orb.set_collision_layer_value(6, true)  # P2 Projectiles (Layer 6 = 32)
-	orb.collision_mask = 0
-	orb.set_collision_mask_value(11, true)  # Enemy Hurtbox (Layer 11 = 1024)
+	# Collision setup (ONLY Enemy Hurtbox - NO Player Hurtbox)
+	aoe.collision_layer = 0
+	aoe.set_collision_layer_value(6, true)  # P2 Projectiles (Layer 6 = 32)
+	aoe.collision_mask = 0
+	aoe.set_collision_mask_value(11, true)  # Enemy Hurtbox ONLY (Layer 11 = 1024)
 
-	# CRITICAL: Enable monitoring
-	orb.monitoring = true
-	orb.monitorable = true
+	aoe.monitoring = true
+	aoe.monitorable = false
 
-	# Set direction (void_orb.gd handles movement)
-	var direction = Vector2.RIGHT if not sprite.flip_h else Vector2.LEFT
-	orb.set_direction(direction)
-
-	# Find nearest enemy for homing
-	var enemies = get_tree().get_nodes_in_group("enemies")
-	if enemies.size() > 0:
-		var nearest_enemy = null
-		var nearest_distance = 999999.0
-		for enemy in enemies:
-			if enemy and is_instance_valid(enemy):
-				var distance = global_position.distance_to(enemy.global_position)
-				if distance < nearest_distance:
-					nearest_distance = distance
-					nearest_enemy = enemy
-		if nearest_enemy:
-			orb.set_target(nearest_enemy)
-
-	print("[Void Orb] Created - Damage: %.1f, Charge: %.0f%%, Layer: %d, Mask: %d" % [
+	print("[Void Orb AoE] Released! Charge: %.0fs | Damage: %.1f | Radius: %.0f" % [
+		orb_charge_time,
 		damage,
-		charge_factor * 100,
-		orb.collision_layer,
-		orb.collision_mask
+		VOID_ORB_SCREEN_RADIUS
 	])
+
+	# Wait one frame for Area2D to detect overlaps
+	await get_tree().process_frame
+
+	# Damage all enemies in range
+	var hit_areas = aoe.get_overlapping_areas()
+	var enemies_hit = 0
+
+	for area in hit_areas:
+		if not area or not is_instance_valid(area):
+			continue
+
+		# Get enemy from hurtbox
+		var enemy = area.get_parent()
+		if not enemy or not is_instance_valid(enemy):
+			continue
+
+		if enemy.is_in_group("enemies"):
+			# Deal damage through HealthComponent
+			if enemy.has_node("HealthComponent"):
+				var health = enemy.get_node("HealthComponent")
+				if health.has_method("take_damage"):
+					health.take_damage(int(damage))
+					enemies_hit += 1
+					print("[Void Orb AoE] Hit %s for %.1f damage" % [enemy.name, damage])
+
+	print("[Void Orb AoE] Total enemies hit: %d" % enemies_hit)
+
+	# VFX: Screen flash/wave effect
+	if VFXManager and VFXManager.has_method("spawn_screen_flash"):
+		VFXManager.spawn_screen_flash(global_position, Color(0.5, 0.2, 0.8, 0.3))
+
+	# Cleanup
+	aoe.queue_free()
+
+	# Audio
+	if AudioManager and AudioManager.has_method("play_sfx"):
+		AudioManager.play_sfx("void_explosion")
 
 # ============ PHASE-SHIFT (COMMIT 019.5) ============
 
