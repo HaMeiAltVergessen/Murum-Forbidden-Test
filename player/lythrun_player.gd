@@ -73,25 +73,16 @@ const SCYTHE_MANA_COST: int = 30
 var scythe_instance = null
 var scythe_thrown: bool = false
 
-# ============ VOID PARRY (COMMIT 019.5 - REVISED to match P1 hold system) ============
-# Hold-based parry system matching P1's ParryBlockSystem
-const VOID_PARRY_WINDOW: float = 0.3  # Perfect parry window (matches P1)
-const VOID_PARRY_COOLDOWN: float = 0.3  # Brief cooldown after releasing (matches P1)
-const PARRY_BLOCK_RADIUS: float = 70.0  # Detection radius (matches P1)
-const BLOCK_MANA_DRAIN_INTERVAL: float = 1.5  # Mana drain when blocking (matches P1)
-const BLOCK_MANA_DRAIN_AMOUNT: float = 1.0  # Mana per drain tick
-const PERFECT_PARRY_AOE_RADIUS: float = 220.0  # AoE damage radius on perfect parry
+# ============ VOID PARRY (COMMIT 019.5) ============
+const VOID_PARRY_WINDOW: float = 0.4  # Total parry window
+const PERFECT_PARRY_WINDOW: float = 0.12  # COMMIT 024: Perfect timing window (reduced from 0.15s)
+const VOID_PARRY_COOLDOWN: float = 3.0
+const PERFECT_PARRY_AOE_RADIUS: float = 220.0
 const PERFECT_PARRY_DAMAGE: float = 40.0
 const PERFECT_PARRY_STUN_DURATION: float = 1.5
-
-enum VoidParryState { IDLE, PARRY_WINDOW, BLOCKING }
-var void_parry_state: VoidParryState = VoidParryState.IDLE
+var is_void_parrying: bool = false
 var void_parry_cooldown_active: bool = false
-var void_parry_window_timer: float = 0.0
-var parry_mana_drain_timer: float = 0.0
 var parry_start_time: float = 0.0
-var parry_area: Area2D = null  # Detection area for attacks
-var parry_visual_indicator: Polygon2D = null  # Visual shield indicator
 
 # ============ VOID RIFT (COMMIT 019.5) ============
 const VOID_RIFT_MANA_COST: int = 40  # COMMIT 024: Reduced from 50 (more affordable)
@@ -489,24 +480,6 @@ func _process(delta: float) -> void:
 		orb_charge_time = min(orb_charge_time, VOID_ORB_CHARGE_TIME)
 		update_charging_orb_vfx(orb_charge_time / VOID_ORB_CHARGE_TIME)
 
-	# Void Parry state management (hold system)
-	if void_parry_state == VoidParryState.PARRY_WINDOW:
-		void_parry_window_timer -= delta
-		if void_parry_window_timer <= 0:
-			# Transition to blocking state
-			_transition_to_blocking()
-	elif void_parry_state == VoidParryState.BLOCKING:
-		# Drain mana while blocking
-		parry_mana_drain_timer += delta
-		if parry_mana_drain_timer >= BLOCK_MANA_DRAIN_INTERVAL:
-			parry_mana_drain_timer = 0.0
-			if current_mana >= BLOCK_MANA_DRAIN_AMOUNT:
-				consume_mana(BLOCK_MANA_DRAIN_AMOUNT)
-			else:
-				# Out of mana - auto-stop blocking
-				print("[Void Parry] Out of mana - stopping block")
-				stop_void_parry()
-
 	# ===== P2 SHADOW ABILITIES INPUT =====
 	if not InputManager or not InputManager.p2_active:
 		return
@@ -540,13 +513,10 @@ func _process(delta: float) -> void:
 		else:
 			shadow_scythe()
 
-	# Void Parry (LT trigger - HOLD system like P1)
+	# Void Parry (LT button / Button 6)
 	if InputManager.is_p2_action_just_pressed("void_parry"):
-		print("[Lythrun DEBUG] Void Parry (LT) pressed - starting parry")
-		start_void_parry()
-	elif not InputManager.is_p2_action_pressed("void_parry") and void_parry_state != VoidParryState.IDLE:
-		print("[Lythrun DEBUG] Void Parry (LT) released - stopping parry")
-		stop_void_parry()
+		print("[Lythrun DEBUG] Void Parry pressed")
+		void_parry()
 
 	# Phase-Shift (RB button / Button 5)
 	if InputManager.is_p2_action_just_pressed("phase_shift"):
@@ -717,10 +687,13 @@ func spawn_stun_afterimage() -> void:
 	if not sprite:
 		return
 
-	# Create afterimage - use AnimatedSprite2D to copy current frame
-	var afterimage = AnimatedSprite2D.new()
-	afterimage.sprite_frames = sprite.sprite_frames
-	afterimage.animation = sprite.animation
+	# Create afterimage sprite
+	var afterimage = Sprite2D.new()
+	afterimage.texture = sprite.texture
+	if sprite.hframes > 1:
+		afterimage.hframes = sprite.hframes
+	if sprite.vframes > 1:
+		afterimage.vframes = sprite.vframes
 	afterimage.frame = sprite.frame
 	afterimage.flip_h = sprite.flip_h
 	afterimage.modulate = Color(0.3, 0, 0.6, 0.7)  # Dark violet
@@ -1183,171 +1156,76 @@ func on_scythe_returned() -> void:
 
 # ============ VOID PARRY (COMMIT 019.5) ============
 
-func start_void_parry() -> void:
-	"""Start void parry (LT pressed) - HOLD system like P1"""
-	if void_parry_state != VoidParryState.IDLE:
-		print("[Void Parry] Already parrying/blocking")
+func void_parry() -> void:
+	"""Parry with perfect-parry AoE stun"""
+	if is_attacking or is_dashing or void_parry_cooldown_active:
 		return
 
-	if void_parry_cooldown_active:
-		print("[Void Parry] Cooldown active")
-		return
-
-	if is_attacking or is_dashing or is_dodging:
-		print("[Void Parry] Blocked by other action")
-		return
+	is_void_parrying = true
+	void_parry_cooldown_active = true
+	parry_start_time = Time.get_ticks_msec() / 1000.0
 
 	print("[Void Parry] ===== PARRY WINDOW STARTED (%.2fs) =====" % VOID_PARRY_WINDOW)
 
-	# Enter PARRY_WINDOW state
-	void_parry_state = VoidParryState.PARRY_WINDOW
-	void_parry_window_timer = VOID_PARRY_WINDOW
-	parry_start_time = Time.get_ticks_msec() / 1000.0
+	# CRITICAL FIX: Set invulnerability during parry (same as P1's ParryBlockSystem)
+	print("[Void Parry] About to set player invulnerable to TRUE")
+	_set_void_parry_invulnerable(true)
+	print("[Void Parry] Finished setting player invulnerable")
 
-	# Create detection area
-	_create_parry_area()
-
-	# VFX - Create visual shield indicator
-	_create_parry_visual_indicator()
+	# VFX
+	spawn_void_parry_shield()
 
 	# Audio
 	if AudioManager and AudioManager.has_method("play_sfx"):
 		AudioManager.play_sfx("void_parry_activate")
 
-	# Make player invulnerable during parry (like P1)
-	var hurtbox = get_node_or_null("HurtboxComponent")
-	if hurtbox and hurtbox.has_method("set_monitoring"):
-		hurtbox.set_deferred("monitoring", false)
+	# Parry window
+	await get_tree().create_timer(VOID_PARRY_WINDOW).timeout
+	if is_instance_valid(self):
+		is_void_parrying = false
 
-func _transition_to_blocking() -> void:
-	"""Transition from parry window to blocking state"""
-	print("[Void Parry] ===== PARRY WINDOW EXPIRED -> BLOCKING STATE =====")
+		# Disable invulnerability when parry window ends
+		print("[Void Parry] Parry window ended, disabling invulnerability")
+		_set_void_parry_invulnerable(false)
 
-	void_parry_state = VoidParryState.BLOCKING
-	parry_mana_drain_timer = 0.0
-
-	# Visual feedback change (parry window expired, now just blocking)
-	_update_parry_visual_to_blocking()
-
-func stop_void_parry() -> void:
-	"""Stop void parry (LT released)"""
-	if void_parry_state == VoidParryState.IDLE:
-		return
-
-	print("[Void Parry] Stopped")
-
-	void_parry_state = VoidParryState.IDLE
-	void_parry_window_timer = 0.0
-	parry_mana_drain_timer = 0.0
-
-	# Destroy detection area
-	if parry_area and is_instance_valid(parry_area):
-		parry_area.queue_free()
-		parry_area = null
-
-	# Destroy visual indicator
-	_destroy_parry_visual()
-
-	# Re-enable hurtbox
-	var hurtbox = get_node_or_null("HurtboxComponent")
-	if hurtbox and hurtbox.has_method("set_monitoring"):
-		hurtbox.set_deferred("monitoring", true)
-
-	# Start cooldown
-	void_parry_cooldown_active = true
+	# Cooldown
 	await get_tree().create_timer(VOID_PARRY_COOLDOWN).timeout
 	if is_instance_valid(self):
 		void_parry_cooldown_active = false
 		print("[Void Parry] Cooldown complete")
 
-func _create_parry_area() -> void:
-	"""Create Area2D for detecting incoming attacks"""
-	parry_area = Area2D.new()
-	var collision = CollisionShape2D.new()
-	var shape = CircleShape2D.new()
-	shape.radius = PARRY_BLOCK_RADIUS
+func _set_void_parry_invulnerable(invulnerable: bool) -> void:
+	"""Sets player invulnerability state during void parry (same as P1's ParryBlockSystem)"""
+	if not hurtbox:
+		print("[Void Parry] ERROR: Cannot set invulnerability - hurtbox is null!")
+		return
 
-	collision.shape = shape
-	parry_area.add_child(collision)
-	add_child(parry_area)
+	# CRITICAL FIX: Set invulnerability on HURTBOX, not HealthComponent!
+	# HurtboxComponent.take_damage() checks its own is_invulnerable
 
-	# Collision setup - detect enemy hitboxes
-	parry_area.collision_layer = 0
-	parry_area.collision_mask = 0
-	parry_area.set_collision_mask_value(3, true)  # Enemy projectiles (Layer 3)
-	parry_area.set_collision_mask_value(4, true)  # Enemy hitboxes (Layer 4)
+	# Stop the hurtbox's invulnerability timer to prevent override
+	if hurtbox.invulnerability_timer:
+		hurtbox.invulnerability_timer.stop()
+		print("[Void Parry] Stopped HurtboxComponent invulnerability_timer")
 
-	parry_area.monitoring = true
-	parry_area.monitorable = false
+	hurtbox.is_invulnerable = invulnerable
+	print("[Void Parry] Player invulnerability set to: %s (current value: %s)" % [invulnerable, hurtbox.is_invulnerable])
 
-	# Connect signal
-	parry_area.area_entered.connect(_on_parry_area_entered)
+func _on_parry_hit(attacker) -> void:
+	"""Called when parry successfully blocks attack"""
+	if not is_void_parrying:
+		return
 
-	print("[Void Parry] Detection area created - Radius: %.0f" % PARRY_BLOCK_RADIUS)
+	# Calculate if perfect parry
+	var parry_time = (Time.get_ticks_msec() / 1000.0) - parry_start_time
+	var is_perfect = parry_time <= PERFECT_PARRY_WINDOW  # COMMIT 024: Use constant (0.12s)
 
-func _create_parry_visual_indicator() -> void:
-	"""Create visual shield indicator (placeholder circle like P1)"""
-	parry_visual_indicator = Polygon2D.new()
-
-	# Create circle shape (8 segments for performance)
-	var points: PackedVector2Array = []
-	var segments = 8
-	for i in range(segments):
-		var angle = (PI * 2.0 * i) / segments
-		var point = Vector2(cos(angle), sin(angle)) * PARRY_BLOCK_RADIUS
-		points.append(point)
-
-	parry_visual_indicator.polygon = points
-
-	# Gold color for parry window (matches P1)
-	parry_visual_indicator.color = Color(1.0, 0.84, 0.0, 0.5)  # Gold, 50% opacity
-
-	add_child(parry_visual_indicator)
-
-	# Pulsing animation during parry window
-	var tween = create_tween().set_loops()
-	tween.tween_property(parry_visual_indicator, "modulate:a", 0.7, 0.15)
-	tween.tween_property(parry_visual_indicator, "modulate:a", 1.0, 0.15)
-
-	print("[Void Parry] Visual indicator created (gold pulsing)")
-
-func _update_parry_visual_to_blocking() -> void:
-	"""Change visual to blocking state (violet/purple, dimmer)"""
-	if parry_visual_indicator and is_instance_valid(parry_visual_indicator):
-		# Stop pulsing animation
-		var tween = parry_visual_indicator.get_tree().create_tween()
-		# Change to purple/violet for blocking (matches P2's shadow theme)
-		parry_visual_indicator.color = Color(0.6, 0.0, 0.8, 0.3)  # Purple, dimmer
-		print("[Void Parry] Visual changed to blocking mode (purple)")
-
-func _destroy_parry_visual() -> void:
-	"""Destroy visual shield indicator"""
-	if parry_visual_indicator and is_instance_valid(parry_visual_indicator):
-		parry_visual_indicator.queue_free()
-		parry_visual_indicator = null
-		print("[Void Parry] Visual indicator destroyed")
-
-func _on_parry_area_entered(area: Area2D) -> void:
-	"""Called when enemy attack enters parry area"""
-	print("[Void Parry] ===== ATTACK DETECTED =====")
-	print("[Void Parry] Area: %s, State: %s" % [area.name, VoidParryState.keys()[void_parry_state]])
-
-	if void_parry_state == VoidParryState.PARRY_WINDOW:
-		# Perfect parry!
-		print("[Void Parry] PERFECT PARRY!")
+	if is_perfect:
 		perform_perfect_parry()
-	elif void_parry_state == VoidParryState.BLOCKING:
-		# Normal block - costs mana
-		var mana_cost = 15.0  # Default normal attack cost
-		if current_mana >= mana_cost:
-			consume_mana(mana_cost)
-			print("[Void Parry] Blocked! Mana cost: %.0f" % mana_cost)
-			if AudioManager and AudioManager.has_method("play_sfx"):
-				AudioManager.play_sfx("void_parry_block")
-		else:
-			# Not enough mana - block fails
-			print("[Void Parry] Not enough mana to block!")
-			stop_void_parry()
+	else:
+		# Normal parry
+		if AudioManager and AudioManager.has_method("play_sfx"):
+			AudioManager.play_sfx("void_parry_success")
 
 func perform_perfect_parry() -> void:
 	"""Execute perfect parry AoE"""
@@ -1380,12 +1258,8 @@ func perform_perfect_parry() -> void:
 
 	print("[Perfect Parry] AoE created - Damage: %.1f, Radius: %.0f" % [PERFECT_PARRY_DAMAGE, PERFECT_PARRY_AOE_RADIUS])
 
-	# Wait one frame for physics to register the area
-	await get_tree().process_frame
-
 	# Damage and stun all enemies in radius
 	var enemies = aoe.get_overlapping_bodies()
-	print("[Perfect Parry] Found %d enemies in radius" % enemies.size())
 	for enemy in enemies:
 		# Damage
 		if enemy.has_method("take_damage"):
