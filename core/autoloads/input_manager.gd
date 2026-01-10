@@ -201,16 +201,15 @@ func _input(event: InputEvent) -> void:
 	if p2_active and p2_controller_device >= 0:
 		# Process BUTTONS from P2's controller (COMMIT 022.5)
 		if event is InputEventJoypadButton and event.device == p2_controller_device:
-			# CORRECTED MAPPING - Xbox One For Windows Layout:
-			# Button 4 = Back/Select, Button 5 = RB, Button 6 = Start, Button 9 = LB
+			# FINAL CORRECTED MAPPING - Xbox Controller (RB = Button 10):
 			var button_to_action = {
 				0: "jump",           # A button
 				1: "dodge",          # B button
 				2: "attack",         # X button (Void Strike)
 				3: "shadow_scythe",  # Y button (base action, RT+Y for combo)
 				4: "inventory",      # Back/Select button
-				5: "void_orbs",      # RB button (Right Bumper) - Ultimate
 				9: "dash",           # LB button (base action, RT+LB for Phase Shift combo)
+				10: "void_orbs",     # RB button (Right Bumper) - Ultimate (CORRECTED!)
 				# Button 6 (Start) currently unused - reserved for pause menu
 				# Note: LT = Void Parry (Axis 6), RT = Combo Modifier (Axis 7)
 				# Note: Phase Shift = RT+LB combo (handled in lythrun_player.gd)
