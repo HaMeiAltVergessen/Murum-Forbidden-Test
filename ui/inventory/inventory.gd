@@ -51,6 +51,7 @@ var current_tab: Tab = Tab.CONSUMABLES
 var is_open: bool = false
 var pending_use_item: Dictionary = {}
 var i_key_was_pressed: bool = false  # Track I key state for just_pressed detection
+var viewing_player: int = 1  # 1 = P1, 2 = P2 (tracks who opened the inventory)
 
 # Grid references
 var grids: Array[GridContainer] = []
@@ -79,6 +80,8 @@ func _ready() -> void:
 	# Connect inventory signals with safety check
 	if is_instance_valid(InventoryManager):
 		InventoryManager.inventory_changed.connect(_refresh_current_tab)
+		InventoryManager.p2_inventory_changed.connect(_refresh_current_tab)
+		print("[Inventory] Connected to P1 and P2 inventory signals")
 	else:
 		push_error("[Inventory] InventoryManager not available at _ready()")
 
@@ -129,7 +132,6 @@ func _setup_grids() -> void:
 func _process(_delta: float) -> void:
 	# CRITICAL: Filter inventory toggle through InputManager (P1 = keyboard-only when P2 active)
 	# Use direct key check for "I" key when P2 active, since inventory_toggle action includes controller
-	var inventory_toggle_pressed = false
 
 	if InputManager and InputManager.p2_active:
 		# Co-op mode: Check BOTH P1 (keyboard) AND P2 (controller via InputManager)
@@ -137,15 +139,19 @@ func _process(_delta: float) -> void:
 		var p1_pressed = i_key_is_pressed and not i_key_was_pressed
 		var p2_pressed = InputManager.is_p2_action_just_pressed("inventory")
 
-		inventory_toggle_pressed = p1_pressed or p2_pressed
+		if p1_pressed:
+			print("[Inventory] P1 opened inventory (Keyboard I)")
+			toggle_inventory(1)  # P1 opened it
+		elif p2_pressed:
+			print("[Inventory] P2 opened inventory (Controller Button 6)")
+			toggle_inventory(2)  # P2 opened it
+
 		i_key_was_pressed = i_key_is_pressed
 	else:
 		# Solo mode: Allow keyboard + controller
-		inventory_toggle_pressed = Input.is_action_just_pressed("inventory_toggle")
+		if Input.is_action_just_pressed("inventory_toggle"):
+			toggle_inventory(1)  # P1 only in solo mode
 		i_key_was_pressed = false  # Reset when not in co-op
-
-	if inventory_toggle_pressed:
-		toggle_inventory()
 
 
 func _input(event: InputEvent) -> void:
@@ -196,16 +202,16 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
-func toggle_inventory() -> void:
-	"""Toggles inventory open/closed"""
+func toggle_inventory(player: int = 1) -> void:
+	"""Toggles inventory open/closed for specified player (1=P1, 2=P2)"""
 	if is_open:
 		close_inventory()
 	else:
-		open_inventory()
+		open_inventory(player)
 
 
-func open_inventory() -> void:
-	"""Opens the inventory"""
+func open_inventory(player: int = 1) -> void:
+	"""Opens the inventory for specified player (1=P1, 2=P2)"""
 	# Safety check
 	if not is_instance_valid(InventoryManager):
 		push_error("[Inventory] Cannot open - InventoryManager not valid")
@@ -215,8 +221,11 @@ func open_inventory() -> void:
 		push_error("[Inventory] Cannot open - GameManager not valid")
 		return
 
+	viewing_player = player
 	is_open = true
 	visible = true
+
+	print("[Inventory] Opening for P%d" % viewing_player)
 
 	# Disable player movement and input
 	if GameManager.player and is_instance_valid(GameManager.player):
@@ -338,8 +347,14 @@ func _refresh_tab_data(grid: GridContainer, category: String) -> void:
 		print("[Inventory] WARNING: InventoryManager not available")
 		return
 
-	var items = InventoryManager.get_items_by_category(category)
-	print("[Inventory] Refreshing ", category, " tab with ", items.size(), " items")
+	# Get items from the correct player's inventory
+	var items: Array = []
+	if viewing_player == 2:
+		items = InventoryManager.get_p2_items_by_category(category)
+		print("[Inventory] Refreshing P2's ", category, " tab with ", items.size(), " items")
+	else:
+		items = InventoryManager.get_items_by_category(category)
+		print("[Inventory] Refreshing P1's ", category, " tab with ", items.size(), " items")
 
 	if grid and grid.has_method("populate_items"):
 		grid.populate_items(items)
@@ -411,13 +426,16 @@ func _on_confirm_yes() -> void:
 
 	var item_id = pending_use_item.get("id", "")
 	if item_id != "":
-		# Use the item
-		var success = InventoryManager.use_item(item_id)
-
-		if success:
-			print("[Inventory] Used item: ", item_id)
-			# Grid will auto-refresh via signal
+		# Use the item from the correct player's inventory
+		var success = false
+		if viewing_player == 2:
+			success = InventoryManager.use_p2_consumable(item_id)
+			print("[Inventory] P2 used item: ", item_id)
 		else:
+			success = InventoryManager.use_item(item_id)
+			print("[Inventory] P1 used item: ", item_id)
+
+		if not success:
 			print("[Inventory] Failed to use item: ", item_id)
 
 	pending_use_item = {}
