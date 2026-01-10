@@ -61,6 +61,10 @@ func _process(delta: float) -> void:
 	if not enabled:
 		return
 
+	# COMMIT 023.5.1: Null check - safety guard
+	if not player:
+		return
+
 	# Update air combo timer
 	if current_air_combo > 0:
 		air_combo_timer -= delta
