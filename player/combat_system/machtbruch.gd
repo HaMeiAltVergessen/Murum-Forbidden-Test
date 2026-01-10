@@ -54,6 +54,7 @@ var player: CharacterBody2D = null
 var combo_tracker: Node = null
 var resonance_system: Node = null
 var movement_controller: Node = null
+var is_player_2: bool = false  # COMMIT 023: Track if this is P2
 
 # VFX
 var charge_vfx: Node = null
@@ -86,6 +87,9 @@ func _ready() -> void:
 		print("[Machtbruch] ERROR: Could not find player reference!")
 		return
 
+	# Detect if this is Player 2 (COMMIT 023)
+	is_player_2 = player.is_in_group("player2") or player.name == "Lythrun"
+
 	# Get combo tracker reference
 	combo_tracker = player.get_node_or_null("CombatSystem/ComboTracker")
 	if combo_tracker:
@@ -111,13 +115,25 @@ func _ready() -> void:
 # ============================================================================
 
 func _input(event: InputEvent) -> void:
+	# COMMIT 023: Use InputManager for proper P1/P2 distinction
+	var attack_pressed = false
+	var attack_released = false
+
+	if InputManager:
+		if is_player_2:
+			attack_pressed = event.is_action_pressed("p2_attack")
+			attack_released = event.is_action_released("p2_attack")
+		else:
+			attack_pressed = event.is_action_pressed("p1_attack")
+			attack_released = event.is_action_released("p1_attack")
+
 	# Start charging when attack button pressed (if available)
-	if event.is_action_pressed("light_attack"):
+	if attack_pressed:
 		if is_available and not is_charging:
 			_start_charge()
 
 	# Release burst when attack button released
-	if event.is_action_released("light_attack"):
+	if attack_released:
 		if is_charging:
 			_release_burst()
 

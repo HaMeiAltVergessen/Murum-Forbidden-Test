@@ -345,6 +345,10 @@ func _start_pvp_sequence() -> void:
 
 	await get_tree().create_timer(2.0).timeout
 
+	# Enable PvP mode (allows player-to-player damage)
+	CoopManager.pvp_mode = true
+	print("[Room05] >>> PVP MODE ENABLED (friendly fire ON)")
+
 	# Enable PvP collision
 	CoopManager.set_pvp_collision()
 	print("[Room05] PvP collision enabled")

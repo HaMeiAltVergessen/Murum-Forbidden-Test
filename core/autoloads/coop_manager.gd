@@ -11,6 +11,9 @@ var p2_instance: CharacterBody2D = null
 var p1_instance: CharacterBody2D = null
 var is_p2_active: bool = false
 
+# ============ PvP MODE (COMMIT 023) ============
+var pvp_mode: bool = false  # When true, players can damage each other
+
 # ============ JOIN BLOCKING FLAGS ============
 var join_blocked_cutscene: bool = false
 var join_blocked_boss_fight: bool = false

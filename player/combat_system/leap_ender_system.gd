@@ -92,7 +92,16 @@ func _setup_references() -> void:
 # ============================================================================
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("light_attack"):
+	# COMMIT 023: Use InputManager for proper P1/P2 distinction
+	var attack_pressed = false
+	if InputManager:
+		var is_p2 = player.is_in_group("player2") or player.name == "Lythrun"
+		if is_p2:
+			attack_pressed = event.is_action_pressed("p2_attack")
+		else:
+			attack_pressed = event.is_action_pressed("p1_attack")
+
+	if attack_pressed:
 		_try_trigger_leap_ender()
 
 func _try_trigger_leap_ender() -> void:
