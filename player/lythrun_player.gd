@@ -582,7 +582,7 @@ func _process(delta: float) -> void:
 			# Transition to BLOCKING state
 			_transition_to_blocking()
 
-	# ===== P2 SHADOW ABILITIES INPUT =====
+	# ===== P2 SHADOW ABILITIES INPUT (COMMIT 022.5: RT-Combos) =====
 	if not InputManager or not InputManager.p2_active:
 		return
 
@@ -592,24 +592,33 @@ func _process(delta: float) -> void:
 		print("[Lythrun DEBUG] Dodge (B) pressed")
 		dodge()
 
-	# Shadow Dash (LB Button)
-	if InputManager.is_p2_action_just_pressed("dash"):
+	# Shadow Dash (LB Button) - ONLY if RT not held (RT+LB = Phase Shift)
+	if InputManager.is_p2_action_just_pressed("dash") and not InputManager.is_p2_rt_held():
 		print("[Lythrun DEBUG] Shadow Dash (LB) pressed")
 		shadow_dash()
 
 	# Void Rift (Attack + Down in air - like P1's Wolkenbruch)
+	# OR Abgrundriss (Down in air without Attack)
 	var input_vector = InputManager.get_p2_input_vector() if InputManager else Vector2.ZERO
-	if InputManager.is_p2_action_just_pressed("attack") and not is_on_floor() and input_vector.y > 0.5:
-		print("[Lythrun DEBUG] Void Rift (Attack+Down in air) triggered")
-		void_rift()
-	# Void Strike (Attack button - normal ground/air attack)
-	elif InputManager.is_p2_action_just_pressed("attack"):
-		print("[Lythrun DEBUG] Attack pressed")
-		void_strike()
+	if not is_on_floor() and input_vector.y > 0.5:
+		if InputManager.is_p2_action_just_pressed("attack"):
+			print("[Lythrun DEBUG] Void Rift (Attack+Down in air) triggered")
+			void_rift()
+		# Abgrundriss wird separat gehandhabt (siehe unten)
 
-	# Shadow Scythe (Y button / Button 3)
-	if InputManager.is_p2_action_just_pressed("shadow_scythe"):
-		print("[Lythrun DEBUG] Shadow Scythe pressed")
+	# Void Strike (Attack button - normal ground/air attack)
+	if InputManager.is_p2_action_just_pressed("attack") and (is_on_floor() or input_vector.y <= 0.5):
+		# RT+Attack = Charged Void Strike (höherer Damage)
+		if InputManager.is_p2_rt_held():
+			print("[Lythrun DEBUG] Charged Void Strike (RT+X) triggered")
+			void_strike_charged()
+		else:
+			print("[Lythrun DEBUG] Attack pressed")
+			void_strike()
+
+	# Shadow Scythe (RT+Y combo - Toggle werfen/zurückrufen)
+	if InputManager.is_p2_action_just_pressed("shadow_scythe") and InputManager.is_p2_rt_held():
+		print("[Lythrun DEBUG] Shadow Scythe (RT+Y) pressed")
 		if scythe_thrown and scythe_instance:
 			# Check recall cooldown to prevent accidental immediate recalls
 			var time_since_throw = (Time.get_ticks_msec() / 1000.0) - scythe_throw_time
@@ -620,32 +629,32 @@ func _process(delta: float) -> void:
 		else:
 			shadow_scythe()
 
-	# Void Parry (LT button / Button 6) - HOLD-BASED like P1
+	# Void Parry (LT button / Axis 6) - HOLD-BASED like P1
 	# NOTE: Only check for press here, release is handled in State Machine above
-	# (Triggers don't work well with just_released, so we check is_p2_action_pressed continuously)
 	if InputManager.is_p2_action_just_pressed("void_parry"):
 		print("[Lythrun DEBUG] Void Parry pressed")
 		_start_void_parry()
 
-	# Phase-Shift (RB button / Button 5)
-	if InputManager.is_p2_action_just_pressed("phase_shift"):
-		print("[Lythrun DEBUG] Phase Shift pressed")
+	# Phase-Shift (RT+LB combo - Teleport Dash)
+	if InputManager.is_p2_action_just_pressed("dash") and InputManager.is_p2_rt_held():
+		print("[Lythrun DEBUG] Phase Shift (RT+LB) triggered")
 		phase_shift()
 
-	# Void Orbs (RT button / Button 7 - charged attack)
-	if InputManager.is_p2_action_just_pressed("ultimate"):
-		print("[Lythrun DEBUG] Ultimate charge started")
+	# Void Orbs (RB button / Button 5 - Ultimate)
+	if InputManager.is_p2_action_just_pressed("void_orbs"):
+		print("[Lythrun DEBUG] Void Orbs (RB) charge started")
 		start_charging_orb()
 
 	# Release Void Orbs
-	if not InputManager.is_p2_action_pressed("ultimate") and is_charging_orb:
-		print("[Lythrun DEBUG] Ultimate released")
+	if not InputManager.is_p2_action_pressed("void_orbs") and is_charging_orb:
+		print("[Lythrun DEBUG] Void Orbs released")
 		release_orb()
 
-	# Phase-Shift (Ultimate + Dash modifier - R3 + B)
-	if InputManager.is_p2_action_just_pressed("ultimate") and InputManager.is_p2_action_pressed("dash"):
-		print("[Lythrun DEBUG] Phase Shift triggered")
-		phase_shift()
+	# Abgrundriss (Down in air - P2's version of Wolkenbruch)
+	if not is_on_floor() and input_vector.y > 0.5 and not is_attacking:
+		# Wird automatisch getriggert wenn in der Luft und Down gehalten
+		# (separate Funktion - siehe später)
+		pass
 
 func _physics_process(delta: float) -> void:
 	"""Handle physics and movement (COMMIT 019.5 - custom movement)"""
@@ -983,6 +992,90 @@ func spawn_attack_hitbox(damage: float) -> void:
 	await get_tree().create_timer(0.1).timeout
 	if is_instance_valid(hitbox):
 		hitbox.queue_free()
+
+func void_strike_charged() -> void:
+	"""Charged Void Strike (RT+X) - Higher damage with larger AoE (COMMIT 022.5)"""
+	if is_attacking:
+		return
+
+	is_attacking = true
+	print("[Void Strike Charged] RT+X Combo triggered!")
+
+	# Charged strike has higher damage and larger radius
+	var charged_damage = base_damage * 1.5
+	var charged_radius = 100.0  # Larger than normal attack (60px)
+
+	# Spawn large charged attack hitbox
+	var hitbox = Area2D.new()
+	var collision = CollisionShape2D.new()
+	var shape = CircleShape2D.new()
+	shape.radius = charged_radius
+
+	collision.shape = shape
+	hitbox.add_child(collision)
+	add_child(hitbox)
+
+	# Position centered on player
+	hitbox.position = Vector2.ZERO
+
+	# Add visual effect (purple explosion)
+	var visual = Sprite2D.new()
+	visual.texture = PlaceholderTexture2D.new()
+	if visual.texture is PlaceholderTexture2D:
+		visual.texture.size = Vector2(charged_radius * 2, charged_radius * 2)
+	visual.modulate = Color(0.7, 0.2, 1.0, 0.8)  # Bright purple
+	hitbox.add_child(visual)
+
+	# Animate explosion (scale up then fade)
+	var tween = visual.create_tween()
+	tween.tween_property(visual, "scale", Vector2(1.3, 1.3), 0.2)
+	tween.parallel().tween_property(visual, "modulate:a", 0.0, 0.2)
+
+	# Collision setup
+	hitbox.collision_layer = 0
+	hitbox.set_collision_layer_value(6, true)  # P2 Projectiles
+	hitbox.collision_mask = 0
+	hitbox.set_collision_mask_value(4, true)  # Enemies
+
+	hitbox.monitoring = true
+	hitbox.monitorable = true
+
+	print("[Void Strike Charged] Hitbox created - Damage: %.1f, Radius: %.0f" % [charged_damage, charged_radius])
+
+	# Damage on hit
+	hitbox.body_entered.connect(func(body):
+		print("[Void Strike Charged] Hit: %s" % body.name)
+		if body.has_method("take_damage"):
+			body.take_damage(charged_damage)
+			print("[Void Strike Charged] Dealt %.1f damage to %s" % [charged_damage, body.name])
+		elif body.has_node("HealthComponent"):
+			var health = body.get_node("HealthComponent")
+			if health.has_method("take_damage"):
+				health.take_damage(int(charged_damage))
+				print("[Void Strike Charged] Dealt %.1f damage to %s" % [charged_damage, body.name])
+	)
+
+	# VFX
+	spawn_void_strike_vfx()
+
+	# Audio
+	if AudioManager and AudioManager.has_method("play_sfx"):
+		AudioManager.play_sfx("void_strike")  # TODO: Add charged version sound
+
+	# Camera shake
+	var camera = get_viewport().get_camera_2d()
+	if camera and camera.has_method("shake"):
+		camera.shake(10.0, 0.3)
+
+	# Remove after 0.2s
+	await get_tree().create_timer(0.2).timeout
+	if is_instance_valid(hitbox):
+		hitbox.queue_free()
+
+	# Recovery
+	await get_tree().create_timer(ATTACK_RECOVERY * 1.2).timeout  # Slightly longer recovery
+	if is_instance_valid(self):
+		is_attacking = false
 
 func spawn_void_shockwave() -> void:
 	"""Spawn AoE shockwave on 3rd combo hit"""
