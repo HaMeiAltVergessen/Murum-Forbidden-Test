@@ -28,6 +28,7 @@ var player2: CharacterBody2D = null
 var fight_started: bool = false
 var fight_ended: bool = false
 var is_pvp_mode: bool = false
+var dialog_label: Label = null  # COMMIT 023.8: Dialog placeholder
 
 # ============================================================================
 # INITIALIZATION
@@ -336,14 +337,13 @@ func _start_pvp_sequence() -> void:
 
 	await get_tree().create_timer(0.5).timeout
 
-	# TODO: Show dialog box here
-	# Example: "Lythrun: You dare face me in my domain?"
-	# Example: "Lythrun: Then let us see who is truly worthy!"
-	print("[Room05] >>> Dialog: (Placeholder - implement dialog system)")
-	print("[Room05] >>> Dialog: 'The arena senses two warriors...'")
-	print("[Room05] >>> Dialog: 'Only one may claim victory!'")
+	# Show dialog placeholder (COMMIT 023.8)
+	_show_dialog("The arena senses two warriors...\nOnly one may claim victory!")
 
 	await get_tree().create_timer(2.0).timeout
+
+	# Hide dialog
+	_hide_dialog()
 
 	# COMMIT 023.6: Make players into enemies for PvP
 	# This is the SIMPLE solution - just change their groups!
@@ -411,6 +411,12 @@ func _connect_pvp_death_signals() -> void:
 
 func _on_p1_death_pvp() -> void:
 	"""Called when P1 dies in PvP - P2 wins!"""
+
+	# CRITICAL: Check if fight already ended (both died simultaneously)
+	if fight_ended:
+		print("[Room05] Fight already ended, ignoring P1 death")
+		return
+
 	print("[Room05] === P1 DIED - P2 WINS! ===")
 
 	# Disable further damage
@@ -429,6 +435,12 @@ func _on_p1_death_pvp() -> void:
 
 func _on_p2_death_pvp() -> void:
 	"""Called when P2 dies in PvP - P1 wins!"""
+
+	# CRITICAL: Check if fight already ended (both died simultaneously)
+	if fight_ended:
+		print("[Room05] Fight already ended, ignoring P2 death")
+		return
+
 	print("[Room05] === P2 DIED - P1 WINS! ===")
 
 	# Disable further damage
@@ -471,6 +483,45 @@ func _close_arena_barrier() -> void:
 		exit_door.lock_door()
 
 	print("[Room05] Arena barrier closed")
+
+
+func _show_dialog(text: String) -> void:
+	"""Show dialog placeholder (COMMIT 023.8)"""
+	if not dialog_label:
+		dialog_label = Label.new()
+		dialog_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		dialog_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+
+		# Style
+		dialog_label.add_theme_font_size_override("font_size", 32)
+		dialog_label.add_theme_color_override("font_color", Color.WHITE)
+		dialog_label.add_theme_color_override("font_outline_color", Color.BLACK)
+		dialog_label.add_theme_constant_override("outline_size", 4)
+
+		# Position (center of screen)
+		dialog_label.position = Vector2(0, -200)  # Above center
+		dialog_label.size = Vector2(800, 200)
+		dialog_label.anchor_left = 0.5
+		dialog_label.anchor_top = 0.5
+		dialog_label.anchor_right = 0.5
+		dialog_label.anchor_bottom = 0.5
+		dialog_label.offset_left = -400
+		dialog_label.offset_top = -100
+		dialog_label.offset_right = 400
+		dialog_label.offset_bottom = 100
+
+		add_child(dialog_label)
+
+	dialog_label.text = text
+	dialog_label.visible = true
+	print("[Room05] Dialog shown: ", text)
+
+
+func _hide_dialog() -> void:
+	"""Hide dialog placeholder"""
+	if dialog_label:
+		dialog_label.visible = false
+	print("[Room05] Dialog hidden")
 
 
 # ============================================================================

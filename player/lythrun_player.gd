@@ -1273,8 +1273,13 @@ func create_placeholder_scythe() -> void:
 		if not enemy or not is_instance_valid(enemy):
 			return
 
-		# CRITICAL: Only hit enemies, NOT players
+		# CRITICAL: Only hit enemies, NOT players, NOT self (COMMIT 023.8)
 		if not enemy.is_in_group("enemies"):
+			return
+
+		# CRITICAL: Don't hit yourself!
+		if enemy == self:
+			print("[Shadow Scythe] Blocked self-hit")
 			return
 
 		print("[Shadow Scythe] Hit %s" % enemy.name)
@@ -1786,8 +1791,13 @@ func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
 		if not enemy or not is_instance_valid(enemy):
 			continue
 
-		# CRITICAL: Only hit enemies, NOT players
+		# CRITICAL: Only hit enemies, NOT players, NOT self (COMMIT 023.8)
 		if enemy.is_in_group("enemies"):
+			# CRITICAL: Don't hit yourself!
+			if enemy == self:
+				print("[Void Orb AoE] Blocked self-hit on %s" % enemy.name)
+				continue
+
 			# Deal damage through HealthComponent
 			if enemy.has_node("HealthComponent"):
 				var health = enemy.get_node("HealthComponent")
