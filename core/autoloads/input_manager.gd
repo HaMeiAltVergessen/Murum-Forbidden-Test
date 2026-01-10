@@ -13,6 +13,14 @@ var p2_controller_device: int = -1  # Which controller is P2?
 
 # ============ CONTROLLER DETECTION ============
 var detected_controllers: Array[int] = []
+var controller_count: int = 0
+
+# ============ RT-MODIFIER TRACKING (COMMIT 022.5) ============
+# Track RT trigger state for combo modifiers
+var p1_rt_held: bool = false  # P1's RT (R key or Axis 7)
+var p2_rt_held: bool = false  # P2's RT (Axis 7)
+const RT_THRESHOLD: float = 0.5  # Trigger must be > 50% pressed
+const RT_RELEASE_THRESHOLD: float = 0.2  # Hysteresis for release
 
 # ============ P1 INPUT STATE TRACKING ============
 # Track button/key states for P1 (keyboard/mouse only when P2 active, keyboard+controller when solo)
@@ -69,7 +77,7 @@ func _process(_delta: float) -> void:
 				p2_button_just_pressed[action] = false
 
 func detect_controllers() -> void:
-	"""Detect all connected controllers"""
+	"""Detect all connected controllers (COMMIT 022.5: Track count)"""
 	detected_controllers.clear()
 
 	# Get all connected joypads
@@ -80,39 +88,90 @@ func detect_controllers() -> void:
 		var controller_name = Input.get_joy_name(device_id)
 		print("[InputManager] Controller detected: Device %d - %s" % [device_id, controller_name])
 
-	if detected_controllers.size() == 0:
+	controller_count = detected_controllers.size()
+
+	if controller_count == 0:
 		print("[InputManager] No controllers detected")
+	elif controller_count == 1:
+		print("[InputManager] 1 controller detected - P1 uses Keyboard, P2 uses Controller")
+	else:
+		print("[InputManager] %d controllers detected - P1 can use both Keyboard and Controller Device 0" % controller_count)
 
 func _on_controller_connection_changed(device: int, connected: bool) -> void:
-	"""Handle controller hotplug events"""
+	"""Handle controller hotplug events (COMMIT 022.5: P1 fallback on Device 0 disconnect)"""
 	if connected:
 		print("[InputManager] Controller connected: Device %d - %s" % [device, Input.get_joy_name(device)])
 		detected_controllers.append(device)
+		controller_count = detected_controllers.size()
+
+		# Notify if P1 can now use controller (2+ controllers available)
+		if controller_count >= 2 and not p2_active:
+			print("[InputManager] P1 can now use Controller Device 0 + Keyboard")
 	else:
 		print("[InputManager] Controller disconnected: Device %d" % device)
 		detected_controllers.erase(device)
+		controller_count = detected_controllers.size()
 
 		# If P2's controller disconnected, trigger P2 leave
 		if device == p2_controller_device:
 			print("[InputManager] P2's controller disconnected - triggering P2 leave")
 			p2_leave_requested.emit()
 
+		# If Device 0 disconnected and P1 was using it, P1 falls back to keyboard
+		elif device == 0 and not p2_active:
+			print("[InputManager] Controller Device 0 disconnected - P1 falls back to Keyboard only")
+			# No explicit action needed - P1 will automatically use keyboard when controller is unavailable
+
 func _input(event: InputEvent) -> void:
 	# CRITICAL DEBUG: Log ALL joypad button events to see if they arrive at InputManager
 	if event is InputEventJoypadButton and event.is_pressed():
 		print("[InputManager _input] JoypadButton RECEIVED: Device=%d Button=%d p2_active=%s p2_device=%d" % [event.device, event.button_index, p2_active, p2_controller_device])
 
-	# ============ P1 INPUT TRACKING ============
-	# CRITICAL: When P2 is active, P1 should ONLY accept Keyboard/Mouse (NO controller)
-	# When P2 is NOT active, P1 can use both Keyboard and Controller
+	# ============ RT-MODIFIER TRACKING (COMMIT 022.5) ============
+	# Track P1 RT (Axis 7 on Device 0 OR R key)
+	if not p2_active or controller_count >= 2:  # P1 can use controller
+		# P1 Controller RT (Axis 7 on Device 0)
+		if event is InputEventJoypadMotion and event.device == 0 and event.axis == JOY_AXIS_TRIGGER_RIGHT:
+			var was_held = p1_rt_held
+			p1_rt_held = event.axis_value > RT_THRESHOLD
+			if not was_held and p1_rt_held:
+				print("[InputManager] P1 RT pressed (Controller, %.2f)" % event.axis_value)
+			elif was_held and event.axis_value < RT_RELEASE_THRESHOLD:
+				p1_rt_held = false
+				print("[InputManager] P1 RT released")
+		# P1 Keyboard RT (R key)
+		elif event is InputEventKey and event.physical_keycode == KEY_R:
+			p1_rt_held = event.is_pressed()
+			if p1_rt_held:
+				print("[InputManager] P1 RT pressed (Keyboard)")
+			else:
+				print("[InputManager] P1 RT released (Keyboard)")
+
+	# Track P2 RT (Axis 7 on P2's controller)
+	if p2_active and p2_controller_device >= 0:
+		if event is InputEventJoypadMotion and event.device == p2_controller_device and event.axis == JOY_AXIS_TRIGGER_RIGHT:
+			var was_held = p2_rt_held
+			p2_rt_held = event.axis_value > RT_THRESHOLD
+			if not was_held and p2_rt_held:
+				print("[InputManager] P2 RT pressed (%.2f)" % event.axis_value)
+			elif was_held and event.axis_value < RT_RELEASE_THRESHOLD:
+				p2_rt_held = false
+				print("[InputManager] P2 RT released")
+
+	# ============ P1 INPUT TRACKING (COMMIT 022.5: Hybrid-Input) ============
+	# P1 Input Logic:
+	# - Solo (P2 not active): Keyboard + Controller Device 0
+	# - Coop with 1 Controller: Keyboard ONLY (controller reserved for P2)
+	# - Coop with 2+ Controllers: Keyboard + Controller Device 0 (P2 uses other controller)
 
 	var is_keyboard_mouse = (event is InputEventKey or event is InputEventMouse or event is InputEventMouseButton)
 	var is_controller = (event is InputEventJoypadButton or event is InputEventJoypadMotion)
+	var is_p1_controller = is_controller and ((event is InputEventJoypadButton and event.device == 0) or (event is InputEventJoypadMotion and event.device == 0))
 
 	# P1 accepts this input if:
 	# - It's keyboard/mouse (always) OR
-	# - It's controller AND P2 is NOT active
-	var p1_should_accept = is_keyboard_mouse or (is_controller and not p2_active)
+	# - It's controller Device 0 AND (P2 not active OR 2+ controllers available)
+	var p1_should_accept = is_keyboard_mouse or (is_p1_controller and (not p2_active or controller_count >= 2))
 
 	if p1_should_accept:
 		# Track P1 actions
@@ -230,14 +289,14 @@ func _input(event: InputEvent) -> void:
 				p2_controller_device = -1  # Reset
 
 func _update_p1_input_vector() -> void:
-	"""Update P1's movement vector based on current allowed inputs"""
-	# CRITICAL: When P2 is active, use ONLY keyboard (not controller)
-	# This must be called every frame in _process, not just in _input
+	"""Update P1's movement vector based on current allowed inputs (COMMIT 022.5: Hybrid-Input)"""
+	# P1 Input Logic:
+	# - Solo (P2 not active): Keyboard + Controller Device 0
+	# - Coop with 1 Controller: Keyboard ONLY
+	# - Coop with 2+ Controllers: Keyboard + Controller Device 0
 
-	if p2_active:
-		# Co-op mode: Keyboard ONLY (no controller for P1)
-		# We can't use Input.get_vector() because it includes controller
-		# Instead, check keyboard keys directly
+	if p2_active and controller_count < 2:
+		# Co-op mode with 1 Controller: Keyboard ONLY (no controller for P1)
 		var x = 0.0
 		var y = 0.0
 
@@ -252,10 +311,9 @@ func _update_p1_input_vector() -> void:
 
 		p1_input_vector = Vector2(x, y).normalized() if (x != 0 or y != 0) else Vector2.ZERO
 	else:
-		# Solo mode - accept both keyboard and controller
-		# CRITICAL: InputMap has p1_move_left/right but NOT p1_move_up/down
-		# Use the existing move_left/right/jump/crouch actions
-		p1_input_vector = Input.get_vector("p1_move_left", "p1_move_right", "jump", "crouch")
+		# Solo mode OR 2+ controllers: Accept both keyboard and controller Device 0
+		# Use Input.get_vector with p1_move_left/right actions (includes keyboard + Device 0)
+		p1_input_vector = Input.get_vector("p1_move_left", "p1_move_right", "p1_jump", "p1_crouch")
 
 func can_p2_join() -> bool:
 	"""Check if P2 can join"""
@@ -390,3 +448,17 @@ func get_p2_controller_name() -> String:
 func has_controller() -> bool:
 	"""Check if any controller is connected"""
 	return detected_controllers.size() > 0
+
+# ============ RT-MODIFIER GETTERS (COMMIT 022.5) ============
+
+func is_p1_rt_held() -> bool:
+	"""Check if P1's RT modifier is held (R key or Axis 7 on Device 0)"""
+	return p1_rt_held
+
+func is_p2_rt_held() -> bool:
+	"""Check if P2's RT modifier is held (Axis 7 on P2's controller)"""
+	return p2_rt_held
+
+func get_controller_count() -> int:
+	"""Get number of connected controllers"""
+	return controller_count
