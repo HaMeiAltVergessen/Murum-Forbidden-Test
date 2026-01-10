@@ -152,16 +152,17 @@ func _input(event: InputEvent) -> void:
 	if p2_active and p2_controller_device >= 0:
 		# Process BUTTONS from P2's controller
 		if event is InputEventJoypadButton and event.device == p2_controller_device:
-			# CORRECTED MAPPING - Xbox Controller Layout:
-			# B = Dodge, LB = Dash (not the other way around!)
+			# CORRECTED MAPPING - Xbox One For Windows Layout:
+			# Button 4 = Back/Select, Button 6 = Start, Button 9 = LB
 			var button_to_action = {
 				0: "jump",           # A button
-				1: "dodge",          # B button - CORRECTED!
+				1: "dodge",          # B button
 				2: "attack",         # X button (Void Strike)
 				3: "shadow_scythe",  # Y button
-				4: "dash",           # LB button (Left Bumper) - CORRECTED!
+				4: "inventory",      # Back/Select button
 				5: "phase_shift",    # RB button (Right Bumper)
-				6: "inventory",      # Back/Select button - CORRECTED!
+				9: "dash",           # LB button (Left Bumper)
+				# Button 6 (Start) currently unused - reserved for pause menu
 				# Note: LT/RT are TRIGGERS (axes), not buttons - handled below
 				# Note: Void Rift is Attack+Down combo, handled in lythrun_player.gd
 			}
@@ -215,9 +216,9 @@ func _input(event: InputEvent) -> void:
 				elif not is_pressed and was_pressed:
 					p2_button_just_pressed["ultimate"] = false
 
-	# P2 Join-Request (any controller START button)
+	# P2 Join-Request (Button 6 = Start on Xbox One For Windows)
 	if not p2_active and event is InputEventJoypadButton:
-		if event.is_pressed() and event.button_index == JOY_BUTTON_START:
+		if event.is_pressed() and event.button_index == 6:  # Start button
 			# Store which controller is P2
 			p2_controller_device = event.device
 
