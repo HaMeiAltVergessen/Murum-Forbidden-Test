@@ -24,20 +24,28 @@ const BOSS_SCENE_PATH: String = "res://bosses/lythrun/lythrun_boss.tscn"
 
 var boss_instance: BaseBoss = null
 var player: CharacterBody2D = null
+var player2: CharacterBody2D = null
 var fight_started: bool = false
 var fight_ended: bool = false
+var is_pvp_mode: bool = false
 
 # ============================================================================
 # INITIALIZATION
 # ============================================================================
 
 func _ready() -> void:
+	print("[Room05] Arena initialized")
+	print("[Room05] P2 Active (initial): ", CoopManager.is_p2_active)
+
 	_setup_arena()
 	_spawn_player()
 
-	# Intro sequence
+	# Grace period: Wait for P2 to potentially join before starting sequence
+	# This handles race conditions where P2 joins right as arena loads
 	await get_tree().create_timer(1.0).timeout
-	_play_intro_cutscene()
+
+	# Check P2 status after grace period
+	_check_arena_mode_and_start()
 
 
 func _setup_arena() -> void:
@@ -55,8 +63,9 @@ func _setup_arena() -> void:
 
 
 func _spawn_player() -> void:
-	"""Spawns the player at the designated spawn point"""
+	"""Spawns the player(s) at the designated spawn point"""
 
+	# Spawn P1
 	player = get_tree().get_first_node_in_group("player")
 
 	if not player:
@@ -71,7 +80,46 @@ func _spawn_player() -> void:
 		player.disable_movement()
 
 	var spawn_pos = player_spawn.global_position if player_spawn else Vector2.ZERO
-	print("[Room05] Player spawned at: ", spawn_pos)
+	print("[Room05] P1 spawned at: ", spawn_pos)
+
+	# If P2 is already active, position them in arena too
+	var p2_instance = CoopManager.get_p2_instance()
+	if p2_instance and is_instance_valid(p2_instance):
+		player2 = p2_instance
+		# Position P2 on opposite side of arena
+		if player_spawn:
+			player2.global_position = player_spawn.global_position + Vector2(100, 0)
+
+		# Disable P2 movement during intro
+		if player2.has_method("disable_movement"):
+			player2.disable_movement()
+
+		print("[Room05] P2 spawned at: ", player2.global_position)
+
+
+func _check_arena_mode_and_start() -> void:
+	"""Check if P2 is present and decide: Solo Boss Fight vs PvP"""
+
+	# Double-check P2 status (both flag and instance)
+	var p2_instance = CoopManager.get_p2_instance()
+	var is_p2_present = CoopManager.is_p2_active and p2_instance != null and is_instance_valid(p2_instance)
+
+	print("[Room05] === ARENA MODE CHECK ===")
+	print("[Room05] P2 Active Flag: ", CoopManager.is_p2_active)
+	print("[Room05] P2 Instance: ", p2_instance)
+	print("[Room05] P2 Valid: ", is_p2_present)
+
+	if is_p2_present:
+		# 2 PLAYERS → PvP MODE
+		print("[Room05] >>> MODE: PvP (2 Players detected)")
+		player2 = p2_instance
+		is_pvp_mode = true
+		_start_pvp_sequence()
+	else:
+		# 1 PLAYER → SOLO MODE (Boss Fight)
+		print("[Room05] >>> MODE: Solo (1 Player, spawning boss)")
+		is_pvp_mode = false
+		_play_intro_cutscene()
 
 
 # ============================================================================
@@ -113,6 +161,11 @@ func _play_intro_cutscene() -> void:
 func _spawn_boss() -> void:
 	"""Spawns the boss at the designated spawn point"""
 
+	# SAFETY CHECK: Do NOT spawn boss in PvP mode
+	if is_pvp_mode:
+		print("[Room05] ABORT: Cannot spawn boss in PvP mode!")
+		return
+
 	if not ResourceLoader.exists(BOSS_SCENE_PATH):
 		push_error("[Room05] Boss scene not found: " + BOSS_SCENE_PATH)
 		return
@@ -136,7 +189,7 @@ func _spawn_boss() -> void:
 	# Spawn VFX
 	_spawn_boss_vfx()
 
-	print("[Room05] Boss spawned")
+	print("[Room05] Boss spawned (Solo Mode)")
 
 
 func _spawn_boss_vfx() -> void:
@@ -247,6 +300,98 @@ func _intensify_arena_phase3() -> void:
 
 	# Spawn hazards (placeholder)
 	print("[Room05] Phase 3 arena hazards activated")
+
+
+# ============================================================================
+# PvP SEQUENCE (COMMIT 023)
+# ============================================================================
+
+func _start_pvp_sequence() -> void:
+	"""Start the PvP sequence when 2 players are detected"""
+
+	print("[Room05] === STARTING PVP SEQUENCE ===")
+
+	# Lock both players in place for intro
+	if player and player.has_method("disable_movement"):
+		player.disable_movement()
+		print("[Room05] P1 movement locked")
+
+	if player2 and player2.has_method("disable_movement"):
+		player2.disable_movement()
+		print("[Room05] P2 movement locked")
+
+	# Get camera
+	var active_camera = get_viewport().get_camera_2d()
+
+	# Calculate midpoint between players for camera focus
+	var midpoint = Vector2.ZERO
+	if player and player2:
+		midpoint = (player.global_position + player2.global_position) / 2.0
+
+	# Zoom camera to midpoint
+	if active_camera:
+		var tween = create_tween()
+		tween.tween_property(active_camera, "global_position", midpoint, 1.5).set_trans(Tween.TRANS_CUBIC)
+		await tween.finished
+
+	await get_tree().create_timer(0.5).timeout
+
+	# TODO: Show dialog box here
+	# Example: "Lythrun: You dare face me in my domain?"
+	# Example: "Lythrun: Then let us see who is truly worthy!"
+	print("[Room05] >>> Dialog: (Placeholder - implement dialog system)")
+	print("[Room05] >>> Dialog: 'The arena senses two warriors...'")
+	print("[Room05] >>> Dialog: 'Only one may claim victory!'")
+
+	await get_tree().create_timer(2.0).timeout
+
+	# Enable PvP collision
+	CoopManager.set_pvp_collision()
+	print("[Room05] PvP collision enabled")
+
+	# Unlock both players
+	if player and player.has_method("enable_movement"):
+		player.enable_movement()
+		print("[Room05] P1 movement unlocked")
+
+	if player2 and player2.has_method("enable_movement"):
+		player2.enable_movement()
+		print("[Room05] P2 movement unlocked")
+
+	# Change music to PvP theme
+	if has_node("/root/AudioManager"):
+		var audio_manager = get_node("/root/AudioManager")
+		if audio_manager.has_method("play_boss_music"):
+			audio_manager.play_boss_music("pvp_theme")  # TODO: Create PvP music track
+
+	# Close arena barrier (prevent escape)
+	_close_arena_barrier()
+
+	fight_started = true
+
+	print("[Room05] >>> PVP FIGHT STARTED <<<")
+
+	# TODO: Implement win condition detection
+	# - Monitor both players' health
+	# - When one dies, declare winner
+	# - Unlock exit door for winner
+	# - Restore co-op collision
+	# - Award loot
+
+
+func _close_arena_barrier() -> void:
+	"""Close the arena barrier to prevent escape during PvP"""
+
+	# Make arena boundary fully visible
+	if arena_boundary:
+		var tween = create_tween()
+		tween.tween_property(arena_boundary, "modulate:a", 0.8, 1.0)
+
+	# Lock exit door
+	if exit_door and exit_door.has_method("lock_door"):
+		exit_door.lock_door()
+
+	print("[Room05] Arena barrier closed")
 
 
 # ============================================================================
