@@ -95,7 +95,7 @@ func detect_controllers() -> void:
 	elif controller_count == 1:
 		print("[InputManager] 1 controller detected - P1 uses Keyboard, P2 uses Controller")
 	else:
-		print("[InputManager] %d controllers detected - P1 can use both Keyboard and Controller Device 0" % controller_count)
+		print("[InputManager] %d controllers detected - P1 can use Keyboard + Device 0 (if P2 doesn't use Device 0)" % controller_count)
 
 func _on_controller_connection_changed(device: int, connected: bool) -> void:
 	"""Handle controller hotplug events (COMMIT 022.5: P1 fallback on Device 0 disconnect)"""
@@ -162,16 +162,16 @@ func _input(event: InputEvent) -> void:
 	# P1 Input Logic:
 	# - Solo (P2 not active): Keyboard + Controller Device 0
 	# - Coop with 1 Controller: Keyboard ONLY (controller reserved for P2)
-	# - Coop with 2+ Controllers: Keyboard + Controller Device 0 (P2 uses other controller)
+	# - Coop with 2+ Controllers: Keyboard + Controller Device 0 (ONLY if P2 uses different device!)
+	# CRITICAL: P1 can NEVER use Device 0 if P2 is using Device 0 (prevents cross-talk)
 
 	var is_keyboard_mouse = (event is InputEventKey or event is InputEventMouse or event is InputEventMouseButton)
 	var is_controller = (event is InputEventJoypadButton or event is InputEventJoypadMotion)
 	var is_p1_controller = is_controller and ((event is InputEventJoypadButton and event.device == 0) or (event is InputEventJoypadMotion and event.device == 0))
 
-	# P1 accepts this input if:
-	# - It's keyboard/mouse (always) OR
-	# - It's controller Device 0 AND (P2 not active OR 2+ controllers available)
-	var p1_should_accept = is_keyboard_mouse or (is_p1_controller and (not p2_active or controller_count >= 2))
+	# P1 can use Controller Device 0 ONLY if P2 is not using it
+	var p1_can_use_device_0 = not p2_active or (p2_active and p2_controller_device != 0)
+	var p1_should_accept = is_keyboard_mouse or (is_p1_controller and p1_can_use_device_0)
 
 	if p1_should_accept:
 		# Track P1 actions (COMMIT 022.5: ALL actions now have p1_ prefix!)
@@ -278,11 +278,12 @@ func _update_p1_input_vector() -> void:
 	"""Update P1's movement vector based on current allowed inputs (COMMIT 022.5: Hybrid-Input)"""
 	# P1 Input Logic:
 	# - Solo (P2 not active): Keyboard + Controller Device 0
-	# - Coop with 1 Controller: Keyboard ONLY
-	# - Coop with 2+ Controllers: Keyboard + Controller Device 0
+	# - Coop with P2 using Device 0: Keyboard ONLY (prevent cross-talk!)
+	# - Coop with P2 using other device: Keyboard + Controller Device 0
 
-	if p2_active and controller_count < 2:
-		# Co-op mode with 1 Controller: Keyboard ONLY (no controller for P1)
+	# Use keyboard-only if P2 is using Device 0 (prevents cross-talk)
+	if p2_active and (controller_count < 2 or p2_controller_device == 0):
+		# Keyboard ONLY mode (either only 1 controller OR P2 is using Device 0)
 		var x = 0.0
 		var y = 0.0
 
@@ -297,7 +298,7 @@ func _update_p1_input_vector() -> void:
 
 		p1_input_vector = Vector2(x, y).normalized() if (x != 0 or y != 0) else Vector2.ZERO
 	else:
-		# Solo mode OR 2+ controllers: Accept both keyboard and controller Device 0
+		# Solo mode OR P2 uses different controller (not Device 0)
 		# Use Input.get_vector with p1_move_left/right actions (includes keyboard + Device 0)
 		p1_input_vector = Input.get_vector("p1_move_left", "p1_move_right", "p1_jump", "p1_crouch")
 
