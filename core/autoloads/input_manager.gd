@@ -174,6 +174,10 @@ func _input(event: InputEvent) -> void:
 	var p1_should_accept = is_keyboard_mouse or (is_p1_controller and p1_can_use_device_0)
 
 	if p1_should_accept:
+		# DEBUG: Log ALL P1 controller button presses
+		if event is InputEventJoypadButton and event.device == 0:
+			print("[InputManager P1 BUTTON] Device=%d Button=%d Pressed=%s" % [event.device, event.button_index, event.is_pressed()])
+
 		# Track P1 actions (COMMIT 022.5: ALL actions now have p1_ prefix!)
 		# Actions: jump, attack, dash, block, dodge, staff_throw, urgathon, wolkenbruch, crouch, interact, inventory, machtstoss
 		var p1_actions = ["jump", "attack", "dash", "block", "dodge", "staff_throw", "urgathon", "wolkenbruch", "crouch", "interact", "inventory", "machtstoss"]
@@ -184,6 +188,7 @@ func _input(event: InputEvent) -> void:
 				if event.is_pressed() and not p1_button_just_pressed.get(action_name, false):
 					p1_button_just_pressed[action_name] = true
 					p1_button_just_pressed_time[action_name] = Time.get_ticks_msec()  # Track time
+					print("[InputManager DEBUG] P1 action pressed: %s (time=%d)" % [action_name, Time.get_ticks_msec()])
 				elif not event.is_pressed():
 					p1_button_just_pressed[action_name] = false
 
@@ -212,6 +217,9 @@ func _input(event: InputEvent) -> void:
 				# Note: Void Rift = Attack+Down combo (handled in lythrun_player.gd)
 			}
 
+			# DEBUG: Log ALL button presses (even unmapped ones)
+			print("[InputManager P2 BUTTON] Device=%d Button=%d Pressed=%s" % [event.device, event.button_index, event.is_pressed()])
+
 			# Check if this button has a mapped action
 			if event.button_index in button_to_action:
 				var action_name = button_to_action[event.button_index]
@@ -226,6 +234,10 @@ func _input(event: InputEvent) -> void:
 					print("[InputManager DEBUG] P2 action pressed: %s (button=%d, time=%d)" % [action_name, event.button_index, Time.get_ticks_msec()])
 				elif not event.is_pressed():
 					p2_button_just_pressed[action_name] = false
+			else:
+				# Log unmapped buttons
+				if event.is_pressed():
+					print("[InputManager P2 UNMAPPED] Button %d pressed (not mapped to any action)" % event.button_index)
 
 		# Process TRIGGERS (LT/RT are axes, not buttons!)
 		if event is InputEventJoypadMotion and event.device == p2_controller_device:
