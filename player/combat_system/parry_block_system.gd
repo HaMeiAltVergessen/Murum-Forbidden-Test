@@ -188,17 +188,15 @@ func _input(event: InputEvent) -> void:
 	if player and player.name == "LythrunPlayer":
 		return  # P2 doesn't use parry/block system
 
-	# P1 device filtering
-	if InputManager and InputManager.p2_active:
-		# Co-op mode: P1 should ONLY accept keyboard/mouse input
-		var is_keyboard_mouse = (event is InputEventKey or event is InputEventMouse or event is InputEventMouseButton)
-		if not is_keyboard_mouse:
-			return  # Reject controller input when P2 is active
+	# Use InputManager for proper device filtering (COMMIT 022.5)
+	if not InputManager:
+		return
 
-	if event.is_action_pressed("block"):
+	# Check for block input (Right-Click or LT)
+	if InputManager.is_p1_action_just_pressed("block"):
 		_start_blocking()
 
-	if event.is_action_released("block"):
+	if InputManager.is_p1_action_just_released("block"):
 		_stop_blocking()
 
 # ============================================================================

@@ -108,27 +108,20 @@ func _input(event: InputEvent) -> void:
 	if is_unconscious:
 		return
 
-	# CRITICAL: Device filtering for co-op support
-	# P1: Can use urgathon with keyboard/mouse (or controller when solo)
-	# P2: Should NOT use this ability (has shadow abilities instead)
-
-	# Check if this is P2 - if so, don't process urgathon input
+	# CRITICAL: P1-only ability (COMMIT 022.5)
 	if player and player.name == "LythrunPlayer":
 		return  # P2 doesn't use Urgathon
 
-	# P1 device filtering
-	if InputManager and InputManager.p2_active:
-		# Co-op mode: P1 should ONLY accept keyboard/mouse input
-		var is_keyboard_mouse = (event is InputEventKey or event is InputEventMouse or event is InputEventMouseButton)
-		if not is_keyboard_mouse:
-			return  # Reject controller input when P2 is active
+	# Use InputManager for proper device filtering
+	if not InputManager:
+		return
 
-	# Start charging
-	if event.is_action_pressed("urgathon_charge"):
+	# Start charging (RB button or U key)
+	if InputManager.is_p1_action_just_pressed("urgathon"):
 		_start_charge()
 
 	# Release charge
-	if event.is_action_released("urgathon_charge"):
+	if not InputManager.is_p1_action_pressed("urgathon") and is_charging:
 		_release_charge()
 
 # ============================================================================

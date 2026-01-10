@@ -47,33 +47,17 @@ signal throw_failed(reason: String)
 # ============================================================================
 
 func _input(event: InputEvent) -> void:
-	# CRITICAL: Device filtering for co-op support
-	# This is P1-only ability - P2 doesn't use staff
+	# CRITICAL: P1-only ability - P2 doesn't use staff (COMMIT 022.5)
 	if player and player.name == "LythrunPlayer":
 		return  # P2 doesn't use staff
 
-	# P1 device filtering
-	if InputManager and InputManager.p2_active:
-		var is_keyboard_mouse = (event is InputEventKey or event is InputEventMouse or event is InputEventMouseButton)
-		if not is_keyboard_mouse:
-			return  # Reject controller when P2 active
+	# Use InputManager for proper device filtering
+	if not InputManager:
+		return
 
-	if event.is_action_pressed("staff_throw"):
+	# Check for staff throw input through InputManager
+	if InputManager.is_p1_action_just_pressed("staff_throw"):
 		attempt_throw()
-	# Gamepad: RT + X (X = light_attack button)
-	elif event.is_action_pressed("light_attack"):
-		if _is_rt_pressed():
-			attempt_throw()
-
-func _is_rt_pressed() -> bool:
-	"""Check if RT is pressed (either as button or analog trigger)"""
-	# Button 7 (some controllers)
-	if Input.is_action_pressed("gamepad_modifier"):
-		return true
-	# Axis 5 (analog trigger on Xbox/PS controllers)
-	if Input.get_joy_axis(0, JOY_AXIS_TRIGGER_RIGHT) > 0.5:
-		return true
-	return false
 
 # ============================================================================
 # THROW LOGIC
