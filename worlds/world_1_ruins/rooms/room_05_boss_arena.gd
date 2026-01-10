@@ -345,7 +345,19 @@ func _start_pvp_sequence() -> void:
 
 	await get_tree().create_timer(2.0).timeout
 
-	# Enable PvP mode (allows player-to-player damage)
+	# COMMIT 023.6: Make players into enemies for PvP
+	# This is the SIMPLE solution - just change their groups!
+	if player:
+		player.remove_from_group("player")  # No longer a player
+		player.add_to_group("enemies")      # Now an enemy
+		print("[Room05] P1 converted to enemy")
+
+	if player2:
+		player2.remove_from_group("player2")  # No longer player2
+		player2.add_to_group("enemies")       # Now an enemy
+		print("[Room05] P2 converted to enemy")
+
+	# Enable PvP mode (allows enemy-to-enemy damage in HitboxComponent)
 	CoopManager.pvp_mode = true
 	print("[Room05] >>> PVP MODE ENABLED (friendly fire ON)")
 
