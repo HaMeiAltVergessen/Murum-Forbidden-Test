@@ -107,10 +107,15 @@ func _is_same_team(hurtbox: HurtboxComponent) -> bool:
 	var i_am_enemy = my_owner.is_in_group("enemies")
 	var they_are_enemy = their_owner.is_in_group("enemies")
 
-	# Players shouldn't hit other players (co-op friendly fire OFF)
+	# Players shouldn't hit other players UNLESS in PvP mode (COMMIT 023)
 	if i_am_player and they_are_player:
-		print("[Hitbox] Both players, ignoring")
-		return true
+		# Check if PvP mode is active
+		if CoopManager and CoopManager.pvp_mode:
+			print("[Hitbox] Both players, but PVP MODE ACTIVE - allowing hit!")
+			return false  # Allow damage in PvP
+		else:
+			print("[Hitbox] Both players, co-op mode - ignoring")
+			return true  # Friendly fire OFF in co-op
 
 	# Enemies shouldn't hit other enemies (friendly fire OFF)
 	if i_am_enemy and they_are_enemy:

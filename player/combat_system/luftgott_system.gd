@@ -52,6 +52,7 @@ var hover_sphere: Node3D = null
 var player: CharacterBody2D = null
 var air_combo_system: Node = null
 var movement_controller: Node = null
+var is_player_2: bool = false  # COMMIT 023: Track if this is P2
 
 # ============================================================================
 # SIGNALS
@@ -72,6 +73,9 @@ func _ready() -> void:
 	if not player:
 		push_error("[LuftgottSystem] Owner must be player CharacterBody2D")
 		return
+
+	# Detect if this is Player 2 (COMMIT 023)
+	is_player_2 = player.is_in_group("player2") or player.name == "Lythrun"
 
 	air_combo_system = player.get_node_or_null("AirComboSystem")
 	if not air_combo_system:
@@ -135,8 +139,15 @@ func _process_reset_window(delta: float) -> void:
 
 	reset_window_timer -= delta
 
-	# Check for attack input during window
-	if Input.is_action_just_pressed("light_attack"):
+	# Check for attack input during window (COMMIT 023: Use InputManager)
+	var attack_pressed = false
+	if InputManager:
+		if is_player_2:
+			attack_pressed = InputManager.is_p2_action_just_pressed("attack")
+		else:
+			attack_pressed = InputManager.is_p1_action_just_pressed("attack")
+
+	if attack_pressed:
 		# Must still be airborne
 		if not player.is_on_floor():
 			_activate_air_reset()
@@ -241,8 +252,15 @@ func _process_air_reset() -> void:
 		_end_air_reset()
 		return
 
-	# Check for attack input
-	if Input.is_action_just_pressed("light_attack"):
+	# Check for attack input (COMMIT 023: Use InputManager)
+	var attack_pressed = false
+	if InputManager:
+		if is_player_2:
+			attack_pressed = InputManager.is_p2_action_just_pressed("attack")
+		else:
+			attack_pressed = InputManager.is_p1_action_just_pressed("attack")
+
+	if attack_pressed:
 		# Check combo limit
 		if reset_combo_count >= AIR_RESET_COMBO_LIMIT:
 			print("[LuftgottSystem] Reset combo limit reached (%d)" % AIR_RESET_COMBO_LIMIT)

@@ -67,10 +67,12 @@ func _process(delta: float) -> void:
 		# CRITICAL: Use InputManager to prevent P2 from triggering P1's ability!
 		var p1_attack = false
 		if InputManager:
-			p1_attack = InputManager.is_p1_action_pressed("attack")
-		else:
-			# Fallback if no InputManager (shouldn't happen)
-			p1_attack = Input.is_action_pressed("light_attack")
+			# COMMIT 023: Detect if P2 and use correct action
+			var is_p2 = player.is_in_group("player2") or player.name == "Lythrun"
+			if is_p2:
+				p1_attack = InputManager.is_p2_action_pressed("attack")
+			else:
+				p1_attack = InputManager.is_p1_action_pressed("attack")
 
 		# Keyboard: W + LMB (P1 only)
 		var keyboard_combo = Input.is_physical_key_pressed(KEY_W) and p1_attack

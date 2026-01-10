@@ -23,6 +23,7 @@ var juggled_enemy: Node = null  # Currently juggled enemy (changed from BaseEnem
 # ============ REFERENCES ============
 var player: CharacterBody2D = null
 var combat_system: Node = null
+var is_player_2: bool = false  # COMMIT 023: Track if this is P2
 
 # ============ SIGNALS ============
 signal air_combo_started(enemy: Node)
@@ -42,6 +43,9 @@ func _ready() -> void:
 
 	# Get CombatSystem
 	combat_system = player.get_node_or_null("CombatSystem")
+
+	# Detect if this is Player 2 (COMMIT 023)
+	is_player_2 = player.is_in_group("player2") or player.name == "Lythrun"
 
 	# Connect to launcher events
 	_connect_launcher_events()
@@ -66,8 +70,15 @@ func _process(delta: float) -> void:
 	# Check player airborne state
 	_update_airborne_state()
 
-	# Check for air attack input
-	if _can_perform_air_attack() and Input.is_action_just_pressed("light_attack"):
+	# Check for air attack input (COMMIT 023: Use InputManager)
+	var attack_pressed = false
+	if InputManager:
+		if is_player_2:
+			attack_pressed = InputManager.is_p2_action_just_pressed("attack")
+		else:
+			attack_pressed = InputManager.is_p1_action_just_pressed("attack")
+
+	if _can_perform_air_attack() and attack_pressed:
 		_perform_air_attack()
 
 
