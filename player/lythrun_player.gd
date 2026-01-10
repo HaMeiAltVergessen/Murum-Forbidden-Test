@@ -16,6 +16,9 @@ class_name Lythrun
 @onready var shadow_trail: GPUParticles2D = $ShadowTrail if has_node("ShadowTrail") else null
 @onready var dark_aura: PointLight2D = $DarkAura if has_node("DarkAura") else null
 
+# ============ PASSIVE ABILITIES ============
+var myrkurs_echo: Node = null  # Passive mana regeneration
+
 # ============ PLAYER 2 IDENTITY ============
 var is_player_2: bool = true
 var player_name: String = "Lythrun"
@@ -143,6 +146,9 @@ func _ready() -> void:
 
 	# Connect signals
 	_connect_signals()
+
+	# Setup passive abilities
+	_setup_passive_abilities()
 
 	# Disable P2's camera (P1's camera is active)
 	if player_camera:
@@ -394,6 +400,19 @@ func _connect_signals() -> void:
 	# Hurtbox signals
 	if hurtbox:
 		hurtbox.damage_received.connect(_on_damage_received)
+
+func _setup_passive_abilities() -> void:
+	"""Setup passive abilities for P2"""
+	# Load and instantiate MyrkursEcho (passive mana regeneration)
+	var myrkurs_echo_script = load("res://player/abilities/myrkurs_echo.gd")
+	if myrkurs_echo_script:
+		myrkurs_echo = Node.new()
+		myrkurs_echo.set_script(myrkurs_echo_script)
+		myrkurs_echo.name = "MyrkursEcho"
+		add_child(myrkurs_echo)
+		print("[Lythrun] MyrkursEcho passive ability added")
+	else:
+		print("[Lythrun] ERROR: Failed to load MyrkursEcho script!")
 
 func _on_health_changed(new_health: int, max_health: int) -> void:
 	"""Handle health changes"""
