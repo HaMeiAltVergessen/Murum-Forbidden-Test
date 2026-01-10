@@ -1784,11 +1784,13 @@ func take_damage(damage: float) -> void:
 # ============ HELPER FUNCTIONS (COMMIT 019.5) ============
 
 func consume_mana(amount: int) -> void:
-	"""Consume mana"""
-	if mana_component and mana_component.has_method("consume_mana"):
-		mana_component.consume_mana(amount)
+	"""Consume mana (uses ManaComponent.use_mana())"""
+	if mana_component and mana_component.has_method("use_mana"):
+		mana_component.use_mana(amount)
+		print("[Lythrun] Consumed %d mana via ManaComponent" % amount)
 	else:
 		current_mana = max(0, current_mana - amount)
+		print("[Lythrun] Consumed %d mana via fallback" % amount)
 
 # ============ VFX HELPER FUNCTIONS (COMMIT 019.5) ============
 
