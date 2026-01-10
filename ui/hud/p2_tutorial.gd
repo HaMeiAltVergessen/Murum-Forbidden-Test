@@ -75,11 +75,12 @@ func get_button_names_for_controller(controller_name: String) -> Dictionary:
 		return {
 			"jump": "A Button",
 			"attack": "X Button",
-			"dash": "LB",
+			"dash": "LB (Button 9)",
 			"staff_throw": "Y Button",
 			"parry": "LT",
 			"urgathon": "RT",
-			"inventory": "Back/Select"
+			"inventory": "Back/Select (Button 4)",
+			"join": "Start (Button 6)"
 		}
 
 	# PlayStation controllers
@@ -91,7 +92,8 @@ func get_button_names_for_controller(controller_name: String) -> Dictionary:
 			"staff_throw": "△ (Triangle)",
 			"parry": "L2",
 			"urgathon": "R2",
-			"inventory": "Share/Select"
+			"inventory": "Share/Select",
+			"join": "Options"
 		}
 
 	# Generic controller
@@ -99,11 +101,12 @@ func get_button_names_for_controller(controller_name: String) -> Dictionary:
 		return {
 			"jump": "Button 0",
 			"attack": "Button 2",
-			"dash": "Button 4 (LB)",
+			"dash": "Button 9 (LB)",
 			"staff_throw": "Button 3",
 			"parry": "LT",
 			"urgathon": "RT",
-			"inventory": "Button 6 (Select)"
+			"inventory": "Button 4 (Select)",
+			"join": "Button 6 (Start)"
 		}
 
 func _input(event: InputEvent) -> void:
