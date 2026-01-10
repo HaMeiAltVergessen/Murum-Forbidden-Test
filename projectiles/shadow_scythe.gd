@@ -20,17 +20,18 @@ var hit_enemies: Array = []
 func _ready() -> void:
 	print("[Shadow Scythe] Spawned")
 
-	# Visual setup
+	# Visual setup - BRIGHTER and MORE VISIBLE
 	if sprite:
-		sprite.modulate = Color(0.4, 0, 0.7)  # Dark violet
+		sprite.modulate = Color(0.8, 0.4, 1.0)  # Much brighter violet/purple
+		sprite.scale = Vector2(1.5, 1.5)  # 50% larger for visibility
 
 	if trail:
 		trail.emitting = true
 
 	if light:
 		light.enabled = true
-		light.color = Color(0.5, 0, 0.8)
-		light.energy = 0.5
+		light.color = Color(0.8, 0.4, 1.0)  # Brighter glow
+		light.energy = 1.0  # Doubled brightness
 
 	# Collision setup
 	collision_layer = 0
