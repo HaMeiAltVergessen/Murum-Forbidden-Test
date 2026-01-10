@@ -77,7 +77,8 @@ func _input(event: InputEvent) -> void:
 		return
 
 	# Check for dodge input (Shift key or B button)
-	if InputManager.is_p1_action_just_pressed("dodge"):
+	# IMPORTANT: Don't trigger dodge if RT is held (RT+B = Machtstoß combo)
+	if InputManager.is_p1_action_just_pressed("dodge") and not InputManager.is_p1_rt_held():
 		attempt_dodge()
 
 
