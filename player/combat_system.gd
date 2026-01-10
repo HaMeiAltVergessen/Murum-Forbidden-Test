@@ -82,36 +82,21 @@ func _process(delta: float) -> void:
 
 
 func _input(event: InputEvent) -> void:
-	# CRITICAL: Device filtering for co-op support
+	# CRITICAL: Use InputManager for proper device filtering (COMMIT 022.5)
+	if not InputManager:
+		return
+
 	# Determine which player we belong to
 	var owner_player = get_parent()
 	var is_p2 = (owner_player and owner_player.name == "LythrunPlayer")
 
+	# Check for attack input through InputManager
 	if is_p2:
-		# P2: Only accept inputs from P2's specific controller device
-		if InputManager and InputManager.p2_active and InputManager.p2_controller_device >= 0:
-			if event is InputEventJoypadButton and event.device == InputManager.p2_controller_device:
-				# P2's controller - process it
-				pass
-			else:
-				return  # Wrong device - ignore
-		else:
-			return  # P2 not active or no controller assigned
+		if InputManager.is_p2_action_just_pressed("attack"):
+			_request_attack()
 	else:
-		# P1: Device filtering when P2 active
-		if InputManager and InputManager.p2_active:
-			# Co-op mode: P1 should ONLY accept keyboard/mouse input
-			var is_keyboard_mouse = (event is InputEventKey or event is InputEventMouse or event is InputEventMouseButton)
-			if not is_keyboard_mouse:
-				return  # Reject controller input when P2 is active
-
-	var attack_action = input_prefix + "attack"
-	# Fallback to "light_attack" if p1_attack doesn't exist (backwards compatibility)
-	if not InputMap.has_action(attack_action):
-		attack_action = "light_attack"
-
-	if event.is_action_pressed(attack_action):
-		_request_attack()
+		if InputManager.is_p1_action_just_pressed("attack"):
+			_request_attack()
 
 
 # ============ ATTACK SYSTEM ============

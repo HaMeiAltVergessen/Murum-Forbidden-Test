@@ -174,27 +174,12 @@ func _input(event: InputEvent) -> void:
 	var p1_should_accept = is_keyboard_mouse or (is_p1_controller and (not p2_active or controller_count >= 2))
 
 	if p1_should_accept:
-		# Track P1 actions
-		# CRITICAL: Some actions don't have p1_ prefix in InputMap!
-		# - With p1_ prefix: jump, attack, dash, block, move_left, move_right
-		# - WITHOUT p1_ prefix: staff_throw, dodge, urgathon_charge, crouch
-
-		# Actions WITH p1_ prefix
-		var p1_prefixed_actions = ["jump", "attack", "dash", "block"]
-		for action_name in p1_prefixed_actions:
+		# Track P1 actions (COMMIT 022.5: ALL actions now have p1_ prefix!)
+		# Actions: jump, attack, dash, block, dodge, staff_throw, urgathon, wolkenbruch, crouch, interact, inventory
+		var p1_actions = ["jump", "attack", "dash", "block", "dodge", "staff_throw", "urgathon", "wolkenbruch", "crouch", "interact", "inventory"]
+		for action_name in p1_actions:
 			var full_action = "p1_" + action_name
 			if InputMap.has_action(full_action) and event.is_action(full_action):
-				p1_button_states[action_name] = event.is_pressed()
-				if event.is_pressed() and not p1_button_just_pressed.get(action_name, false):
-					p1_button_just_pressed[action_name] = true
-					p1_button_just_pressed_time[action_name] = Time.get_ticks_msec()  # Track time
-				elif not event.is_pressed():
-					p1_button_just_pressed[action_name] = false
-
-		# Actions WITHOUT p1_ prefix (global actions that P1 uses)
-		var p1_global_actions = ["staff_throw", "dodge", "urgathon_charge", "crouch", "ability_1", "ability_2", "ability_3", "interact"]
-		for action_name in p1_global_actions:
-			if InputMap.has_action(action_name) and event.is_action(action_name):
 				p1_button_states[action_name] = event.is_pressed()
 				if event.is_pressed() and not p1_button_just_pressed.get(action_name, false):
 					p1_button_just_pressed[action_name] = true
@@ -209,21 +194,22 @@ func _input(event: InputEvent) -> void:
 	# ============ P2 INPUT TRACKING ============
 	# CRITICAL: Track P2 button states ONLY from P2's specific controller device
 	if p2_active and p2_controller_device >= 0:
-		# Process BUTTONS from P2's controller
+		# Process BUTTONS from P2's controller (COMMIT 022.5)
 		if event is InputEventJoypadButton and event.device == p2_controller_device:
 			# CORRECTED MAPPING - Xbox One For Windows Layout:
-			# Button 4 = Back/Select, Button 6 = Start, Button 9 = LB
+			# Button 4 = Back/Select, Button 5 = RB, Button 6 = Start, Button 9 = LB
 			var button_to_action = {
 				0: "jump",           # A button
 				1: "dodge",          # B button
 				2: "attack",         # X button (Void Strike)
-				3: "shadow_scythe",  # Y button
+				3: "shadow_scythe",  # Y button (base action, RT+Y for combo)
 				4: "inventory",      # Back/Select button
-				5: "phase_shift",    # RB button (Right Bumper)
-				9: "dash",           # LB button (Left Bumper)
+				5: "void_orbs",      # RB button (Right Bumper) - Ultimate
+				9: "dash",           # LB button (base action, RT+LB for Phase Shift combo)
 				# Button 6 (Start) currently unused - reserved for pause menu
-				# Note: LT/RT are TRIGGERS (axes), not buttons - handled below
-				# Note: Void Rift is Attack+Down combo, handled in lythrun_player.gd
+				# Note: LT = Void Parry (Axis 6), RT = Combo Modifier (Axis 7)
+				# Note: Phase Shift = RT+LB combo (handled in lythrun_player.gd)
+				# Note: Void Rift = Attack+Down combo (handled in lythrun_player.gd)
 			}
 
 			# Check if this button has a mapped action
