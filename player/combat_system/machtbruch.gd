@@ -115,6 +115,10 @@ func _ready() -> void:
 # ============================================================================
 
 func _input(event: InputEvent) -> void:
+	# COMMIT 023.5.1: Null check - _input can be called before _ready
+	if not player:
+		return
+
 	# COMMIT 023: Use InputManager for proper P1/P2 distinction
 	var attack_pressed = false
 	var attack_released = false

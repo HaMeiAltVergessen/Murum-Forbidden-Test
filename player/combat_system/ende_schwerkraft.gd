@@ -56,6 +56,10 @@ func _exit_tree() -> void:
 
 
 func _process(delta: float) -> void:
+	# COMMIT 023.5.1: Null check - safety guard
+	if not player:
+		return
+
 	if cooldown_timer > 0.0:
 		cooldown_timer -= delta
 

@@ -94,6 +94,10 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	# COMMIT 023.5.1: Null check - safety guard
+	if not player:
+		return
+
 	match current_state:
 		State.RESET_WINDOW:
 			_process_reset_window(delta)
