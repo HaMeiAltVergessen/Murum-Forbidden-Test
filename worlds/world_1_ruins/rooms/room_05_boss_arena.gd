@@ -383,16 +383,79 @@ func _start_pvp_sequence() -> void:
 	# Close arena barrier (prevent escape)
 	_close_arena_barrier()
 
+	# COMMIT 023.7: Connect death signals for PvP victory detection
+	_connect_pvp_death_signals()
+
 	fight_started = true
 
 	print("[Room05] >>> PVP FIGHT STARTED <<<")
 
-	# TODO: Implement win condition detection
-	# - Monitor both players' health
-	# - When one dies, declare winner
-	# - Unlock exit door for winner
-	# - Restore co-op collision
-	# - Award loot
+
+func _connect_pvp_death_signals() -> void:
+	"""Connect to player death signals for PvP victory detection"""
+
+	# Connect P1 death signal
+	if player and player.has_node("HealthComponent"):
+		var p1_health = player.get_node("HealthComponent")
+		if p1_health.has_signal("health_depleted"):
+			p1_health.health_depleted.connect(_on_p1_death_pvp)
+			print("[Room05] Connected to P1 death signal")
+
+	# Connect P2 death signal
+	if player2 and player2.has_node("HealthComponent"):
+		var p2_health = player2.get_node("HealthComponent")
+		if p2_health.has_signal("health_depleted"):
+			p2_health.health_depleted.connect(_on_p2_death_pvp)
+			print("[Room05] Connected to P2 death signal")
+
+
+func _on_p1_death_pvp() -> void:
+	"""Called when P1 dies in PvP - P2 wins!"""
+	print("[Room05] === P1 DIED - P2 WINS! ===")
+
+	# Disable further damage
+	fight_ended = true
+
+	# Show victory message
+	print("[Room05] >>> VICTORY: Player 2 (Lythrun) wins! <<<")
+	# TODO: Show victory screen / pause game
+
+	await get_tree().create_timer(2.0).timeout
+
+	# For now: Just show message and pause
+	print("[Room05] PvP ended - P2 victorious. Game should show victory screen here.")
+	get_tree().paused = true
+
+
+func _on_p2_death_pvp() -> void:
+	"""Called when P2 dies in PvP - P1 wins!"""
+	print("[Room05] === P2 DIED - P1 WINS! ===")
+
+	# Disable further damage
+	fight_ended = true
+
+	# Restore P1 to player group
+	if player:
+		player.remove_from_group("enemies")
+		player.add_to_group("player")
+		print("[Room05] P1 restored to player group")
+
+	# Disable PvP mode
+	CoopManager.pvp_mode = false
+	CoopManager.set_coop_collision()
+	print("[Room05] PvP mode disabled, co-op collision restored")
+
+	# Unlock exit door
+	if exit_door and exit_door.has_method("unlock_door"):
+		exit_door.unlock_door()
+		print("[Room05] Exit door unlocked")
+
+	# Fade arena boundary
+	if arena_boundary:
+		var tween = create_tween()
+		tween.tween_property(arena_boundary, "modulate:a", 0.0, 2.0)
+
+	print("[Room05] >>> VICTORY: Player 1 (Murum) wins! P1 can exit arena. <<<")
 
 
 func _close_arena_barrier() -> void:

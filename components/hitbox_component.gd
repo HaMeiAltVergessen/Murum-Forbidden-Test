@@ -116,8 +116,14 @@ func _is_same_team(hurtbox: HurtboxComponent) -> bool:
 	if i_am_enemy and they_are_enemy:
 		# In PvP mode, allow enemy-to-enemy damage (both players are "enemies")
 		if CoopManager and CoopManager.pvp_mode:
-			print("[Hitbox] Both enemies, but PVP MODE - allowing hit!")
-			return false  # Allow damage in PvP
+			# CRITICAL: Even in PvP, don't allow self-damage!
+			# This is extra safety for abilities that might have wrong owner setup
+			if my_owner != their_owner:
+				print("[Hitbox] Both enemies, PVP MODE, different owners - allowing hit!")
+				return false  # Allow damage in PvP
+			else:
+				print("[Hitbox] Both enemies, PVP MODE, but SAME owner (self-hit) - ignoring!")
+				return true  # No self-damage!
 		else:
 			print("[Hitbox] Both enemies, co-op mode - ignoring friendly fire")
 			return true  # Friendly fire OFF in co-op

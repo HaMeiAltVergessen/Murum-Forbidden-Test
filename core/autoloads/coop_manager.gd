@@ -200,6 +200,11 @@ func _on_p2_died() -> void:
 	if not is_p2_active:
 		return
 
+	# COMMIT 023.7: Don't respawn in PvP mode - let arena handle it
+	if pvp_mode:
+		print("[CoopManager] P2 died in PvP mode - arena will handle victory")
+		return  # Arena handles PvP death
+
 	print("[CoopManager] P2 died, waiting %s seconds..." % RESPAWN_DELAY)
 
 	# Wait for respawn delay
@@ -244,6 +249,11 @@ func respawn_p2_at_p1() -> void:
 func on_p1_died() -> void:
 	"""Handle P1 death (called from GameManager)"""
 	print("[CoopManager] P1 died")
+
+	# COMMIT 023.7: Don't respawn in PvP mode - let arena handle it
+	if pvp_mode:
+		print("[CoopManager] P1 died in PvP mode - P2 wins!")
+		return  # Arena handles PvP death
 
 	# Check if P2 is active and alive
 	if is_p2_active and p2_instance and is_instance_valid(p2_instance) and not p2_instance.is_dead:
