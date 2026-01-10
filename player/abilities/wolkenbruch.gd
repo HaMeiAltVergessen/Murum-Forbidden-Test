@@ -325,8 +325,14 @@ func _process(delta: float) -> void:
 		var attack_pressed = false
 
 		if InputManager:
-			# Down = S key (physical key check for proper detection)
-			down_pressed = Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN)
+			# Down check: Keyboard OR Controller (Left Stick Down)
+			if InputManager.p2_active:
+				# P2 active: P1 uses keyboard only
+				down_pressed = Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN)
+			else:
+				# Solo mode: P1 uses keyboard + controller
+				down_pressed = Input.is_physical_key_pressed(KEY_S) or Input.is_physical_key_pressed(KEY_DOWN) or Input.is_action_pressed("wolkenbruch_slam")
+
 			attack_pressed = InputManager.is_p1_action_pressed("attack")
 		else:
 			# Fallback (shouldn't happen)
