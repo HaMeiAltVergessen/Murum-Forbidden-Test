@@ -69,9 +69,11 @@ var buffer_timer: float = 0.0
 
 # ============ SHADOW SCYTHE (COMMIT 019.5) ============
 const SCYTHE_SPEED: float = 300.0  # COMMIT 024: Increased from 250.0 (faster travel)
-const SCYTHE_MANA_COST: int = 30
+const SCYTHE_MANA_COST: int = 15  # COMMIT 024: Reduced from 30 (more affordable)
+const SCYTHE_RECALL_COOLDOWN: float = 0.5  # Prevent accidental immediate recalls
 var scythe_instance = null
 var scythe_thrown: bool = false
+var scythe_throw_time: float = 0.0  # Time when scythe was thrown
 
 # ============ VOID PARRY (COMMIT 019.5 - Hold-based like P1) ============
 const VOID_PARRY_WINDOW: float = 0.6  # Parry window (DOUBLED from 0.3s)
@@ -590,7 +592,12 @@ func _process(delta: float) -> void:
 	if InputManager.is_p2_action_just_pressed("shadow_scythe"):
 		print("[Lythrun DEBUG] Shadow Scythe pressed")
 		if scythe_thrown and scythe_instance:
-			recall_scythe()
+			# Check recall cooldown to prevent accidental immediate recalls
+			var time_since_throw = (Time.get_ticks_msec() / 1000.0) - scythe_throw_time
+			if time_since_throw >= SCYTHE_RECALL_COOLDOWN:
+				recall_scythe()
+			else:
+				print("[Shadow Scythe] Recall cooldown active (%.2fs remaining)" % (SCYTHE_RECALL_COOLDOWN - time_since_throw))
 		else:
 			shadow_scythe()
 
@@ -1085,6 +1092,7 @@ func shadow_scythe() -> void:
 		scythe_instance.can_pierce = true
 
 	scythe_thrown = true
+	scythe_throw_time = Time.get_ticks_msec() / 1000.0  # Record throw time
 	scythe_instance.tree_exiting.connect(_on_scythe_destroyed)
 
 	print("[Shadow Scythe] Thrown!")
@@ -1102,12 +1110,12 @@ func create_placeholder_scythe() -> void:
 	collision.shape = shape
 	scythe.add_child(collision)
 
-	# Add visual with rotating animation
+	# Add visual with rotating animation - BRIGHTER and LARGER
 	var visual = Sprite2D.new()
 	visual.texture = PlaceholderTexture2D.new()
 	if visual.texture is PlaceholderTexture2D:
-		visual.texture.size = Vector2(40, 40)
-	visual.modulate = Color(0.5, 0, 0.8)  # Purple shadow scythe color
+		visual.texture.size = Vector2(60, 60)  # Increased from 40x40
+	visual.modulate = Color(0.8, 0.4, 1.0)  # Brighter purple (matches shadow_scythe.gd)
 	scythe.add_child(visual)
 
 	# Rotate sprite for scythe effect
@@ -1170,6 +1178,7 @@ func create_placeholder_scythe() -> void:
 	# Store reference
 	scythe_instance = scythe
 	scythe_thrown = true
+	scythe_throw_time = Time.get_ticks_msec() / 1000.0  # Record throw time
 	scythe_instance.tree_exiting.connect(_on_scythe_destroyed)
 
 	# Move scythe
