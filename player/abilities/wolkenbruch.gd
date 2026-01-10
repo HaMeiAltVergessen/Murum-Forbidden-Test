@@ -604,6 +604,10 @@ func _apply_aoe_damage(damage: int, radius: float) -> void:
 	var hit_count = 0
 
 	for enemy in enemies:
+		# CRITICAL: Don't hit yourself! (COMMIT 023.9.1)
+		if enemy == player:
+			continue
+
 		var distance = player.global_position.distance_to(enemy.global_position)
 
 		if distance <= radius:
@@ -626,6 +630,10 @@ func _apply_aoe_knockback(knockback_force: float, radius: float) -> void:
 	var stuck_enemies = []  # Track enemies that might be stuck at walls
 
 	for enemy in enemies:
+		# CRITICAL: Don't knockback yourself! (COMMIT 023.9.1)
+		if enemy == player:
+			continue
+
 		var distance = player.global_position.distance_to(enemy.global_position)
 
 		if distance <= radius:

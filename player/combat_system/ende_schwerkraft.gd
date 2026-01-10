@@ -133,6 +133,10 @@ func _find_targets() -> Array:
 			print("[EndeSchwerkraft] Skipping boss %s (too heavy to launch)" % enemy.name)
 			continue
 
+		# CRITICAL: Don't launch yourself! (COMMIT 023.9.1)
+		if enemy == player:
+			continue
+
 		var to_enemy = enemy.global_position - player.global_position
 		var dist = to_enemy.length()
 

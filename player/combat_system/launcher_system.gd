@@ -161,6 +161,10 @@ func _find_launchable_enemies() -> Array[BaseEnemy]:
 
 		var base_enemy: BaseEnemy = enemy as BaseEnemy
 
+		# CRITICAL: Don't launch yourself! (COMMIT 023.9.1)
+		if base_enemy == player:
+			continue
+
 		# Skip dead or already launched enemies
 		if base_enemy.is_dead:
 			continue
