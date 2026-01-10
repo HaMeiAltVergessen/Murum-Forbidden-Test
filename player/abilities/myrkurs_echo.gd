@@ -31,8 +31,8 @@ var testing_timer: float = 0.0
 # REFERENCES
 # ============================================================================
 
-@onready var player: CharacterBody2D = owner
-@onready var mana_component: ManaComponent = player.get_node("ManaComponent") if player.has_node("ManaComponent") else null
+var player: CharacterBody2D = null
+var mana_component: ManaComponent = null
 
 # ============================================================================
 # SIGNALS
@@ -45,6 +45,22 @@ signal mana_restored(amount: int, trigger: String)  # trigger: "hits" oder "time
 # ============================================================================
 
 func _ready() -> void:
+	# Get references safely
+	player = get_parent() as CharacterBody2D
+	if not player:
+		print("[MyrkursEcho] ERROR: Parent is not a CharacterBody2D!")
+		return
+
+	# Wait a frame for ManaComponent to be ready
+	await get_tree().process_frame
+
+	if player.has_node("ManaComponent"):
+		mana_component = player.get_node("ManaComponent") as ManaComponent
+
+	if not mana_component:
+		print("[MyrkursEcho] ERROR: No ManaComponent found on player!")
+		return
+
 	if TESTING_MODE:
 		print("[MyrkursEcho] Initialized in TESTING MODE (every %.1fs → 1/8 max mana)" % TESTING_INTERVAL)
 	else:
@@ -61,7 +77,7 @@ func _ready() -> void:
 # ============================================================================
 
 func _process(delta: float) -> void:
-	if not is_unlocked:
+	if not is_unlocked or not mana_component:
 		return
 
 	# Testing Mode: Timer-basiert
