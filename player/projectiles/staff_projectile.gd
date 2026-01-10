@@ -159,6 +159,11 @@ func _on_area_entered(area: Area2D) -> void:
 			print("[StaffProjectile] Not in enemies group or null")
 			return
 
+		# CRITICAL: Don't hit the owner! (COMMIT 023.9)
+		if enemy == owner_player:
+			print("[StaffProjectile] Blocked self-hit on owner")
+			return
+
 		if _is_enemy_on_cooldown(enemy):
 			print("[StaffProjectile] Enemy on cooldown")
 			return

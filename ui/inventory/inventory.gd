@@ -212,6 +212,12 @@ func toggle_inventory(player: int = 1) -> void:
 
 func open_inventory(player: int = 1) -> void:
 	"""Opens the inventory for specified player (1=P1, 2=P2)"""
+
+	# COMMIT 023.9: Block inventory during PvP
+	if CoopManager and CoopManager.pvp_mode:
+		print("[Inventory] Cannot open - PvP mode active!")
+		return
+
 	# Safety check
 	if not is_instance_valid(InventoryManager):
 		push_error("[Inventory] Cannot open - InventoryManager not valid")
