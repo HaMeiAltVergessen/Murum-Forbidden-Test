@@ -175,8 +175,8 @@ func _input(event: InputEvent) -> void:
 
 	if p1_should_accept:
 		# Track P1 actions (COMMIT 022.5: ALL actions now have p1_ prefix!)
-		# Actions: jump, attack, dash, block, dodge, staff_throw, urgathon, wolkenbruch, crouch, interact, inventory
-		var p1_actions = ["jump", "attack", "dash", "block", "dodge", "staff_throw", "urgathon", "wolkenbruch", "crouch", "interact", "inventory"]
+		# Actions: jump, attack, dash, block, dodge, staff_throw, urgathon, wolkenbruch, crouch, interact, inventory, machtstoss
+		var p1_actions = ["jump", "attack", "dash", "block", "dodge", "staff_throw", "urgathon", "wolkenbruch", "crouch", "interact", "inventory", "machtstoss"]
 		for action_name in p1_actions:
 			var full_action = "p1_" + action_name
 			if InputMap.has_action(full_action) and event.is_action(full_action):
@@ -223,7 +223,7 @@ func _input(event: InputEvent) -> void:
 				if event.is_pressed() and not p2_button_just_pressed.get(action_name, false):
 					p2_button_just_pressed[action_name] = true
 					p2_button_just_pressed_time[action_name] = Time.get_ticks_msec()  # Track time
-					print("[InputManager DEBUG] P2 action pressed: %s (time=%d)" % [action_name, Time.get_ticks_msec()])
+					print("[InputManager DEBUG] P2 action pressed: %s (button=%d, time=%d)" % [action_name, event.button_index, Time.get_ticks_msec()])
 				elif not event.is_pressed():
 					p2_button_just_pressed[action_name] = false
 

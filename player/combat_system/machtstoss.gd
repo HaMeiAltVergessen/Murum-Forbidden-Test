@@ -107,45 +107,28 @@ func _ready() -> void:
 # ============================================================================
 
 func _input(event: InputEvent) -> void:
-	# CRITICAL: P1-only ability, device filtering
+	# CRITICAL: P1-only ability (COMMIT 022.5)
 	if player and player.name == "LythrunPlayer":
 		return
 
-	if InputManager and InputManager.p2_active:
-		var is_keyboard_mouse = (event is InputEventKey or event is InputEventMouse or event is InputEventMouseButton)
-		if not is_keyboard_mouse:
-			return
+	# Use InputManager for proper device filtering
+	if not InputManager:
+		return
 
-	# Start charging on Key 1 press
-	if event.is_action_pressed("ability_1"):
+	# Start charging on Key 1 press OR RT+B combo
+	if InputManager.is_p1_action_just_pressed("machtstoss"):
 		_start_charging()
-	# Release charge on Key 1 release
-	elif event.is_action_released("ability_1"):
+	# Also support RT+Dodge combo (RT+B)
+	elif InputManager.is_p1_action_just_pressed("dodge") and InputManager.is_p1_rt_held():
+		_start_charging()
+
+	# Release charge on Key 1 release OR when dodge released (if charging)
+	if not InputManager.is_p1_action_pressed("machtstoss") and is_charging:
+		# Check if we started with Key 1
 		_release_charge()
-
-	# Gamepad: RT + B (ONLY when P2 is NOT active - P1 uses keyboard when P2 active)
-	elif not (InputManager and InputManager.p2_active):
-		# Only process gamepad input when solo (no P2)
-		if event.is_action_pressed("dodge"):
-			if _is_rt_pressed():
-				_start_charging()
-		elif event.is_action_released("dodge"):
-			if is_charging:
-				_release_charge()
-
-func _is_rt_pressed() -> bool:
-	"""Check if RT is pressed (either as button or analog trigger)"""
-	# ONLY for solo mode (when P2 is not active)
-	if InputManager and InputManager.p2_active:
-		return false  # Don't check controller when P2 active
-
-	# Button 7 (some controllers)
-	if Input.is_action_pressed("gamepad_modifier"):
-		return true
-	# Axis 5 (analog trigger on Xbox/PS controllers)
-	if Input.get_joy_axis(0, JOY_AXIS_TRIGGER_RIGHT) > 0.5:
-		return true
-	return false
+	elif not InputManager.is_p1_action_pressed("dodge") and is_charging and InputManager.is_p1_rt_held():
+		# Check if we started with RT+B
+		_release_charge()
 
 # ============================================================================
 # PROCESS
