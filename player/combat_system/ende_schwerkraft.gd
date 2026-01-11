@@ -201,12 +201,21 @@ func _launch_all(enemies: Array) -> void:
 			enemy.set_juggled_state(true)
 
 		# Damage enemy
-		if enemy.has_method("take_damage"):
-			enemy.take_damage(LAUNCH_DAMAGE, player)
-		elif enemy.has_node("HealthComponent"):
+		if enemy.has_node("HealthComponent"):
 			var health = enemy.get_node("HealthComponent")
 			if health.has_method("take_damage"):
 				health.take_damage(LAUNCH_DAMAGE)
+		elif enemy.has_method("take_damage"):
+			# Try direct method (for BaseEnemy) - check parameter count
+			var method_list = enemy.get_method_list()
+			var take_damage_params = 0
+			for method in method_list:
+				if method.name == "take_damage":
+					take_damage_params = method.args.size()
+					break
+
+			if take_damage_params == 1:
+				enemy.take_damage(LAUNCH_DAMAGE)
 
 		# VFX for each enemy
 		_spawn_launch_effect(enemy.global_position)
