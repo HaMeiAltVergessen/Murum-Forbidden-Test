@@ -125,11 +125,14 @@ func _input(event: InputEvent) -> void:
 
 func _is_rt_pressed() -> bool:
 	"""Check if RT is pressed (either as button or analog trigger)"""
-	# Button 7 (some controllers)
-	if Input.is_action_pressed("gamepad_modifier"):
-		return true
-	# Axis 5 (analog trigger on Xbox/PS controllers)
+	# Use InputManager if available (COMMIT 023.9.6)
+	if InputManager:
+		return InputManager.is_p1_rt_held()
+	# Fallback: Check axis directly
 	if Input.get_joy_axis(0, JOY_AXIS_TRIGGER_RIGHT) > 0.5:
+		return true
+	# Keyboard fallback (R key)
+	if Input.is_key_pressed(KEY_R):
 		return true
 	return false
 
