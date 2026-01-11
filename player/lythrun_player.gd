@@ -1784,14 +1784,14 @@ func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
 		orb_radius
 	])
 
-	# CRITICAL: Wait multiple frames for collision detection to register
-	await get_tree().process_frame
-	await get_tree().process_frame
-	await get_tree().process_frame
+	# COMMIT 023.9.6: Use timer instead of await for better collision detection
+	await get_tree().create_timer(0.1).timeout
 
 	# Damage all enemies in range
 	var hit_areas = aoe.get_overlapping_areas()
 	var enemies_hit = 0
+
+	print("[Void Orb AoE] Found %d overlapping areas" % hit_areas.size())
 
 	for area in hit_areas:
 		if not area or not is_instance_valid(area):

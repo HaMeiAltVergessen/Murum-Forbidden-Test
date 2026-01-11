@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://components/hurtbox_component.gd" id="1_hurtbox"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hurtbox"]
-size = Vector2(32, 48)
+size = Vector2(64, 96)
 
 [node name="HurtboxComponent" type="Area2D"]
 collision_layer = 4
