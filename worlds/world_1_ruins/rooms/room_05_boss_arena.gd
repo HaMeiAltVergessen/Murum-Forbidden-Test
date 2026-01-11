@@ -352,10 +352,24 @@ func _start_pvp_sequence() -> void:
 		player.add_to_group("enemies")      # Now an enemy
 		print("[Room05] P1 converted to enemy")
 
+		# COMMIT 023.9.2: Change hurtbox layer from PlayerHurtbox (10) to EnemyHurtbox (9)
+		if player.has_node("HurtboxComponent"):
+			var hurtbox = player.get_node("HurtboxComponent")
+			hurtbox.collision_layer = 0
+			hurtbox.set_collision_layer_value(9, true)  # EnemyHurtbox
+			print("[Room05] P1 hurtbox changed to EnemyHurtbox layer")
+
 	if player2:
 		player2.remove_from_group("player2")  # No longer player2
 		player2.add_to_group("enemies")       # Now an enemy
 		print("[Room05] P2 converted to enemy")
+
+		# COMMIT 023.9.2: Change hurtbox layer from PlayerHurtbox (10) to EnemyHurtbox (9)
+		if player2.has_node("HurtboxComponent"):
+			var hurtbox = player2.get_node("HurtboxComponent")
+			hurtbox.collision_layer = 0
+			hurtbox.set_collision_layer_value(9, true)  # EnemyHurtbox
+			print("[Room05] P2 hurtbox changed to EnemyHurtbox layer")
 
 	# Enable PvP mode (allows enemy-to-enemy damage in HitboxComponent)
 	CoopManager.pvp_mode = true
@@ -451,6 +465,13 @@ func _on_p2_death_pvp() -> void:
 		player.remove_from_group("enemies")
 		player.add_to_group("player")
 		print("[Room05] P1 restored to player group")
+
+		# COMMIT 023.9.2: Restore hurtbox layer from EnemyHurtbox (9) to PlayerHurtbox (10)
+		if player.has_node("HurtboxComponent"):
+			var hurtbox = player.get_node("HurtboxComponent")
+			hurtbox.collision_layer = 0
+			hurtbox.set_collision_layer_value(10, true)  # PlayerHurtbox
+			print("[Room05] P1 hurtbox restored to PlayerHurtbox layer")
 
 	# Disable PvP mode
 	CoopManager.pvp_mode = false

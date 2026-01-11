@@ -622,19 +622,32 @@ func _dash_end_explosion() -> void:
 		if not is_instance_valid(enemy):
 			continue
 
+		# CRITICAL: Don't hit yourself! (COMMIT 023.9.2)
+		if enemy == player:
+			continue
+
 		# Check distance
 		var distance = player.global_position.distance_to(enemy.global_position)
 		if distance > EXPLOSION_RADIUS:
 			continue
 
 		# Apply damage
-		if enemy.has_method("take_damage"):
-			enemy.take_damage(EXPLOSION_DAMAGE, player)
-			hit_count += 1
-		elif enemy.has_node("HealthComponent"):
+		if enemy.has_node("HealthComponent"):
 			var health = enemy.get_node("HealthComponent")
 			if health.has_method("take_damage"):
 				health.take_damage(EXPLOSION_DAMAGE)
+				hit_count += 1
+		elif enemy.has_method("take_damage"):
+			# Try direct method (for BaseEnemy)
+			var method_list = enemy.get_method_list()
+			var take_damage_params = 0
+			for method in method_list:
+				if method.name == "take_damage":
+					take_damage_params = method.args.size()
+					break
+
+			if take_damage_params == 1:
+				enemy.take_damage(EXPLOSION_DAMAGE)
 				hit_count += 1
 
 		# Apply knockback
