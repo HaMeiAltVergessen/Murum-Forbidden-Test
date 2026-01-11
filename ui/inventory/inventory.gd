@@ -149,7 +149,7 @@ func _process(_delta: float) -> void:
 		i_key_was_pressed = i_key_is_pressed
 	else:
 		# Solo mode: Allow keyboard + controller
-		if Input.is_action_just_pressed("inventory_toggle"):
+		if Input.is_action_just_pressed("p1_inventory"):
 			toggle_inventory(1)  # P1 only in solo mode
 		i_key_was_pressed = false  # Reset when not in co-op
 

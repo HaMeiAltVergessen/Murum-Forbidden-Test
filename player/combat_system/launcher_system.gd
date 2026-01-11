@@ -100,8 +100,8 @@ func _check_launcher_input() -> bool:
 		return launcher_pressed and up_held
 	else:
 		# P1 solo mode: direct Input
-		var up_held: bool = Input.is_action_pressed("jump")
-		var launcher_pressed: bool = Input.is_action_just_pressed(LAUNCHER_INPUT)
+		var up_held: bool = Input.is_action_pressed("p1_jump")
+		var launcher_pressed: bool = Input.is_action_just_pressed("p1_" + LAUNCHER_INPUT)
 		return launcher_pressed and up_held
 
 

@@ -1245,11 +1245,11 @@ func create_placeholder_scythe() -> void:
 
 	scythe.global_position = global_position + Vector2(0, -20)
 
-	# Collision setup (COMMIT 021: Fixed - traf P2 selbst)
+	# Collision setup (COMMIT 023.9.4: Fixed layer to 9 instead of 11!)
 	scythe.collision_layer = 0
-	scythe.set_collision_layer_value(6, true)  # P2 Projectiles (Layer 6 = 32)
+	scythe.set_collision_layer_value(6, true)  # P2 Projectiles (Layer 6)
 	scythe.collision_mask = 0
-	scythe.set_collision_mask_value(11, true)  # Enemy Hurtbox ONLY (Layer 11 = 1024)
+	scythe.set_collision_mask_value(9, true)  # EnemyHurtbox (Layer 9) - works in both normal & PvP
 
 	# CRITICAL: Enable monitoring
 	scythe.monitoring = true
