@@ -108,7 +108,8 @@ func _input(event: InputEvent) -> void:
 			return
 
 	# Activate on Key 3 press OR RT + A (gamepad)
-	if event.is_action_pressed("p1_ability_3"):
+	# COMMIT 023.9.5: Check if action exists to prevent errors
+	if InputMap.has_action("p1_ability_3") and event.is_action_pressed("p1_ability_3"):
 		if is_active:
 			# Already active - cannot deactivate manually
 			print("[Echo] Already active - wait for duration to expire")
