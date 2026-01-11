@@ -359,6 +359,13 @@ func _start_pvp_sequence() -> void:
 			hurtbox.set_collision_layer_value(9, true)  # EnemyHurtbox
 			print("[Room05] P1 hurtbox changed to EnemyHurtbox layer")
 
+		# COMMIT 023.9.3: Change hitbox mask to check EnemyHurtbox (9) instead of PlayerHurtbox (10)
+		if player.has_node("CombatSystem/HitboxComponent"):
+			var hitbox = player.get_node("CombatSystem/HitboxComponent")
+			hitbox.set_collision_mask_value(10, false)  # Stop checking PlayerHurtbox
+			hitbox.set_collision_mask_value(9, true)    # Start checking EnemyHurtbox
+			print("[Room05] P1 hitbox mask updated for PvP (checks EnemyHurtbox)")
+
 	if player2:
 		player2.remove_from_group("player2")  # No longer player2
 		player2.add_to_group("enemies")       # Now an enemy
@@ -370,6 +377,13 @@ func _start_pvp_sequence() -> void:
 			hurtbox.collision_layer = 0
 			hurtbox.set_collision_layer_value(9, true)  # EnemyHurtbox
 			print("[Room05] P2 hurtbox changed to EnemyHurtbox layer")
+
+		# COMMIT 023.9.3: Change hitbox mask to check EnemyHurtbox (9) instead of PlayerHurtbox (10)
+		if player2.has_node("CombatSystem/HitboxComponent"):
+			var hitbox = player2.get_node("CombatSystem/HitboxComponent")
+			hitbox.set_collision_mask_value(10, false)  # Stop checking PlayerHurtbox
+			hitbox.set_collision_mask_value(9, true)    # Start checking EnemyHurtbox
+			print("[Room05] P2 hitbox mask updated for PvP (checks EnemyHurtbox)")
 
 	# Enable PvP mode (allows enemy-to-enemy damage in HitboxComponent)
 	CoopManager.pvp_mode = true
@@ -472,6 +486,13 @@ func _on_p2_death_pvp() -> void:
 			hurtbox.collision_layer = 0
 			hurtbox.set_collision_layer_value(10, true)  # PlayerHurtbox
 			print("[Room05] P1 hurtbox restored to PlayerHurtbox layer")
+
+		# COMMIT 023.9.3: Restore hitbox mask to check PlayerHurtbox (10) instead of EnemyHurtbox (9)
+		if player.has_node("CombatSystem/HitboxComponent"):
+			var hitbox = player.get_node("CombatSystem/HitboxComponent")
+			hitbox.set_collision_mask_value(9, false)   # Stop checking EnemyHurtbox
+			hitbox.set_collision_mask_value(10, true)   # Start checking PlayerHurtbox
+			print("[Room05] P1 hitbox mask restored to normal (checks PlayerHurtbox)")
 
 	# Disable PvP mode
 	CoopManager.pvp_mode = false
