@@ -60,6 +60,12 @@ func _ready() -> void:
 	add_to_group("projectiles")
 	add_to_group("staff_projectiles")
 
+	# COMMIT 023.9.4: In PvP mode, check EnemyHurtbox layer instead of PlayerHurtbox
+	if CoopManager and CoopManager.pvp_mode:
+		collision_mask = 0
+		set_collision_mask_value(9, true)  # EnemyHurtbox
+		print("[StaffProjectile] PvP mode - checking EnemyHurtbox (Layer 9)")
+
 	print("[StaffProjectile] Spawned, direction: %v" % direction)
 	print("[StaffProjectile] Collision layer: %d, mask: %d" % [collision_layer, collision_mask])
 	print("[StaffProjectile] Monitoring: %s, Monitorable: %s" % [monitoring, monitorable])

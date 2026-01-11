@@ -33,16 +33,17 @@ func _ready() -> void:
 		light.color = Color(0.8, 0.4, 1.0)  # Brighter glow
 		light.energy = 1.0  # Doubled brightness
 
-	# Collision setup
+	# Collision setup (COMMIT 023.9.4: Fixed to check Hurtbox layers!)
 	collision_layer = 0
 	set_collision_layer_value(6, true)  # P2 Projectiles
 	collision_mask = 0
-	set_collision_mask_value(1, true)   # World
-	set_collision_mask_value(4, true)   # Enemies
-	set_collision_mask_value(2, true)   # P1 (in co-op)
+	set_collision_mask_value(1, true)   # World (for walls)
+	# Check EnemyHurtbox (Layer 9) - works in both normal mode and PvP
+	set_collision_mask_value(9, true)   # EnemyHurtbox
 
 	# Connect signals
-	body_entered.connect(_on_body_entered)
+	area_entered.connect(_on_area_entered)  # Use area_entered for hurtboxes
+	body_entered.connect(_on_body_entered)  # Keep for walls
 
 func _process(delta: float) -> void:
 	# Rotate sprite (scythe spins)
@@ -98,8 +99,44 @@ func start_return_to_player(player) -> void:
 	if light:
 		light.energy = 0.8
 
+func _on_area_entered(area: Area2D) -> void:
+	"""Handle collision with hurtboxes (COMMIT 023.9.4)"""
+	if is_returning:
+		return
+
+	# Get enemy from hurtbox
+	var enemy = area.owner if area.owner else area.get_parent()
+	if not enemy or not is_instance_valid(enemy):
+		return
+
+	# Only hit enemies
+	if not enemy.is_in_group("enemies"):
+		return
+
+	# CRITICAL: Don't hit owner!
+	if enemy == owner_player:
+		print("[Shadow Scythe] Blocked self-hit on owner")
+		return
+
+	# Check if already hit this enemy
+	if enemy in hit_enemies:
+		return  # Pierce through, no second hit
+
+	# Damage enemy through HealthComponent
+	if enemy.has_node("HealthComponent"):
+		var health = enemy.get_node("HealthComponent")
+		if health.has_method("take_damage"):
+			health.take_damage(int(damage))
+			hit_enemies.append(enemy)
+			print("[Shadow Scythe] Hit %s! Damage: %.1f" % [enemy.name, damage])
+			spawn_hit_vfx()
+
+			# If not piercing, destroy
+			if not can_pierce:
+				queue_free()
+
 func _on_body_entered(body: Node2D) -> void:
-	"""Handle collision with bodies"""
+	"""Handle collision with bodies (walls only now)"""
 	if is_returning:
 		# During return, ignore collisions
 		return
@@ -113,25 +150,6 @@ func _on_body_entered(body: Node2D) -> void:
 		else:
 			queue_free()  # Owner is invalid, destroy scythe
 		return
-
-	# Enemy hit
-	if body.has_method("take_damage"):
-		# Check if already hit this enemy
-		if body in hit_enemies:
-			return  # Pierce through, no second hit
-
-		# Damage enemy
-		body.take_damage(damage)
-		hit_enemies.append(body)
-
-		print("[Shadow Scythe] Hit enemy! Damage: %.1f" % damage)
-
-		# VFX
-		spawn_hit_vfx()
-
-		# If not piercing, destroy
-		if not can_pierce:
-			queue_free()
 
 func spawn_hit_vfx() -> void:
 	"""Spawn impact VFX"""
