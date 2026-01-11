@@ -1031,28 +1031,39 @@ func void_strike_charged() -> void:
 	tween.tween_property(visual, "scale", Vector2(1.3, 1.3), 0.2)
 	tween.parallel().tween_property(visual, "modulate:a", 0.0, 0.2)
 
-	# Collision setup
+	# Collision setup (COMMIT 023.9.5: Fixed Layer 4 → 9, body_entered → area_entered!)
 	hitbox.collision_layer = 0
 	hitbox.set_collision_layer_value(6, true)  # P2 Projectiles
 	hitbox.collision_mask = 0
-	hitbox.set_collision_mask_value(4, true)  # Enemies
+	hitbox.set_collision_mask_value(9, true)  # EnemyHurtbox (Layer 9) - works in normal & PvP!
 
 	hitbox.monitoring = true
 	hitbox.monitorable = true
 
 	print("[Void Strike Charged] Hitbox created - Damage: %.1f, Radius: %.0f" % [charged_damage, charged_radius])
 
-	# Damage on hit
-	hitbox.body_entered.connect(func(body):
-		print("[Void Strike Charged] Hit: %s" % body.name)
-		if body.has_method("take_damage"):
-			body.take_damage(charged_damage)
-			print("[Void Strike Charged] Dealt %.1f damage to %s" % [charged_damage, body.name])
-		elif body.has_node("HealthComponent"):
-			var health = body.get_node("HealthComponent")
+	# Damage on hit (COMMIT 023.9.5: Use area_entered for hurtboxes!)
+	hitbox.area_entered.connect(func(area):
+		# Get enemy from hurtbox
+		var enemy = area.owner if area.owner else area.get_parent()
+		if not enemy or not is_instance_valid(enemy):
+			return
+
+		# Only hit enemies
+		if not enemy.is_in_group("enemies"):
+			return
+
+		# Don't hit yourself!
+		if enemy == self:
+			print("[Void Strike Charged] Blocked self-hit")
+			return
+
+		print("[Void Strike Charged] Hit: %s" % enemy.name)
+		if enemy.has_node("HealthComponent"):
+			var health = enemy.get_node("HealthComponent")
 			if health.has_method("take_damage"):
 				health.take_damage(int(charged_damage))
-				print("[Void Strike Charged] Dealt %.1f damage to %s" % [charged_damage, body.name])
+				print("[Void Strike Charged] Dealt %.1f damage to %s" % [charged_damage, enemy.name])
 	)
 
 	# VFX
@@ -1758,11 +1769,11 @@ func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
 
 	aoe.global_position = global_position
 
-	# Collision setup (ONLY Enemy Hurtbox - NO Player Hurtbox)
+	# Collision setup (COMMIT 023.9.5: Fixed Layer 11 → 9!)
 	aoe.collision_layer = 0
-	aoe.set_collision_layer_value(6, true)  # P2 Projectiles (Layer 6 = 32)
+	aoe.set_collision_layer_value(6, true)  # P2 Projectiles (Layer 6)
 	aoe.collision_mask = 0
-	aoe.set_collision_mask_value(11, true)  # Enemy Hurtbox ONLY (Layer 11 = 1024)
+	aoe.set_collision_mask_value(9, true)  # EnemyHurtbox (Layer 9) - works in normal & PvP!
 
 	aoe.monitoring = true
 	aoe.monitorable = false

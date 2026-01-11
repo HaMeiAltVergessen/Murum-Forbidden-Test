@@ -99,7 +99,8 @@ func _input(event: InputEvent) -> void:
 			return
 
 	# Activate on Key 2 press OR RT + Y (gamepad)
-	if event.is_action_pressed("p1_ability_2"):
+	# COMMIT 023.9.5: Check if action exists to prevent errors
+	if InputMap.has_action("p1_ability_2") and event.is_action_pressed("p1_ability_2"):
 		attempt_activation()
 	# Gamepad: RT + Y (Y = button 3)
 	elif event is InputEventJoypadButton:
