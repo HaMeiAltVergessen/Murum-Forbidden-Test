@@ -1,11 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://lythrun_player"]
+[gd_scene load_steps=7 format=3 uid="uid://lythrun_player"]
 
 [ext_resource type="Script" path="res://player/lythrun_player.gd" id="1_lythrun"]
 [ext_resource type="Script" path="res://player/movement_controller.gd" id="2_movement"]
 [ext_resource type="Script" path="res://player/health_component.gd" id="3_health"]
 [ext_resource type="Script" path="res://player/mana_component.gd" id="4_mana"]
-[ext_resource type="Script" path="res://player/combat_system.gd" id="5_combat"]
-[ext_resource type="PackedScene" uid="uid://dmqxgb7cyujwa" path="res://components/hitbox_component.tscn" id="6_hitbox"]
 [ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="7_hurtbox"]
 [ext_resource type="Script" path="res://player/player_camera.gd" id="8_camera"]
 [ext_resource type="Texture2D" uid="uid://jg4v3jkvbw1b" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Wizard/wizard-sheet.png" id="9_wizard"]
@@ -65,19 +63,6 @@ script = ExtResource("4_mana")
 max_mana = 100
 regeneration_rate = 10.0
 regen_delay_after_use = 1.0
-
-[node name="CombatSystem" type="Node2D" parent="."]
-script = ExtResource("5_combat")
-input_prefix = "p2_"
-attack_damages = Array[int]([10, 12, 15])
-attack_durations = Array[float]([0.3, 0.35, 0.4])
-combo_window = 0.5
-
-[node name="HitboxComponent" parent="CombatSystem" instance=ExtResource("6_hitbox")]
-position = Vector2(50, 0)
-collision_layer = 32
-collision_mask = 8
-damage = 10
 
 [node name="HurtboxComponent" parent="." instance=ExtResource("7_hurtbox")]
 collision_layer = 1024
