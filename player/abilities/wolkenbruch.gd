@@ -611,22 +611,19 @@ func _apply_aoe_damage(damage: int, radius: float) -> void:
 		var distance = player.global_position.distance_to(enemy.global_position)
 
 		if distance <= radius:
-			# Apply damage (COMMIT 023.9.6: Fixed take_damage signature)
-			if enemy.has_node("HealthComponent"):
+			# Apply damage (COMMIT 023.9.10: Use HurtboxComponent to respect invulnerability!)
+			# PRIORITY 1: Use HurtboxComponent (respects invulnerability/block!)
+			if enemy.has_node("HurtboxComponent"):
+				var hurtbox = enemy.get_node("HurtboxComponent")
+				if hurtbox and hurtbox.has_method("take_damage"):
+					var success = hurtbox.take_damage(damage, Vector2.ZERO, 0.1, player)
+					if success:
+						hit_count += 1
+			# FALLBACK: HealthComponent (old enemies)
+			elif enemy.has_node("HealthComponent"):
 				var health = enemy.get_node("HealthComponent")
 				if health.has_method("take_damage"):
 					health.take_damage(damage)
-					hit_count += 1
-			elif enemy.has_method("take_damage"):
-				# Check parameter count
-				var method_list = enemy.get_method_list()
-				var take_damage_params = 0
-				for method in method_list:
-					if method.name == "take_damage":
-						take_damage_params = method.args.size()
-						break
-				if take_damage_params == 1:
-					enemy.take_damage(damage)
 					hit_count += 1
 
 	print("[Wolkenbruch] Hit %d enemies for %d damage each" % [hit_count, damage])
