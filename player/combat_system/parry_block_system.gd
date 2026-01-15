@@ -151,7 +151,10 @@ func _setup_collision_area() -> void:
 
 	# Collision layers
 	block_area.collision_layer = 0
-	block_area.collision_mask = 128  # Enemy Hitboxes (Layer 8)
+	block_area.collision_mask = 0
+	block_area.set_collision_mask_value(6, true)  # P2 Projectiles (Layer 6)
+	block_area.set_collision_mask_value(8, true)  # Enemy Hitboxes (Layer 8)
+	block_area.set_collision_mask_value(9, true)  # P2 Abilities (Layer 9)
 
 	# Disabled by default
 	block_area.monitoring = false

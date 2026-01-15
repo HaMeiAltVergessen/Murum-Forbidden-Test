@@ -5,7 +5,7 @@ class_name Lythrun
 
 # ============ COMPONENT REFERENCES ============
 @onready var movement_controller: MovementController = $MovementController if has_node("MovementController") else null
-@onready var combat_system: CombatSystem = $CombatSystem if has_node("CombatSystem") else null
+# Note: Lythrun doesn't use CombatSystem (uses own abilities instead)
 @onready var health_component: HealthComponent = $HealthComponent if has_node("HealthComponent") else null
 @onready var mana_component: ManaComponent = $ManaComponent if has_node("ManaComponent") else null
 @onready var hurtbox: HurtboxComponent = $HurtboxComponent if has_node("HurtboxComponent") else null
@@ -192,12 +192,8 @@ func calculate_and_apply_scaled_stats() -> void:
 		movement_controller.jump_velocity = -scaled_stats.jump_force
 		movement_speed = scaled_stats.movement_speed
 
-	if combat_system:
-		# Scale attack damages
-		for i in range(combat_system.attack_damages.size()):
-			combat_system.attack_damages[i] = int(combat_system.attack_damages[i] * scaling_factor)
-		if combat_system.attack_damages.size() > 0:
-			base_damage = combat_system.attack_damages[0]
+	# Note: Lythrun uses base_damage directly (no CombatSystem)
+	base_damage = int(base_damage * scaling_factor)
 
 	# Log scaled stats
 	print_scaled_stats(p1_stats, scaled_stats)
@@ -320,15 +316,8 @@ func set_coop_collision() -> void:
 	set_collision_mask_value(7, true)   # Pickups
 	set_collision_mask_value(8, true)   # Hazards
 
-	# Update hitbox collision (P2's attacks hit enemies ONLY in co-op)
-	if combat_system and combat_system.has_node("HitboxComponent"):
-		var hitbox = combat_system.get_node("HitboxComponent")
-		hitbox.collision_layer = 0
-		hitbox.set_collision_layer_value(6, true)  # P2 Projectiles layer
-		hitbox.collision_mask = 0
-		hitbox.set_collision_mask_value(4, true)   # Enemies
-		hitbox.set_collision_mask_value(10, true)  # PlayerHurtbox
-		# NOTE: P1 collision only in PvP mode, handled by CoopManager.set_pvp_collision()
+	# Note: Lythrun's abilities (spawn_attack_hitbox, etc.) set their own hitbox layers
+	# No need for CombatSystem hitbox - each ability creates its own
 
 	print("[Lythrun] Co-op collision layers set")
 
