@@ -1020,11 +1020,12 @@ func void_strike_charged() -> void:
 	tween.tween_property(visual, "scale", Vector2(1.3, 1.3), 0.2)
 	tween.parallel().tween_property(visual, "modulate:a", 0.0, 0.2)
 
-	# Collision setup (COMMIT 023.9.8: Fixed back to Layer 11 - that's where enemies actually are!)
+	# Collision setup (COMMIT 023.9.9: Check BOTH Layer 9 (PVP) AND Layer 11 (Enemies)!)
 	hitbox.collision_layer = 0
 	hitbox.set_collision_layer_value(9, true)  # P2 Abilities (Layer 9)
 	hitbox.collision_mask = 0
-	hitbox.set_collision_mask_value(11, true)  # PlayerHurtbox/EnemyHurtbox (Layer 11) - both use same layer!
+	hitbox.set_collision_mask_value(9, true)   # EnemyHurtbox (PVP - Layer 9)
+	hitbox.set_collision_mask_value(11, true)  # PlayerHurtbox/EnemyHurtbox (Normal - Layer 11)
 
 	hitbox.monitoring = true
 	hitbox.monitorable = true
@@ -1245,11 +1246,12 @@ func create_placeholder_scythe() -> void:
 
 	scythe.global_position = global_position + Vector2(0, -20)
 
-	# Collision setup (COMMIT 023.9.8: Fixed to Layer 11 - where enemies actually are!)
+	# Collision setup (COMMIT 023.9.9: Check BOTH Layer 9 (PVP) AND Layer 11 (Enemies)!)
 	scythe.collision_layer = 0
 	scythe.set_collision_layer_value(6, true)  # P2 Projectiles (Layer 6)
 	scythe.collision_mask = 0
-	scythe.set_collision_mask_value(11, true)  # PlayerHurtbox/EnemyHurtbox (Layer 11) - both use same layer!
+	scythe.set_collision_mask_value(9, true)   # EnemyHurtbox (PVP - Layer 9)
+	scythe.set_collision_mask_value(11, true)  # PlayerHurtbox/EnemyHurtbox (Normal - Layer 11)
 
 	# CRITICAL: Enable monitoring
 	scythe.monitoring = true
@@ -1758,11 +1760,12 @@ func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
 
 	aoe.global_position = global_position
 
-	# Collision setup (COMMIT 023.9.8: Fixed back to Layer 11 - where enemies actually are!)
+	# Collision setup (COMMIT 023.9.9: Check BOTH Layer 9 (PVP) AND Layer 11 (Enemies)!)
 	aoe.collision_layer = 0
 	aoe.set_collision_layer_value(6, true)  # P2 Projectiles (Layer 6)
 	aoe.collision_mask = 0
-	aoe.set_collision_mask_value(11, true)  # PlayerHurtbox/EnemyHurtbox (Layer 11) - both use same layer!
+	aoe.set_collision_mask_value(9, true)   # EnemyHurtbox (PVP - Layer 9)
+	aoe.set_collision_mask_value(11, true)  # PlayerHurtbox/EnemyHurtbox (Normal - Layer 11)
 
 	aoe.monitoring = true
 	aoe.monitorable = false

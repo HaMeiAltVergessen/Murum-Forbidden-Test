@@ -317,6 +317,11 @@ func _on_block_area_entered(area: Area2D) -> void:
 		print("[ParryBlockSystem] No owner, ignoring")
 		return
 
+	# CRITICAL: Don't parry/block own hurtbox! (COMMIT 023.9.9)
+	if target == player:
+		print("[ParryBlockSystem] Ignoring own hurtbox (self-parry prevented)")
+		return
+
 	# ========== PARRY WINDOW (first 1 second after RMB press) ==========
 	if current_state == State.PARRY_WINDOW:
 		# Perfect Parry!
