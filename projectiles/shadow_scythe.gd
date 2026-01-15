@@ -33,13 +33,13 @@ func _ready() -> void:
 		light.color = Color(0.8, 0.4, 1.0)  # Brighter glow
 		light.energy = 1.0  # Doubled brightness
 
-	# Collision setup (COMMIT 023.9.4: Fixed to check Hurtbox layers!)
+	# Collision setup (COMMIT 023.9.8: Fixed to Layer 11 - where enemies actually are!)
 	collision_layer = 0
 	set_collision_layer_value(6, true)  # P2 Projectiles
 	collision_mask = 0
 	set_collision_mask_value(1, true)   # World (for walls)
-	# Check EnemyHurtbox (Layer 9) - works in both normal mode and PvP
-	set_collision_mask_value(9, true)   # EnemyHurtbox
+	# Check PlayerHurtbox/EnemyHurtbox (Layer 11) - both use same layer!
+	set_collision_mask_value(11, true)  # PlayerHurtbox/EnemyHurtbox
 
 	# Connect signals
 	area_entered.connect(_on_area_entered)  # Use area_entered for hurtboxes
