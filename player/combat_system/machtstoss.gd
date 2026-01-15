@@ -447,33 +447,30 @@ func _apply_knockback_direct(enemy: CharacterBody2D, knockback_vector: Vector2) 
 	tween.tween_property(enemy, "velocity", Vector2.ZERO, KNOCKBACK_DURATION)
 
 func _deal_damage_to_enemy(enemy: Node, damage: int) -> void:
-	"""Deals damage to an enemy (COMMIT 023.9.6: Fixed take_damage signature)"""
+	"""Deals damage to an enemy (COMMIT 023.9.10: Use HurtboxComponent to respect invulnerability!)"""
 
 	# CRITICAL: Don't damage yourself!
 	if enemy == player:
 		print("[Machtstoß] Blocked self-hit")
 		return
 
-	# Prioritize HealthComponent (always takes 1 argument)
+	# PRIORITY 1: Use HurtboxComponent (respects invulnerability/block!)
+	if enemy.has_node("HurtboxComponent"):
+		var hurtbox = enemy.get_node("HurtboxComponent")
+		if hurtbox and hurtbox.has_method("take_damage"):
+			var success = hurtbox.take_damage(damage, Vector2.ZERO, 0.2, player)
+			if success:
+				print("[Machtstoß]   -> Damaged %s for %d (HurtboxComponent)" % [enemy.name, damage])
+			else:
+				print("[Machtstoß]   -> BLOCKED by %s (invulnerable!)" % enemy.name)
+			return
+
+	# FALLBACK: Use HealthComponent directly (old enemies without hurtbox)
 	if enemy.has_node("HealthComponent"):
 		var health = enemy.get_node("HealthComponent")
 		if health and health.has_method("take_damage"):
 			health.take_damage(damage)
-			print("[Machtstoß]   -> Damaged %s for %d (HealthComponent)" % [enemy.name, damage])
-			return
-
-	# Fallback: Try direct method with parameter count check
-	if enemy.has_method("take_damage"):
-		var method_list = enemy.get_method_list()
-		var take_damage_params = 0
-		for method in method_list:
-			if method.name == "take_damage":
-				take_damage_params = method.args.size()
-				break
-
-		if take_damage_params == 1:
-			enemy.take_damage(damage)
-			print("[Machtstoß]   -> Damaged %s for %d (direct method)" % [enemy.name, damage])
+			print("[Machtstoß]   -> Damaged %s for %d (HealthComponent fallback)" % [enemy.name, damage])
 			return
 
 	print("[Machtstoß]   -> WARNING: Could not damage %s (no damage method)" % enemy.name)

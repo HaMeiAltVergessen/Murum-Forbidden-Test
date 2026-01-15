@@ -323,16 +323,26 @@ func _deal_fullscreen_damage(damage: int) -> void:
 		if not is_instance_valid(enemy):
 			continue
 
-		# Try direct method first
-		if enemy.has_method("take_damage"):
+		# COMMIT 023.9.10: Use HurtboxComponent to respect invulnerability!
+		# PRIORITY 1: Use HurtboxComponent (respects invulnerability/block!)
+		if enemy.has_node("HurtboxComponent"):
+			var hurtbox = enemy.get_node("HurtboxComponent")
+			if hurtbox and hurtbox.has_method("take_damage"):
+				var success = hurtbox.take_damage(damage, Vector2.ZERO, 0.2, player)
+				if success:
+					print("[UrgathonWill] Dealt %d damage to %s (HurtboxComponent)" % [damage, enemy.name])
+				else:
+					print("[UrgathonWill] BLOCKED by %s (invulnerable!)" % enemy.name)
+		# FALLBACK 1: Direct method (old enemies)
+		elif enemy.has_method("take_damage"):
 			enemy.take_damage(damage, player)
-			print("[UrgathonWill] Dealt %d damage to %s (direct)" % [damage, enemy.name])
-		# Fallback to HealthComponent
+			print("[UrgathonWill] Dealt %d damage to %s (direct method)" % [damage, enemy.name])
+		# FALLBACK 2: HealthComponent
 		elif enemy.has_node("HealthComponent"):
 			var health = enemy.get_node("HealthComponent")
 			if health.has_method("take_damage"):
 				health.take_damage(damage)
-				print("[UrgathonWill] Dealt %d damage to %s (HealthComponent)" % [damage, enemy.name])
+				print("[UrgathonWill] Dealt %d damage to %s (HealthComponent fallback)" % [damage, enemy.name])
 
 func _spawn_explosion(level: int) -> void:
 	"""Spawns explosion VFX based on level"""

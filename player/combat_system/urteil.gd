@@ -400,16 +400,26 @@ func _apply_explosion_effect(enemy: Node, explosion_center: Vector2, distance: f
 	elif enemy.has_method("apply_knockback"):
 		enemy.apply_knockback(direction, PULL_FORCE, PULL_DURATION)
 
-	# Apply damage
-	if enemy.has_method("take_damage"):
+	# Apply damage (COMMIT 023.9.10: Use HurtboxComponent to respect invulnerability!)
+	# PRIORITY 1: Use HurtboxComponent (respects invulnerability/block!)
+	if enemy.has_node("HurtboxComponent"):
+		var hurtbox = enemy.get_node("HurtboxComponent")
+		if hurtbox and hurtbox.has_method("take_damage"):
+			var success = hurtbox.take_damage(EXPLOSION_DAMAGE, Vector2.ZERO, 0.2, player)
+			if success:
+				print("[Urteil] Damaged %s for %d (HurtboxComponent)" % [enemy.name, EXPLOSION_DAMAGE])
+			else:
+				print("[Urteil] BLOCKED by %s (invulnerable!)" % enemy.name)
+	# FALLBACK 1: Try direct method (for old enemies)
+	elif enemy.has_method("take_damage"):
 		enemy.take_damage(EXPLOSION_DAMAGE, player)
-		print("[Urteil] Damaged %s for %d" % [enemy.name, EXPLOSION_DAMAGE])
-	# Fallback to HealthComponent
+		print("[Urteil] Damaged %s for %d (direct method)" % [enemy.name, EXPLOSION_DAMAGE])
+	# FALLBACK 2: HealthComponent
 	elif enemy.has_node("HealthComponent"):
 		var health = enemy.get_node("HealthComponent")
 		if health.has_method("take_damage"):
 			health.take_damage(EXPLOSION_DAMAGE)
-			print("[Urteil] Damaged %s for %d (HealthComponent)" % [enemy.name, EXPLOSION_DAMAGE])
+			print("[Urteil] Damaged %s for %d (HealthComponent fallback)" % [enemy.name, EXPLOSION_DAMAGE])
 
 	# Check if enemy died from explosion and ensure cleanup
 	await get_tree().process_frame  # Wait for damage to process
