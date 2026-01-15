@@ -364,8 +364,22 @@ func _on_block_area_entered(area: Area2D) -> void:
 		EventBus.attack_blocked.emit(target, 1.0)  # 100% damage reduction (invulnerable)
 
 func _is_enemy_hitbox(area: Area2D) -> bool:
-	"""Checks if area is enemy hitbox"""
-	return area.is_in_group("hitbox") or area.name.contains("Hitbox")
+	"""Checks if area is enemy hitbox or P2 projectile/ability"""
+	# Check by group
+	if area.is_in_group("hitbox"):
+		return true
+	# Check by name
+	if area.name.contains("Hitbox"):
+		return true
+	# Check by collision layer (NEW: for P2 projectiles/abilities)
+	# Layer 6 = P2 Projectiles, Layer 8 = Enemy Hitboxes, Layer 9 = P2 Abilities
+	if area.get_collision_layer_value(6):  # P2 Projectiles (Shadow Scythe, etc.)
+		return true
+	if area.get_collision_layer_value(8):  # Enemy Hitboxes
+		return true
+	if area.get_collision_layer_value(9):  # P2 Abilities (Void Strike, etc.)
+		return true
+	return false
 
 func _is_projectile(node: Node) -> bool:
 	"""Checks if node is a projectile"""
