@@ -122,18 +122,32 @@ func _on_area_entered(area: Area2D) -> void:
 	if enemy in hit_enemies:
 		return  # Pierce through, no second hit
 
-	# Damage enemy through HealthComponent
-	if enemy.has_node("HealthComponent"):
+	# Damage enemy (COMMIT 023.9.11: Use HurtboxComponent to respect invulnerability!)
+	var damage_dealt = false
+
+	# PRIORITY 1: Use HurtboxComponent (respects invulnerability/block!)
+	if area is HurtboxComponent:
+		var success = area.take_damage(int(damage), Vector2.ZERO, 0.2, owner_player)
+		if success:
+			damage_dealt = true
+			print("[Shadow Scythe] Hit %s! Damage: %.1f (HurtboxComponent)" % [enemy.name, damage])
+		else:
+			print("[Shadow Scythe] BLOCKED by %s (invulnerable!)" % enemy.name)
+	# FALLBACK: HealthComponent (old enemies)
+	elif enemy.has_node("HealthComponent"):
 		var health = enemy.get_node("HealthComponent")
 		if health.has_method("take_damage"):
 			health.take_damage(int(damage))
-			hit_enemies.append(enemy)
-			print("[Shadow Scythe] Hit %s! Damage: %.1f" % [enemy.name, damage])
-			spawn_hit_vfx()
+			damage_dealt = true
+			print("[Shadow Scythe] Hit %s! Damage: %.1f (HealthComponent fallback)" % [enemy.name, damage])
 
-			# If not piercing, destroy
-			if not can_pierce:
-				queue_free()
+	if damage_dealt:
+		hit_enemies.append(enemy)
+		spawn_hit_vfx()
+
+		# If not piercing, destroy
+		if not can_pierce:
+			queue_free()
 
 func _on_body_entered(body: Node2D) -> void:
 	"""Handle collision with bodies (walls only now)"""

@@ -1032,8 +1032,12 @@ func void_strike_charged() -> void:
 
 	print("[Void Strike Charged] Hitbox created - Damage: %.1f, Radius: %.0f" % [charged_damage, charged_radius])
 
-	# Damage on hit (COMMIT 023.9.5: Use area_entered for hurtboxes!)
+	# Damage on hit (COMMIT 023.9.11: Use HurtboxComponent to respect invulnerability!)
 	hitbox.area_entered.connect(func(area):
+		# area is HurtboxComponent!
+		if not area or not is_instance_valid(area):
+			return
+
 		# Get enemy from hurtbox
 		var enemy = area.owner if area.owner else area.get_parent()
 		if not enemy or not is_instance_valid(enemy):
@@ -1048,12 +1052,19 @@ func void_strike_charged() -> void:
 			print("[Void Strike Charged] Blocked self-hit")
 			return
 
-		print("[Void Strike Charged] Hit: %s" % enemy.name)
-		if enemy.has_node("HealthComponent"):
+		# PRIORITY 1: Use HurtboxComponent (respects invulnerability/block!)
+		if area is HurtboxComponent:
+			var success = area.take_damage(int(charged_damage), Vector2.ZERO, 0.2, self)
+			if success:
+				print("[Void Strike Charged] Dealt %.1f damage to %s (HurtboxComponent)" % [charged_damage, enemy.name])
+			else:
+				print("[Void Strike Charged] BLOCKED by %s (invulnerable!)" % enemy.name)
+		# FALLBACK: HealthComponent (old enemies)
+		elif enemy.has_node("HealthComponent"):
 			var health = enemy.get_node("HealthComponent")
 			if health.has_method("take_damage"):
 				health.take_damage(int(charged_damage))
-				print("[Void Strike Charged] Dealt %.1f damage to %s" % [charged_damage, enemy.name])
+				print("[Void Strike Charged] Dealt %.1f damage to %s (HealthComponent fallback)" % [charged_damage, enemy.name])
 	)
 
 	# VFX
@@ -1801,13 +1812,22 @@ func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
 				print("[Void Orb AoE] Blocked self-hit on %s" % enemy.name)
 				continue
 
-			# Deal damage through HealthComponent
-			if enemy.has_node("HealthComponent"):
+			# Deal damage (COMMIT 023.9.11: Use HurtboxComponent to respect invulnerability!)
+			# PRIORITY 1: Use HurtboxComponent (respects invulnerability/block!)
+			if area is HurtboxComponent:
+				var success = area.take_damage(int(damage), Vector2.ZERO, 0.2, self)
+				if success:
+					enemies_hit += 1
+					print("[Void Orb AoE] Hit %s for %.1f damage (HurtboxComponent)" % [enemy.name, damage])
+				else:
+					print("[Void Orb AoE] BLOCKED by %s (invulnerable!)" % enemy.name)
+			# FALLBACK: HealthComponent (old enemies)
+			elif enemy.has_node("HealthComponent"):
 				var health = enemy.get_node("HealthComponent")
 				if health.has_method("take_damage"):
 					health.take_damage(int(damage))
 					enemies_hit += 1
-					print("[Void Orb AoE] Hit %s for %.1f damage" % [enemy.name, damage])
+					print("[Void Orb AoE] Hit %s for %.1f damage (HealthComponent fallback)" % [enemy.name, damage])
 
 	print("[Void Orb AoE] Total enemies hit: %d" % enemies_hit)
 
