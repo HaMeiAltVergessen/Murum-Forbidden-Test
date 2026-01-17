@@ -1,11 +1,11 @@
 [gd_scene load_steps=7 format=3 uid="uid://cg1yfqr5u0pjd"]
 
-[ext_resource type="Script" path="res://ui/hud.gd" id="1_hud"]
+[ext_resource type="Script" uid="uid://unppgap50u0t" path="res://ui/hud.gd" id="1_hud"]
 [ext_resource type="PackedScene" path="res://ui/hud/combo_display.tscn" id="2_combo_display"]
 [ext_resource type="PackedScene" path="res://ui/hud/resonance_bar.tscn" id="3_resonance_bar"]
 [ext_resource type="PackedScene" uid="uid://dx5m8q3v2rnpt" path="res://ui/hud/wave_indicator.tscn" id="5_wave_indicator"]
-[ext_resource type="PackedScene" uid="uid://air_combo_display_ui" path="res://ui/hud/air_combo_display.tscn" id="6_air_combo_display"]
-[ext_resource type="PackedScene" uid="uid://rebound_indicator_001" path="res://ui/hud/rebound_indicator.tscn" id="7_rebound_indicator"]
+[ext_resource type="PackedScene" path="res://ui/hud/air_combo_display.tscn" id="6_air_combo_display"]
+[ext_resource type="PackedScene" path="res://ui/hud/rebound_indicator.tscn" id="7_rebound_indicator"]
 
 [node name="HUD" type="CanvasLayer" groups=["hud"]]
 script = ExtResource("1_hud")
@@ -34,7 +34,6 @@ theme_override_constants/separation = 4
 [node name="ManaBar" type="ProgressBar" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(200, 24)
 layout_mode = 2
-max_value = 100.0
 value = 100.0
 show_percentage = false
 
@@ -56,7 +55,6 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="ResonanceBar" parent="MarginContainer/VBoxContainer" instance=ExtResource("3_resonance_bar")]
-layout_mode = 2
 
 [node name="InteractionPrompt" type="Label" parent="."]
 anchors_preset = 8
@@ -91,21 +89,3 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0)
-
-[node name="GoldCounter" type="Label" parent="."]
-anchors_preset = 2
-anchor_left = 0.0
-anchor_top = 1.0
-anchor_right = 0.0
-anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = -80.0
-offset_right = 220.0
-offset_bottom = -40.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_colors/font_color = Color(1, 0.9, 0.3, 1)
-theme_override_font_sizes/font_size = 24
-text = "Gold: 0"
-horizontal_alignment = 0
-vertical_alignment = 1

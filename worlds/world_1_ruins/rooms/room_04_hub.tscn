@@ -1,83 +1,52 @@
 [gd_scene load_steps=12 format=3 uid="uid://room04hub"]
 
-[ext_resource type="Script" path="res://worlds/world_1_ruins/rooms/room_04_hub.gd" id="1_room04"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Background/Environments/HauntedForest/Layers/back.png" id="1_background"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Background/Environments/HauntedForest/Layers/middle.png" id="2_middle"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Background/Environments/HauntedForest/Layers/tileset.png" id="1_tileset"]
-[ext_resource type="PackedScene" uid="uid://b1k5wfkqxc8yx" path="res://player/murum.tscn" id="2_murum"]
+[ext_resource type="Script" uid="uid://bt81ajh4hcw44" path="res://worlds/world_1_ruins/rooms/room_04_hub.gd" id="1_room04"]
 [ext_resource type="PackedScene" uid="uid://c2nx5q8v4kmpr" path="res://environment/checkpoint.tscn" id="2_checkpoint"]
-[ext_resource type="PackedScene" path="res://environment/door.tscn" id="3_door"]
-[ext_resource type="PackedScene" uid="uid://world1_merchant" path="res://environment/npcs/world1_merchant.tscn" id="4_merchant"]
-[ext_resource type="Script" path="res://environment/death_box.gd" id="5_deathbox"]
+[ext_resource type="Texture2D" uid="uid://dftu0634otf66" path="res://Assets/AIAssets/c7df7238-2e2f-4627-a438-f87cf6ed1b3c.jpg" id="2_lwg8g"]
+[ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="3_door"]
+[ext_resource type="AudioStream" uid="uid://dxuqv3ffmx07a" path="res://Music/Welt 01 Boss Build Up.mp3" id="4_ccilu"]
+[ext_resource type="PackedScene" path="res://environment/npcs/world1_merchant.tscn" id="4_merchant"]
+[ext_resource type="Script" uid="uid://caok0xb0x0ebj" path="res://environment/death_box.gd" id="5_deathbox"]
 [ext_resource type="PackedScene" path="res://environment/pickups/gold_coin.tscn" id="6_goldcoin"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
-size = Vector2(1200, 80)
+size = Vector2(1890, 80)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wall"]
 size = Vector2(40, 900)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_deathbox"]
-size = Vector2(1500, 200)
+size = Vector2(2044, 200)
 
 [node name="Room04Hub" type="Node2D"]
 script = ExtResource("1_room04")
 
 [node name="BackLayer" type="Sprite2D" parent="."]
 z_index = -3
-position = Vector2(600, 450)
-scale = Vector2(2.8, 2.8)
-texture = ExtResource("1_background")
-
-[node name="MiddleLayer" type="Sprite2D" parent="."]
-z_index = -2
-position = Vector2(600, 450)
-scale = Vector2(2.8, 2.8)
-texture = ExtResource("2_middle")
-modulate = Color(1, 1, 1, 0.7)
+position = Vector2(966.4, 533.9)
+scale = Vector2(1.26771, 1.08574)
+texture = ExtResource("2_lwg8g")
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(0, 820)
 
-[node name="Sprite2D" type="Sprite2D" parent="Ground"]
-position = Vector2(600, 40)
-scale = Vector2(5, 5)
-texture = ExtResource("1_tileset")
-region_enabled = true
-region_rect = Rect2(0, 0, 256, 16)
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
-position = Vector2(600, 40)
+position = Vector2(945, 40)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="WallLeft" type="StaticBody2D" parent="."]
 position = Vector2(-20, 450)
-collision_layer = 1
 collision_mask = 0
-
-[node name="Sprite2D" type="Sprite2D" parent="WallLeft"]
-z_index = -1
-position = Vector2(0, 0)
-scale = Vector2(0.2, 6)
-texture = ExtResource("1_tileset")
-modulate = Color(0.4, 0.35, 0.4, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
 shape = SubResource("RectangleShape2D_wall")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
 position = Vector2(1220, 450)
-collision_layer = 1
 collision_mask = 0
 
-[node name="Sprite2D" type="Sprite2D" parent="WallRight"]
-z_index = -1
-position = Vector2(0, 0)
-scale = Vector2(0.2, 6)
-texture = ExtResource("1_tileset")
-modulate = Color(0.4, 0.35, 0.4, 1)
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
+position = Vector2(691, 5)
 shape = SubResource("RectangleShape2D_wall")
 
 [node name="DeathBoxLeft" type="Area2D" parent="."]
@@ -85,20 +54,19 @@ position = Vector2(-120, 450)
 script = ExtResource("5_deathbox")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DeathBoxLeft"]
+position = Vector2(1120, -427)
 shape = SubResource("RectangleShape2D_deathbox")
 
 [node name="DeathBoxRight" type="Area2D" parent="."]
 position = Vector2(1320, 450)
 script = ExtResource("5_deathbox")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathBoxRight"]
-shape = SubResource("RectangleShape2D_deathbox")
-
 [node name="DeathBoxBottom" type="Area2D" parent="."]
 position = Vector2(600, 1000)
 script = ExtResource("5_deathbox")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DeathBoxBottom"]
+position = Vector2(272, 0)
 shape = SubResource("RectangleShape2D_deathbox")
 
 [node name="Doors" type="Node2D" parent="."]
@@ -119,7 +87,7 @@ text = "Arena"
 horizontal_alignment = 1
 
 [node name="DoorToBoss" parent="Doors" instance=ExtResource("3_door")]
-position = Vector2(1100, 760)
+position = Vector2(981, 750)
 target_scene = "res://worlds/world_1_ruins/rooms/room_05_boss_arena.tscn"
 spawn_position = Vector2(-200, 0)
 
@@ -136,7 +104,6 @@ horizontal_alignment = 1
 [node name="DoorToItemRoom" parent="Doors" instance=ExtResource("3_door")]
 position = Vector2(600, 760)
 target_scene = "res://levels/item_room.tscn"
-spawn_position = Vector2(300, 950)
 
 [node name="DoorLabel" type="Label" parent="Doors/DoorToItemRoom"]
 offset_left = -50.0
@@ -168,3 +135,10 @@ position = Vector2(450, 780)
 
 [node name="Default" type="Marker2D" parent="SpawnPoints"]
 position = Vector2(200, 750)
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(945, 860)
+stream = ExtResource("4_ccilu")
+volume_db = -4.0
+autoplay = true
+parameters/looping = false

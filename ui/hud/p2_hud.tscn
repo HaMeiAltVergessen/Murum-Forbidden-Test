@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://p2_hud"]
+[gd_scene load_steps=2 format=3 uid="uid://d35km3hfngjf6"]
 
-[ext_resource type="Script" path="res://ui/hud/p2_hud.gd" id="1_p2_hud"]
+[ext_resource type="Script" uid="uid://cflumnv3qae8j" path="res://ui/hud/p2_hud.gd" id="1_p2_hud"]
 
 [node name="P2HUD" type="CanvasLayer"]
 script = ExtResource("1_p2_hud")
@@ -8,15 +8,12 @@ script = ExtResource("1_p2_hud")
 [node name="MarginContainer" type="MarginContainer" parent="."]
 anchors_preset = 1
 anchor_left = 1.0
-anchor_top = 0.0
 anchor_right = 1.0
-anchor_bottom = 0.0
 offset_left = -320.0
 offset_top = 20.0
 offset_right = -20.0
 offset_bottom = 150.0
 grow_horizontal = 0
-grow_vertical = 1
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
@@ -44,7 +41,6 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(150, 20)
 layout_mode = 2
 size_flags_horizontal = 3
-max_value = 100.0
 value = 80.0
 show_percentage = false
 
@@ -66,7 +62,6 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(150, 20)
 layout_mode = 2
 size_flags_horizontal = 3
-max_value = 100.0
 value = 80.0
 show_percentage = false
 
