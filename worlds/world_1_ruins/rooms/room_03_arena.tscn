@@ -1,13 +1,13 @@
 [gd_scene load_steps=14 format=3 uid="uid://dq7m4n8x3vspt"]
 
-[ext_resource type="Script" uid="uid://dpy70x2xl8a2b" path="res://worlds/world_1_ruins/rooms/room_03_arena.gd" id="1_room03"]
-[ext_resource type="Texture2D" uid="uid://clj54sugotem3" path="res://Assets/Placeholder/Background/Environments/HauntedForest/Layers/tileset.png" id="1_tileset"]
+[ext_resource type="Script" uid="uid://d3ga2xnikulhm" path="res://worlds/world_1_ruins/rooms/room_03_arena.gd" id="1_room03"]
 [ext_resource type="Texture2D" uid="uid://ddshbf3nio6lw" path="res://Assets/AIAssets/8d33fd80-90de-40ba-a387-b68c6792874b.jpg" id="2_pdr4c"]
-[ext_resource type="Script" uid="uid://dyw6qr3x50uyq" path="res://worlds/wave_spawner.gd" id="2_wave_spawner"]
+[ext_resource type="Script" uid="uid://dedqqgmekjfmv" path="res://worlds/wave_spawner.gd" id="2_wave_spawner"]
 [ext_resource type="PackedScene" uid="uid://c2nx5q8v4kmpr" path="res://environment/checkpoint.tscn" id="3_checkpoint"]
+[ext_resource type="Texture2D" uid="uid://b7h4ebwpboi5w" path="res://Assets/AIAssets/world1lvl01.jpg" id="3_sky3w"]
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="4_door"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="5_spawn"]
-[ext_resource type="Script" uid="uid://caok0xb0x0ebj" path="res://environment/death_box.gd" id="6_deathbox"]
+[ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="6_deathbox"]
 [ext_resource type="AudioStream" uid="uid://l06dl0uy336p" path="res://Music/Welt 01 temple.mp3" id="9_sky3w"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
@@ -27,9 +27,15 @@ script = ExtResource("1_room03")
 
 [node name="BackLayer" type="Sprite2D" parent="."]
 z_index = -3
-position = Vector2(936.6, 574.5)
-scale = Vector2(1.28464, 1.12793)
+position = Vector2(825, 481.5)
+scale = Vector2(1.06901, 1.06348)
 texture = ExtResource("2_pdr4c")
+
+[node name="BackLayer2" type="Sprite2D" parent="."]
+z_index = -4
+position = Vector2(1554, 372)
+scale = Vector2(3, 3)
+texture = ExtResource("3_sky3w")
 
 [node name="TileMap" type="TileMap" parent="."]
 format = 2
@@ -40,7 +46,6 @@ position = Vector2(0, 820)
 [node name="Sprite2D" type="Sprite2D" parent="Ground"]
 position = Vector2(800, 40)
 scale = Vector2(6.5, 5)
-texture = ExtResource("1_tileset")
 region_enabled = true
 region_rect = Rect2(0, 0, 256, 16)
 
@@ -109,7 +114,7 @@ target_scene = "res://worlds/world_1_ruins/rooms/room_02_corridor.tscn"
 spawn_position = Vector2(1130, 600)
 
 [node name="DoorToRoom04" parent="Doors" instance=ExtResource("4_door")]
-position = Vector2(628, 737)
+position = Vector2(581, 687)
 target_scene = "res://worlds/world_1_ruins/rooms/room_04_hub.tscn"
 spawn_position = Vector2(200, 750)
 
@@ -136,6 +141,7 @@ facing_direction = -1
 position = Vector2(800, 780)
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(821, 419)
 stream = ExtResource("9_sky3w")
 volume_db = -8.0
 autoplay = true

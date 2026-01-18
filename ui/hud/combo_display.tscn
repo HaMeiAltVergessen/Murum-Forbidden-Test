@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://combo_display_ui"]
+[gd_scene load_steps=2 format=3 uid="uid://dbpjem0c6m3eg"]
 
-[ext_resource type="Script" path="res://ui/hud/combo_display.gd" id="1_combo_display"]
+[ext_resource type="Script" uid="uid://dongd7csvselg" path="res://ui/hud/combo_display.gd" id="1_combo_display"]
 
 [node name="ComboDisplay" type="Control"]
 layout_mode = 3
@@ -19,6 +19,8 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = 249.0
+offset_bottom = 249.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 4
@@ -39,6 +41,5 @@ horizontal_alignment = 2
 custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 max_value = 1.0
-step = 0.01
 value = 1.0
 show_percentage = false

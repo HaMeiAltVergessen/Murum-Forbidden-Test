@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://cg1yfqr5u0pjd"]
 
 [ext_resource type="Script" uid="uid://unppgap50u0t" path="res://ui/hud.gd" id="1_hud"]
-[ext_resource type="PackedScene" path="res://ui/hud/combo_display.tscn" id="2_combo_display"]
+[ext_resource type="PackedScene" uid="uid://dbpjem0c6m3eg" path="res://ui/hud/combo_display.tscn" id="2_combo_display"]
 [ext_resource type="PackedScene" path="res://ui/hud/resonance_bar.tscn" id="3_resonance_bar"]
 [ext_resource type="PackedScene" uid="uid://dx5m8q3v2rnpt" path="res://ui/hud/wave_indicator.tscn" id="5_wave_indicator"]
 [ext_resource type="PackedScene" path="res://ui/hud/air_combo_display.tscn" id="6_air_combo_display"]

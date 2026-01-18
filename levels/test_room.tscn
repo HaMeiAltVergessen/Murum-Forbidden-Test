@@ -1,18 +1,17 @@
-[gd_scene load_steps=15 format=3 uid="uid://dbvhxpr5y6bww"]
+[gd_scene load_steps=19 format=3 uid="uid://dbvhxpr5y6bww"]
 
-[ext_resource type="Script" path="res://levels/test_room.gd" id="1_test_room_script"]
+[ext_resource type="Script" uid="uid://cc2sp6gtbqbnh" path="res://levels/test_room.gd" id="1_test_room_script"]
+[ext_resource type="Texture2D" uid="uid://q47f0nofwgxj" path="res://Assets/AIAssets/11a02050-3ac3-4fdb-9da2-f063590399d3.jpg" id="2_lapnv"]
 [ext_resource type="PackedScene" uid="uid://b1k5wfkqxc8yx" path="res://player/murum.tscn" id="2_murum_scene"]
+[ext_resource type="PackedScene" uid="uid://bx7k2qn8nav4p" path="res://enemies/world_1_ruins/geist.tscn" id="3_geist_scene"]
 [ext_resource type="PackedScene" uid="uid://dkc8y7x0ij6nw" path="res://enemies/untote.tscn" id="3_untote_scene"]
-[ext_resource type="PackedScene" uid="uid://bx7k2qn8m9v4p" path="res://enemies/world_1_ruins/geist.tscn" id="3_geist_scene"]
 [ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="4_spike_trap_scene"]
-[ext_resource type="PackedScene" uid="uid://b9kx4m2v7pqrs" path="res://environment/interactables/lever.tscn" id="5_lever_scene"]
+[ext_resource type="PackedScene" uid="uid://cakx4m2v7pqrs" path="res://environment/interactables/lever.tscn" id="5_lever_scene"]
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="6_door_scene"]
-[ext_resource type="PackedScene" uid="uid://cg1yfqr5u0pjd" path="res://ui/hud.tscn" id="7_hud_scene"]
 [ext_resource type="PackedScene" uid="uid://cnwm5dx2vx7b4" path="res://ui/death_screen.tscn" id="8_death_screen_scene"]
-[ext_resource type="PackedScene" uid="uid://inventory_scene" path="res://ui/inventory/inventory.tscn" id="9_inventory_scene"]
-[ext_resource type="PackedScene" uid="uid://pickup_base_scene" path="res://environment/pickups/pickup_base.tscn" id="10_pickup_scene"]
-[ext_resource type="PackedScene" uid="uid://coop_camera_scene" path="res://camera/coop_camera.tscn" id="11_coop_camera"]
-[ext_resource type="PackedScene" uid="uid://split_screen_manager" path="res://camera/split_screen_manager.tscn" id="12_split_screen"]
+[ext_resource type="PackedScene" path="res://environment/pickups/pickup_base.tscn" id="10_pickup_scene"]
+[ext_resource type="PackedScene" path="res://camera/coop_camera.tscn" id="11_coop_camera"]
+[ext_resource type="PackedScene" path="res://camera/split_screen_manager.tscn" id="12_split_screen"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_floor"]
 texture_region_size = Vector2i(32, 32)
@@ -22,7 +21,7 @@ tile_size = Vector2i(32, 32)
 sources/0 = SubResource("TileSetAtlasSource_floor")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
-size = Vector2(1920, 80)
+size = Vector2(1920, 113)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_left"]
 size = Vector2(32, 1080)
@@ -35,12 +34,11 @@ size = Vector2(256, 32)
 
 [node name="TestRoom" type="Node2D"]
 script = ExtResource("1_test_room_script")
-room_size = Vector2(1920, 1080)
 
-[node name="Background" type="ColorRect" parent="."]
-offset_right = 1920.0
-offset_bottom = 1080.0
-color = Color(0.1, 0.1, 0.15, 1)
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(964.437, 542.5)
+scale = Vector2(0.697266, 0.697266)
+texture = ExtResource("2_lapnv")
 
 [node name="TileMap" type="TileMap" parent="."]
 tile_set = SubResource("TileSet_main")
@@ -49,13 +47,8 @@ format = 2
 [node name="GroundPlatform1" type="StaticBody2D" parent="."]
 position = Vector2(0, 1000)
 
-[node name="ColorRect" type="ColorRect" parent="GroundPlatform1"]
-offset_right = 1920.0
-offset_bottom = 80.0
-color = Color(0.3, 0.3, 0.3, 1)
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="GroundPlatform1"]
-position = Vector2(960, 40)
+position = Vector2(960, 23.5)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="LeftWall" type="StaticBody2D" parent="."]
@@ -153,9 +146,10 @@ position = Vector2(1100, 968)
 
 [node name="Lever" parent="Environment" instance=ExtResource("5_lever_scene")]
 position = Vector2(1500, 450)
+connected_door_ids = Array[String](["Door"])
 
 [node name="Door" parent="Environment" instance=ExtResource("6_door_scene")]
-position = Vector2(1700, 900)
+position = Vector2(1590, 888)
 target_scene = "res://worlds/world_1_ruins/rooms/room_01_entry.tscn"
 spawn_position = Vector2(200, 600)
 
@@ -168,10 +162,6 @@ item_id = "titanenblut_stein"
 [node name="PickupUrtraene" parent="Environment/Pickups" instance=ExtResource("10_pickup_scene")]
 position = Vector2(600, 750)
 item_id = "urtraene"
-
-[node name="PickupSchluessel" parent="Environment/Pickups" instance=ExtResource("10_pickup_scene")]
-position = Vector2(1200, 950)
-item_id = "schluessel_ruinen"
 
 [node name="DeathScreen" parent="." instance=ExtResource("8_death_screen_scene")]
 

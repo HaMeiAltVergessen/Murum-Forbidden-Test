@@ -1,11 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://lythrun_player"]
+[gd_scene load_steps=9 format=3 uid="uid://cdwfn6plhyyrx"]
 
-[ext_resource type="Script" path="res://player/lythrun_player.gd" id="1_lythrun"]
-[ext_resource type="Script" path="res://player/movement_controller.gd" id="2_movement"]
-[ext_resource type="Script" path="res://player/health_component.gd" id="3_health"]
-[ext_resource type="Script" path="res://player/mana_component.gd" id="4_mana"]
+[ext_resource type="Script" uid="uid://dweuvlc4nxds6" path="res://player/lythrun_player.gd" id="1_lythrun"]
+[ext_resource type="Script" uid="uid://dbvdyoaibtj2o" path="res://player/movement_controller.gd" id="2_movement"]
+[ext_resource type="Script" uid="uid://c2qc384qkctay" path="res://player/health_component.gd" id="3_health"]
+[ext_resource type="Script" uid="uid://s82vgt75o4ve" path="res://player/mana_component.gd" id="4_mana"]
 [ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="7_hurtbox"]
-[ext_resource type="Script" path="res://player/player_camera.gd" id="8_camera"]
+[ext_resource type="Script" uid="uid://1ybv2u56wptt" path="res://player/player_camera.gd" id="8_camera"]
 [ext_resource type="Texture2D" uid="uid://jg4v3jkvbw1b" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Wizard/wizard-sheet.png" id="9_wizard"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
@@ -21,8 +21,6 @@ script = ExtResource("1_lythrun")
 modulate = Color(0.7, 0.5, 0.9, 1)
 texture = ExtResource("9_wizard")
 hframes = 6
-vframes = 1
-frame = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_player")
@@ -30,7 +28,6 @@ shape = SubResource("CapsuleShape2D_player")
 [node name="ShadowTrail" type="GPUParticles2D" parent="."]
 emitting = false
 amount = 16
-process_material = null
 lifetime = 0.5
 
 [node name="DarkAura" type="PointLight2D" parent="."]
@@ -42,39 +39,21 @@ texture_scale = 2.0
 [node name="MovementController" type="Node" parent="."]
 script = ExtResource("2_movement")
 input_prefix = "p2_"
-move_speed = 300.0
-jump_velocity = -800.0
-gravity = 1800.0
-coyote_time = 0.1
-jump_buffer_time = 0.15
-max_jumps = 2
 dash_distance = 800.0
-dash_duration = 0.2
-dash_mana_cost = 20
-dash_cooldown = 1.0
 
 [node name="HealthComponent" type="Node" parent="."]
 script = ExtResource("3_health")
 max_health = 1000
-invulnerability_duration = 0.5
 
 [node name="ManaComponent" type="Node" parent="."]
 script = ExtResource("4_mana")
-max_mana = 100
-regeneration_rate = 10.0
-regen_delay_after_use = 1.0
 
 [node name="HurtboxComponent" parent="." instance=ExtResource("7_hurtbox")]
 collision_layer = 1024
 collision_mask = 128
 
-[node name="CollisionShape2D" parent="HurtboxComponent"]
-disabled = false
-
 [node name="PlayerCamera" type="Camera2D" parent="."]
-enabled = false
 offset = Vector2(0, -150)
+enabled = false
 position_smoothing_enabled = true
-position_smoothing_speed = 5.0
 script = ExtResource("8_camera")
-zoom = Vector2(1, 1)

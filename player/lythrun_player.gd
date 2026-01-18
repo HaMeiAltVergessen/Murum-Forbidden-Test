@@ -2070,4 +2070,3 @@ func spawn_phase_shift_absorb_vfx() -> void:
 		var tween = create_tween()
 		tween.tween_property(flash, "modulate:a", 0.0, 0.3)
 		tween.tween_callback(flash.queue_free)
-

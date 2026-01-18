@@ -1,13 +1,12 @@
-[gd_scene load_steps=2 format=3 uid="uid://parry_indicator_ui"]
+[gd_scene load_steps=2 format=3 uid="uid://bm8up0yx5r2on"]
 
-[ext_resource type="Script" path="res://ui/hud/parry_indicator.gd" id="1_parry_indicator"]
+[ext_resource type="Script" uid="uid://4nk0b82hxc28" path="res://ui/hud/parry_indicator.gd" id="1_parry_indicator"]
 
 [node name="ParryIndicator" type="Control"]
+visible = false
 layout_mode = 3
 anchors_preset = 2
-anchor_left = 0.0
 anchor_top = 1.0
-anchor_right = 0.0
 anchor_bottom = 1.0
 offset_left = 20.0
 offset_top = -80.0

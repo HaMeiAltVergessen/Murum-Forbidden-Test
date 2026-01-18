@@ -1,8 +1,7 @@
-[gd_scene load_steps=15 format=3 uid="uid://csm4wax2ntpqr"]
+[gd_scene load_steps=14 format=3 uid="uid://csm4wax2ntpqr"]
 
-[ext_resource type="Script" uid="uid://dhherqlrd2s44" path="res://worlds/world_1_ruins/rooms/room_02_corridor.gd" id="1_room02"]
-[ext_resource type="Texture2D" uid="uid://clj54sugotem3" path="res://Assets/Placeholder/Background/Environments/HauntedForest/Layers/tileset.png" id="1_tileset"]
-[ext_resource type="Texture2D" uid="uid://cff75ben07ww3" path="res://Assets/AIAssets/2444b311-a428-4213-9ced-133f36c01b38.jpg" id="2_qe3w4"]
+[ext_resource type="Script" uid="uid://cm3e5pkoi5u4r" path="res://worlds/world_1_ruins/rooms/room_02_corridor.gd" id="1_room02"]
+[ext_resource type="Texture2D" uid="uid://bb1oeaxgt20et" path="res://Assets/AIAssets/world1lvl1bg03.jpg" id="2_qe3w4"]
 [ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="2_spike"]
 [ext_resource type="PackedScene" uid="uid://cakx4m2v7pqrs" path="res://environment/interactables/lever.tscn" id="3_lever"]
 [ext_resource type="AudioStream" uid="uid://hpevd7oyylnm" path="res://Music/Welt 01 Boss Build Up (1).mp3" id="4_63odc"]
@@ -10,16 +9,16 @@
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="5_door"]
 [ext_resource type="PackedScene" uid="uid://dkc8y7x0ij6nw" path="res://enemies/untote.tscn" id="6_untote"]
 [ext_resource type="PackedScene" uid="uid://bx7k2qn8nav4p" path="res://enemies/world_1_ruins/geist.tscn" id="7_geist"]
-[ext_resource type="Script" uid="uid://caok0xb0x0ebj" path="res://environment/death_box.gd" id="8_deathbox"]
+[ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="8_deathbox"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
-size = Vector2(1280, 80)
+size = Vector2(1891, 80)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wall"]
-size = Vector2(40, 720)
+size = Vector2(40, 953)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_deathbox"]
-size = Vector2(1500, 200)
+size = Vector2(1975, 200)
 
 [node name="Room02Corridor" type="Node2D"]
 script = ExtResource("1_room02")
@@ -39,12 +38,11 @@ position = Vector2(0, 640)
 [node name="Sprite2D" type="Sprite2D" parent="Ground"]
 position = Vector2(640, 40)
 scale = Vector2(5, 5)
-texture = ExtResource("1_tileset")
 region_enabled = true
 region_rect = Rect2(0, 0, 256, 16)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
-position = Vector2(640, 40)
+position = Vector2(959, 281)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="WallLeft" type="StaticBody2D" parent="."]
@@ -52,6 +50,7 @@ position = Vector2(-20, 360)
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
+position = Vector2(0, 116.5)
 shape = SubResource("RectangleShape2D_wall")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
@@ -59,13 +58,7 @@ position = Vector2(1300, 360)
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
-position = Vector2(172, 12)
-shape = SubResource("RectangleShape2D_wall")
-
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="WallRight"]
-position = Vector2(99, 278)
-rotation = 3.94305
-scale = Vector2(2.17856, -0.660496)
+position = Vector2(614, 60)
 shape = SubResource("RectangleShape2D_wall")
 
 [node name="DeathBoxLeft" type="Area2D" parent="."]
@@ -85,7 +78,7 @@ position = Vector2(640, 800)
 script = ExtResource("8_deathbox")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DeathBoxBottom"]
-position = Vector2(54, 26)
+position = Vector2(318, 254)
 shape = SubResource("RectangleShape2D_deathbox")
 
 [node name="Environment" type="Node2D" parent="."]
@@ -94,7 +87,9 @@ shape = SubResource("RectangleShape2D_deathbox")
 position = Vector2(400, 608)
 
 [node name="Lever" parent="Environment" instance=ExtResource("3_lever")]
-position = Vector2(1100, 580)
+position = Vector2(1416, 679)
+can_toggle = true
+connected_door_ids = Array[String](["DoorToRoom03"])
 
 [node name="Enemies" type="Node2D" parent="."]
 
@@ -110,12 +105,12 @@ position = Vector2(1000, 600)
 [node name="Doors" type="Node2D" parent="."]
 
 [node name="DoorToRoom01" parent="Doors" instance=ExtResource("5_door")]
-position = Vector2(100, 640)
-target_scene = "res://worlds/world_1_ruins/rooms/room_01_entry.tscn"
+position = Vector2(53, 825)
+target_scene = "res://worlds/world_1_ruins/rooms/Welt01_Dorf.tscn"
 spawn_position = Vector2(150, 640)
 
 [node name="DoorToRoom03" parent="Doors" instance=ExtResource("5_door")]
-position = Vector2(1389, 490)
+position = Vector2(1848, 818)
 target_scene = "res://worlds/world_1_ruins/rooms/room_03_arena.tscn"
 spawn_position = Vector2(150, 780)
 

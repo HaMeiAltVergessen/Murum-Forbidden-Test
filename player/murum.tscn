@@ -1,23 +1,23 @@
-[gd_scene load_steps=12 format=3 uid="uid://b1k5wfkqxc8yx"]
+[gd_scene load_steps=20 format=3 uid="uid://b1k5wfkqxc8yx"]
 
-[ext_resource type="Script" path="res://player/murum.gd" id="1_murum"]
-[ext_resource type="Script" path="res://player/movement_controller.gd" id="2_movement"]
-[ext_resource type="Script" path="res://player/health_component.gd" id="3_health"]
-[ext_resource type="Script" path="res://player/mana_component.gd" id="4_mana"]
-[ext_resource type="Script" path="res://player/combat_system.gd" id="5_combat"]
+[ext_resource type="Script" uid="uid://8fj2ugwsb24e" path="res://player/murum.gd" id="1_murum"]
+[ext_resource type="Script" uid="uid://dbvdyoaibtj2o" path="res://player/movement_controller.gd" id="2_movement"]
+[ext_resource type="Script" uid="uid://c2qc384qkctay" path="res://player/health_component.gd" id="3_health"]
+[ext_resource type="Script" uid="uid://s82vgt75o4ve" path="res://player/mana_component.gd" id="4_mana"]
+[ext_resource type="Script" uid="uid://ciw1ta2e200fl" path="res://player/combat_system.gd" id="5_combat"]
 [ext_resource type="PackedScene" uid="uid://dmqxgb7cyujwa" path="res://components/hitbox_component.tscn" id="6_hitbox"]
 [ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="7_hurtbox"]
-[ext_resource type="Script" path="res://player/player_camera.gd" id="8_camera"]
-[ext_resource type="SpriteFrames" uid="uid://murum_sprite_frames" path="res://Assets/AIPlaceholder/Char/Murum/murum_frames.tres" id="9_murum_sprite"]
-[ext_resource type="Script" path="res://player/combat_system/staff_controller.gd" id="10_staff"]
-[ext_resource type="Script" path="res://player/combat_system/launcher_system.gd" id="11_launcher"]
-[ext_resource type="Script" path="res://player/combat_system/air_combo_system.gd" id="12_air_combo"]
-[ext_resource type="Script" path="res://player/dodge_roll_system.gd" id="13_dodge"]
-[ext_resource type="Script" path="res://player/combat_system/ende_schwerkraft.gd" id="14_ende_schwerkraft"]
-[ext_resource type="Script" path="res://player/abilities/wolkenbruch.gd" id="15_wolkenbruch"]
-[ext_resource type="Script" path="res://player/abilities/echo_von_urgathon.gd" id="16_echo"]
-[ext_resource type="Script" path="res://player/combat_system/luftgott_system.gd" id="16_luftgott"]
-[ext_resource type="Script" path="res://player/murum_animator.gd" id="17_animator"]
+[ext_resource type="Script" uid="uid://1ybv2u56wptt" path="res://player/player_camera.gd" id="8_camera"]
+[ext_resource type="SpriteFrames" uid="uid://q7syvpvkpd0" path="res://Assets/AIPlaceholder/Char/Murum/murum_frames.tres" id="9_murum_sprite"]
+[ext_resource type="Script" uid="uid://coip6pcvj3sba" path="res://player/combat_system/staff_controller.gd" id="10_staff"]
+[ext_resource type="Script" uid="uid://srr4rcshcjpb" path="res://player/combat_system/launcher_system.gd" id="11_launcher"]
+[ext_resource type="Script" uid="uid://mrx6f3jegwl5" path="res://player/combat_system/air_combo_system.gd" id="12_air_combo"]
+[ext_resource type="Script" uid="uid://dmtdbn2wfc2ol" path="res://player/dodge_roll_system.gd" id="13_dodge"]
+[ext_resource type="Script" uid="uid://dilak0td0ropd" path="res://player/combat_system/ende_schwerkraft.gd" id="14_ende_schwerkraft"]
+[ext_resource type="Script" uid="uid://bq5nogex4jsmg" path="res://player/abilities/wolkenbruch.gd" id="15_wolkenbruch"]
+[ext_resource type="Script" uid="uid://b2dxi0i5oqthf" path="res://player/abilities/echo_von_urgathon.gd" id="16_echo"]
+[ext_resource type="Script" uid="uid://cnnaiidqk1poo" path="res://player/combat_system/luftgott_system.gd" id="16_luftgott"]
+[ext_resource type="Script" uid="uid://dn12rlk07wbkl" path="res://player/murum_animator.gd" id="17_animator"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 radius = 16.0
@@ -29,6 +29,8 @@ collision_mask = 17
 script = ExtResource("1_murum")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(-7, -1.90735e-06)
+scale = Vector2(0.451389, 0.451389)
 sprite_frames = ExtResource("9_murum_sprite")
 animation = &"idle"
 autoplay = "idle"
@@ -38,65 +40,35 @@ shape = SubResource("CapsuleShape2D_player")
 
 [node name="MovementController" type="Node" parent="."]
 script = ExtResource("2_movement")
-move_speed = 300.0
-jump_velocity = -800.0
-gravity = 1800.0
-coyote_time = 0.1
-jump_buffer_time = 0.15
-max_jumps = 2
 dash_distance = 800.0
-dash_duration = 0.2
-dash_mana_cost = 20
-dash_cooldown = 1.0
 
 [node name="HealthComponent" type="Node" parent="."]
 script = ExtResource("3_health")
 max_health = 1000
-invulnerability_duration = 0.5
 
 [node name="ManaComponent" type="Node" parent="."]
 script = ExtResource("4_mana")
-max_mana = 100
-regeneration_rate = 10.0
-regen_delay_after_use = 1.0
 
 [node name="CombatSystem" type="Node2D" parent="."]
 script = ExtResource("5_combat")
-attack_damages = Array[int]([10, 12, 15])
-attack_durations = Array[float]([0.3, 0.35, 0.4])
-combo_window = 0.5
 
 [node name="HitboxComponent" parent="CombatSystem" instance=ExtResource("6_hitbox")]
 position = Vector2(50, 0)
 collision_layer = 16
 collision_mask = 1024
-damage = 10
 
 [node name="HurtboxComponent" parent="." instance=ExtResource("7_hurtbox")]
 collision_layer = 1024
 collision_mask = 128
-
-[node name="CollisionShape2D" parent="HurtboxComponent"]
-disabled = false
 
 [node name="StaffController" type="Node" parent="."]
 script = ExtResource("10_staff")
 
 [node name="LauncherSystem" type="Node" parent="."]
 script = ExtResource("11_launcher")
-launch_force = 600.0
-launch_horizontal_force = 100.0
-launcher_mana_cost = 15
-launcher_damage = 20
-launcher_cooldown = 2.0
 
 [node name="AirComboSystem" type="Node" parent="."]
 script = ExtResource("12_air_combo")
-air_attack_damage = 15
-juggle_force = 400.0
-max_air_combo = 10
-slam_damage_multiplier = 2.0
-slam_force = 800.0
 
 [node name="EndeSchwerkraft" type="Node" parent="."]
 script = ExtResource("14_ende_schwerkraft")
@@ -109,6 +81,7 @@ script = ExtResource("15_wolkenbruch")
 
 [node name="EchoVonUrgathon" type="Node" parent="."]
 script = ExtResource("16_echo")
+
 [node name="LuftgottSystem" type="Node" parent="."]
 script = ExtResource("16_luftgott")
 
@@ -116,9 +89,6 @@ script = ExtResource("16_luftgott")
 script = ExtResource("17_animator")
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
-enabled = true
 offset = Vector2(0, -150)
 position_smoothing_enabled = true
-position_smoothing_speed = 5.0
 script = ExtResource("8_camera")
-zoom = Vector2(1, 1)
