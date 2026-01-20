@@ -14,6 +14,8 @@ correct_sequence = [1, 2, 3]
 
 [node name="Switch1" type="Area2D" parent="SequencePuzzleController" groups=["puzzle_switches"]]
 position = Vector2(0, 0)
+collision_layer = 8
+collision_mask = 2
 script = ExtResource("2")
 switch_id = 1
 
@@ -41,6 +43,8 @@ shape = SubResource("RectangleShape2D_switch")
 
 [node name="Switch2" type="Area2D" parent="SequencePuzzleController" groups=["puzzle_switches"]]
 position = Vector2(80, 0)
+collision_layer = 8
+collision_mask = 2
 script = ExtResource("2")
 switch_id = 2
 
@@ -68,6 +72,8 @@ shape = SubResource("RectangleShape2D_switch")
 
 [node name="Switch3" type="Area2D" parent="SequencePuzzleController" groups=["puzzle_switches"]]
 position = Vector2(160, 0)
+collision_layer = 8
+collision_mask = 2
 script = ExtResource("2")
 switch_id = 3
 

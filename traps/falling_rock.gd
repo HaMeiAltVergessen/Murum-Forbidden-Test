@@ -91,6 +91,7 @@ func _on_proximity_entered(body: Node2D) -> void:
 	if not (body.is_in_group("player") or body.is_in_group("player2")):
 		return
 
+	print("[FallingRock] %s proximity triggered by %s" % [name, body.name])
 	_start_warning()
 
 func _start_warning() -> void:
@@ -205,11 +206,28 @@ func _check_damage_on_landing() -> void:
 			_deal_damage(player)
 
 func _deal_damage(player: Node2D) -> void:
-	"""Deal damage to player"""
-	var health_comp = player.get_node_or_null("HealthComponent")
-	if health_comp and health_comp.has_method("take_damage"):
-		health_comp.take_damage(damage)
-		print("[FallingRock] %s dealt %d damage to %s" % [name, damage, player.name])
+	"""Deal damage to player with knockback"""
+	# Calculate knockback direction (away from rock center)
+	var knockback_direction = (player.global_position - global_position).normalized()
+	var knockback_force = 300.0
+
+	# Apply knockback to player velocity
+	if player is CharacterBody2D and "velocity" in player:
+		player.velocity = knockback_direction * knockback_force
+		player.velocity.y = -200.0  # Upward pop
+		print("[FallingRock] %s applied knockback to %s (force: %.0f)" % [name, player.name, knockback_force])
+
+	# Deal damage via HurtboxComponent (respects invulnerability)
+	var hurtbox = player.get_node_or_null("HurtboxComponent")
+	if hurtbox and hurtbox.has_method("take_damage"):
+		hurtbox.take_damage(damage, knockback_direction * knockback_force, 0.3)
+		print("[FallingRock] %s dealt %d damage to %s (via Hurtbox)" % [name, damage, player.name])
+	else:
+		# Fallback: Direct HealthComponent damage
+		var health_comp = player.get_node_or_null("HealthComponent")
+		if health_comp and health_comp.has_method("take_damage"):
+			health_comp.take_damage(damage)
+			print("[FallingRock] %s dealt %d damage to %s (direct)" % [name, damage, player.name])
 
 # ============================================================================
 # HELPERS
