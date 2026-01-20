@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://dbvhxpr5y6bww"]
+[gd_scene load_steps=24 format=3 uid="uid://dbvhxpr5y6bww"]
 
 [ext_resource type="Script" uid="uid://cc2sp6gtbqbnh" path="res://levels/test_room.gd" id="1_test_room_script"]
 [ext_resource type="Texture2D" uid="uid://q47f0nofwgxj" path="res://Assets/AIAssets/11a02050-3ac3-4fdb-9da2-f063590399d3.jpg" id="2_lapnv"]
@@ -12,6 +12,11 @@
 [ext_resource type="PackedScene" path="res://environment/pickups/pickup_base.tscn" id="10_pickup_scene"]
 [ext_resource type="PackedScene" path="res://camera/coop_camera.tscn" id="11_coop_camera"]
 [ext_resource type="PackedScene" path="res://camera/split_screen_manager.tscn" id="12_split_screen"]
+[ext_resource type="PackedScene" uid="uid://sequence_puzzle_001" path="res://puzzles/scenes/sequence_puzzle.tscn" id="13_sequence_puzzle"]
+[ext_resource type="PackedScene" uid="uid://pressure_plate_puzzle_001" path="res://puzzles/scenes/pressure_plate_puzzle.tscn" id="14_pressure_plate_puzzle"]
+[ext_resource type="PackedScene" uid="uid://crystal_chain_puzzle_001" path="res://puzzles/scenes/crystal_chain_puzzle.tscn" id="15_crystal_chain_puzzle"]
+[ext_resource type="PackedScene" uid="uid://timed_door_puzzle_001" path="res://puzzles/scenes/timed_door_puzzle.tscn" id="16_timed_door_puzzle"]
+[ext_resource type="PackedScene" uid="uid://puzzle_block_001" path="res://puzzles/scenes/puzzle_block.tscn" id="17_puzzle_block"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_floor"]
 texture_region_size = Vector2i(32, 32)
@@ -162,6 +167,38 @@ item_id = "titanenblut_stein"
 [node name="PickupUrtraene" parent="Environment/Pickups" instance=ExtResource("10_pickup_scene")]
 position = Vector2(600, 750)
 item_id = "urtraene"
+
+[node name="Puzzles" type="Node2D" parent="."]
+
+[node name="R1_SequencePuzzle" parent="Puzzles" instance=ExtResource("13_sequence_puzzle")]
+position = Vector2(200, 350)
+
+[node name="R2_PressurePlatePuzzle" parent="Puzzles" instance=ExtResource("14_pressure_plate_puzzle")]
+position = Vector2(450, 750)
+
+[node name="R3_CrystalChainPuzzle" parent="Puzzles" instance=ExtResource("15_crystal_chain_puzzle")]
+position = Vector2(900, 600)
+
+[node name="R4_TimedDoorPuzzle" parent="Puzzles" instance=ExtResource("16_timed_door_puzzle")]
+position = Vector2(1300, 400)
+
+[node name="PuzzleBlocks" type="Node2D" parent="."]
+
+[node name="Block1_Sequence" parent="PuzzleBlocks" instance=ExtResource("17_puzzle_block")]
+position = Vector2(100, 100)
+puzzle_controller = NodePath("../../Puzzles/R1_SequencePuzzle/SequencePuzzleController")
+
+[node name="Block2_PressurePlate" parent="PuzzleBlocks" instance=ExtResource("17_puzzle_block")]
+position = Vector2(200, 100)
+puzzle_controller = NodePath("../../Puzzles/R2_PressurePlatePuzzle/DualPlatePuzzleController")
+
+[node name="Block3_CrystalChain" parent="PuzzleBlocks" instance=ExtResource("17_puzzle_block")]
+position = Vector2(300, 100)
+puzzle_controller = NodePath("../../Puzzles/R3_CrystalChainPuzzle/ChainPuzzleController")
+
+[node name="Block4_TimedDoor" parent="PuzzleBlocks" instance=ExtResource("17_puzzle_block")]
+position = Vector2(400, 100)
+puzzle_controller = NodePath("../../Puzzles/R4_TimedDoorPuzzle/TimedDoorController")
 
 [node name="DeathScreen" parent="." instance=ExtResource("8_death_screen_scene")]
 
