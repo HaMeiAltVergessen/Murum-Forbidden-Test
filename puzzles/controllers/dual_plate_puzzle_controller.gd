@@ -28,8 +28,12 @@ func _ready() -> void:
 # ============================================================================
 
 func _connect_plates() -> void:
-	"""Finds and connects to all PressurePlate children"""
-	for child in get_children():
+	"""Finds and connects to all PressurePlate siblings in parent"""
+	var parent_node = get_parent()
+	if not parent_node:
+		return
+
+	for child in parent_node.get_children():
 		if child.has_signal("plate_pressed"):
 			connected_plates.append(child)
 			plate_states[child] = false

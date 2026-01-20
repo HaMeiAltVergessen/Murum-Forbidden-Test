@@ -34,8 +34,12 @@ func _ready() -> void:
 # ============================================================================
 
 func _find_components() -> void:
-	"""Finds TimedSwitch and TimedDoor in children"""
-	for child in get_children():
+	"""Finds TimedSwitch and TimedDoor siblings in parent"""
+	var parent_node = get_parent()
+	if not parent_node:
+		return
+
+	for child in parent_node.get_children():
 		if child.has_signal("switch_activated"):
 			timed_switch = child
 			timed_switch.switch_activated.connect(_on_switch_activated)
