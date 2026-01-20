@@ -9,7 +9,7 @@ class_name PressurePlate
 # ============================================================================
 
 signal plate_pressed(activator: CharacterBody2D)
-signal plate_released()
+signal plate_released(last_activator: CharacterBody2D)
 
 # ============================================================================
 # EXPORTS
@@ -86,7 +86,7 @@ func _on_body_exited(body: Node2D) -> void:
 
 	# Release if no more bodies
 	if bodies_on_plate.is_empty() and is_pressed:
-		_release()
+		_release(char_body)
 
 # ============================================================================
 # ACTIVATION
@@ -107,10 +107,10 @@ func _press(activator: CharacterBody2D) -> void:
 
 	print("[PressurePlate] %s pressed by %s" % [name, activator.name])
 
-func _release() -> void:
+func _release(last_body: CharacterBody2D = null) -> void:
 	"""Deactivates the pressure plate"""
 	is_pressed = false
-	plate_released.emit()
+	plate_released.emit(last_body)
 
 	# Visual feedback
 	if visual_feedback:

@@ -54,9 +54,9 @@ func connect_switch(switch: PuzzleSwitch) -> void:
 # SIGNAL HANDLERS
 # ============================================================================
 
-func _on_switch_hit(switch_id: int) -> void:
+func _on_switch_hit(switch_id: int, activator: Node2D) -> void:
 	"""Handles switch activation"""
-	print("[SequencePuzzle] Switch %d hit (Current sequence: %v)" % [switch_id, current_sequence])
+	print("[SequencePuzzle] Switch %d hit by %s (Current sequence: %v)" % [switch_id, activator.name if activator else "unknown", current_sequence])
 
 	# Add to current sequence
 	current_sequence.append(switch_id)
@@ -79,8 +79,6 @@ func _on_switch_hit(switch_id: int) -> void:
 		_show_failure_feedback()
 		fail()
 
-func _on_switch_hit.call_deferred(switch_id: int) -> void:
-	pass  # Required for deferred calls
 
 # ============================================================================
 # SOLUTION CHECK

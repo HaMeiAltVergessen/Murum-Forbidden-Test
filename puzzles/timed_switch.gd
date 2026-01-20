@@ -20,13 +20,13 @@ func _ready() -> void:
 # ACTIVATION OVERRIDE
 # ============================================================================
 
-func activate() -> void:
+func activate(activator: Node2D = null) -> void:
 	"""Activates the switch (can be reactivated)"""
 	# Always allow activation (even if already activated)
 	var was_activated = is_activated
 	is_activated = true
 
-	switch_activated.emit(switch_id)
+	switch_activated.emit(switch_id, activator)
 
 	# Visual feedback
 	if visual_feedback:

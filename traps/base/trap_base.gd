@@ -9,7 +9,7 @@ class_name TrapBase
 # ============================================================================
 
 signal trap_triggered()
-signal player_damaged(damage: int)
+signal entity_damaged(entity: Node2D, damage: int)
 
 # ============================================================================
 # EXPORTS
@@ -17,6 +17,8 @@ signal player_damaged(damage: int)
 
 @export var damage: int = 10
 @export var is_active: bool = true
+@export var affect_players: bool = true
+@export var affect_enemies: bool = false
 
 # ============================================================================
 # REFERENCES
@@ -50,15 +52,23 @@ func trigger() -> void:
 	print("[TrapBase] %s triggered" % name)
 
 func deal_damage(body: Node2D) -> void:
-	"""Deals damage to player"""
-	if not body.is_in_group("player") and not body.is_in_group("player2"):
+	"""Deals damage to players or enemies"""
+	if not is_active:
+		return
+
+	# Check entity type
+	var is_player = body.is_in_group("player") or body.is_in_group("player2")
+	var is_enemy = body.is_in_group("enemies") or body.is_in_group("enemy")
+
+	# Check if we should damage this entity
+	if not ((is_player and affect_players) or (is_enemy and affect_enemies)):
 		return
 
 	# Try to find HealthComponent
 	var health_comp = body.get_node_or_null("HealthComponent")
 	if health_comp and health_comp.has_method("take_damage"):
 		health_comp.take_damage(damage)
-		player_damaged.emit(damage)
+		entity_damaged.emit(body, damage)
 		print("[TrapBase] %s dealt %d damage to %s" % [name, damage, body.name])
 
 # ============================================================================

@@ -8,7 +8,7 @@ class_name PuzzleSwitch
 # SIGNALS
 # ============================================================================
 
-signal switch_activated(switch_id: int)
+signal switch_activated(switch_id: int, activator: Node2D)
 signal switch_deactivated(switch_id: int)
 
 # ============================================================================
@@ -55,13 +55,13 @@ func _ready() -> void:
 # ACTIVATION
 # ============================================================================
 
-func activate() -> void:
+func activate(activator: Node2D = null) -> void:
 	"""Activates the switch"""
 	if is_activated:
 		return
 
 	is_activated = true
-	switch_activated.emit(switch_id)
+	switch_activated.emit(switch_id, activator)
 
 	# Visual feedback
 	if visual_feedback:
@@ -94,13 +94,16 @@ func deactivate() -> void:
 func _on_body_entered(body: Node2D) -> void:
 	"""Handles body collision (player interaction)"""
 	if body.is_in_group("player") or body.is_in_group("player2"):
-		activate()
+		activate(body)
 
 func _on_area_entered(area: Area2D) -> void:
-	"""Handles area collision (staff projectile)"""
-	if area.is_in_group("staff_projectile") or area.is_in_group("staff_projectiles"):
-		activate()
-		print("[PuzzleSwitch] Hit by staff projectile")
+	"""Handles area collision (staff projectile or shadow scythe)"""
+	# Support both P1 Staff Throw and P2 Shadow Scythe
+	if area.is_in_group("staff_projectile") or area.is_in_group("staff_projectiles") or area.is_in_group("shadow_scythe"):
+		# Try to get owner player from metadata
+		var owner_player = area.get_meta("owner_player", null) if area.has_meta("owner_player") else area.owner
+		activate(owner_player)
+		print("[PuzzleSwitch] Hit by projectile (owner: %s)" % (owner_player.name if owner_player else "unknown"))
 
 # ============================================================================
 # VISUAL FEEDBACK
