@@ -34,8 +34,12 @@ func _ready() -> void:
 # ============================================================================
 
 func _connect_switches() -> void:
-	"""Finds and connects to all PuzzleSwitch children"""
-	for child in get_children():
+	"""Finds and connects to all PuzzleSwitch siblings in parent"""
+	var parent_node = get_parent()
+	if not parent_node:
+		return
+
+	for child in parent_node.get_children():
 		if child is PuzzleSwitch:
 			connected_switches.append(child)
 			child.switch_activated.connect(_on_switch_hit)

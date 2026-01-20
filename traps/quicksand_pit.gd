@@ -17,7 +17,7 @@ signal player_died_in_pit(player: Node2D)
 # EXPORTS
 # ============================================================================
 
-@export var pull_strength: float = 50.0
+@export var pull_strength: float = 200.0
 @export var damage_per_second: int = 10
 @export var instant_death_time: float = 5.0  ## Time until instant death
 @export var pit_type: PitType = PitType.QUICKSAND
