@@ -124,12 +124,26 @@ func _handle_player_hit(player: Node2D) -> void:
 		_parry(player)
 		return
 
-	# Deal damage
-	var health_comp = player.get_node_or_null("HealthComponent")
-	if health_comp and health_comp.has_method("take_damage"):
-		health_comp.take_damage(damage)
+	# Check if player is invulnerable (via HurtboxComponent)
+	var hurtbox = player.get_node_or_null("HurtboxComponent")
+	if hurtbox and hurtbox.has("is_invulnerable") and hurtbox.is_invulnerable:
+		print("[ArrowProjectile] Player is invulnerable - arrow blocked!")
+		_play_hit_effect()
+		queue_free()
+		return
+
+	# Deal damage via HurtboxComponent if available (respects invulnerability)
+	if hurtbox and hurtbox.has_method("take_damage"):
+		hurtbox.take_damage(damage, Vector2.ZERO, 0.0)  # No knockback/hitstun from arrows
 		arrow_hit.emit(player)
 		print("[ArrowProjectile] Hit player %s for %d damage" % [player.name, damage])
+	else:
+		# Fallback: Direct HealthComponent damage (bypasses invulnerability)
+		var health_comp = player.get_node_or_null("HealthComponent")
+		if health_comp and health_comp.has_method("take_damage"):
+			health_comp.take_damage(damage)
+			arrow_hit.emit(player)
+			print("[ArrowProjectile] Hit player %s for %d damage (direct)" % [player.name, damage])
 
 	# Play hit effect
 	_play_hit_effect()

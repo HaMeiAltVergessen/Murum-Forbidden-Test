@@ -115,8 +115,9 @@ func _apply_pull_force(player: Node2D, delta: float) -> void:
 	var direction = (pit_center - player.global_position).normalized()
 
 	# Apply force to player velocity
-	if player.has("velocity"):
+	if "velocity" in player:
 		player.velocity += direction * pull_strength * delta
+		#print("[QuicksandPit] Pulling %s towards center (force: %.1f)" % [player.name, pull_strength * delta])
 
 # ============================================================================
 # BODY ENTER/EXIT

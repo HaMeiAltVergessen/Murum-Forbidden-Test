@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://traps/falling_rock.gd" id="1"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_proximity"]
-radius = 100.0
+radius = 200.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_rock"]
 radius = 24.0
@@ -13,7 +13,7 @@ collision_layer = 10
 collision_mask = 1
 script = ExtResource("1")
 damage = 35
-trigger_range = 100.0
+trigger_range = 200.0
 warning_duration = 0.5
 damage_radius = 50.0
 
