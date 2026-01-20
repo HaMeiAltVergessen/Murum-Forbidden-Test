@@ -8,7 +8,7 @@ class_name PuzzleCrystal
 # SIGNALS
 # ============================================================================
 
-signal crystal_hit()
+signal crystal_hit(projectile_owner: Node2D)
 
 # ============================================================================
 # EXPORTS
@@ -57,19 +57,22 @@ func _ready() -> void:
 # ============================================================================
 
 func _on_area_entered(area: Area2D) -> void:
-	"""Handles area collision (staff projectile)"""
+	"""Handles area collision (staff projectile or shadow scythe)"""
 	print("[PuzzleCrystal] Area entered: %s (groups: %s)" % [area.name, area.get_groups()])
 
-	# Check if it's a staff projectile
-	if not (area.is_in_group("staff_projectile") or area.is_in_group("staff_projectiles")):
+	# Check if it's a valid projectile (P1 Staff Throw or P2 Shadow Scythe)
+	if not (area.is_in_group("staff_projectile") or area.is_in_group("staff_projectiles") or area.is_in_group("shadow_scythe")):
 		return
 
 	# Only activate once per chain
 	if is_activated:
 		return
 
+	# Get owner player
+	var owner_player = area.get_meta("owner_player", null) if area.has_meta("owner_player") else area.owner
+
 	# Activate crystal
-	activate()
+	activate(owner_player)
 
 	# Allow piercing: temporarily disable monitoring
 	_allow_pierce()
@@ -78,13 +81,13 @@ func _on_area_entered(area: Area2D) -> void:
 # ACTIVATION
 # ============================================================================
 
-func activate() -> void:
+func activate(projectile_owner: Node2D = null) -> void:
 	"""Activates the crystal"""
 	if is_activated:
 		return
 
 	is_activated = true
-	crystal_hit.emit()
+	crystal_hit.emit(projectile_owner)
 
 	# Visual feedback
 	_play_activation_visual()

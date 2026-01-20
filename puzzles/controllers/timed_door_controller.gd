@@ -59,7 +59,7 @@ func set_door(door: Node) -> void:
 # SIGNAL HANDLERS
 # ============================================================================
 
-func _on_switch_activated(_switch_id: int) -> void:
+func _on_switch_activated(_switch_id: int, _activator: Node2D) -> void:
 	"""Handles switch activation - opens door temporarily"""
 	if not timed_door or not timed_door.has_method("open_timed"):
 		push_warning("[TimedDoorPuzzle] No timed door connected!")

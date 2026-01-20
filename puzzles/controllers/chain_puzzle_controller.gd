@@ -61,7 +61,7 @@ func connect_crystal(crystal: Node) -> void:
 # SIGNAL HANDLERS
 # ============================================================================
 
-func _on_crystal_hit(crystal: Node) -> void:
+func _on_crystal_hit(projectile_owner: Node2D, crystal: Node) -> void:
 	"""Handles crystal being hit"""
 	var current_time = Time.get_ticks_msec() / 1000.0
 
@@ -75,7 +75,7 @@ func _on_crystal_hit(crystal: Node) -> void:
 	activated_count += 1
 	last_activation_time = current_time
 
-	print("[ChainPuzzle] Crystal %s hit (%d/%d)" % [crystal.name, activated_count, required_crystals])
+	print("[ChainPuzzle] Crystal %s hit by %s (%d/%d)" % [crystal.name, projectile_owner.name if projectile_owner else "unknown", activated_count, required_crystals])
 
 	# Visual feedback
 	if crystal.has_method("set_activated_visual"):
