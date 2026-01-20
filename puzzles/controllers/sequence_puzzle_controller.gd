@@ -16,6 +16,7 @@ class_name SequencePuzzleController
 
 var current_sequence: Array[int] = []
 var connected_switches: Array[PuzzleSwitch] = []
+var is_resetting: bool = false  ## Prevents input during reset delay
 
 # ============================================================================
 # INITIALIZATION
@@ -60,6 +61,11 @@ func connect_switch(switch: PuzzleSwitch) -> void:
 
 func _on_switch_hit(switch_id: int, activator: Node2D) -> void:
 	"""Handles switch activation"""
+	# Ignore input during reset delay
+	if is_resetting:
+		print("[SequencePuzzle] Ignoring input during reset delay")
+		return
+
 	print("[SequencePuzzle] Switch %d hit by %s (Current sequence: %v)" % [switch_id, activator.name if activator else "unknown", current_sequence])
 
 	# Add to current sequence
@@ -79,9 +85,10 @@ func _on_switch_hit(switch_id: int, activator: Node2D) -> void:
 			if check_solution():
 				solve()
 	else:
-		# Wrong sequence - reset
+		# Wrong sequence - show feedback and reset after delay
 		_show_failure_feedback()
 		fail()
+		_reset_after_delay()
 
 
 # ============================================================================
@@ -118,6 +125,7 @@ func reset_puzzle() -> void:
 	"""Resets the sequence puzzle"""
 	super.reset_puzzle()
 	current_sequence.clear()
+	is_resetting = false
 
 	# Reset all switches
 	for switch in connected_switches:
@@ -125,6 +133,15 @@ func reset_puzzle() -> void:
 			switch.deactivate()
 
 	print("[SequencePuzzle] Reset - awaiting new sequence")
+
+func _reset_after_delay() -> void:
+	"""Resets puzzle after 3 second delay (for wrong sequence)"""
+	is_resetting = true
+	print("[SequencePuzzle] Wrong sequence! Resetting in 3 seconds...")
+
+	await get_tree().create_timer(3.0).timeout
+
+	reset_puzzle()
 
 # ============================================================================
 # FEEDBACK

@@ -39,9 +39,10 @@ func _connect_plates() -> void:
 			plate_states[child] = false
 
 			child.plate_pressed.connect(_on_plate_pressed.bind(child))
-			child.plate_released.connect(_on_plate_released.bind(child))
 
 			print("[DualPlatePuzzle] Connected to plate: %s" % child.name)
+
+	print("[DualPlatePuzzle] Total plates: %d" % connected_plates.size())
 
 func connect_plate(plate: Node) -> void:
 	"""Manually connects a pressure plate"""
@@ -52,7 +53,6 @@ func connect_plate(plate: Node) -> void:
 	plate_states[plate] = false
 
 	plate.plate_pressed.connect(_on_plate_pressed.bind(plate))
-	plate.plate_released.connect(_on_plate_released.bind(plate))
 
 	print("[DualPlatePuzzle] Manually connected to plate: %s" % plate.name)
 
@@ -61,18 +61,13 @@ func connect_plate(plate: Node) -> void:
 # ============================================================================
 
 func _on_plate_pressed(activator: CharacterBody2D, plate: Node) -> void:
-	"""Handles plate being pressed"""
+	"""Handles plate being activated (one-time)"""
 	plate_states[plate] = true
-	print("[DualPlatePuzzle] Plate %s pressed by %s" % [plate.name, activator.name if activator else "unknown"])
+	print("[DualPlatePuzzle] Plate %s activated by %s" % [plate.name, activator.name if activator else "unknown"])
 
-	# Check if all plates are pressed
+	# Check if all plates are activated
 	if check_solution():
 		solve()
-
-func _on_plate_released(plate: Node) -> void:
-	"""Handles plate being released"""
-	plate_states[plate] = false
-	print("[DualPlatePuzzle] Plate %s released" % plate.name)
 
 # ============================================================================
 # SOLUTION CHECK
