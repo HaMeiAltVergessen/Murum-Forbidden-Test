@@ -17,6 +17,9 @@
 [ext_resource type="PackedScene" uid="uid://crystal_chain_puzzle_001" path="res://puzzles/scenes/crystal_chain_puzzle.tscn" id="15_crystal_chain_puzzle"]
 [ext_resource type="PackedScene" uid="uid://timed_door_puzzle_001" path="res://puzzles/scenes/timed_door_puzzle.tscn" id="16_timed_door_puzzle"]
 [ext_resource type="PackedScene" uid="uid://puzzle_block_001" path="res://puzzles/scenes/puzzle_block.tscn" id="17_puzzle_block"]
+[ext_resource type="PackedScene" uid="uid://falling_rock_001" path="res://traps/scenes/falling_rock.tscn" id="18_falling_rock"]
+[ext_resource type="PackedScene" uid="uid://arrow_trap_001" path="res://traps/scenes/arrow_trap.tscn" id="19_arrow_trap"]
+[ext_resource type="PackedScene" uid="uid://quicksand_pit_001" path="res://traps/scenes/quicksand_pit.tscn" id="20_quicksand_pit"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_floor"]
 texture_region_size = Vector2i(32, 32)
@@ -199,6 +202,27 @@ puzzle_controller = NodePath("../../Puzzles/R3_CrystalChainPuzzle/ChainPuzzleCon
 [node name="Block4_TimedDoor" parent="PuzzleBlocks" instance=ExtResource("17_puzzle_block")]
 position = Vector2(400, 100)
 puzzle_controller = NodePath("../../Puzzles/R4_TimedDoorPuzzle/TimedDoorController")
+
+[node name="Traps" type="Node2D" parent="."]
+
+[node name="FallingRock1" parent="Traps" instance=ExtResource("18_falling_rock")]
+position = Vector2(700, 200)
+
+[node name="FallingRock2" parent="Traps" instance=ExtResource("18_falling_rock")]
+position = Vector2(1100, 250)
+
+[node name="ArrowTrap1" parent="Traps" instance=ExtResource("19_arrow_trap")]
+position = Vector2(1700, 800)
+arrow_direction = Vector2(-1, 0)
+trigger_mode = 1
+
+[node name="ArrowTrap2" parent="Traps" instance=ExtResource("19_arrow_trap")]
+position = Vector2(300, 600)
+arrow_direction = Vector2(1, 0)
+trigger_mode = 0
+
+[node name="QuicksandPit1" parent="Traps" instance=ExtResource("20_quicksand_pit")]
+position = Vector2(1000, 900)
 
 [node name="DeathScreen" parent="." instance=ExtResource("8_death_screen_scene")]
 

@@ -1,0 +1,39 @@
+[gd_scene load_steps=3 format=3 uid="uid://quicksand_pit_001"]
+
+[ext_resource type="Script" path="res://traps/quicksand_pit.gd" id="1"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_pit"]
+radius = 80.0
+
+[node name="QuicksandPit" type="Area2D"]
+collision_layer = 10
+collision_mask = 2
+script = ExtResource("1")
+pull_strength = 50.0
+damage_per_second = 10
+instant_death_time = 5.0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="Sprite2D"]
+offset_left = -80.0
+offset_top = -80.0
+offset_right = 80.0
+offset_bottom = 80.0
+color = Color(0.4, 0.3, 0.2, 0.8)
+
+[node name="CenterCircle" type="ColorRect" parent="Sprite2D"]
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+color = Color(0.2, 0.15, 0.1, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_pit")
+
+[node name="PullParticles" type="GPUParticles2D" parent="."]
+emitting = true
+amount = 32
+process_material = null
+lifetime = 2.0

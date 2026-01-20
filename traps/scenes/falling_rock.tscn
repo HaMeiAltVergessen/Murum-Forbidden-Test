@@ -1,0 +1,55 @@
+[gd_scene load_steps=4 format=3 uid="uid://falling_rock_001"]
+
+[ext_resource type="Script" path="res://traps/falling_rock.gd" id="1"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_proximity"]
+radius = 100.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_rock"]
+radius = 24.0
+
+[node name="FallingRock" type="RigidBody2D"]
+collision_layer = 10
+collision_mask = 1
+script = ExtResource("1")
+damage = 35
+trigger_range = 100.0
+warning_duration = 0.5
+damage_radius = 50.0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="Sprite2D"]
+offset_left = -24.0
+offset_top = -24.0
+offset_right = 24.0
+offset_bottom = 24.0
+color = Color(0.4, 0.3, 0.25, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_rock")
+
+[node name="ProximityDetector" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ProximityDetector"]
+shape = SubResource("CircleShape2D_proximity")
+debug_color = Color(1, 1, 0, 0.2)
+
+[node name="DamageArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="WarningParticles" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 8
+process_material = null
+lifetime = 0.5
+
+[node name="ImpactParticles" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 16
+process_material = null
+lifetime = 0.8
+one_shot = true
