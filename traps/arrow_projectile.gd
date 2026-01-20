@@ -52,12 +52,11 @@ func _ready() -> void:
 
 	# Setup collision for normal arrows (hit players AND block areas)
 	collision_layer = 0
+	set_collision_layer_value(8, true)   # Interactables (für BlockArea detection)
 	set_collision_layer_value(11, true)  # Projectiles layer
 	collision_mask = 0
 	set_collision_mask_value(1, true)   # World
 	set_collision_mask_value(2, true)   # Player
-	set_collision_mask_value(5, true)   # Block/Shield (Layer 5 = 16)
-	set_collision_mask_value(9, true)   # Detection (Layer 9 = 256)
 
 	# Trail
 	if trail:
@@ -127,17 +126,20 @@ func _on_area_entered(area: Area2D) -> void:
 
 func _handle_player_hit(player: Node2D) -> void:
 	"""Handles hitting a player"""
-	# Check if player is blocking/parrying - if yes, destroy arrow
-	if can_be_parried and _check_parry(player):
-		_parry(player)
+	# Check if player is invulnerable (blocking/parrying via ParryBlockSystem)
+	var hurtbox = player.get_node_or_null("HurtboxComponent")
+	if hurtbox and "is_invulnerable" in hurtbox and hurtbox.is_invulnerable:
+		# Player is blocking - ParryBlockSystem will handle destruction via BlockArea
+		print("[ArrowProjectile] Player invulnerable (blocking) - waiting for ParryBlockSystem")
 		return
 
-	# Deal damage normally
-	var health_comp = player.get_node_or_null("HealthComponent")
-	if health_comp and health_comp.has_method("take_damage"):
-		health_comp.take_damage(damage)
+	# Deal damage through HurtboxComponent
+	if hurtbox and hurtbox.has_method("take_damage"):
+		hurtbox.take_damage(damage, direction * speed, 0.0)
 		arrow_hit.emit(player)
 		print("[ArrowProjectile] Hit player %s for %d damage" % [player.name, damage])
+	else:
+		print("[ArrowProjectile] No HurtboxComponent found on %s" % player.name)
 
 	# Play hit effect
 	_play_hit_effect()

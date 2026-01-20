@@ -16,20 +16,22 @@ size = Vector2(32, 128)
 script = ExtResource("1")
 door_open_duration = 3.0
 
-[node name="TimedSwitch" type="Area2D" parent="TimedDoorController" groups=["puzzle_switches"]]
+[node name="TimedSwitch" type="Area2D" parent="." groups=["puzzle_switches"]]
 position = Vector2(0, 0)
+collision_layer = 8
+collision_mask = 2
 script = ExtResource("2")
 
-[node name="Sprite2D" type="Sprite2D" parent="TimedDoorController/TimedSwitch"]
+[node name="Sprite2D" type="Sprite2D" parent="TimedSwitch"]
 
-[node name="ColorRect" type="ColorRect" parent="TimedDoorController/TimedSwitch/Sprite2D"]
+[node name="ColorRect" type="ColorRect" parent="TimedSwitch/Sprite2D"]
 offset_left = -24.0
 offset_top = -24.0
 offset_right = 24.0
 offset_bottom = 24.0
 color = Color(0.8, 0.8, 0.3, 1)
 
-[node name="Label" type="Label" parent="TimedDoorController/TimedSwitch/Sprite2D"]
+[node name="Label" type="Label" parent="TimedSwitch/Sprite2D"]
 offset_left = -12.0
 offset_top = -12.0
 offset_right = 12.0
@@ -38,22 +40,22 @@ text = "⏱"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TimedDoorController/TimedSwitch"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TimedSwitch"]
 shape = SubResource("RectangleShape2D_switch")
 
-[node name="TimedDoor" type="StaticBody2D" parent="TimedDoorController" groups=["timed_doors"]]
+[node name="TimedDoor" type="StaticBody2D" parent="." groups=["timed_doors"]]
 position = Vector2(200, 0)
 script = ExtResource("3")
 default_open_duration = 3.0
 
-[node name="Sprite2D" type="Sprite2D" parent="TimedDoorController/TimedDoor"]
+[node name="Sprite2D" type="Sprite2D" parent="TimedDoor"]
 
-[node name="ColorRect" type="ColorRect" parent="TimedDoorController/TimedDoor/Sprite2D"]
+[node name="ColorRect" type="ColorRect" parent="TimedDoor/Sprite2D"]
 offset_left = -16.0
 offset_top = -64.0
 offset_right = 16.0
 offset_bottom = 64.0
 color = Color(0.3, 0.3, 0.8, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TimedDoorController/TimedDoor"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TimedDoor"]
 shape = SubResource("RectangleShape2D_door")

@@ -82,7 +82,7 @@ func _on_area_entered(area: Area2D) -> void:
 # ============================================================================
 
 func activate(projectile_owner: Node2D = null) -> void:
-	"""Activates the crystal"""
+	"""Destroys the crystal (HP system: 1 hit = destroyed)"""
 	if is_activated:
 		return
 
@@ -90,13 +90,17 @@ func activate(projectile_owner: Node2D = null) -> void:
 	crystal_hit.emit(projectile_owner)
 
 	# Visual feedback
-	_play_activation_visual()
+	_play_destruction_visual()
 
 	# Audio feedback
 	if AudioManager:
-		AudioManager.play_sfx("puzzle/crystal_hit")
+		AudioManager.play_sfx("puzzle/crystal_shatter")
 
-	print("[PuzzleCrystal] %s activated (ID: %d)" % [name, crystal_id])
+	print("[PuzzleCrystal] %s destroyed (ID: %d)" % [name, crystal_id])
+
+	# Destroy crystal after visual effect
+	await get_tree().create_timer(0.3).timeout
+	queue_free()
 
 func reset() -> void:
 	"""Resets the crystal"""
@@ -128,17 +132,17 @@ func _allow_pierce() -> void:
 # VISUAL FEEDBACK
 # ============================================================================
 
-func _play_activation_visual() -> void:
-	"""Plays activation visual effect"""
+func _play_destruction_visual() -> void:
+	"""Plays destruction visual effect"""
 	if sprite:
-		# Bright cyan glow
-		sprite.modulate = Color(0.5, 1.5, 2.0, 1.0)
+		# White flash then fade
+		sprite.modulate = Color(2.0, 2.0, 2.0, 1.0)
 
-		# Pulse effect
+		# Explode and fade
 		var tween = create_tween()
-		tween.set_loops()
-		tween.tween_property(sprite, "scale", Vector2(1.2, 1.2), 0.5)
-		tween.tween_property(sprite, "scale", Vector2(1.0, 1.0), 0.5)
+		tween.set_parallel(true)
+		tween.tween_property(sprite, "scale", Vector2(1.5, 1.5), 0.2)
+		tween.tween_property(sprite, "modulate:a", 0.0, 0.3)
 
 	if particles:
 		particles.restart()
