@@ -36,8 +36,12 @@ func _ready() -> void:
 # ============================================================================
 
 func _connect_crystals() -> void:
-	"""Finds and connects to all PuzzleCrystal children"""
-	for child in get_children():
+	"""Finds and connects to all PuzzleCrystal siblings in parent"""
+	var parent_node = get_parent()
+	if not parent_node:
+		return
+
+	for child in parent_node.get_children():
 		if child.has_signal("crystal_hit"):
 			connected_crystals.append(child)
 			child.crystal_hit.connect(_on_crystal_hit.bind(child))

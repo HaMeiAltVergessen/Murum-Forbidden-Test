@@ -19,17 +19,17 @@ collision_mask = 2
 script = ExtResource("2")
 switch_id = 1
 
-[node name="Sprite2D" type="Sprite2D" parent="SequencePuzzleController/Switch1"]
+[node name="Sprite2D" type="Sprite2D" parent="Switch1"]
 modulate = Color(0.8, 0.3, 0.3, 1)
 
-[node name="ColorRect" type="ColorRect" parent="SequencePuzzleController/Switch1/Sprite2D"]
+[node name="ColorRect" type="ColorRect" parent="Switch1/Sprite2D"]
 offset_left = -24.0
 offset_top = -24.0
 offset_right = 24.0
 offset_bottom = 24.0
 color = Color(0.8, 0.3, 0.3, 1)
 
-[node name="Label" type="Label" parent="SequencePuzzleController/Switch1/Sprite2D"]
+[node name="Label" type="Label" parent="Switch1/Sprite2D"]
 offset_left = -8.0
 offset_top = -12.0
 offset_right = 8.0
@@ -38,7 +38,7 @@ text = "1"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SequencePuzzleController/Switch1"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Switch1"]
 shape = SubResource("RectangleShape2D_switch")
 
 [node name="Switch2" type="Area2D" parent="." groups=["puzzle_switches"]]
@@ -48,17 +48,17 @@ collision_mask = 2
 script = ExtResource("2")
 switch_id = 2
 
-[node name="Sprite2D" type="Sprite2D" parent="SequencePuzzleController/Switch2"]
+[node name="Sprite2D" type="Sprite2D" parent="Switch2"]
 modulate = Color(0.8, 0.3, 0.3, 1)
 
-[node name="ColorRect" type="ColorRect" parent="SequencePuzzleController/Switch2/Sprite2D"]
+[node name="ColorRect" type="ColorRect" parent="Switch2/Sprite2D"]
 offset_left = -24.0
 offset_top = -24.0
 offset_right = 24.0
 offset_bottom = 24.0
 color = Color(0.8, 0.3, 0.3, 1)
 
-[node name="Label" type="Label" parent="SequencePuzzleController/Switch2/Sprite2D"]
+[node name="Label" type="Label" parent="Switch2/Sprite2D"]
 offset_left = -8.0
 offset_top = -12.0
 offset_right = 8.0
@@ -67,7 +67,7 @@ text = "2"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SequencePuzzleController/Switch2"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Switch2"]
 shape = SubResource("RectangleShape2D_switch")
 
 [node name="Switch3" type="Area2D" parent="." groups=["puzzle_switches"]]
@@ -77,17 +77,17 @@ collision_mask = 2
 script = ExtResource("2")
 switch_id = 3
 
-[node name="Sprite2D" type="Sprite2D" parent="SequencePuzzleController/Switch3"]
+[node name="Sprite2D" type="Sprite2D" parent="Switch3"]
 modulate = Color(0.8, 0.3, 0.3, 1)
 
-[node name="ColorRect" type="ColorRect" parent="SequencePuzzleController/Switch3/Sprite2D"]
+[node name="ColorRect" type="ColorRect" parent="Switch3/Sprite2D"]
 offset_left = -24.0
 offset_top = -24.0
 offset_right = 24.0
 offset_bottom = 24.0
 color = Color(0.8, 0.3, 0.3, 1)
 
-[node name="Label" type="Label" parent="SequencePuzzleController/Switch3/Sprite2D"]
+[node name="Label" type="Label" parent="Switch3/Sprite2D"]
 offset_left = -8.0
 offset_top = -12.0
 offset_right = 8.0
@@ -96,5 +96,5 @@ text = "3"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SequencePuzzleController/Switch3"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Switch3"]
 shape = SubResource("RectangleShape2D_switch")

@@ -12,70 +12,78 @@ radius = 20.0
 script = ExtResource("1")
 required_crystals = 4
 
-[node name="Crystal1" type="Area2D" parent="ChainPuzzleController" groups=["puzzle_crystals"]]
+[node name="Crystal1" type="Area2D" parent="." groups=["puzzle_crystals"]]
 position = Vector2(0, 0)
+collision_layer = 8
+collision_mask = 11
 script = ExtResource("2")
 crystal_id = 1
 
-[node name="Sprite2D" type="Sprite2D" parent="ChainPuzzleController/Crystal1"]
+[node name="Sprite2D" type="Sprite2D" parent="Crystal1"]
 
-[node name="ColorRect" type="ColorRect" parent="ChainPuzzleController/Crystal1/Sprite2D"]
+[node name="ColorRect" type="ColorRect" parent="Crystal1/Sprite2D"]
 offset_left = -16.0
 offset_top = -16.0
 offset_right = 16.0
 offset_bottom = 16.0
 color = Color(0.3, 0.8, 1, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ChainPuzzleController/Crystal1"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Crystal1"]
 shape = SubResource("CircleShape2D_crystal")
 
-[node name="Crystal2" type="Area2D" parent="ChainPuzzleController" groups=["puzzle_crystals"]]
+[node name="Crystal2" type="Area2D" parent="." groups=["puzzle_crystals"]]
 position = Vector2(100, 0)
+collision_layer = 8
+collision_mask = 11
 script = ExtResource("2")
 crystal_id = 2
 
-[node name="Sprite2D" type="Sprite2D" parent="ChainPuzzleController/Crystal2"]
+[node name="Sprite2D" type="Sprite2D" parent="Crystal2"]
 
-[node name="ColorRect" type="ColorRect" parent="ChainPuzzleController/Crystal2/Sprite2D"]
+[node name="ColorRect" type="ColorRect" parent="Crystal2/Sprite2D"]
 offset_left = -16.0
 offset_top = -16.0
 offset_right = 16.0
 offset_bottom = 16.0
 color = Color(0.3, 0.8, 1, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ChainPuzzleController/Crystal2"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Crystal2"]
 shape = SubResource("CircleShape2D_crystal")
 
-[node name="Crystal3" type="Area2D" parent="ChainPuzzleController" groups=["puzzle_crystals"]]
+[node name="Crystal3" type="Area2D" parent="." groups=["puzzle_crystals"]]
 position = Vector2(200, 0)
+collision_layer = 8
+collision_mask = 11
 script = ExtResource("2")
 crystal_id = 3
 
-[node name="Sprite2D" type="Sprite2D" parent="ChainPuzzleController/Crystal3"]
+[node name="Sprite2D" type="Sprite2D" parent="Crystal3"]
 
-[node name="ColorRect" type="ColorRect" parent="ChainPuzzleController/Crystal3/Sprite2D"]
+[node name="ColorRect" type="ColorRect" parent="Crystal3/Sprite2D"]
 offset_left = -16.0
 offset_top = -16.0
 offset_right = 16.0
 offset_bottom = 16.0
 color = Color(0.3, 0.8, 1, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ChainPuzzleController/Crystal3"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Crystal3"]
 shape = SubResource("CircleShape2D_crystal")
 
-[node name="Crystal4" type="Area2D" parent="ChainPuzzleController" groups=["puzzle_crystals"]]
+[node name="Crystal4" type="Area2D" parent="." groups=["puzzle_crystals"]]
 position = Vector2(300, 0)
+collision_layer = 8
+collision_mask = 11
 script = ExtResource("2")
 crystal_id = 4
 
-[node name="Sprite2D" type="Sprite2D" parent="ChainPuzzleController/Crystal4"]
+[node name="Sprite2D" type="Sprite2D" parent="Crystal4"]
 
-[node name="ColorRect" type="ColorRect" parent="ChainPuzzleController/Crystal4/Sprite2D"]
+[node name="ColorRect" type="ColorRect" parent="Crystal4/Sprite2D"]
 offset_left = -16.0
 offset_top = -16.0
 offset_right = 16.0
 offset_bottom = 16.0
 color = Color(0.3, 0.8, 1, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ChainPuzzleController/Crystal4"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Crystal4"]
 shape = SubResource("CircleShape2D_crystal")
