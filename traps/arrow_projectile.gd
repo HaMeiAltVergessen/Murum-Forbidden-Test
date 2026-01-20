@@ -50,12 +50,14 @@ func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	area_entered.connect(_on_area_entered)
 
-	# Setup collision for normal arrows (hit players)
+	# Setup collision for normal arrows (hit players AND block areas)
 	collision_layer = 0
 	set_collision_layer_value(11, true)  # Projectiles layer
 	collision_mask = 0
 	set_collision_mask_value(1, true)   # World
 	set_collision_mask_value(2, true)   # Player
+	set_collision_mask_value(5, true)   # Block/Shield (Layer 5 = 16)
+	set_collision_mask_value(9, true)   # Detection (Layer 9 = 256)
 
 	# Trail
 	if trail:
@@ -109,9 +111,15 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 
 func _on_area_entered(area: Area2D) -> void:
-	"""Handles collision with areas"""
-	# Could be used for shield/barrier detection
-	pass
+	"""Handles collision with areas (BlockArea, shields, etc.)"""
+	print("[ArrowProjectile] Area entered: %s (groups: %s)" % [area.name, area.get_groups()])
+
+	# Check if it's a BlockArea (player blocking)
+	if area.name == "BlockArea" or "block_area" in area.name.to_lower():
+		print("[ArrowProjectile] Hit BlockArea - arrow blocked and destroyed!")
+		_play_hit_effect()
+		queue_free()
+		return
 
 # ============================================================================
 # PLAYER HIT
