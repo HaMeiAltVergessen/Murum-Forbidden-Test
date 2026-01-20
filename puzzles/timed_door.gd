@@ -22,6 +22,8 @@ signal door_closed()
 # ============================================================================
 
 var is_open: bool = false
+var original_collision_layer: int = 0
+var original_collision_mask: int = 0
 
 # ============================================================================
 # REFERENCES
@@ -38,8 +40,12 @@ var close_timer: Timer = null
 # ============================================================================
 
 func _ready() -> void:
+	# Store original collision settings
+	original_collision_layer = collision_layer
+	original_collision_mask = collision_mask
+
 	add_to_group("timed_doors")
-	print("[TimedDoor] %s initialized" % name)
+	print("[TimedDoor] %s initialized (collision_layer: %d, collision_mask: %d)" % [name, original_collision_layer, original_collision_mask])
 
 # ============================================================================
 # OPEN/CLOSE
@@ -83,7 +89,9 @@ func open() -> void:
 			var tween = create_tween()
 			tween.tween_property(sprite, "modulate:a", 0.3, 0.3)
 
-	# Disable collision
+	# Completely disable collision (layers + shape)
+	collision_layer = 0
+	collision_mask = 0
 	if collision_shape:
 		collision_shape.disabled = true
 
@@ -92,7 +100,7 @@ func open() -> void:
 		AudioManager.play_sfx("puzzle/door_open")
 
 	door_opened.emit()
-	print("[TimedDoor] %s opened" % name)
+	print("[TimedDoor] %s opened (collision completely disabled)" % name)
 
 func close() -> void:
 	"""Closes the door"""
@@ -110,7 +118,9 @@ func close() -> void:
 			var tween = create_tween()
 			tween.tween_property(sprite, "modulate:a", 1.0, 0.3)
 
-	# Enable collision
+	# Re-enable collision (restore original layers + shape)
+	collision_layer = original_collision_layer
+	collision_mask = original_collision_mask
 	if collision_shape:
 		collision_shape.disabled = false
 
@@ -119,7 +129,7 @@ func close() -> void:
 		AudioManager.play_sfx("puzzle/door_close")
 
 	door_closed.emit()
-	print("[TimedDoor] %s closed" % name)
+	print("[TimedDoor] %s closed (collision re-enabled)" % name)
 
 # ============================================================================
 # TIMER HANDLER

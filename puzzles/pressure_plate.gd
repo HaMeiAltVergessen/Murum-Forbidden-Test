@@ -1,7 +1,8 @@
 extends Area2D
 class_name PressurePlate
 
-## Pressure plate that detects bodies standing on it
+## Simple one-time pressure plate (like a switch without interact)
+## Activates once when player steps on it
 ## Godot 4.4 compatible
 
 # ============================================================================
@@ -9,21 +10,18 @@ class_name PressurePlate
 # ============================================================================
 
 signal plate_pressed(activator: CharacterBody2D)
-signal plate_released(last_activator: CharacterBody2D)
 
 # ============================================================================
 # EXPORTS
 # ============================================================================
 
-@export var require_enemy: bool = true  ## Require enemy to activate (vs player)
 @export var visual_feedback: bool = true
 
 # ============================================================================
 # STATE
 # ============================================================================
 
-var is_pressed: bool = false
-var bodies_on_plate: Array[CharacterBody2D] = []
+var is_activated: bool = false
 
 # ============================================================================
 # REFERENCES
@@ -43,21 +41,24 @@ func _ready() -> void:
 
 	# Connect signals
 	body_entered.connect(_on_body_entered)
-	body_exited.connect(_on_body_exited)
 
 	add_to_group("pressure_plates")
 
-	print("[PressurePlate] %s initialized (require_enemy: %s)" % [name, require_enemy])
+	print("[PressurePlate] %s initialized (one-time activation)" % name)
 
 # ============================================================================
 # COLLISION HANDLERS
 # ============================================================================
 
 func _on_body_entered(body: Node2D) -> void:
-	"""Handles body entering plate"""
-	print("[PressurePlate] Body entered: %s (class: %s, groups: %s)" % [body.name, body.get_class(), body.get_groups()])
+	"""Handles body entering plate - activates once"""
+	# Already activated, ignore
+	if is_activated:
+		return
 
-	# Check if valid body
+	print("[PressurePlate] Body entered: %s (groups: %s)" % [body.name, body.get_groups()])
+
+	# Check if valid body (player or player2)
 	if not _is_valid_body(body):
 		print("[PressurePlate] Body not valid for activation")
 		return
@@ -66,35 +67,16 @@ func _on_body_entered(body: Node2D) -> void:
 	if not char_body:
 		return
 
-	# Add to bodies on plate
-	if char_body not in bodies_on_plate:
-		bodies_on_plate.append(char_body)
-
-	# Activate if not already pressed
-	if not is_pressed:
-		_press(char_body)
-
-func _on_body_exited(body: Node2D) -> void:
-	"""Handles body leaving plate"""
-	var char_body = body as CharacterBody2D
-	if not char_body:
-		return
-
-	# Remove from bodies on plate
-	if char_body in bodies_on_plate:
-		bodies_on_plate.erase(char_body)
-
-	# Release if no more bodies
-	if bodies_on_plate.is_empty() and is_pressed:
-		_release(char_body)
+	# Activate once
+	_activate(char_body)
 
 # ============================================================================
 # ACTIVATION
 # ============================================================================
 
-func _press(activator: CharacterBody2D) -> void:
-	"""Activates the pressure plate"""
-	is_pressed = true
+func _activate(activator: CharacterBody2D) -> void:
+	"""Activates the pressure plate once"""
+	is_activated = true
 	plate_pressed.emit(activator)
 
 	# Visual feedback
@@ -105,38 +87,22 @@ func _press(activator: CharacterBody2D) -> void:
 	if AudioManager:
 		AudioManager.play_sfx("puzzle/plate_pressed")
 
-	print("[PressurePlate] %s pressed by %s" % [name, activator.name])
+	# Disable further detection
+	monitoring = false
 
-func _release(last_body: CharacterBody2D = null) -> void:
-	"""Deactivates the pressure plate"""
-	is_pressed = false
-	plate_released.emit(last_body)
-
-	# Visual feedback
-	if visual_feedback:
-		_play_release_visual()
-
-	# Audio feedback
-	if AudioManager:
-		AudioManager.play_sfx("puzzle/plate_released")
-
-	print("[PressurePlate] %s released" % name)
+	print("[PressurePlate] %s activated by %s (one-time)" % [name, activator.name])
 
 # ============================================================================
 # VALIDATION
 # ============================================================================
 
 func _is_valid_body(body: Node) -> bool:
-	"""Checks if body is valid for activation"""
+	"""Checks if body is valid for activation (player only)"""
 	if not body is CharacterBody2D:
 		return false
 
-	if require_enemy:
-		# Must be enemy
-		return body.is_in_group("enemies") or body.is_in_group("enemy")
-	else:
-		# Can be player or enemy
-		return body.is_in_group("player") or body.is_in_group("player2") or body.is_in_group("enemies") or body.is_in_group("enemy")
+	# Only players can activate
+	return body.is_in_group("player") or body.is_in_group("player2")
 
 # ============================================================================
 # VISUAL FEEDBACK
@@ -149,15 +115,5 @@ func _play_press_visual() -> void:
 		var tween = create_tween()
 		tween.tween_property(sprite, "position:y", 4.0, 0.1)
 
-		# Yellow color
-		sprite.modulate = Color(1.0, 1.0, 0.5, 1.0)
-
-func _play_release_visual() -> void:
-	"""Plays release visual effect"""
-	if sprite:
-		# Move back up
-		var tween = create_tween()
-		tween.tween_property(sprite, "position:y", 0.0, 0.1)
-
-		# Reset color
-		sprite.modulate = Color.WHITE
+		# Green color for activated
+		sprite.modulate = Color(0.5, 1.0, 0.5, 1.0)

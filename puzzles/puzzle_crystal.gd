@@ -39,43 +39,63 @@ func _ready() -> void:
 	monitoring = true
 	monitorable = true
 
-	# Set collision layers for staff projectile detection
-	# Staff projectiles are typically on layer 11
+	# Treat crystal as static enemy - set collision layers like enemy hitbox
+	collision_layer = 0
+	set_collision_layer_value(8, true)  # Interactables/Enemy Hitboxes (Layer 8)
+
 	collision_mask = 0
-	set_collision_mask_value(1, true)   # Default
-	set_collision_mask_value(11, true)  # Projectiles
+	set_collision_mask_value(11, true)  # Projectiles (Layer 11)
 
 	# Connect signals
 	area_entered.connect(_on_area_entered)
+	body_entered.connect(_on_body_entered)
 
+	# Add to enemies group so projectiles recognize it as target
 	add_to_group("puzzle_crystals")
+	add_to_group("enemies")
 
-	print("[PuzzleCrystal] %s initialized (ID: %d)" % [name, crystal_id])
+	print("[PuzzleCrystal] %s initialized as static enemy (ID: %d)" % [name, crystal_id])
 
 # ============================================================================
 # COLLISION HANDLERS
 # ============================================================================
 
 func _on_area_entered(area: Area2D) -> void:
-	"""Handles area collision (staff projectile or shadow scythe)"""
-	print("[PuzzleCrystal] Area entered: %s (groups: %s)" % [area.name, area.get_groups()])
-
-	# Check if it's a valid projectile (P1 Staff Throw or P2 Shadow Scythe)
-	if not (area.is_in_group("staff_projectile") or area.is_in_group("staff_projectiles") or area.is_in_group("shadow_scythe")):
+	"""Handles area collision (any projectile)"""
+	# Only activate once
+	if is_activated:
 		return
 
-	# Only activate once per chain
-	if is_activated:
+	print("[PuzzleCrystal] Area entered: %s (layer: %d, groups: %s)" % [area.name, area.collision_layer, area.get_groups()])
+
+	# Check if it's on projectile layer (Layer 11)
+	if not area.get_collision_layer_value(11):
+		print("[PuzzleCrystal] Not a projectile (not on layer 11)")
 		return
 
 	# Get owner player
 	var owner_player = area.get_meta("owner_player", null) if area.has_meta("owner_player") else area.owner
 
-	# Activate crystal
+	# Activate crystal (destroys it)
 	activate(owner_player)
 
-	# Allow piercing: temporarily disable monitoring
-	_allow_pierce()
+func _on_body_entered(body: Node2D) -> void:
+	"""Handles body collision (CharacterBody2D projectiles)"""
+	# Only activate once
+	if is_activated:
+		return
+
+	print("[PuzzleCrystal] Body entered: %s (groups: %s)" % [body.name, body.get_groups()])
+
+	# Check if it's a projectile
+	if not (body.is_in_group("projectiles") or "Projectile" in body.name):
+		return
+
+	# Get owner player
+	var owner_player = body.get_meta("owner_player", null) if body.has_meta("owner_player") else body.owner
+
+	# Activate crystal (destroys it)
+	activate(owner_player)
 
 # ============================================================================
 # ACTIVATION
@@ -116,17 +136,6 @@ func reset() -> void:
 
 	print("[PuzzleCrystal] %s reset" % name)
 
-# ============================================================================
-# PIERCING MECHANIC
-# ============================================================================
-
-func _allow_pierce() -> void:
-	"""Temporarily disables monitoring to allow staff to pierce through"""
-	monitoring = false
-
-	# Re-enable after delay
-	await get_tree().create_timer(pierce_delay).timeout
-	monitoring = true
 
 # ============================================================================
 # VISUAL FEEDBACK
