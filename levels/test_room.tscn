@@ -12,10 +12,18 @@
 [ext_resource type="PackedScene" path="res://environment/pickups/pickup_base.tscn" id="10_pickup_scene"]
 [ext_resource type="PackedScene" path="res://camera/coop_camera.tscn" id="11_coop_camera"]
 [ext_resource type="PackedScene" path="res://camera/split_screen_manager.tscn" id="12_split_screen"]
-[ext_resource type="PackedScene" uid="uid://sequence_puzzle_001" path="res://puzzles/scenes/sequence_puzzle.tscn" id="13_sequence_puzzle"]
-[ext_resource type="PackedScene" uid="uid://pressure_plate_puzzle_001" path="res://puzzles/scenes/pressure_plate_puzzle.tscn" id="14_pressure_plate_puzzle"]
-[ext_resource type="PackedScene" uid="uid://crystal_chain_puzzle_001" path="res://puzzles/scenes/crystal_chain_puzzle.tscn" id="15_crystal_chain_puzzle"]
-[ext_resource type="PackedScene" uid="uid://timed_door_puzzle_001" path="res://puzzles/scenes/timed_door_puzzle.tscn" id="16_timed_door_puzzle"]
+[ext_resource type="PackedScene" uid="uid://puzzle_block_001" path="res://puzzles/scenes/puzzle_block.tscn" id="13_puzzle_block"]
+[ext_resource type="PackedScene" uid="uid://sequence_controller" path="res://puzzles/scenes/controllers/sequence_puzzle_controller.tscn" id="14_sequence_controller"]
+[ext_resource type="PackedScene" uid="uid://puzzle_switch_component" path="res://puzzles/scenes/components/puzzle_switch.tscn" id="15_puzzle_switch"]
+[ext_resource type="PackedScene" uid="uid://dual_plate_controller" path="res://puzzles/scenes/controllers/dual_plate_puzzle_controller.tscn" id="16_dual_plate_controller"]
+[ext_resource type="PackedScene" uid="uid://pressure_plate_component" path="res://puzzles/scenes/components/pressure_plate.tscn" id="17_pressure_plate"]
+[ext_resource type="PackedScene" uid="uid://falling_rock_001" path="res://traps/scenes/falling_rock.tscn" id="18_falling_rock"]
+[ext_resource type="PackedScene" uid="uid://arrow_trap_001" path="res://traps/scenes/arrow_trap.tscn" id="19_arrow_trap"]
+[ext_resource type="PackedScene" uid="uid://quicksand_pit_001" path="res://traps/scenes/quicksand_pit.tscn" id="20_quicksand_pit"]
+[ext_resource type="PackedScene" uid="uid://chain_controller" path="res://puzzles/scenes/controllers/chain_puzzle_controller.tscn" id="21_chain_controller"]
+[ext_resource type="PackedScene" uid="uid://puzzle_crystal_component" path="res://puzzles/scenes/components/puzzle_crystal.tscn" id="22_puzzle_crystal"]
+[ext_resource type="PackedScene" uid="uid://timed_door_controller" path="res://puzzles/scenes/controllers/timed_door_controller.tscn" id="23_timed_door_controller"]
+[ext_resource type="PackedScene" uid="uid://timed_door_component" path="res://puzzles/scenes/components/timed_door.tscn" id="24_timed_door"]
 [ext_resource type="PackedScene" uid="uid://puzzle_block_001" path="res://puzzles/scenes/puzzle_block.tscn" id="17_puzzle_block"]
 [ext_resource type="PackedScene" uid="uid://falling_rock_001" path="res://traps/scenes/falling_rock.tscn" id="18_falling_rock"]
 [ext_resource type="PackedScene" uid="uid://arrow_trap_001" path="res://traps/scenes/arrow_trap.tscn" id="19_arrow_trap"]
@@ -173,36 +181,87 @@ item_id = "urtraene"
 
 [node name="Puzzles" type="Node2D" parent="."]
 
-[node name="R1_SequencePuzzle" parent="Puzzles" instance=ExtResource("13_sequence_puzzle")]
-position = Vector2(200, 350)
+[node name="R1_SequencePuzzle" type="Node2D" parent="Puzzles"]
+position = Vector2(200, 950)
 
-[node name="R2_PressurePlatePuzzle" parent="Puzzles" instance=ExtResource("14_pressure_plate_puzzle")]
-position = Vector2(450, 750)
+[node name="SequencePuzzleController" parent="Puzzles/R1_SequencePuzzle" instance=ExtResource("14_sequence_controller")]
+correct_sequence = [1, 2, 3]
+use_reset_delay = true
+reset_delay = 3.0
 
-[node name="R3_CrystalChainPuzzle" parent="Puzzles" instance=ExtResource("15_crystal_chain_puzzle")]
-position = Vector2(900, 600)
+[node name="Switch1" parent="Puzzles/R1_SequencePuzzle" instance=ExtResource("15_puzzle_switch")]
+position = Vector2(0, 0)
+switch_id = 1
 
-[node name="R4_TimedDoorPuzzle" parent="Puzzles" instance=ExtResource("16_timed_door_puzzle")]
-position = Vector2(1300, 400)
+[node name="Switch2" parent="Puzzles/R1_SequencePuzzle" instance=ExtResource("15_puzzle_switch")]
+position = Vector2(80, 0)
+switch_id = 2
+
+[node name="Switch3" parent="Puzzles/R1_SequencePuzzle" instance=ExtResource("15_puzzle_switch")]
+position = Vector2(160, 0)
+switch_id = 3
+
+[node name="R2_PressurePlatePuzzle" type="Node2D" parent="Puzzles"]
+position = Vector2(600, 950)
+
+[node name="DualPlatePuzzleController" parent="Puzzles/R2_PressurePlatePuzzle" instance=ExtResource("16_dual_plate_controller")]
+
+[node name="Plate1" parent="Puzzles/R2_PressurePlatePuzzle" instance=ExtResource("17_pressure_plate")]
+position = Vector2(0, 0)
+
+[node name="Plate2" parent="Puzzles/R2_PressurePlatePuzzle" instance=ExtResource("17_pressure_plate")]
+position = Vector2(150, 0)
+
+[node name="R3_CrystalChainPuzzle" type="Node2D" parent="Puzzles"]
+position = Vector2(1000, 950)
+
+[node name="ChainPuzzleController" parent="Puzzles/R3_CrystalChainPuzzle" instance=ExtResource("21_chain_controller")]
+
+[node name="Crystal1" parent="Puzzles/R3_CrystalChainPuzzle" instance=ExtResource("22_puzzle_crystal")]
+position = Vector2(0, 0)
+crystal_id = 1
+
+[node name="Crystal2" parent="Puzzles/R3_CrystalChainPuzzle" instance=ExtResource("22_puzzle_crystal")]
+position = Vector2(80, 0)
+crystal_id = 2
+
+[node name="Crystal3" parent="Puzzles/R3_CrystalChainPuzzle" instance=ExtResource("22_puzzle_crystal")]
+position = Vector2(160, 0)
+crystal_id = 3
+
+[node name="Crystal4" parent="Puzzles/R3_CrystalChainPuzzle" instance=ExtResource("22_puzzle_crystal")]
+position = Vector2(240, 0)
+crystal_id = 4
+
+[node name="R4_TimedDoorPuzzle" type="Node2D" parent="Puzzles"]
+position = Vector2(1500, 950)
+
+[node name="TimedDoorController" parent="Puzzles/R4_TimedDoorPuzzle" instance=ExtResource("23_timed_door_controller")]
+
+[node name="TimedSwitch" parent="Puzzles/R4_TimedDoorPuzzle" instance=ExtResource("15_puzzle_switch")]
+position = Vector2(0, 0)
+switch_id = 1
+
+[node name="TimedDoor" parent="Puzzles/R4_TimedDoorPuzzle" instance=ExtResource("24_timed_door")]
+position = Vector2(0, -100)
 
 [node name="PuzzleBlocks" type="Node2D" parent="."]
 
-[node name="Block1_Sequence" parent="PuzzleBlocks" instance=ExtResource("17_puzzle_block")]
+[node name="Block1_Sequence" parent="PuzzleBlocks" instance=ExtResource("13_puzzle_block")]
 position = Vector2(100, 100)
 puzzle_controller = NodePath("../../Puzzles/R1_SequencePuzzle/SequencePuzzleController")
 
-[node name="Block2_PressurePlate" parent="PuzzleBlocks" instance=ExtResource("17_puzzle_block")]
+[node name="Block2_PressurePlate" parent="PuzzleBlocks" instance=ExtResource("13_puzzle_block")]
 position = Vector2(200, 100)
 puzzle_controller = NodePath("../../Puzzles/R2_PressurePlatePuzzle/DualPlatePuzzleController")
 
-[node name="Block3_CrystalChain" parent="PuzzleBlocks" instance=ExtResource("17_puzzle_block")]
+[node name="Block3_CrystalChain" parent="PuzzleBlocks" instance=ExtResource("13_puzzle_block")]
 position = Vector2(300, 100)
 puzzle_controller = NodePath("../../Puzzles/R3_CrystalChainPuzzle/ChainPuzzleController")
 
-[node name="Block4_TimedDoor" parent="PuzzleBlocks" instance=ExtResource("17_puzzle_block")]
+[node name="Block4_TimedDoor" parent="PuzzleBlocks" instance=ExtResource("13_puzzle_block")]
 position = Vector2(400, 100)
 puzzle_controller = NodePath("../../Puzzles/R4_TimedDoorPuzzle/TimedDoorController")
-
 [node name="Traps" type="Node2D" parent="."]
 
 [node name="FallingRock1" parent="Traps" instance=ExtResource("18_falling_rock")]
