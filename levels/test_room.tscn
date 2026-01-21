@@ -290,6 +290,7 @@ puzzle_controllers = [NodePath("Puzzles/R1_SequencePuzzle/SequencePuzzleControll
 require_all = true
 enable_teleport = true
 target_scene = "res://levels/item_room.tscn"
+spawn_position = Vector2(200, 600)
 
 position = Vector2(1000, 900)
 
