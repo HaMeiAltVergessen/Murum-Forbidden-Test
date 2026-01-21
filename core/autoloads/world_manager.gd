@@ -25,6 +25,7 @@ var cleared_rooms: Dictionary = {}  # room_id: bool
 var visited_rooms: Array[String] = []
 var unlocked_doors: Array[String] = []
 var collected_items: Array[String] = []  # Tracks collected pickups to prevent respawn
+var solved_puzzles: Array[String] = []  # Tracks solved puzzles to prevent re-solving
 
 # World Progression
 var bosses_defeated: Array[String] = []
@@ -493,7 +494,8 @@ func get_progression_data() -> Dictionary:
 		"visited_rooms": visited_rooms,
 		"unlocked_doors": unlocked_doors,
 		"bosses_defeated": bosses_defeated,
-		"collected_items": collected_items
+		"collected_items": collected_items,
+		"solved_puzzles": solved_puzzles
 	}
 
 func load_progression_data(data: Dictionary) -> void:
@@ -532,7 +534,11 @@ func load_progression_data(data: Dictionary) -> void:
 	for item_id in data.get("collected_items", []):
 		collected_items.append(item_id)
 
-	print("[WorldManager] Progression data loaded (including %d collected items)" % collected_items.size())
+	solved_puzzles.clear()
+	for puzzle_id in data.get("solved_puzzles", []):
+		solved_puzzles.append(puzzle_id)
+
+	print("[WorldManager] Progression data loaded: %d items, %d puzzles" % [collected_items.size(), solved_puzzles.size()])
 
 # ============================================================================
 # UTILITY
@@ -551,6 +557,16 @@ func mark_item_collected(item_id: String) -> void:
 func is_item_collected(item_id: String) -> bool:
 	"""Returns true if item was already collected"""
 	return item_id in collected_items
+
+func mark_puzzle_solved(puzzle_id: String) -> void:
+	"""Marks a puzzle as solved to prevent re-solving"""
+	if puzzle_id not in solved_puzzles:
+		solved_puzzles.append(puzzle_id)
+		print("[WorldManager] Puzzle solved: %s" % puzzle_id)
+
+func is_puzzle_solved(puzzle_id: String) -> bool:
+	"""Returns true if puzzle was already solved"""
+	return puzzle_id in solved_puzzles
 
 func get_enemies_in_room() -> Array:
 	"""Returns all enemies in current room"""
