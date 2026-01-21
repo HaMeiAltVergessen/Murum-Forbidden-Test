@@ -90,12 +90,20 @@ func _on_switch_hit(switch_id: int, activator: Node2D) -> void:
 		# Wrong sequence - show feedback
 		_show_failure_feedback()
 
+		# Play fail sound
+		if AudioManager:
+			AudioManager.play_sfx("puzzle/puzzle_failed")
+
+		print("[SequencePuzzle] Wrong sequence detected!")
+
 		if use_reset_delay:
-			# Reset after delay
+			# Reset after delay (don't call fail() - it has auto-reset!)
 			_reset_after_delay()
 		else:
-			# Reset immediately
-			fail()
+			# Reset immediately without delay
+			is_resetting = true
+			await get_tree().create_timer(0.1).timeout
+			reset_puzzle()
 
 
 # ============================================================================

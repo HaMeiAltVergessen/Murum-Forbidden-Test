@@ -51,7 +51,8 @@ func _ready() -> void:
 	set_collision_layer_value(8, true)  # Interactables (Layer 8)
 
 	collision_mask = 0
-	set_collision_mask_value(11, true)  # Projectiles (Layer 11)
+	set_collision_mask_value(5, true)   # Staff Projectiles (Layer 5)
+	set_collision_mask_value(11, true)  # Other Projectiles (Layer 11)
 
 	# Connect signals (only area_entered for projectiles)
 	area_entered.connect(_on_area_entered)
@@ -71,17 +72,16 @@ func _on_area_entered(area: Area2D) -> void:
 	if is_activated:
 		return
 
-	print("[PuzzleCrystal] Area entered: %s (groups: %s)" % [area.name, area.get_groups()])
+	print("[PuzzleCrystal] Area entered: %s (layer: %d, groups: %s)" % [area.name, area.collision_layer, area.get_groups()])
 
 	# CRITICAL: Ignore player HurtboxComponent!
 	if "Hurtbox" in area.name or "hurtbox" in area.name.to_lower():
 		print("[PuzzleCrystal] Ignoring HurtboxComponent")
 		return
 
-	# Only accept actual projectiles (staff throw, shadow scythe)
+	# Only accept actual projectiles (check groups)
 	var is_projectile = (
-		area.is_in_group("staff_projectile") or
-		area.is_in_group("staff_projectiles") or
+		area.is_in_group("staff_projectiles") or   # FIXED: plural!
 		area.is_in_group("shadow_scythe") or
 		area.is_in_group("projectiles") or
 		"Projectile" in area.name
@@ -90,6 +90,8 @@ func _on_area_entered(area: Area2D) -> void:
 	if not is_projectile:
 		print("[PuzzleCrystal] Not a projectile, ignoring")
 		return
+
+	print("[PuzzleCrystal] Projectile detected! Taking damage...")
 
 	# Get owner player
 	var owner_player = area.get_meta("owner_player", null) if area.has_meta("owner_player") else area.owner
