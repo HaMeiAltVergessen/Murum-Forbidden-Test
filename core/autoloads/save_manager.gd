@@ -233,6 +233,9 @@ func _gather_save_data(slot_index: int) -> Dictionary:
 
 	var player = get_tree().get_first_node_in_group("player")
 
+	if not player:
+		print("[SaveManager] WARNING: No player found in scene, using defaults")
+
 	var save_data = {
 		"version": SAVE_VERSION,
 		"timestamp": Time.get_datetime_string_from_system(),
@@ -247,6 +250,7 @@ func _gather_save_data(slot_index: int) -> Dictionary:
 		"abilities": _gather_abilities_data()
 	}
 
+	print("[SaveManager] Save data gathered successfully")
 	return save_data
 
 func _gather_player_data(player: Node) -> Dictionary:
@@ -301,13 +305,15 @@ func _gather_inventory_data() -> Dictionary:
 func _gather_progression_data() -> Dictionary:
 	"""Gathers world progression"""
 	# Get progression from WorldManager if available
-	if WorldManager:
+	if WorldManager and WorldManager.has_method("get_progression_data"):
 		return WorldManager.get_progression_data()
 
-	# Fallback if WorldManager not available
+	# Fallback if WorldManager not available or method missing
 	return {
 		"worlds_unlocked": ["world_1_ruins"],
-		"rooms_cleared": [],
+		"rooms_cleared": {},
+		"visited_rooms": [],
+		"unlocked_doors": [],
 		"bosses_defeated": [],
 		"checkpoints_activated": [],
 		"secrets_found": []
@@ -415,15 +421,27 @@ func _apply_save_data(save_data: Dictionary) -> void:
 		WorldManager.load_progression_data(progression_data)
 		print("[SaveManager] Loaded progression data to WorldManager")
 
-	# Transition to saved room
+	# Get saved room data
 	var player_data = save_data.get("player", {})
-	var saved_room = player_data.get("current_room", "test_room")
+	var saved_world = player_data.get("current_world", "world_1_ruins")
+	var saved_room = player_data.get("current_room", "room_01_entry")
 
-	if WorldManager and saved_room != WorldManager.current_room:
-		print("[SaveManager] Transitioning to saved room: %s" % saved_room)
-		WorldManager.transition_to_room(saved_room, "default")
+	# Fallback if room is empty
+	if saved_room.is_empty():
+		saved_room = "room_01_entry"
+		print("[SaveManager] WARNING: Empty room in save, using fallback: %s" % saved_room)
+
+	# Build scene path and load directly
+	var scene_path = "res://worlds/%s/rooms/%s.tscn" % [saved_world, saved_room]
+	print("[SaveManager] Loading saved room: %s (path: %s)" % [saved_room, scene_path])
+
+	# Load scene directly
+	if FileAccess.file_exists(scene_path):
+		get_tree().change_scene_to_file(scene_path)
 	else:
-		print("[SaveManager] Already in correct room: %s" % saved_room)
+		push_error("[SaveManager] ERROR: Saved room scene not found: %s" % scene_path)
+		# Fallback to room_01_entry
+		get_tree().change_scene_to_file("res://worlds/world_1_ruins/rooms/room_01_entry.tscn")
 
 	print("[SaveManager] Stored player data for application after scene load")
 

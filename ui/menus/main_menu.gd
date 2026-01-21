@@ -123,8 +123,18 @@ func _on_continue_pressed():
 func _on_new_game_pressed():
 	print("[MainMenu] ========== NEW GAME BUTTON PRESSED ==========")
 
-	# Create new save file (COMMIT 016: SaveManager Integration)
-	# This will overwrite existing save if one exists
+	# Delete old save if exists (fresh start)
+	if SaveManager.has_save_file():
+		SaveManager.delete_current_save()
+		print("[MainMenu] Old save deleted for fresh start")
+
+	# Set WorldManager to starting room BEFORE creating save
+	if WorldManager:
+		WorldManager.current_world = "world_1_ruins"
+		WorldManager.current_room = "room_01_entry"
+		print("[MainMenu] WorldManager preset to room_01_entry")
+
+	# Create new save file with correct room data
 	SaveManager.create_new_save()
 	print("[MainMenu] New save created")
 
