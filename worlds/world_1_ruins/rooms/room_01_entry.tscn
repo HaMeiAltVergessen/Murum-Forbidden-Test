@@ -128,10 +128,12 @@ position = Vector2(1083, -433)
 [node name="PickupTitanenblut" parent="Pickups" instance=ExtResource("9_cqwq7")]
 position = Vector2(300, 950)
 item_id = "titanenblut_stein"
+pickup_id = "room_01_entry/titanenblut_1"
 
 [node name="PickupUrtraene" parent="Pickups" instance=ExtResource("9_cqwq7")]
 position = Vector2(462, 641)
 item_id = "urtraene"
+pickup_id = "room_01_entry/urtraene_1"
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 position = Vector2(1545, 481)

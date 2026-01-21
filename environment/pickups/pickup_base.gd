@@ -1,7 +1,8 @@
 extends Area2D
 ## Base class for all item pickups in the game world
 
-@export var item_id: String = ""
+@export var item_id: String = ""  ## Item type (e.g., "titanenblut_stein")
+@export var pickup_id: String = ""  ## Unique pickup ID (e.g., "room_01_entry/titanenblut_1")
 @export var auto_categorize: bool = true
 
 var player_in_range: bool = false
@@ -12,9 +13,14 @@ var is_picked_up: bool = false
 
 
 func _ready() -> void:
-	# Check if item was already collected
-	if item_id != "" and WorldManager and WorldManager.is_item_collected(item_id):
-		print("[Pickup] Already collected, removing: ", item_id)
+	# Generate pickup_id if not set (fallback to item_id + instance_id)
+	if pickup_id == "":
+		pickup_id = "%s_%d" % [item_id, get_instance_id()]
+		print("[Pickup] WARNING: No pickup_id set, using fallback: %s" % pickup_id)
+
+	# Check if this specific pickup was already collected
+	if pickup_id != "" and WorldManager and WorldManager.is_item_collected(pickup_id):
+		print("[Pickup] Already collected, removing: ", pickup_id)
 		queue_free()
 		return
 
@@ -92,9 +98,10 @@ func _pickup_item() -> void:
 	var success = InventoryManager.add_item(item_id, category)
 
 	if success:
-		# Mark as collected in WorldManager to prevent respawn
+		# Mark THIS specific pickup as collected (using unique pickup_id)
 		if WorldManager:
-			WorldManager.mark_item_collected(item_id)
+			WorldManager.mark_item_collected(pickup_id)
+			print("[Pickup] Marked as collected: %s (item: %s)" % [pickup_id, item_id])
 
 		# Get item data for notification
 		var item_data = InventoryManager.get_item_data(item_id)
@@ -112,7 +119,7 @@ func _pickup_item() -> void:
 		# Remove from world
 		queue_free()
 
-		print("[Pickup] Picked up: ", item_id)
+		print("[Pickup] Picked up: %s (%s)" % [pickup_id, item_id])
 	else:
 		print("[Pickup] Failed to pick up: ", item_id)
 		is_picked_up = false

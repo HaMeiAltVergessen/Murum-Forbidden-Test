@@ -271,6 +271,14 @@ func _on_puzzle_solved() -> void:
 	"""Called when puzzle is solved"""
 	print("[Room01] Puzzle solved: %s" % PUZZLE_ID)
 
+	# Disable reset on all crystals (prevents respawn)
+	for crystal in puzzle_crystals:
+		if is_instance_valid(crystal):
+			crystal.can_reset = false
+			crystal.is_being_removed = true  # Mark for removal
+
+	print("[Room01] Disabled crystal reset - puzzle permanently solved")
+
 	# Mark puzzle as solved in WorldManager
 	if WorldManager:
 		WorldManager.mark_puzzle_solved(PUZZLE_ID)
