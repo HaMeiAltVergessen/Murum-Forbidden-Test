@@ -11,10 +11,6 @@ class_name MainMenu
 const TEST_ROOM_PATH = "res://levels/test_room.tscn"
 const WORLD_1_ENTRY_PATH = "res://worlds/world_1_ruins/rooms/room_01_entry.tscn"
 
-# State
-var focused_button_index: int = 0
-var buttons: Array[Button] = []
-
 
 func _ready():
 	# Verstecke HUD im Hauptmenü
@@ -22,64 +18,39 @@ func _ready():
 		HUDManager.hide_all_hud()
 		print("[MainMenu] HUD hidden")
 
-	# Button-Array aufbauen
-	buttons = [continue_button, new_game_button, options_button, quit_button]
-
 	# Signals verbinden
 	continue_button.pressed.connect(_on_continue_pressed)
 	new_game_button.pressed.connect(_on_new_game_pressed)
 	quit_button.pressed.connect(_on_quit_pressed)
 
-	# Mouse Input - Enable mouse filter für alle Buttons
-	for btn in buttons:
-		btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	# Setup Focus Navigation (Skip disabled buttons)
+	_setup_focus_neighbors()
 
-	# Fokus setzen
+	# Initialen Fokus setzen
 	if continue_button.visible and not continue_button.disabled:
 		continue_button.grab_focus()
 	else:
 		new_game_button.grab_focus()
 
 
-func _unhandled_input(event: InputEvent):
-	# Navigation Down
-	if event.is_action_pressed("ui_down"):
-		_focus_next_button(1)  # +1 = vorwärts
-		get_viewport().set_input_as_handled()
-
-	# Navigation Up
-	elif event.is_action_pressed("ui_up"):
-		_focus_next_button(-1)  # -1 = rückwärts
-		get_viewport().set_input_as_handled()
-
-	# Bestätigen (Enter/Space/A-Button)
-	elif event.is_action_pressed("ui_accept"):
-		var focused = get_viewport().gui_get_focus_owner()
-		if focused is Button:
-			focused.emit_signal("pressed")
-		get_viewport().set_input_as_handled()
-
-
-func _focus_next_button(direction: int):
-	var start_index = focused_button_index
-
-	# Loop bis gültiger Button gefunden
-	for i in range(buttons.size()):
-		focused_button_index = (focused_button_index + direction) % buttons.size()
-
-		# Negativ-Wrap-around fix
-		if focused_button_index < 0:
-			focused_button_index = buttons.size() - 1
-
-		var btn = buttons[focused_button_index]
-
-		# Überspringe disabled/invisible
+func _setup_focus_neighbors():
+	"""Setzt Focus-Nachbarn für Keyboard/Controller Navigation mit Wrap-around"""
+	# Erstelle Liste der aktiven Buttons (nicht disabled)
+	var active_buttons: Array[Button] = []
+	for btn in [continue_button, new_game_button, options_button, quit_button]:
 		if btn.visible and not btn.disabled:
-			btn.grab_focus()
-			return
+			active_buttons.append(btn)
 
-	# Fallback: Bleibe bei aktuellem Button
-	focused_button_index = start_index
+	# Setze Focus-Nachbarn für Wrap-around Navigation
+	for i in range(active_buttons.size()):
+		var btn = active_buttons[i]
+		var prev_index = (i - 1 + active_buttons.size()) % active_buttons.size()
+		var next_index = (i + 1) % active_buttons.size()
+
+		btn.focus_neighbor_top = btn.get_path_to(active_buttons[prev_index])
+		btn.focus_neighbor_bottom = btn.get_path_to(active_buttons[next_index])
+		btn.focus_previous = btn.get_path_to(active_buttons[prev_index])
+		btn.focus_next = btn.get_path_to(active_buttons[next_index])
 
 
 # Button Callbacks
