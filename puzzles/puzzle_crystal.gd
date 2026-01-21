@@ -26,6 +26,7 @@ signal crystal_hit(projectile_owner: Node2D)
 
 var current_hp: int = 10
 var is_activated: bool = false
+var is_being_removed: bool = false  ## Set to true when puzzle is solved and crystal should be removed
 
 # ============================================================================
 # REFERENCES
@@ -146,9 +147,14 @@ func destroy(projectile_owner: Node2D = null) -> void:
 	monitoring = false
 
 	if can_reset:
-		# Crystal will reset after delay
+		# Crystal will reset after delay (unless puzzle is solved and crystal removed)
 		print("[PuzzleCrystal] %s destroyed (ID: %d) - resetting in %.1fs" % [name, crystal_id, reset_time])
 		await get_tree().create_timer(reset_time).timeout
+
+		# Check if crystal should be removed (puzzle solved) or if it's still valid
+		if is_being_removed or not is_instance_valid(self):
+			return
+
 		reset()
 	else:
 		# Crystal is permanently destroyed

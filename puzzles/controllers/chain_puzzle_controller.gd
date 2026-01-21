@@ -84,6 +84,8 @@ func _on_crystal_hit(projectile_owner: Node2D, crystal: Node) -> void:
 		# All crystals HP=0 → Puzzle solved!
 		print("[ChainPuzzle] All crystals destroyed! Puzzle solved!")
 		solve()
+		# Remove all crystals from scene immediately (prevents reset timers from firing)
+		_remove_all_crystals()
 	else:
 		# Some crystals still alive → Reset destroyed crystals (if they can reset)
 		print("[ChainPuzzle] Not all crystals destroyed - resetting destroyed ones")
@@ -126,6 +128,24 @@ func _reset_destroyed_crystals() -> void:
 			if "can_reset" in crystal and crystal.can_reset and crystal.has_method("reset"):
 				crystal.reset()
 				print("[ChainPuzzle] Reset crystal: %s" % crystal.name)
+
+func _remove_all_crystals() -> void:
+	"""Removes all crystals from the scene (called when puzzle is solved)"""
+	print("[ChainPuzzle] Removing all crystals from scene")
+	for crystal in connected_crystals:
+		if is_instance_valid(crystal):
+			# Mark crystal for removal (prevents reset timer from firing)
+			if "is_being_removed" in crystal:
+				crystal.is_being_removed = true
+			# Cancel any active monitoring
+			if "monitoring" in crystal:
+				crystal.monitoring = false
+			# Queue for removal
+			crystal.queue_free()
+			print("[ChainPuzzle] Removed crystal: %s" % crystal.name)
+
+	# Clear the array
+	connected_crystals.clear()
 
 # ============================================================================
 # RESET
