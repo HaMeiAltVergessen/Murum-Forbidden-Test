@@ -28,6 +28,9 @@ func _ready() -> void:
 	_spawn_checkpoint()
 	_spawn_enemies()
 
+	# Spawn crystal puzzle (COMMIT 015: Puzzle System)
+	_spawn_puzzle()
+
 	# Activate room (register with GameManager, setup player)
 	call_deferred("_activate")
 
@@ -188,3 +191,107 @@ func _spawn_enemies() -> void:
 		add_child(enemy)
 
 	print("[Room01] Spawned %d Untote enemies" % spawn_positions.size())
+
+
+# ============================================================================
+# CRYSTAL PUZZLE (COMMIT 015: Puzzle System)
+# ============================================================================
+
+func _spawn_puzzle() -> void:
+	"""Spawns a crystal sequence puzzle with 3 crystals"""
+	const PUZZLE_ID = "room_01_entry/crystal_sequence"
+
+	# Check if puzzle is already solved
+	if WorldManager and WorldManager.is_puzzle_solved(PUZZLE_ID):
+		print("[Room01] Puzzle already solved, skipping spawn")
+		return
+
+	# Load crystal scene
+	var crystal_scene = preload("res://puzzles/scenes/components/puzzle_crystal.tscn")
+	if not crystal_scene:
+		print("[Room01] WARNING: Crystal scene not found")
+		return
+
+	# Create 3 crystals in a line
+	var crystal_positions = [
+		Vector2(1200, 400),  # Crystal 1 (left)
+		Vector2(1400, 400),  # Crystal 2 (middle)
+		Vector2(1600, 400),  # Crystal 3 (right)
+	]
+
+	var crystals = []
+	for i in range(3):
+		var crystal = crystal_scene.instantiate()
+		crystal.global_position = crystal_positions[i]
+		crystal.crystal_id = i + 1
+		crystal.max_hp = 3  # 3 hits to activate each crystal
+		add_child(crystal)
+		crystals.append(crystal)
+
+	# Connect crystal_hit signals to check sequence
+	var hit_sequence = []
+	for crystal in crystals:
+		crystal.crystal_hit.connect(func(projectile_owner):
+			_on_crystal_hit(PUZZLE_ID, crystal.crystal_id, hit_sequence, crystals)
+		)
+
+	print("[Room01] Crystal sequence puzzle spawned (3 crystals, hit order: 1→2→3)")
+
+
+func _on_crystal_hit(puzzle_id: String, crystal_id: int, hit_sequence: Array, crystals: Array) -> void:
+	"""Called when a crystal is hit"""
+	print("[Room01] Crystal %d hit! Current sequence: %v" % [crystal_id, hit_sequence])
+
+	# Add to hit sequence
+	hit_sequence.append(crystal_id)
+
+	# Check if sequence is correct so far
+	var correct_sequence = [1, 2, 3]
+	var is_correct = true
+
+	for i in range(hit_sequence.size()):
+		if i >= correct_sequence.size() or hit_sequence[i] != correct_sequence[i]:
+			is_correct = false
+			break
+
+	if not is_correct:
+		# Wrong sequence - reset all crystals
+		print("[Room01] Wrong sequence! Resetting...")
+		if EventBus:
+			EventBus.show_notification.emit("Falsche Reihenfolge!", 2.0)
+
+		# Clear sequence
+		hit_sequence.clear()
+
+		# Reset crystals after delay
+		await get_tree().create_timer(1.0).timeout
+		for crystal in crystals:
+			if is_instance_valid(crystal):
+				crystal.reset()
+
+		return
+
+	# Check if puzzle is complete
+	if hit_sequence.size() == correct_sequence.size():
+		_on_puzzle_solved(puzzle_id)
+
+
+func _on_puzzle_solved(puzzle_id: String) -> void:
+	"""Called when puzzle is solved"""
+	print("[Room01] Puzzle solved: %s" % puzzle_id)
+
+	# Mark puzzle as solved in WorldManager
+	if WorldManager:
+		WorldManager.mark_puzzle_solved(puzzle_id)
+
+	# Auto-save after solving puzzle
+	if SaveManager:
+		SaveManager.save_current_game()
+		print("[Room01] Auto-saved after puzzle completion")
+
+	# Visual/audio feedback
+	if EventBus:
+		EventBus.show_notification.emit("Rätsel gelöst!", 3.0)
+
+	if AudioManager:
+		AudioManager.play_sfx("puzzle/puzzle_solved")

@@ -335,7 +335,8 @@ func _gather_progression_data() -> Dictionary:
 		"bosses_defeated": [],
 		"checkpoints_activated": [],
 		"secrets_found": [],
-		"collected_items": []
+		"collected_items": [],
+		"solved_puzzles": []
 	}
 
 func _gather_path_choices() -> Dictionary:
