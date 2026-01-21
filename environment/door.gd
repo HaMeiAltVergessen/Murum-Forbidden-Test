@@ -52,6 +52,11 @@ func _on_body_exited(body: Node2D) -> void:
 func _load_scene() -> void:
 	print("[Door] Loading scene: ", target_scene)
 
+	# Auto-save before scene transition (COMMIT 015: Save System)
+	if SaveManager:
+		SaveManager.save_current_game()
+		print("[Door] Auto-saved before transition")
+
 	# Play door SFX
 	AudioManager.play_sfx("door_open")
 
