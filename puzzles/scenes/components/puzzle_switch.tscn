@@ -21,12 +21,16 @@ offset_right = 24.0
 offset_bottom = 24.0
 color = Color(0.3, 0.3, 0.3, 1)
 
-[node name="IDLabel" type="ColorRect" parent="Sprite2D"]
-offset_left = -8.0
-offset_top = -8.0
-offset_right = 8.0
-offset_bottom = 8.0
-color = Color(1, 1, 1, 1)
+[node name="IDLabel" type="Label" parent="Sprite2D"]
+offset_left = -24.0
+offset_top = -24.0
+offset_right = 24.0
+offset_bottom = 24.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_switch")
