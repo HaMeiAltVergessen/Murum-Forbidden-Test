@@ -279,10 +279,10 @@ func _gather_player_data(player: Node) -> Dictionary:
 		last_checkpoint = WorldManager.last_checkpoint
 
 	return {
-		"current_hp": player.current_hp if player.has("current_hp") else 100,
-		"max_hp": player.MAX_HP if player.has("MAX_HP") else 100,
-		"current_mana": player.current_mana if player.has("current_mana") else 100,
-		"max_mana": player.MAX_MANA if player.has("MAX_MANA") else 100,
+		"current_hp": player.current_hp if "current_hp" in player else 100,
+		"max_hp": player.MAX_HP if "MAX_HP" in player else 100,
+		"current_mana": player.current_mana if "current_mana" in player else 100,
+		"max_mana": player.MAX_MANA if "MAX_MANA" in player else 100,
 		"position": {
 			"x": player.global_position.x,
 			"y": player.global_position.y

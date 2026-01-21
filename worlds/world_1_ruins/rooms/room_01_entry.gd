@@ -128,17 +128,17 @@ func _apply_saved_player_data(player: Node, player_data: Dictionary) -> void:
 	print("[Room01] Applying saved player data...")
 
 	# Apply HP
-	if player.has("current_hp"):
-		player.current_hp = player_data.get("current_hp", player.MAX_HP if player.has("MAX_HP") else 100)
+	if "current_hp" in player:
+		player.current_hp = player_data.get("current_hp", player.MAX_HP if "MAX_HP" in player else 100)
 		print("[Room01] Set HP to: %d" % player.current_hp)
 
 	# Apply Mana
-	if player.has("current_mana"):
-		player.current_mana = player_data.get("current_mana", player.MAX_MANA if player.has("MAX_MANA") else 100)
+	if "current_mana" in player:
+		player.current_mana = player_data.get("current_mana", player.MAX_MANA if "MAX_MANA" in player else 100)
 		print("[Room01] Set Mana to: %d" % player.current_mana)
 
 	# Apply facing direction
-	if player.has("facing_direction"):
+	if "facing_direction" in player:
 		player.facing_direction = player_data.get("facing_direction", 1)
 
 	print("[Room01] Player data applied successfully")

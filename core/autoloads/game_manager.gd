@@ -108,6 +108,16 @@ func register_player(player_node: CharacterBody2D, spawn_pos: Vector2) -> void:
 		CoopManager.set_p1_reference(player_node)
 
 
+func set_player(player_node: CharacterBody2D) -> void:
+	"""Sets the player reference (simpler version without spawn position)"""
+	player = player_node
+	print("[GameManager] Player set: ", player_node)
+
+	# Register with CoopManager
+	if CoopManager:
+		CoopManager.set_p1_reference(player_node)
+
+
 func update_spawn_position(new_pos: Vector2) -> void:
 	"""Updates the spawn position (called when entering a new room)"""
 	player_spawn_position = new_pos
