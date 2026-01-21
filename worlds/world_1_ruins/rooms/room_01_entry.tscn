@@ -161,16 +161,16 @@ flip_h = true
 position = Vector2(1200, 400)
 crystal_id = 1
 can_reset = true
-max_hp = 3
+max_hp = 1
 
 [node name="Crystal2" parent="CrystalPuzzle" instance=ExtResource("11_crystal")]
 position = Vector2(1400, 400)
 crystal_id = 2
 can_reset = true
-max_hp = 3
+max_hp = 1
 
 [node name="Crystal3" parent="CrystalPuzzle" instance=ExtResource("11_crystal")]
 position = Vector2(1600, 400)
 crystal_id = 3
 can_reset = true
-max_hp = 3
+max_hp = 1

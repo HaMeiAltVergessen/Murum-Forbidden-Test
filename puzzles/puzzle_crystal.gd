@@ -144,7 +144,7 @@ func destroy(projectile_owner: Node2D = null) -> void:
 		AudioManager.play_sfx("puzzle/crystal_shatter")
 
 	# Disable detection while destroyed
-	monitoring = false
+	set_deferred("monitoring", false)
 
 	if can_reset:
 		# Crystal will reset after delay (unless puzzle is solved and crystal removed)

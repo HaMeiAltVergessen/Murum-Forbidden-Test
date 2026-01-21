@@ -93,7 +93,7 @@ func open() -> void:
 	collision_layer = 0
 	collision_mask = 0
 	if collision_shape:
-		collision_shape.disabled = true
+		collision_shape.set_deferred("disabled", true)
 
 	# Play sound
 	if AudioManager:

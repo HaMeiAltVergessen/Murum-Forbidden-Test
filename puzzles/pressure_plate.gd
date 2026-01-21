@@ -88,7 +88,7 @@ func _activate(activator: CharacterBody2D) -> void:
 		AudioManager.play_sfx("puzzle/plate_pressed")
 
 	# Disable further detection
-	monitoring = false
+	set_deferred("monitoring", false)
 
 	print("[PressurePlate] %s activated by %s (one-time)" % [name, activator.name])
 

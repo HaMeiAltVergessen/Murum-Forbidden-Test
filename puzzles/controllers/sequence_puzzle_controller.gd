@@ -68,7 +68,7 @@ func _on_switch_hit(switch_id: int, activator: Node2D) -> void:
 		print("[SequencePuzzle] Ignoring input during reset delay")
 		return
 
-	print("[SequencePuzzle] Switch %d hit by %s (Current sequence: %v)" % [switch_id, activator.name if activator else "unknown", current_sequence])
+	print("[SequencePuzzle] Switch %d hit by %s (Current sequence: %s)" % [switch_id, activator.name if activator else "unknown", str(current_sequence)])
 
 	# Add to current sequence
 	current_sequence.append(switch_id)
