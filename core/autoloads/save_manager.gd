@@ -294,13 +294,31 @@ func _gather_player_data(player: Node) -> Dictionary:
 	}
 
 func _gather_inventory_data() -> Dictionary:
-	"""Gathers inventory state"""
-	return {
+	"""Gathers inventory state from InventoryManager and GameManager"""
+	var inventory_data = {
+		"consumables": [],
 		"relics": [],
-		"consumables": {},
-		"keys": [],
+		"key_items": [],
 		"coins": 0
 	}
+
+	# Get inventory from InventoryManager
+	if InventoryManager:
+		inventory_data["consumables"] = InventoryManager.inventory.get("consumables", []).duplicate(true)
+		inventory_data["relics"] = InventoryManager.inventory.get("relics", []).duplicate(true)
+		inventory_data["key_items"] = InventoryManager.inventory.get("key_items", []).duplicate(true)
+		print("[SaveManager] Gathered inventory: %d consumables, %d relics, %d keys" % [
+			inventory_data["consumables"].size(),
+			inventory_data["relics"].size(),
+			inventory_data["key_items"].size()
+		])
+
+	# Get coins from GameManager
+	if GameManager:
+		inventory_data["coins"] = GameManager.coins_collected
+		print("[SaveManager] Gathered coins: %d" % inventory_data["coins"])
+
+	return inventory_data
 
 func _gather_progression_data() -> Dictionary:
 	"""Gathers world progression"""
@@ -316,7 +334,8 @@ func _gather_progression_data() -> Dictionary:
 		"unlocked_doors": [],
 		"bosses_defeated": [],
 		"checkpoints_activated": [],
-		"secrets_found": []
+		"secrets_found": [],
+		"collected_items": []
 	}
 
 func _gather_path_choices() -> Dictionary:
@@ -421,6 +440,10 @@ func _apply_save_data(save_data: Dictionary) -> void:
 		WorldManager.load_progression_data(progression_data)
 		print("[SaveManager] Loaded progression data to WorldManager")
 
+	# Load inventory data
+	var inventory_data = save_data.get("inventory", {})
+	_restore_inventory(inventory_data)
+
 	# Get saved room data
 	var player_data = save_data.get("player", {})
 	var saved_world = player_data.get("current_world", "world_1_ruins")
@@ -444,6 +467,45 @@ func _apply_save_data(save_data: Dictionary) -> void:
 		get_tree().change_scene_to_file("res://worlds/world_1_ruins/rooms/room_01_entry.tscn")
 
 	print("[SaveManager] Stored player data for application after scene load")
+
+
+func _restore_inventory(inventory_data: Dictionary) -> void:
+	"""Restores inventory from save data"""
+	if not InventoryManager:
+		push_error("[SaveManager] InventoryManager not found!")
+		return
+
+	# Clear existing inventory
+	InventoryManager.inventory["consumables"].clear()
+	InventoryManager.inventory["relics"].clear()
+	InventoryManager.inventory["key_items"].clear()
+
+	# Restore consumables
+	var consumables = inventory_data.get("consumables", [])
+	for item in consumables:
+		InventoryManager.inventory["consumables"].append(item.duplicate())
+
+	# Restore relics
+	var relics = inventory_data.get("relics", [])
+	for item_id in relics:
+		InventoryManager.inventory["relics"].append(item_id)
+
+	# Restore key items
+	var key_items = inventory_data.get("key_items", [])
+	for item_id in key_items:
+		InventoryManager.inventory["key_items"].append(item_id)
+
+	# Restore coins
+	var coins = inventory_data.get("coins", 0)
+	if GameManager:
+		GameManager.coins_collected = coins
+
+	print("[SaveManager] Inventory restored: %d consumables, %d relics, %d keys, %d coins" % [
+		consumables.size(), relics.size(), key_items.size(), coins
+	])
+
+	# Emit signal to refresh UI
+	InventoryManager.inventory_changed.emit()
 
 # ============================================================================
 # DELETE SAVE

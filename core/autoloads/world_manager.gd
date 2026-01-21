@@ -24,6 +24,7 @@ var last_checkpoint_position: Vector2 = Vector2.ZERO
 var cleared_rooms: Dictionary = {}  # room_id: bool
 var visited_rooms: Array[String] = []
 var unlocked_doors: Array[String] = []
+var collected_items: Array[String] = []  # Tracks collected pickups to prevent respawn
 
 # World Progression
 var bosses_defeated: Array[String] = []
@@ -491,7 +492,8 @@ func get_progression_data() -> Dictionary:
 		"rooms_cleared": cleared_rooms,
 		"visited_rooms": visited_rooms,
 		"unlocked_doors": unlocked_doors,
-		"bosses_defeated": bosses_defeated
+		"bosses_defeated": bosses_defeated,
+		"collected_items": collected_items
 	}
 
 func load_progression_data(data: Dictionary) -> void:
@@ -526,7 +528,11 @@ func load_progression_data(data: Dictionary) -> void:
 	for boss in data.get("bosses_defeated", []):
 		bosses_defeated.append(boss)
 
-	print("[WorldManager] Progression data loaded")
+	collected_items.clear()
+	for item_id in data.get("collected_items", []):
+		collected_items.append(item_id)
+
+	print("[WorldManager] Progression data loaded (including %d collected items)" % collected_items.size())
 
 # ============================================================================
 # UTILITY
@@ -535,6 +541,16 @@ func load_progression_data(data: Dictionary) -> void:
 func get_current_room_full_id() -> String:
 	"""Returns full room ID (world/room)"""
 	return "%s/%s" % [current_world, current_room]
+
+func mark_item_collected(item_id: String) -> void:
+	"""Marks an item as collected to prevent respawn"""
+	if item_id not in collected_items:
+		collected_items.append(item_id)
+		print("[WorldManager] Item collected: %s" % item_id)
+
+func is_item_collected(item_id: String) -> bool:
+	"""Returns true if item was already collected"""
+	return item_id in collected_items
 
 func get_enemies_in_room() -> Array:
 	"""Returns all enemies in current room"""
