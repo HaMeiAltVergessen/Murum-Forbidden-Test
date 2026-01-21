@@ -9,15 +9,14 @@ class_name ChainPuzzleController
 # ============================================================================
 
 @export var required_crystals: int = 4
+@export var check_delay: float = 0.2  ## Delay before checking if all crystals destroyed
 
 # ============================================================================
 # STATE
 # ============================================================================
 
-var activated_count: int = 0
 var connected_crystals: Array[Node] = []
-var last_activation_time: float = 0.0
-const CHAIN_TIMEOUT: float = 0.5  # Max time between crystal hits to count as chain
+var checking_solution: bool = false  ## Prevents multiple simultaneous checks
 
 # ============================================================================
 # INITIALIZATION
@@ -66,37 +65,67 @@ func connect_crystal(crystal: Node) -> void:
 # ============================================================================
 
 func _on_crystal_hit(projectile_owner: Node2D, crystal: Node) -> void:
-	"""Handles crystal being hit"""
-	var current_time = Time.get_ticks_msec() / 1000.0
+	"""Handles crystal being destroyed (HP=0)"""
+	print("[ChainPuzzle] Crystal %s destroyed by %s" % [crystal.name, projectile_owner.name if projectile_owner else "unknown"])
 
-	# Check if this is part of a chain (within timeout)
-	if activated_count > 0 and (current_time - last_activation_time) > CHAIN_TIMEOUT:
-		# Chain broken - reset
-		print("[ChainPuzzle] Chain timeout - resetting (took %.2fs between hits)" % (current_time - last_activation_time))
-		reset_puzzle()
+	# Prevent multiple simultaneous checks
+	if checking_solution:
 		return
 
-	activated_count += 1
-	last_activation_time = current_time
+	checking_solution = true
 
-	print("[ChainPuzzle] Crystal %s hit by %s (%d/%d)" % [crystal.name, projectile_owner.name if projectile_owner else "unknown", activated_count, required_crystals])
+	# Wait for all crystals in current attack to register destruction
+	await get_tree().create_timer(check_delay).timeout
 
-	# Visual feedback
-	if crystal.has_method("set_activated_visual"):
-		crystal.set_activated_visual()
+	# Check if all crystals are destroyed
+	var all_destroyed = _check_all_destroyed()
 
-	# Check if all crystals activated
-	if activated_count >= required_crystals:
-		if check_solution():
-			solve()
+	if all_destroyed:
+		# All crystals HP=0 → Puzzle solved!
+		print("[ChainPuzzle] All crystals destroyed! Puzzle solved!")
+		solve()
+	else:
+		# Some crystals still alive → Reset destroyed crystals (if they can reset)
+		print("[ChainPuzzle] Not all crystals destroyed - resetting destroyed ones")
+		_reset_destroyed_crystals()
+
+	checking_solution = false
 
 # ============================================================================
 # SOLUTION CHECK
 # ============================================================================
 
 func check_solution() -> bool:
-	"""Checks if all crystals have been activated"""
-	return activated_count >= required_crystals
+	"""Checks if all crystals have been destroyed"""
+	return _check_all_destroyed()
+
+func _check_all_destroyed() -> bool:
+	"""Checks if all connected crystals are destroyed (HP=0)"""
+	var destroyed = 0
+	for crystal in connected_crystals:
+		if not is_instance_valid(crystal):
+			# Crystal was removed/freed → counts as destroyed
+			destroyed += 1
+			continue
+
+		# Check if crystal HP is 0 or is_activated is true
+		if ("current_hp" in crystal and crystal.current_hp <= 0) or ("is_activated" in crystal and crystal.is_activated):
+			destroyed += 1
+
+	print("[ChainPuzzle] Destroyed crystals: %d/%d" % [destroyed, required_crystals])
+	return destroyed >= required_crystals
+
+func _reset_destroyed_crystals() -> void:
+	"""Resets destroyed crystals (only if can_reset=true)"""
+	for crystal in connected_crystals:
+		if not is_instance_valid(crystal):
+			continue
+
+		# Only reset if crystal is destroyed AND can reset
+		if "is_activated" in crystal and crystal.is_activated:
+			if "can_reset" in crystal and crystal.can_reset and crystal.has_method("reset"):
+				crystal.reset()
+				print("[ChainPuzzle] Reset crystal: %s" % crystal.name)
 
 # ============================================================================
 # RESET
@@ -105,12 +134,11 @@ func check_solution() -> bool:
 func reset_puzzle() -> void:
 	"""Resets the chain puzzle"""
 	super.reset_puzzle()
-	activated_count = 0
-	last_activation_time = 0.0
+	checking_solution = false
 
 	# Reset all crystals (only if they still exist and can reset)
 	for crystal in connected_crystals:
 		if is_instance_valid(crystal) and crystal.has_method("reset") and "can_reset" in crystal and crystal.can_reset:
 			crystal.reset()
 
-	print("[ChainPuzzle] Reset - awaiting crystal chain")
+	print("[ChainPuzzle] Reset - awaiting all crystals to be destroyed")
