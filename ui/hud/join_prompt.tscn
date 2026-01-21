@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://ui/hud/join_prompt.gd" id="1_join"]
 
 [node name="JoinPrompt" type="CanvasLayer"]
+visible = false
 script = ExtResource("1_join")
 
 [node name="CenterContainer" type="CenterContainer" parent="."]

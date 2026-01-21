@@ -38,6 +38,12 @@ func _activate() -> void:
 	if GameManager.has_method("register_room"):
 		GameManager.register_room(self)
 
+	# Set current room in WorldManager (COMMIT 016: Save System)
+	if WorldManager:
+		WorldManager.current_world = WORLD_ID
+		WorldManager.current_room = ROOM_ID
+		print("[Room01] WorldManager room set: %s/%s" % [WORLD_ID, ROOM_ID])
+
 	# Check if player exists, if not spawn a new one (e.g., from main menu)
 	if not GameManager.player or not is_instance_valid(GameManager.player):
 		print("[Room01] No player found, spawning new player")
