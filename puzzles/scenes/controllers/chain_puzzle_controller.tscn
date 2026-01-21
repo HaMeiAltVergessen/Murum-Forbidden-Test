@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://chain_controller"]
+
+[ext_resource type="Script" path="res://puzzles/controllers/chain_puzzle_controller.gd" id="1"]
+
+[node name="ChainPuzzleController" type="Node"]
+script = ExtResource("1")
+required_crystals = 4

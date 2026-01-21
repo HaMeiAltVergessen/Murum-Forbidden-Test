@@ -108,9 +108,9 @@ func reset_puzzle() -> void:
 	activated_count = 0
 	last_activation_time = 0.0
 
-	# Reset all crystals
+	# Reset all crystals (only if they still exist and can reset)
 	for crystal in connected_crystals:
-		if crystal.has_method("reset"):
+		if is_instance_valid(crystal) and crystal.has_method("reset") and "can_reset" in crystal and crystal.can_reset:
 			crystal.reset()
 
 	print("[ChainPuzzle] Reset - awaiting crystal chain")
