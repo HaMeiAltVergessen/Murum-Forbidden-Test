@@ -187,6 +187,7 @@ item_id = "urtraene"
 position = Vector2(200, 950)
 
 [node name="SequencePuzzleController" parent="Puzzles/R1_SequencePuzzle" instance=ExtResource("14_sequence_controller")]
+puzzle_id = "test_room/r1_sequence"
 correct_sequence = [1, 2, 3]
 use_reset_delay = true
 reset_delay = 3.0
@@ -207,6 +208,7 @@ switch_id = 3
 position = Vector2(600, 950)
 
 [node name="DualPlatePuzzleController" parent="Puzzles/R2_PressurePlatePuzzle" instance=ExtResource("16_dual_plate_controller")]
+puzzle_id = "test_room/r2_pressure_plates"
 
 [node name="Plate1" parent="Puzzles/R2_PressurePlatePuzzle" instance=ExtResource("17_pressure_plate")]
 position = Vector2(0, 0)
@@ -218,6 +220,7 @@ position = Vector2(150, 0)
 position = Vector2(1000, 950)
 
 [node name="ChainPuzzleController" parent="Puzzles/R3_CrystalChainPuzzle" instance=ExtResource("21_chain_controller")]
+puzzle_id = "test_room/r3_crystal_chain"
 
 [node name="Crystal1" parent="Puzzles/R3_CrystalChainPuzzle" instance=ExtResource("22_puzzle_crystal")]
 position = Vector2(0, 0)
@@ -239,6 +242,7 @@ crystal_id = 4
 position = Vector2(1500, 950)
 
 [node name="TimedDoorController" parent="Puzzles/R4_TimedDoorPuzzle" instance=ExtResource("23_timed_door_controller")]
+puzzle_id = "test_room/r4_timed_door"
 
 [node name="TimedSwitch" parent="Puzzles/R4_TimedDoorPuzzle" instance=ExtResource("15_puzzle_switch")]
 position = Vector2(0, 0)
