@@ -568,3 +568,41 @@ func set_current_slot(slot_index: int) -> void:
 	playtime_seconds = 0
 	playtime_timer = 0.0
 	print("[SaveManager] Set current slot to %d" % slot_index)
+
+# ============================================================================
+# SINGLE-SLOT CONVENIENCE FUNCTIONS (COMMIT 016)
+# ============================================================================
+# These functions provide simple API for single-save games
+# All operations default to Slot 1
+
+const DEFAULT_SLOT: int = 1
+
+func has_save_file() -> bool:
+	"""Checks if default save file exists (Slot 1)"""
+	return slot_exists(DEFAULT_SLOT)
+
+func create_new_save() -> bool:
+	"""Creates new save file in default slot (Slot 1)"""
+	print("[SaveManager] Creating new save in slot %d..." % DEFAULT_SLOT)
+
+	# Set current slot for playtime tracking
+	set_current_slot(DEFAULT_SLOT)
+
+	# Save immediately to create file
+	return save_game(DEFAULT_SLOT)
+
+func save_current_game() -> bool:
+	"""Saves current game to default slot (Slot 1)"""
+	return save_game(DEFAULT_SLOT)
+
+func load_current_game() -> bool:
+	"""Loads game from default slot (Slot 1)"""
+	return load_game(DEFAULT_SLOT)
+
+func delete_current_save() -> bool:
+	"""Deletes save from default slot (Slot 1)"""
+	return delete_save(DEFAULT_SLOT)
+
+func get_current_save_metadata() -> SaveSlotMetadata:
+	"""Returns metadata for default slot (Slot 1)"""
+	return get_slot_metadata(DEFAULT_SLOT)
