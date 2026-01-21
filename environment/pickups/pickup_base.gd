@@ -12,6 +12,12 @@ var is_picked_up: bool = false
 
 
 func _ready() -> void:
+	# Check if item was already collected
+	if item_id != "" and WorldManager and WorldManager.is_item_collected(item_id):
+		print("[Pickup] Already collected, removing: ", item_id)
+		queue_free()
+		return
+
 	# Connect area signals
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
@@ -86,6 +92,10 @@ func _pickup_item() -> void:
 	var success = InventoryManager.add_item(item_id, category)
 
 	if success:
+		# Mark as collected in WorldManager to prevent respawn
+		if WorldManager:
+			WorldManager.mark_item_collected(item_id)
+
 		# Get item data for notification
 		var item_data = InventoryManager.get_item_data(item_id)
 		var item_name = item_data.get("name", item_id)
