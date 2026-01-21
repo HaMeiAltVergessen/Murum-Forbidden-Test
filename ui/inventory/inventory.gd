@@ -62,6 +62,9 @@ func _ready() -> void:
 	visible = false
 	is_open = false
 
+	# Setup InputMap actions if they don't exist
+	_setup_input_actions()
+
 	# Wait for child nodes to be ready before setting up grids
 	await get_tree().process_frame
 
@@ -86,6 +89,42 @@ func _ready() -> void:
 		push_error("[Inventory] InventoryManager not available at _ready()")
 
 	print("[Inventory] Initialized (Autoload)")
+
+
+func _setup_input_actions() -> void:
+	"""Creates inventory input actions if they don't exist"""
+
+	# tab_right (next tab)
+	if not InputMap.has_action("tab_right"):
+		InputMap.add_action("tab_right")
+
+		# Q key
+		var key_q = InputEventKey.new()
+		key_q.keycode = KEY_Q
+		InputMap.action_add_event("tab_right", key_q)
+
+		# Right Bumper (RB/R1)
+		var rb = InputEventJoypadButton.new()
+		rb.button_index = JOY_BUTTON_RIGHT_SHOULDER
+		InputMap.action_add_event("tab_right", rb)
+
+		print("[Inventory] Created 'tab_right' action (Q / RB)")
+
+	# tab_left (previous tab)
+	if not InputMap.has_action("tab_left"):
+		InputMap.add_action("tab_left")
+
+		# E key
+		var key_e = InputEventKey.new()
+		key_e.keycode = KEY_E
+		InputMap.action_add_event("tab_left", key_e)
+
+		# Left Bumper (LB/L1)
+		var lb = InputEventJoypadButton.new()
+		lb.button_index = JOY_BUTTON_LEFT_SHOULDER
+		InputMap.action_add_event("tab_left", lb)
+
+		print("[Inventory] Created 'tab_left' action (E / LB)")
 
 
 func _setup_grids() -> void:
