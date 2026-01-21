@@ -67,7 +67,7 @@ func _ready() -> void:
 # ============================================================================
 
 func _on_area_entered(area: Area2D) -> void:
-	"""Handles area collision - only projectiles should trigger"""
+	"""Handles area collision - projectiles AND melee attacks"""
 	# Already destroyed
 	if is_activated:
 		return
@@ -79,19 +79,23 @@ func _on_area_entered(area: Area2D) -> void:
 		print("[PuzzleCrystal] Ignoring HurtboxComponent")
 		return
 
-	# Only accept actual projectiles (check groups)
-	var is_projectile = (
-		area.is_in_group("staff_projectiles") or   # FIXED: plural!
+	# Accept projectiles OR player melee attacks (HitboxComponent)
+	var is_valid_attack = (
+		# Projectiles
+		area.is_in_group("staff_projectiles") or
 		area.is_in_group("shadow_scythe") or
 		area.is_in_group("projectiles") or
-		"Projectile" in area.name
+		"Projectile" in area.name or
+		# Melee attacks (HitboxComponent on Layer 16)
+		"Hitbox" in area.name or
+		"hitbox" in area.name.to_lower()
 	)
 
-	if not is_projectile:
-		print("[PuzzleCrystal] Not a projectile, ignoring")
+	if not is_valid_attack:
+		print("[PuzzleCrystal] Not a valid attack, ignoring")
 		return
 
-	print("[PuzzleCrystal] Projectile detected! Taking damage...")
+	print("[PuzzleCrystal] Attack detected! Taking damage...")
 
 	# Get owner player
 	var owner_player = area.get_meta("owner_player", null) if area.has_meta("owner_player") else area.owner
