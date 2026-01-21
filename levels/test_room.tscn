@@ -24,6 +24,8 @@
 [ext_resource type="PackedScene" uid="uid://puzzle_crystal_component" path="res://puzzles/scenes/components/puzzle_crystal.tscn" id="22_puzzle_crystal"]
 [ext_resource type="PackedScene" uid="uid://timed_door_controller" path="res://puzzles/scenes/controllers/timed_door_controller.tscn" id="23_timed_door_controller"]
 [ext_resource type="PackedScene" uid="uid://timed_door_component" path="res://puzzles/scenes/components/timed_door.tscn" id="24_timed_door"]
+[ext_resource type="PackedScene" uid="uid://master_puzzle_door" path="res://puzzles/scenes/master_puzzle_door.tscn" id="25_master_door"]
+
 [ext_resource type="PackedScene" uid="uid://puzzle_block_001" path="res://puzzles/scenes/puzzle_block.tscn" id="17_puzzle_block"]
 [ext_resource type="PackedScene" uid="uid://falling_rock_001" path="res://traps/scenes/falling_rock.tscn" id="18_falling_rock"]
 [ext_resource type="PackedScene" uid="uid://arrow_trap_001" path="res://traps/scenes/arrow_trap.tscn" id="19_arrow_trap"]
@@ -281,6 +283,12 @@ arrow_direction = Vector2(1, 0)
 trigger_mode = 0
 
 [node name="QuicksandPit1" parent="Traps" instance=ExtResource("20_quicksand_pit")]
+
+[node name="MasterPuzzleDoor" parent="." instance=ExtResource("25_master_door")]
+position = Vector2(1800, 900)
+puzzle_controllers = [NodePath("Puzzles/R1_SequencePuzzle/SequencePuzzleController"), NodePath("Puzzles/R2_PressurePlatePuzzle/DualPlatePuzzleController"), NodePath("Puzzles/R3_CrystalChainPuzzle/ChainPuzzleController"), NodePath("Puzzles/R4_TimedDoorPuzzle/TimedDoorController")]
+require_all = true
+
 position = Vector2(1000, 900)
 
 [node name="DeathScreen" parent="." instance=ExtResource("8_death_screen_scene")]
