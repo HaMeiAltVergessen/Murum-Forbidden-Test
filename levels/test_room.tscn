@@ -222,18 +222,22 @@ position = Vector2(1000, 950)
 [node name="Crystal1" parent="Puzzles/R3_CrystalChainPuzzle" instance=ExtResource("22_puzzle_crystal")]
 position = Vector2(0, 0)
 crystal_id = 1
+can_reset = true
 
 [node name="Crystal2" parent="Puzzles/R3_CrystalChainPuzzle" instance=ExtResource("22_puzzle_crystal")]
 position = Vector2(80, 0)
 crystal_id = 2
+can_reset = true
 
 [node name="Crystal3" parent="Puzzles/R3_CrystalChainPuzzle" instance=ExtResource("22_puzzle_crystal")]
 position = Vector2(160, 0)
 crystal_id = 3
+can_reset = true
 
 [node name="Crystal4" parent="Puzzles/R3_CrystalChainPuzzle" instance=ExtResource("22_puzzle_crystal")]
 position = Vector2(240, 0)
 crystal_id = 4
+can_reset = true
 
 [node name="R4_TimedDoorPuzzle" type="Node2D" parent="Puzzles"]
 position = Vector2(1500, 950)
