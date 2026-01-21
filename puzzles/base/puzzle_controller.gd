@@ -17,6 +17,7 @@ signal puzzle_reset()
 # ============================================================================
 
 @export var puzzle_name: String = "Unnamed Puzzle"
+@export var puzzle_id: String = ""  ## Unique ID for save system (e.g., "test_room/r1_sequence")
 @export var auto_solve: bool = true  ## Automatically emit puzzle_solved when check_solution returns true
 @export var allow_reset: bool = true  ## Can this puzzle be reset after failure?
 
@@ -32,7 +33,17 @@ var is_solved: bool = false
 
 func _ready() -> void:
 	add_to_group("puzzle_controllers")
-	print("[PuzzleController] %s initialized" % puzzle_name)
+
+	# Check if puzzle is already solved (load from save)
+	if puzzle_id != "" and WorldManager and WorldManager.is_puzzle_solved(puzzle_id):
+		print("[PuzzleController] %s already solved, auto-solving..." % puzzle_name)
+		# Auto-solve without sound
+		is_solved = true
+		puzzle_solved.emit()
+		# Hide/remove puzzle elements if needed
+		_on_load_solved()
+	else:
+		print("[PuzzleController] %s initialized" % puzzle_name)
 
 # ============================================================================
 # CORE LOGIC (Override in child classes)
@@ -49,6 +60,10 @@ func reset_puzzle() -> void:
 	puzzle_reset.emit()
 	print("[PuzzleController] %s reset" % puzzle_name)
 
+func _on_load_solved() -> void:
+	"""Called when puzzle is already solved on load. Override in child classes to hide/remove puzzle elements."""
+	pass
+
 # ============================================================================
 # SOLUTION HANDLING
 # ============================================================================
@@ -60,6 +75,10 @@ func solve() -> void:
 
 	is_solved = true
 	puzzle_solved.emit()
+
+	# Save puzzle state to WorldManager
+	if puzzle_id != "" and WorldManager:
+		WorldManager.mark_puzzle_solved(puzzle_id)
 
 	# Play success sound
 	if AudioManager:
