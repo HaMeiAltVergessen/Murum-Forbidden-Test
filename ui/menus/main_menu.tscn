@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bqc8yv8x3jk0m"]
 
 [ext_resource type="Script" path="res://ui/menus/main_menu.gd" id="1_main_menu"]
-[ext_resource type="Texture2D" uid="uid://c70m5enjjv6rh" path="res://Assets/AIAssets/mainscreen.jpg" id="2_background"]
+[ext_resource type="Texture2D" uid="uid://exe3rc543r73" path="res://Assets/AIAssets/mainscreen.jpg" id="2_background"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -13,10 +13,16 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_main_menu")
 
-[node name="Background" type="Sprite2D" parent="."]
-position = Vector2(640, 360)
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 texture = ExtResource("2_background")
-centered = true
+expand_mode = 1
+stretch_mode = 6
 
 [node name="VignetteOverlay" type="ColorRect" parent="."]
 layout_mode = 1
