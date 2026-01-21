@@ -24,6 +24,10 @@ func _ready() -> void:
 	# Door is configured directly in the scene file via target_scene export
 	print("[Room01] Initialized")
 
+	# Spawn checkpoint and enemies (COMMIT 016: Auto-Save)
+	_spawn_checkpoint()
+	_spawn_enemies()
+
 	# Activate room (register with GameManager, setup player)
 	call_deferred("_activate")
 
@@ -132,3 +136,49 @@ func _apply_saved_player_data(player: Node, player_data: Dictionary) -> void:
 		player.facing_direction = player_data.get("facing_direction", 1)
 
 	print("[Room01] Player data applied successfully")
+
+
+# ============================================================================
+# CHECKPOINT & ENEMIES (COMMIT 016: Auto-Save)
+# ============================================================================
+
+func _spawn_checkpoint() -> void:
+	"""Spawns a checkpoint in the room for auto-save"""
+	var checkpoint_scene = preload("res://environment/checkpoint.tscn")
+	if not checkpoint_scene:
+		print("[Room01] WARNING: Checkpoint scene not found")
+		return
+
+	var checkpoint = checkpoint_scene.instantiate()
+	checkpoint.global_position = Vector2(400, 570)  # Platform near start
+	checkpoint.checkpoint_id = "room_01_entry/start_checkpoint"
+
+	add_child(checkpoint)
+	print("[Room01] Checkpoint spawned at ", checkpoint.global_position)
+
+
+func _spawn_enemies() -> void:
+	"""Spawns 8 Untote enemies for combat testing"""
+	var untote_scene = preload("res://enemies/untote.tscn")
+	if not untote_scene:
+		print("[Room01] WARNING: Untote scene not found")
+		return
+
+	# Spawn positions spread across the room
+	var spawn_positions = [
+		Vector2(800, 600),
+		Vector2(1000, 600),
+		Vector2(1200, 600),
+		Vector2(1400, 600),
+		Vector2(1600, 600),
+		Vector2(1800, 600),
+		Vector2(2000, 600),
+		Vector2(2200, 600),
+	]
+
+	for pos in spawn_positions:
+		var enemy = untote_scene.instantiate()
+		enemy.global_position = pos
+		add_child(enemy)
+
+	print("[Room01] Spawned %d Untote enemies" % spawn_positions.size())
