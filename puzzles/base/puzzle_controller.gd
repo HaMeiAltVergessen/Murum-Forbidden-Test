@@ -80,6 +80,11 @@ func solve() -> void:
 	if puzzle_id != "" and WorldManager:
 		WorldManager.mark_puzzle_solved(puzzle_id)
 
+	# Auto-save after solving puzzle (like pickups)
+	if SaveManager:
+		SaveManager.save_current_game()
+		print("[PuzzleController] Auto-saved after solving %s" % puzzle_name)
+
 	# Play success sound
 	if AudioManager:
 		AudioManager.play_sfx("puzzle/puzzle_solved")
