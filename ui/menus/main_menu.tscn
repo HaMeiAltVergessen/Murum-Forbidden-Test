@@ -10,7 +10,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
+mouse_filter = 1
 script = ExtResource("1_main_menu")
 
 [node name="Background" type="TextureRect" parent="."]
@@ -41,11 +41,12 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
+mouse_filter = 1
 
 [node name="MenuContainer" type="VBoxContainer" parent="CenterContainer"]
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
+mouse_filter = 1
 theme_override_constants/separation = 10
 alignment = 1
 
@@ -72,6 +73,7 @@ layout_mode = 2
 
 [node name="ButtonsContainer" type="VBoxContainer" parent="CenterContainer/MenuContainer"]
 layout_mode = 2
+mouse_filter = 1
 theme_override_constants/separation = 20
 alignment = 1
 
