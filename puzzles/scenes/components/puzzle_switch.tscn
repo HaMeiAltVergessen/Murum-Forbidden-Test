@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://puzzle_switch_component"]
+
+[ext_resource type="Script" path="res://puzzles/base/puzzle_switch.gd" id="1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_switch"]
+size = Vector2(48, 48)
+
+[node name="PuzzleSwitch" type="Area2D"]
+collision_layer = 0
+collision_mask = 2050
+script = ExtResource("1")
+switch_id = 1
+can_deactivate = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="Sprite2D"]
+offset_left = -24.0
+offset_top = -24.0
+offset_right = 24.0
+offset_bottom = 24.0
+color = Color(0.3, 0.3, 0.3, 1)
+
+[node name="IDLabel" type="ColorRect" parent="Sprite2D"]
+offset_left = -8.0
+offset_top = -8.0
+offset_right = 8.0
+offset_bottom = 8.0
+color = Color(1, 1, 1, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_switch")

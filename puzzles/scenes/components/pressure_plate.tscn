@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://pressure_plate_component"]
+
+[ext_resource type="Script" path="res://puzzles/pressure_plate.gd" id="1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_plate"]
+size = Vector2(64, 16)
+
+[node name="PressurePlate" type="Area2D"]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1")
+visual_feedback = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="Sprite2D"]
+offset_left = -32.0
+offset_top = -8.0
+offset_right = 32.0
+offset_bottom = 8.0
+color = Color(0.6, 0.5, 0.4, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_plate")
