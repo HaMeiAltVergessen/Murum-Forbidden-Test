@@ -288,6 +288,8 @@ trigger_mode = 0
 position = Vector2(1800, 900)
 puzzle_controllers = [NodePath("Puzzles/R1_SequencePuzzle/SequencePuzzleController"), NodePath("Puzzles/R2_PressurePlatePuzzle/DualPlatePuzzleController"), NodePath("Puzzles/R3_CrystalChainPuzzle/ChainPuzzleController"), NodePath("Puzzles/R4_TimedDoorPuzzle/TimedDoorController")]
 require_all = true
+enable_teleport = true
+target_scene = "res://levels/item_room.tscn"
 
 position = Vector2(1000, 900)
 
