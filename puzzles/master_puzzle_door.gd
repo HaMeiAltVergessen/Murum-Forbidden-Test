@@ -14,6 +14,10 @@ class_name MasterPuzzleDoor
 @export var door_move_distance: Vector2 = Vector2(0, -128)  ## How far the door moves when open
 @export var open_duration: float = 1.0  ## Animation duration
 
+@export_group("Teleport")
+@export var enable_teleport: bool = false  ## Enable teleportation when door opens
+@export_file("*.tscn") var target_scene: String = ""  ## Scene to load when player enters door
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -30,6 +34,7 @@ var is_open: bool = false
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D if has_node("CollisionShape2D") else null
 @onready var progress_label: Label = $ProgressLabel if has_node("ProgressLabel") else null
 
+var teleport_area: Area2D = null
 var original_position: Vector2
 var open_position: Vector2
 
@@ -46,6 +51,10 @@ func _ready() -> void:
 	if not sprite:
 		_create_door_sprite()
 
+	# Create teleport area if teleport enabled
+	if enable_teleport:
+		_create_teleport_area()
+
 	await get_tree().process_frame
 	_connect_controllers()
 
@@ -54,7 +63,7 @@ func _ready() -> void:
 
 	add_to_group("master_puzzle_doors")
 
-	print("[MasterPuzzleDoor] %s initialized (tracking %d puzzles)" % [name, controllers.size()])
+	print("[MasterPuzzleDoor] %s initialized (tracking %d puzzles, teleport: %s)" % [name, controllers.size(), enable_teleport])
 
 func _create_door_sprite() -> void:
 	"""Creates a simple door sprite"""
@@ -65,6 +74,36 @@ func _create_door_sprite() -> void:
 	sprite.position = -Vector2(64, 64)  # Center
 	sprite.color = Color(0.6, 0.3, 0.1, 1.0)  # Brown
 	add_child(sprite)
+
+func _create_teleport_area() -> void:
+	"""Creates the teleport trigger area"""
+	teleport_area = Area2D.new()
+	teleport_area.name = "TeleportArea"
+
+	# Collision setup - only detect players
+	teleport_area.collision_layer = 0
+	teleport_area.collision_mask = 0
+	teleport_area.set_collision_mask_value(2, true)  # Player layer
+
+	# Monitoring disabled until door opens
+	teleport_area.monitoring = false
+	teleport_area.monitorable = false
+
+	# Create collision shape
+	var shape = RectangleShape2D.new()
+	shape.size = Vector2(128, 128)
+
+	var collision = CollisionShape2D.new()
+	collision.shape = shape
+	collision.name = "TeleportCollision"
+
+	teleport_area.add_child(collision)
+	add_child(teleport_area)
+
+	# Connect signal
+	teleport_area.body_entered.connect(_on_teleport_area_entered)
+
+	print("[MasterPuzzleDoor] Teleport area created (target: %s)" % target_scene)
 
 # ============================================================================
 # CONTROLLER CONNECTION
@@ -167,6 +206,47 @@ func _open_door() -> void:
 	# Audio feedback
 	if AudioManager:
 		AudioManager.play_sfx("puzzle/door_open")
+
+	# Enable teleport area if teleport enabled
+	if enable_teleport and teleport_area:
+		teleport_area.monitoring = true
+		print("[MasterPuzzleDoor] Teleport area activated!")
+
+# ============================================================================
+# TELEPORT
+# ============================================================================
+
+func _on_teleport_area_entered(body: Node2D) -> void:
+	"""Handles player entering teleport area"""
+	# Check if it's a player
+	if not (body.is_in_group("player") or body.is_in_group("player2")):
+		return
+
+	# Check if door is open
+	if not is_open:
+		return
+
+	# Check if target scene is set
+	if target_scene == "" or not ResourceLoader.exists(target_scene):
+		push_warning("[MasterPuzzleDoor] Invalid target scene: %s" % target_scene)
+		return
+
+	print("[MasterPuzzleDoor] Player %s entering teleport to %s" % [body.name, target_scene])
+
+	# Load new scene
+	_teleport_to_scene(target_scene)
+
+func _teleport_to_scene(scene_path: String) -> void:
+	"""Teleports to target scene"""
+	# Use SceneManager if available, otherwise direct load
+	if has_node("/root/SceneManager"):
+		var scene_manager = get_node("/root/SceneManager")
+		if scene_manager.has_method("change_scene"):
+			scene_manager.change_scene(scene_path)
+			return
+
+	# Fallback: Direct scene change
+	get_tree().change_scene_to_file(scene_path)
 
 # ============================================================================
 # VISUAL FEEDBACK
