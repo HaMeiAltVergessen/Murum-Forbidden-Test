@@ -231,7 +231,7 @@ func _setup_puzzle_persistence() -> void:
 func _on_crystal_hit(projectile_owner: Node2D, crystal: PuzzleCrystal) -> void:
 	"""Called when a crystal is hit"""
 	var crystal_id = crystal.crystal_id
-	print("[Room01] Crystal %d hit! Current sequence: %v" % [crystal_id, hit_sequence])
+	print("[Room01] Crystal %d hit! Current sequence: %s" % [crystal_id, str(hit_sequence)])
 
 	# Add to hit sequence
 	hit_sequence.append(crystal_id)
