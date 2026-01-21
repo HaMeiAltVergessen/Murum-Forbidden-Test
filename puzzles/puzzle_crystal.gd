@@ -17,11 +17,14 @@ signal crystal_hit(projectile_owner: Node2D)
 @export var crystal_id: int = 0
 @export var can_reset: bool = false  ## If true, crystal resets after being destroyed
 @export var reset_time: float = 5.0  ## Time until crystal resets (if can_reset is true)
+@export var max_hp: int = 10  ## Hit points - crystal destroyed when HP reaches 0
+@export var damage_per_hit: int = 1  ## Damage taken per projectile hit
 
 # ============================================================================
 # STATE
 # ============================================================================
 
+var current_hp: int = 10
 var is_activated: bool = false
 
 # ============================================================================
@@ -40,74 +43,90 @@ func _ready() -> void:
 	monitoring = true
 	monitorable = true
 
-	# Treat crystal as static enemy - set collision layers like enemy hitbox
+	# Initialize HP
+	current_hp = max_hp
+
+	# Set collision for projectile detection only
 	collision_layer = 0
-	set_collision_layer_value(8, true)  # Interactables/Enemy Hitboxes (Layer 8)
+	set_collision_layer_value(8, true)  # Interactables (Layer 8)
 
 	collision_mask = 0
 	set_collision_mask_value(11, true)  # Projectiles (Layer 11)
 
-	# Connect signals
+	# Connect signals (only area_entered for projectiles)
 	area_entered.connect(_on_area_entered)
-	body_entered.connect(_on_body_entered)
 
-	# Add to enemies group so projectiles recognize it as target
+	# Add to crystal group only (NOT enemies group!)
 	add_to_group("puzzle_crystals")
-	add_to_group("enemies")
 
-	print("[PuzzleCrystal] %s initialized as static enemy (ID: %d)" % [name, crystal_id])
+	print("[PuzzleCrystal] %s initialized (ID: %d, HP: %d/%d)" % [name, crystal_id, current_hp, max_hp])
 
 # ============================================================================
 # COLLISION HANDLERS
 # ============================================================================
 
 func _on_area_entered(area: Area2D) -> void:
-	"""Handles area collision (any projectile)"""
-	# Only activate once
+	"""Handles area collision - only projectiles should trigger"""
+	# Already destroyed
 	if is_activated:
 		return
 
-	print("[PuzzleCrystal] Area entered: %s (layer: %d, groups: %s)" % [area.name, area.collision_layer, area.get_groups()])
+	print("[PuzzleCrystal] Area entered: %s (groups: %s)" % [area.name, area.get_groups()])
 
-	# Check if it's on projectile layer (Layer 11)
-	if not area.get_collision_layer_value(11):
-		print("[PuzzleCrystal] Not a projectile (not on layer 11)")
+	# CRITICAL: Ignore player HurtboxComponent!
+	if "Hurtbox" in area.name or "hurtbox" in area.name.to_lower():
+		print("[PuzzleCrystal] Ignoring HurtboxComponent")
+		return
+
+	# Only accept actual projectiles (staff throw, shadow scythe)
+	var is_projectile = (
+		area.is_in_group("staff_projectile") or
+		area.is_in_group("staff_projectiles") or
+		area.is_in_group("shadow_scythe") or
+		area.is_in_group("projectiles") or
+		"Projectile" in area.name
+	)
+
+	if not is_projectile:
+		print("[PuzzleCrystal] Not a projectile, ignoring")
 		return
 
 	# Get owner player
 	var owner_player = area.get_meta("owner_player", null) if area.has_meta("owner_player") else area.owner
 
-	# Activate crystal (destroys it)
-	activate(owner_player)
+	# Take damage
+	take_damage(owner_player)
 
-func _on_body_entered(body: Node2D) -> void:
-	"""Handles body collision (CharacterBody2D projectiles)"""
-	# Only activate once
+# ============================================================================
+# DAMAGE SYSTEM
+# ============================================================================
+
+func take_damage(projectile_owner: Node2D = null) -> void:
+	"""Takes damage from projectile hit"""
 	if is_activated:
 		return
 
-	print("[PuzzleCrystal] Body entered: %s (groups: %s)" % [body.name, body.get_groups()])
+	# Reduce HP
+	current_hp -= damage_per_hit
+	current_hp = max(0, current_hp)
 
-	# Check if it's a projectile
-	if not (body.is_in_group("projectiles") or "Projectile" in body.name):
-		return
+	print("[PuzzleCrystal] %s hit! HP: %d/%d" % [name, current_hp, max_hp])
 
-	# Get owner player
-	var owner_player = body.get_meta("owner_player", null) if body.has_meta("owner_player") else body.owner
+	# Visual feedback for damage
+	_play_hit_visual()
 
-	# Activate crystal (destroys it)
-	activate(owner_player)
+	# Check if destroyed
+	if current_hp <= 0:
+		destroy(projectile_owner)  # Pass owner to destroy
 
-# ============================================================================
-# ACTIVATION
-# ============================================================================
-
-func activate(projectile_owner: Node2D = null) -> void:
-	"""Activates/destroys the crystal (HP system: 1 hit = destroyed)"""
+func destroy(projectile_owner: Node2D = null) -> void:
+	"""Destroys the crystal (HP reached 0)"""
 	if is_activated:
 		return
 
 	is_activated = true
+
+	# Emit signal for puzzle controller (only on destruction!)
 	crystal_hit.emit(projectile_owner)
 
 	# Visual feedback
@@ -135,6 +154,7 @@ func reset() -> void:
 	"""Resets the crystal"""
 	is_activated = false
 	monitoring = true
+	current_hp = max_hp  # Reset HP!
 
 	# Reset visual (fade back in)
 	if sprite:
@@ -148,12 +168,29 @@ func reset() -> void:
 	if particles:
 		particles.emitting = false
 
-	print("[PuzzleCrystal] %s reset (ID: %d)" % [name, crystal_id])
+	print("[PuzzleCrystal] %s reset (ID: %d, HP: %d/%d)" % [name, crystal_id, current_hp, max_hp])
 
 
 # ============================================================================
 # VISUAL FEEDBACK
 # ============================================================================
+
+func _play_hit_visual() -> void:
+	"""Plays visual feedback for taking damage (not destroyed yet)"""
+	if sprite:
+		# Flash white briefly
+		var original_color = sprite.modulate
+		sprite.modulate = Color(1.5, 1.5, 1.5, 1.0)
+
+		# Return to normal
+		var tween = create_tween()
+		tween.tween_property(sprite, "modulate", original_color, 0.2)
+
+		# Slight shake
+		var shake_amount = 3.0
+		var original_pos = sprite.position
+		sprite.position = original_pos + Vector2(randf_range(-shake_amount, shake_amount), randf_range(-shake_amount, shake_amount))
+		tween.tween_property(sprite, "position", original_pos, 0.1)
 
 func _play_destruction_visual() -> void:
 	"""Plays destruction visual effect"""
