@@ -13,15 +13,28 @@ const WORLD_1_ENTRY_PATH = "res://worlds/world_1_ruins/rooms/room_01_entry.tscn"
 
 
 func _ready():
-	# Verstecke HUD im Hauptmenü
+	print("[MainMenu] _ready() called")
+
+	# Verstecke HUD Autoload im Hauptmenü
+	if has_node("/root/HUD"):
+		var hud_autoload = get_node("/root/HUD")
+		hud_autoload.visible = false
+		print("[MainMenu] HUD Autoload hidden")
+
+	# Verstecke HUDManager HUDs
 	if HUDManager:
 		HUDManager.hide_all_hud()
-		print("[MainMenu] HUD hidden")
+		print("[MainMenu] HUDManager HUDs hidden")
 
-	# Signals verbinden
+	# Signals verbinden mit Debug-Prints
 	continue_button.pressed.connect(_on_continue_pressed)
+	continue_button.mouse_entered.connect(func(): print("[MainMenu DEBUG] Mouse entered: Continue Button"))
+
 	new_game_button.pressed.connect(_on_new_game_pressed)
+	new_game_button.mouse_entered.connect(func(): print("[MainMenu DEBUG] Mouse entered: New Game Button"))
+
 	quit_button.pressed.connect(_on_quit_pressed)
+	quit_button.mouse_entered.connect(func(): print("[MainMenu DEBUG] Mouse entered: Quit Button"))
 
 	# Setup Focus Navigation (Skip disabled buttons)
 	_setup_focus_neighbors()
@@ -31,6 +44,8 @@ func _ready():
 		continue_button.grab_focus()
 	else:
 		new_game_button.grab_focus()
+
+	print("[MainMenu] Initialization complete")
 
 
 func _setup_focus_neighbors():
@@ -55,26 +70,35 @@ func _setup_focus_neighbors():
 
 # Button Callbacks
 func _on_continue_pressed():
-	print("[MainMenu] Continue pressed - Loading Test Room")
+	print("[MainMenu] ========== CONTINUE BUTTON PRESSED ==========")
 	_start_game(TEST_ROOM_PATH)
 
 
 func _on_new_game_pressed():
-	print("[MainMenu] New Game pressed - Loading World 1 Entry")
+	print("[MainMenu] ========== NEW GAME BUTTON PRESSED ==========")
 	_start_game(WORLD_1_ENTRY_PATH)
 
 
 func _start_game(scene_path: String):
 	"""Zeigt HUD wieder an und lädt die Szene"""
-	# HUD wieder anzeigen vor dem Szenenwechsel
+	print("[MainMenu] Starting game, loading scene: ", scene_path)
+
+	# HUD Autoload wieder anzeigen
+	if has_node("/root/HUD"):
+		var hud_autoload = get_node("/root/HUD")
+		hud_autoload.visible = true
+		print("[MainMenu] HUD Autoload shown")
+
+	# HUDManager HUDs wieder anzeigen
 	if HUDManager:
 		HUDManager.show_all_hud()
-		print("[MainMenu] HUD shown for gameplay")
+		print("[MainMenu] HUDManager HUDs shown")
 
 	# Szene laden
+	print("[MainMenu] Calling change_scene_to_file...")
 	get_tree().change_scene_to_file(scene_path)
 
 
 func _on_quit_pressed():
-	print("[MainMenu] Quit pressed - Exiting game")
+	print("[MainMenu] ========== QUIT BUTTON PRESSED ==========")
 	get_tree().quit()
