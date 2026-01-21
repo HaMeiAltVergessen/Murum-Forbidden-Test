@@ -17,6 +17,11 @@ var buttons: Array[Button] = []
 
 
 func _ready():
+	# Verstecke HUD im Hauptmenü
+	if HUDManager:
+		HUDManager.hide_all_hud()
+		print("[MainMenu] HUD hidden")
+
 	# Button-Array aufbauen
 	buttons = [continue_button, new_game_button, options_button, quit_button]
 
@@ -24,6 +29,10 @@ func _ready():
 	continue_button.pressed.connect(_on_continue_pressed)
 	new_game_button.pressed.connect(_on_new_game_pressed)
 	quit_button.pressed.connect(_on_quit_pressed)
+
+	# Mouse Input - Enable mouse filter für alle Buttons
+	for btn in buttons:
+		btn.mouse_filter = Control.MOUSE_FILTER_STOP
 
 	# Fokus setzen
 	if continue_button.visible and not continue_button.disabled:
@@ -76,12 +85,23 @@ func _focus_next_button(direction: int):
 # Button Callbacks
 func _on_continue_pressed():
 	print("[MainMenu] Continue pressed - Loading Test Room")
-	get_tree().change_scene_to_file(TEST_ROOM_PATH)
+	_start_game(TEST_ROOM_PATH)
 
 
 func _on_new_game_pressed():
 	print("[MainMenu] New Game pressed - Loading World 1 Entry")
-	get_tree().change_scene_to_file(WORLD_1_ENTRY_PATH)
+	_start_game(WORLD_1_ENTRY_PATH)
+
+
+func _start_game(scene_path: String):
+	"""Zeigt HUD wieder an und lädt die Szene"""
+	# HUD wieder anzeigen vor dem Szenenwechsel
+	if HUDManager:
+		HUDManager.show_all_hud()
+		print("[MainMenu] HUD shown for gameplay")
+
+	# Szene laden
+	get_tree().change_scene_to_file(scene_path)
 
 
 func _on_quit_pressed():
