@@ -507,11 +507,24 @@ func load_progression_data(data: Dictionary) -> void:
 		checkpoint_pos.get("y", 0.0)
 	)
 
-	worlds_unlocked = data.get("worlds_unlocked", ["world_1_ruins"])
+	# Type-safe array loading (Godot 4 requires explicit conversion)
+	worlds_unlocked.clear()
+	for world in data.get("worlds_unlocked", ["world_1_ruins"]):
+		worlds_unlocked.append(world)
+
 	cleared_rooms = data.get("rooms_cleared", {})
-	visited_rooms = data.get("visited_rooms", [])
-	unlocked_doors = data.get("unlocked_doors", [])
-	bosses_defeated = data.get("bosses_defeated", [])
+
+	visited_rooms.clear()
+	for room in data.get("visited_rooms", []):
+		visited_rooms.append(room)
+
+	unlocked_doors.clear()
+	for door in data.get("unlocked_doors", []):
+		unlocked_doors.append(door)
+
+	bosses_defeated.clear()
+	for boss in data.get("bosses_defeated", []):
+		bosses_defeated.append(boss)
 
 	print("[WorldManager] Progression data loaded")
 

@@ -66,6 +66,15 @@ func activate() -> void:
 	if WorldManager:
 		WorldManager.set_last_checkpoint(checkpoint_id, global_position)
 
+	# AUTO-SAVE at checkpoint (COMMIT 016: Auto-Save)
+	if SaveManager:
+		var save_success = SaveManager.save_current_game()
+		if save_success:
+			print("[Checkpoint] Game auto-saved at checkpoint: %s" % checkpoint_id)
+			EventBus.show_notification.emit("Game Saved", 1.5)
+		else:
+			print("[Checkpoint] WARNING: Auto-save failed at checkpoint: %s" % checkpoint_id)
+
 	# Visual feedback
 	_update_visual()
 	_play_activation_effect()
