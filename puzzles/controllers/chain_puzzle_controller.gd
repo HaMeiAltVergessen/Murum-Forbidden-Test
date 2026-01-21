@@ -9,14 +9,14 @@ class_name ChainPuzzleController
 # ============================================================================
 
 @export var required_crystals: int = 4
-@export var check_delay: float = 0.2  ## Delay before checking if all crystals destroyed
+@export var check_delay: float = 0.3  ## Delay before checking if all crystals destroyed
 
 # ============================================================================
 # STATE
 # ============================================================================
 
 var connected_crystals: Array[Node] = []
-var checking_solution: bool = false  ## Prevents multiple simultaneous checks
+var destruction_pending: bool = false  ## True when waiting to check solution
 
 # ============================================================================
 # INITIALIZATION
@@ -68,14 +68,19 @@ func _on_crystal_hit(projectile_owner: Node2D, crystal: Node) -> void:
 	"""Handles crystal being destroyed (HP=0)"""
 	print("[ChainPuzzle] Crystal %s destroyed by %s" % [crystal.name, projectile_owner.name if projectile_owner else "unknown"])
 
-	# Prevent multiple simultaneous checks
-	if checking_solution:
+	# If already waiting to check solution, don't start another check
+	if destruction_pending:
+		print("[ChainPuzzle] Already pending destruction check, skipping...")
 		return
 
-	checking_solution = true
+	# Mark that we're waiting to check the solution
+	destruction_pending = true
 
 	# Wait for all crystals in current attack to register destruction
 	await get_tree().create_timer(check_delay).timeout
+
+	# Reset the pending flag
+	destruction_pending = false
 
 	# Check if all crystals are destroyed
 	var all_destroyed = _check_all_destroyed()
@@ -90,8 +95,6 @@ func _on_crystal_hit(projectile_owner: Node2D, crystal: Node) -> void:
 		# Some crystals still alive → Reset destroyed crystals (if they can reset)
 		print("[ChainPuzzle] Not all crystals destroyed - resetting destroyed ones")
 		_reset_destroyed_crystals()
-
-	checking_solution = false
 
 # ============================================================================
 # SOLUTION CHECK
@@ -154,7 +157,7 @@ func _remove_all_crystals() -> void:
 func reset_puzzle() -> void:
 	"""Resets the chain puzzle"""
 	super.reset_puzzle()
-	checking_solution = false
+	destruction_pending = false
 
 	# Reset all crystals (only if they still exist and can reset)
 	for crystal in connected_crystals:
