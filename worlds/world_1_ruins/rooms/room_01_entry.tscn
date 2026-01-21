@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://b8mx4n7raprst"]
+[gd_scene load_steps=16 format=3 uid="uid://b8mx4n7raprst"]
 
 [ext_resource type="Script" uid="uid://b2r2vfh85un7r" path="res://worlds/world_1_ruins/rooms/room_01_entry.gd" id="1_room01"]
 [ext_resource type="Texture2D" uid="uid://cced6bgpaux0q" path="res://Assets/AIAssets/world1lvl1bg02.jpg" id="2_cqwq7"]
@@ -10,6 +10,7 @@
 [ext_resource type="AudioStream" uid="uid://dsdlo6x4sw6sq" path="res://Music/Welt 01 Ruins.mp3" id="8_tn53d"]
 [ext_resource type="PackedScene" path="res://environment/pickups/pickup_base.tscn" id="9_cqwq7"]
 [ext_resource type="Texture2D" uid="uid://dbecpug8upc2v" path="res://Assets/Placeholder/Background/Environments/ships-graveyard/PNG/layers/boat-front.png" id="10_8m3rk"]
+[ext_resource type="PackedScene" uid="uid://puzzle_crystal_component" path="res://puzzles/scenes/components/puzzle_crystal.tscn" id="11_crystal"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(4598, 80)
@@ -151,3 +152,23 @@ position = Vector2(14, -32)
 scale = Vector2(1.64692, 2.4669)
 texture = ExtResource("10_8m3rk")
 flip_h = true
+
+[node name="CrystalPuzzle" type="Node2D" parent="."]
+
+[node name="Crystal1" parent="CrystalPuzzle" instance=ExtResource("11_crystal")]
+position = Vector2(1200, 400)
+crystal_id = 1
+can_reset = true
+max_hp = 3
+
+[node name="Crystal2" parent="CrystalPuzzle" instance=ExtResource("11_crystal")]
+position = Vector2(1400, 400)
+crystal_id = 2
+can_reset = true
+max_hp = 3
+
+[node name="Crystal3" parent="CrystalPuzzle" instance=ExtResource("11_crystal")]
+position = Vector2(1600, 400)
+crystal_id = 3
+can_reset = true
+max_hp = 3
