@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bqc8yv8x3jk0m"]
+[gd_scene load_steps=4 format=3 uid="uid://bqc8yv8x3jk0m"]
 
 [ext_resource type="Script" path="res://ui/menus/main_menu.gd" id="1_main_menu"]
 [ext_resource type="Texture2D" uid="uid://exe3rc543r73" path="res://Assets/AIAssets/mainscreen.jpg" id="2_background"]
+[ext_resource type="AudioStream" uid="uid://c6nj6qe6g54" path="res://Music/Murum FT Main Theme 3.mp3" id="3_music"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -121,3 +122,8 @@ theme_override_colors/font_pressed_color = Color(0.8, 0.8, 0.8, 1)
 theme_override_colors/font_disabled_color = Color(0.266667, 0.266667, 0.266667, 1)
 theme_override_font_sizes/font_size = 28
 text = "Verlassen"
+
+[node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_music")
+volume_db = -6.0
+autoplay = false

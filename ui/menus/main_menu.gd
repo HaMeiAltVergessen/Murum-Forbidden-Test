@@ -6,14 +6,20 @@ class_name MainMenu
 @onready var new_game_button: Button = %NewGameButton
 @onready var options_button: Button = %OptionsButton
 @onready var quit_button: Button = %QuitButton
+@onready var music_player: AudioStreamPlayer = $MusicPlayer
 
 # Constants
 const TEST_ROOM_PATH = "res://levels/test_room.tscn"
 const WORLD_1_ENTRY_PATH = "res://worlds/world_1_ruins/rooms/room_01_entry.tscn"
+const MUSIC_FADE_DURATION = 1.0  # Sekunden
 
 
 func _ready():
 	print("[MainMenu] _ready() called")
+
+	# Warte bis HUDManager seine HUDs geladen hat
+	await get_tree().process_frame
+	await get_tree().process_frame  # Extra frame für sicheres Timing
 
 	# Verstecke HUD Autoload im Hauptmenü
 	if has_node("/root/HUD"):
@@ -21,10 +27,15 @@ func _ready():
 		hud_autoload.visible = false
 		print("[MainMenu] HUD Autoload hidden")
 
-	# Verstecke HUDManager HUDs
+	# Verstecke HUDManager HUDs (inkl. p1_abilities)
 	if HUDManager:
 		HUDManager.hide_all_hud()
-		print("[MainMenu] HUDManager HUDs hidden")
+		print("[MainMenu] HUDManager HUDs hidden (including abilities)")
+
+	# Starte Musik
+	if music_player:
+		music_player.play()
+		print("[MainMenu] Music started")
 
 	# Signals verbinden mit Debug-Prints
 	continue_button.pressed.connect(_on_continue_pressed)
@@ -80,8 +91,16 @@ func _on_new_game_pressed():
 
 
 func _start_game(scene_path: String):
-	"""Zeigt HUD wieder an und lädt die Szene"""
+	"""Zeigt HUD wieder an und lädt die Szene mit Musik-Fade-Out"""
 	print("[MainMenu] Starting game, loading scene: ", scene_path)
+
+	# Musik fade-out
+	if music_player and music_player.playing:
+		var tween = create_tween()
+		tween.tween_property(music_player, "volume_db", -80, MUSIC_FADE_DURATION)
+		tween.tween_callback(music_player.stop)
+		print("[MainMenu] Music fading out...")
+		await tween.finished
 
 	# HUD Autoload wieder anzeigen
 	if has_node("/root/HUD"):
