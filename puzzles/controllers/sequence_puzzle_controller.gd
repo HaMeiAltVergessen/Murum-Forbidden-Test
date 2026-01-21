@@ -9,6 +9,8 @@ class_name SequencePuzzleController
 # ============================================================================
 
 @export var correct_sequence: Array[int] = [1, 2, 3]
+@export var use_reset_delay: bool = true  ## If true, wrong sequence triggers delay before reset
+@export var reset_delay: float = 3.0  ## Time to wait before resetting after wrong sequence
 
 # ============================================================================
 # STATE
@@ -85,10 +87,15 @@ func _on_switch_hit(switch_id: int, activator: Node2D) -> void:
 			if check_solution():
 				solve()
 	else:
-		# Wrong sequence - show feedback and reset after delay
+		# Wrong sequence - show feedback
 		_show_failure_feedback()
-		fail()
-		_reset_after_delay()
+
+		if use_reset_delay:
+			# Reset after delay
+			_reset_after_delay()
+		else:
+			# Reset immediately
+			fail()
 
 
 # ============================================================================
@@ -135,11 +142,11 @@ func reset_puzzle() -> void:
 	print("[SequencePuzzle] Reset - awaiting new sequence")
 
 func _reset_after_delay() -> void:
-	"""Resets puzzle after 3 second delay (for wrong sequence)"""
+	"""Resets puzzle after delay (for wrong sequence)"""
 	is_resetting = true
-	print("[SequencePuzzle] Wrong sequence! Resetting in 3 seconds...")
+	print("[SequencePuzzle] Wrong sequence! Resetting in %.1f seconds..." % reset_delay)
 
-	await get_tree().create_timer(3.0).timeout
+	await get_tree().create_timer(reset_delay).timeout
 
 	reset_puzzle()
 

@@ -15,7 +15,8 @@ signal crystal_hit(projectile_owner: Node2D)
 # ============================================================================
 
 @export var crystal_id: int = 0
-@export var pierce_delay: float = 0.1  ## Time to disable monitoring to allow piercing
+@export var can_reset: bool = false  ## If true, crystal resets after being destroyed
+@export var reset_time: float = 5.0  ## Time until crystal resets (if can_reset is true)
 
 # ============================================================================
 # STATE
@@ -102,7 +103,7 @@ func _on_body_entered(body: Node2D) -> void:
 # ============================================================================
 
 func activate(projectile_owner: Node2D = null) -> void:
-	"""Destroys the crystal (HP system: 1 hit = destroyed)"""
+	"""Activates/destroys the crystal (HP system: 1 hit = destroyed)"""
 	if is_activated:
 		return
 
@@ -116,25 +117,38 @@ func activate(projectile_owner: Node2D = null) -> void:
 	if AudioManager:
 		AudioManager.play_sfx("puzzle/crystal_shatter")
 
-	print("[PuzzleCrystal] %s destroyed (ID: %d)" % [name, crystal_id])
+	# Disable detection while destroyed
+	monitoring = false
 
-	# Destroy crystal after visual effect
-	await get_tree().create_timer(0.3).timeout
-	queue_free()
+	if can_reset:
+		# Crystal will reset after delay
+		print("[PuzzleCrystal] %s destroyed (ID: %d) - resetting in %.1fs" % [name, crystal_id, reset_time])
+		await get_tree().create_timer(reset_time).timeout
+		reset()
+	else:
+		# Crystal is permanently destroyed
+		print("[PuzzleCrystal] %s destroyed permanently (ID: %d)" % [name, crystal_id])
+		await get_tree().create_timer(0.3).timeout
+		queue_free()
 
 func reset() -> void:
 	"""Resets the crystal"""
 	is_activated = false
 	monitoring = true
 
-	# Reset visual
+	# Reset visual (fade back in)
 	if sprite:
 		sprite.modulate = Color.WHITE
+		sprite.scale = Vector2.ONE
+
+		# Fade in effect
+		var tween = create_tween()
+		tween.tween_property(sprite, "modulate:a", 1.0, 0.5)
 
 	if particles:
 		particles.emitting = false
 
-	print("[PuzzleCrystal] %s reset" % name)
+	print("[PuzzleCrystal] %s reset (ID: %d)" % [name, crystal_id])
 
 
 # ============================================================================
