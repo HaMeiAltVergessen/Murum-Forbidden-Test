@@ -78,12 +78,13 @@ func load_huds() -> void:
 	else:
 		print("[HUDManager] WARNING: Gold Display scene not found")
 
-	# Join Prompt
+	# Join Prompt (initially hidden)
 	var join_prompt_scene = load("res://ui/hud/join_prompt.tscn")
 	if join_prompt_scene:
 		join_prompt = join_prompt_scene.instantiate()
 		add_child(join_prompt)  # Add to HUDManager (persistent)
-		print("[HUDManager] Join Prompt loaded (persistent)")
+		join_prompt.visible = false  # Hide by default
+		print("[HUDManager] Join Prompt loaded (persistent, hidden)")
 	else:
 		print("[HUDManager] WARNING: Join Prompt scene not found")
 

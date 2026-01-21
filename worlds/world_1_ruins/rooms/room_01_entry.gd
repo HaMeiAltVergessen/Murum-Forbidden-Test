@@ -62,7 +62,7 @@ func _activate() -> void:
 
 
 func _spawn_new_player() -> void:
-	"""Spawns a new player at the default spawn point"""
+	"""Spawns a new player at the default spawn point or loaded position"""
 	# Load player scene
 	var player_scene = preload("res://player/murum.tscn")
 	if not player_scene:
@@ -72,16 +72,25 @@ func _spawn_new_player() -> void:
 	# Instantiate player
 	var player = player_scene.instantiate()
 
-	# Get spawn position (50 pixels from left edge, centered vertically on platform level)
+	# Check if we have pending player data from save load (COMMIT 016)
+	var has_save_data = SaveManager.pending_player_data and not SaveManager.pending_player_data.is_empty()
+
+	# Get spawn position
 	var spawn_pos = Vector2(50, 360)
 
-	# Use default spawn point if it exists
-	var default_spawn = spawn_points.get_node_or_null("Default")
-	if default_spawn:
-		spawn_pos = default_spawn.global_position
-		print("[Room01] Using default spawn point at: ", spawn_pos)
+	if has_save_data:
+		# Use saved position
+		var pos_data = SaveManager.pending_player_data.get("position", {})
+		spawn_pos = Vector2(pos_data.get("x", 50), pos_data.get("y", 360))
+		print("[Room01] Using saved position: ", spawn_pos)
 	else:
-		print("[Room01] Using fallback spawn position: ", spawn_pos)
+		# Use default spawn point if it exists
+		var default_spawn = spawn_points.get_node_or_null("Default")
+		if default_spawn:
+			spawn_pos = default_spawn.global_position
+			print("[Room01] Using default spawn point at: ", spawn_pos)
+		else:
+			print("[Room01] Using fallback spawn position: ", spawn_pos)
 
 	# Set player position
 	player.global_position = spawn_pos
@@ -89,8 +98,37 @@ func _spawn_new_player() -> void:
 	# Add player to scene
 	add_child(player)
 
+	# Apply saved stats if available (COMMIT 016)
+	if has_save_data:
+		_apply_saved_player_data(player, SaveManager.pending_player_data)
+
+		# Clear pending data after applying
+		SaveManager.pending_player_data = {}
+		print("[Room01] Saved player data applied and cleared")
+
 	# Register with GameManager
 	if GameManager.has_method("set_player"):
 		GameManager.set_player(player)
 
 	print("[Room01] Player spawned successfully at ", spawn_pos)
+
+
+func _apply_saved_player_data(player: Node, player_data: Dictionary) -> void:
+	"""Applies saved player stats from loaded game (COMMIT 016)"""
+	print("[Room01] Applying saved player data...")
+
+	# Apply HP
+	if player.has("current_hp"):
+		player.current_hp = player_data.get("current_hp", player.MAX_HP if player.has("MAX_HP") else 100)
+		print("[Room01] Set HP to: %d" % player.current_hp)
+
+	# Apply Mana
+	if player.has("current_mana"):
+		player.current_mana = player_data.get("current_mana", player.MAX_MANA if player.has("MAX_MANA") else 100)
+		print("[Room01] Set Mana to: %d" % player.current_mana)
+
+	# Apply facing direction
+	if player.has("facing_direction"):
+		player.facing_direction = player_data.get("facing_direction", 1)
+
+	print("[Room01] Player data applied successfully")

@@ -37,6 +37,11 @@ func _ready():
 		music_player.play()
 		print("[MainMenu] Music started")
 
+	# Prüfe ob Save-Datei existiert (COMMIT 016: SaveManager Integration)
+	var save_exists = SaveManager.has_save_file()
+	continue_button.visible = save_exists
+	print("[MainMenu] Save file exists: %s, Continue button visible: %s" % [save_exists, save_exists])
+
 	# Signals verbinden mit Debug-Prints
 	continue_button.pressed.connect(_on_continue_pressed)
 	continue_button.mouse_entered.connect(func(): print("[MainMenu DEBUG] Mouse entered: Continue Button"))
@@ -51,10 +56,12 @@ func _ready():
 	_setup_focus_neighbors()
 
 	# Initialen Fokus setzen
-	if continue_button.visible and not continue_button.disabled:
+	if save_exists and continue_button.visible:
 		continue_button.grab_focus()
+		print("[MainMenu] Focus set to Continue button")
 	else:
 		new_game_button.grab_focus()
+		print("[MainMenu] Focus set to New Game button")
 
 	print("[MainMenu] Initialization complete")
 
@@ -82,11 +89,46 @@ func _setup_focus_neighbors():
 # Button Callbacks
 func _on_continue_pressed():
 	print("[MainMenu] ========== CONTINUE BUTTON PRESSED ==========")
-	_start_game(TEST_ROOM_PATH)
+
+	# Fade out music first
+	if music_player and music_player.playing:
+		var tween = create_tween()
+		tween.tween_property(music_player, "volume_db", -80, MUSIC_FADE_DURATION)
+		tween.tween_callback(music_player.stop)
+		print("[MainMenu] Music fading out...")
+		await tween.finished
+
+	# Show HUD before loading
+	if has_node("/root/HUD"):
+		var hud_autoload = get_node("/root/HUD")
+		hud_autoload.visible = true
+		print("[MainMenu] HUD Autoload shown")
+
+	if HUDManager:
+		HUDManager.show_all_hud()
+		print("[MainMenu] HUDManager HUDs shown")
+
+	# Load saved game (COMMIT 016: SaveManager Integration)
+	# This will automatically transition to saved room via WorldManager
+	var success = SaveManager.load_current_game()
+
+	if not success:
+		print("[MainMenu] Failed to load save, falling back to test room")
+		get_tree().change_scene_to_file(TEST_ROOM_PATH)
+		return
+
+	print("[MainMenu] Save loaded successfully, WorldManager handling scene transition")
 
 
 func _on_new_game_pressed():
 	print("[MainMenu] ========== NEW GAME BUTTON PRESSED ==========")
+
+	# Create new save file (COMMIT 016: SaveManager Integration)
+	# This will overwrite existing save if one exists
+	SaveManager.create_new_save()
+	print("[MainMenu] New save created")
+
+	# Start new game
 	_start_game(WORLD_1_ENTRY_PATH)
 
 
