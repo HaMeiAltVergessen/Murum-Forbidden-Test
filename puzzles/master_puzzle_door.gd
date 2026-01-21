@@ -210,7 +210,7 @@ func _open_door() -> void:
 
 	# Enable teleport area if teleport enabled
 	if enable_teleport and teleport_area:
-		teleport_area.monitoring = true
+		teleport_area.set_deferred("monitoring", true)
 		print("[MasterPuzzleDoor] Teleport area activated!")
 
 # ============================================================================
@@ -241,42 +241,61 @@ func _teleport_to_scene(scene_path: String) -> void:
 	"""Teleports to target scene - preserves players like normal doors"""
 	print("[MasterPuzzleDoor] Loading scene: ", scene_path)
 
+	# Verify we have a valid tree
+	var tree = get_tree()
+	if not tree:
+		push_error("[MasterPuzzleDoor] No scene tree available!")
+		return
+
 	# Play door SFX
-	if AudioManager:
-		AudioManager.play_sfx("door_open")
+	if has_node("/root/AudioManager"):
+		var audio_mgr = get_node("/root/AudioManager")
+		if audio_mgr and audio_mgr.has_method("play_sfx"):
+			audio_mgr.play_sfx("door_open")
 
 	# Store spawn position in GameManager
-	if GameManager:
-		GameManager.player_spawn_position = spawn_position
+	if has_node("/root/GameManager"):
+		var game_mgr = get_node("/root/GameManager")
+		if game_mgr and "player_spawn_position" in game_mgr:
+			game_mgr.player_spawn_position = spawn_position
 
 	# Preserve P1 across scene transitions
-	if GameManager and GameManager.player and is_instance_valid(GameManager.player):
-		var player = GameManager.player
+	if has_node("/root/GameManager"):
+		var game_mgr = get_node("/root/GameManager")
+		if game_mgr and "player" in game_mgr:
+			var player = game_mgr.player
+			if player and is_instance_valid(player):
+				# Remove player from current scene (but don't free it)
+				var player_parent = player.get_parent()
+				if player_parent:
+					player_parent.remove_child(player)
 
-		# Remove player from current scene (but don't free it)
-		if player.get_parent():
-			player.get_parent().remove_child(player)
+				# Add player to root temporarily (persists across scene change)
+				tree.root.add_child(player)
 
-		# Add player to root temporarily (persists across scene change)
-		get_tree().root.add_child(player)
-
-		print("[MasterPuzzleDoor] P1 preserved for transition to ", scene_path)
+				print("[MasterPuzzleDoor] P1 preserved for transition to ", scene_path)
 
 	# Preserve P2 across scene transitions
-	if CoopManager and CoopManager.is_p2_active:
-		var p2 = CoopManager.get_p2_instance()
-		if p2 and is_instance_valid(p2):
-			# Remove P2 from current scene (but don't free it)
-			if p2.get_parent():
-				p2.get_parent().remove_child(p2)
+	if has_node("/root/CoopManager"):
+		var coop_mgr = get_node("/root/CoopManager")
+		if coop_mgr and "is_p2_active" in coop_mgr and coop_mgr.is_p2_active:
+			if coop_mgr.has_method("get_p2_instance"):
+				var p2 = coop_mgr.get_p2_instance()
+				if p2 and is_instance_valid(p2):
+					# Remove P2 from current scene (but don't free it)
+					var p2_parent = p2.get_parent()
+					if p2_parent:
+						p2_parent.remove_child(p2)
 
-			# Add P2 to root temporarily (persists across scene change)
-			get_tree().root.add_child(p2)
+					# Add P2 to root temporarily (persists across scene change)
+					tree.root.add_child(p2)
 
-			print("[MasterPuzzleDoor] P2 preserved for transition to ", scene_path)
+					print("[MasterPuzzleDoor] P2 preserved for transition to ", scene_path)
 
 	# Change scene
-	get_tree().change_scene_to_file(scene_path)
+	var error = tree.change_scene_to_file(scene_path)
+	if error != OK:
+		push_error("[MasterPuzzleDoor] Failed to load scene: %s (Error: %d)" % [scene_path, error])
 
 	# GameManager will handle repositioning via scene_changed signal
 
