@@ -49,6 +49,11 @@ func _ready() -> void:
 	# Add to group
 	add_to_group("puzzle_switches")
 
+	# Update ID label if it exists
+	var id_label = get_node_or_null("Sprite2D/IDLabel")
+	if id_label and id_label is Label:
+		id_label.text = str(switch_id)
+
 	print("[PuzzleSwitch] %s initialized (ID: %d)" % [name, switch_id])
 
 # ============================================================================
