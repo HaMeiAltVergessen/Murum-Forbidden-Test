@@ -17,6 +17,7 @@ class_name MasterPuzzleDoor
 @export_group("Teleport")
 @export var enable_teleport: bool = false  ## Enable teleportation when door opens
 @export_file("*.tscn") var target_scene: String = ""  ## Scene to load when player enters door
+@export var spawn_position: Vector2 = Vector2(300, 950)  ## Spawn position in target scene
 
 # ============================================================================
 # STATE
@@ -233,20 +234,51 @@ func _on_teleport_area_entered(body: Node2D) -> void:
 
 	print("[MasterPuzzleDoor] Player %s entering teleport to %s" % [body.name, target_scene])
 
-	# Load new scene
-	_teleport_to_scene(target_scene)
+	# Load new scene (deferred to avoid physics callback error)
+	call_deferred("_teleport_to_scene", target_scene)
 
 func _teleport_to_scene(scene_path: String) -> void:
-	"""Teleports to target scene"""
-	# Use SceneManager if available, otherwise direct load
-	if has_node("/root/SceneManager"):
-		var scene_manager = get_node("/root/SceneManager")
-		if scene_manager.has_method("change_scene"):
-			scene_manager.change_scene(scene_path)
-			return
+	"""Teleports to target scene - preserves players like normal doors"""
+	print("[MasterPuzzleDoor] Loading scene: ", scene_path)
 
-	# Fallback: Direct scene change
+	# Play door SFX
+	if AudioManager:
+		AudioManager.play_sfx("door_open")
+
+	# Store spawn position in GameManager
+	if GameManager:
+		GameManager.player_spawn_position = spawn_position
+
+	# Preserve P1 across scene transitions
+	if GameManager and GameManager.player and is_instance_valid(GameManager.player):
+		var player = GameManager.player
+
+		# Remove player from current scene (but don't free it)
+		if player.get_parent():
+			player.get_parent().remove_child(player)
+
+		# Add player to root temporarily (persists across scene change)
+		get_tree().root.add_child(player)
+
+		print("[MasterPuzzleDoor] P1 preserved for transition to ", scene_path)
+
+	# Preserve P2 across scene transitions
+	if CoopManager and CoopManager.is_p2_active:
+		var p2 = CoopManager.get_p2_instance()
+		if p2 and is_instance_valid(p2):
+			# Remove P2 from current scene (but don't free it)
+			if p2.get_parent():
+				p2.get_parent().remove_child(p2)
+
+			# Add P2 to root temporarily (persists across scene change)
+			get_tree().root.add_child(p2)
+
+			print("[MasterPuzzleDoor] P2 preserved for transition to ", scene_path)
+
+	# Change scene
 	get_tree().change_scene_to_file(scene_path)
+
+	# GameManager will handle repositioning via scene_changed signal
 
 # ============================================================================
 # VISUAL FEEDBACK
