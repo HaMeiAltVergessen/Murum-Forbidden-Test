@@ -90,6 +90,21 @@ func _create_fade_overlay() -> void:
 # ROOM TRANSITION
 # ============================================================================
 
+# ============================================================================
+# CHECKPOINT MANAGEMENT
+# ============================================================================
+
+func set_last_checkpoint(checkpoint_id: String, position: Vector2) -> void:
+	"""Sets the last activated checkpoint for respawning"""
+	last_checkpoint = checkpoint_id
+	last_checkpoint_position = position
+	print("[WorldManager] Last checkpoint set: %s at %s" % [checkpoint_id, position])
+
+
+# ============================================================================
+# ROOM TRANSITION
+# ============================================================================
+
 func transition_to_room(room_id: String, spawn_point: String = "default") -> void:
 	"""Transitions to a new room with fade effect"""
 
