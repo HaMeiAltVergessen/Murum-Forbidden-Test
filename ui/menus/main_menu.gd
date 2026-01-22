@@ -8,6 +8,7 @@ class_name MainMenu
 @onready var quit_button: Button = %QuitButton
 @onready var music_player: AudioStreamPlayer = $MusicPlayer
 @onready var main_menu_container: Control = %MenuContainer
+@onready var overwrite_dialog: ConfirmationDialog = %OverwriteDialog
 
 # Options Menu
 const OPTIONS_MENU_SCENE = preload("res://ui/menus/options_submenu.tscn")
@@ -69,6 +70,9 @@ func _ready():
 	# Initialize Options Menu (create but keep hidden)
 	_setup_options_menu()
 
+	# Setup Overwrite Dialog (COMMIT 017: Save Overwrite Warning)
+	_setup_overwrite_dialog()
+
 	# Setup Focus Navigation (Skip disabled buttons)
 	_setup_focus_neighbors()
 
@@ -115,6 +119,14 @@ func _setup_options_menu():
 	print("[MainMenu] Options menu initialized (hidden)")
 
 
+func _setup_overwrite_dialog():
+	"""Sets up the save overwrite confirmation dialog (COMMIT 017: Save Overwrite Warning)"""
+	if overwrite_dialog:
+		overwrite_dialog.confirmed.connect(_on_overwrite_confirmed)
+		overwrite_dialog.canceled.connect(_on_overwrite_canceled)
+		print("[MainMenu] Overwrite dialog initialized")
+
+
 # Button Callbacks
 func _on_continue_pressed():
 	print("[MainMenu] ========== CONTINUE BUTTON PRESSED ==========")
@@ -152,6 +164,31 @@ func _on_continue_pressed():
 func _on_new_game_pressed():
 	print("[MainMenu] ========== NEW GAME BUTTON PRESSED ==========")
 
+	# Check if save exists - show warning dialog (COMMIT 017: Save Overwrite Warning)
+	if SaveManager.has_save_file():
+		print("[MainMenu] Save exists, showing overwrite dialog")
+		overwrite_dialog.popup_centered()
+		return
+
+	# No save exists, start directly
+	_start_new_game()
+
+
+func _on_overwrite_confirmed():
+	"""Called when user confirms overwriting save (COMMIT 017: Save Overwrite Warning)"""
+	print("[MainMenu] User confirmed overwrite, starting new game")
+	_start_new_game()
+
+
+func _on_overwrite_canceled():
+	"""Called when user cancels overwriting save (COMMIT 017: Save Overwrite Warning)"""
+	print("[MainMenu] User canceled overwrite, returning to main menu")
+	# Just close dialog, stays in main menu
+	new_game_button.grab_focus()
+
+
+func _start_new_game():
+	"""Starts a new game (deletes old save if exists) (COMMIT 017: Save Overwrite Warning)"""
 	# Delete old save if exists (fresh start)
 	if SaveManager.has_save_file():
 		SaveManager.delete_current_save()

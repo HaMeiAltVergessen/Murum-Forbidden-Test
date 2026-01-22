@@ -315,11 +315,13 @@ func _spawn_player_at_point(spawn_point_name: String) -> void:
 	# Position player at spawn point
 	player.global_position = spawn_position
 
-	# If we have pending player data with position, use that instead
+	# If we have pending player data with position, use saved X but keep spawn Y
+	# This prevents player from spawning under floor or in air
 	if not pending_player_data.is_empty() and pending_player_data.has("position"):
 		var pos = pending_player_data["position"]
-		player.global_position = Vector2(pos["x"], pos["y"])
-		print("[WorldManager] Player spawned at saved position: %v" % player.global_position)
+		# Use saved X position but keep spawn point's Y position
+		player.global_position = Vector2(pos["x"], spawn_position.y)
+		print("[WorldManager] Player spawned at saved X (%.1f) with spawn Y (%.1f)" % [pos["x"], spawn_position.y])
 	else:
 		print("[WorldManager] Player spawned at spawn point: %v" % player.global_position)
 
