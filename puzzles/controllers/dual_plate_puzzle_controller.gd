@@ -82,6 +82,22 @@ func check_solution() -> bool:
 	return true
 
 # ============================================================================
+# LOAD HANDLING
+# ============================================================================
+
+func _on_load_solved() -> void:
+	"""Called when puzzle is already solved on load - removes all pressure plates"""
+	print("[DualPlatePuzzle] Already solved, removing pressure plates")
+
+	# Remove all connected pressure plates
+	for plate in connected_plates:
+		if is_instance_valid(plate):
+			plate.queue_free()
+
+	connected_plates.clear()
+	plate_states.clear()
+
+# ============================================================================
 # RESET
 # ============================================================================
 

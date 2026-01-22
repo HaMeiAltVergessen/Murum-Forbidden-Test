@@ -77,6 +77,26 @@ func _on_switch_activated(_switch_id: int, _activator: Node2D) -> void:
 		solve()
 
 # ============================================================================
+# LOAD HANDLING
+# ============================================================================
+
+func _on_load_solved() -> void:
+	"""Called when puzzle is already solved on load - removes switch and opens door permanently"""
+	print("[TimedDoorPuzzle] Already solved, opening door permanently and removing switch")
+
+	# Open door permanently
+	if timed_door and is_instance_valid(timed_door):
+		if timed_door.has_method("open_permanently"):
+			timed_door.open_permanently()
+		elif timed_door.has_method("open"):
+			timed_door.open()
+
+	# Remove the switch since puzzle is complete
+	if timed_switch and is_instance_valid(timed_switch):
+		timed_switch.queue_free()
+		timed_switch = null
+
+# ============================================================================
 # SOLUTION CHECK
 # ============================================================================
 
