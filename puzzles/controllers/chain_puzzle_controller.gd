@@ -148,6 +148,15 @@ func _remove_all_crystals() -> void:
 	connected_crystals.clear()
 
 # ============================================================================
+# LOAD HANDLING
+# ============================================================================
+
+func _on_load_solved() -> void:
+	"""Called when puzzle is already solved on load - removes all crystals"""
+	print("[ChainPuzzle] Already solved, removing crystals")
+	_remove_all_crystals()
+
+# ============================================================================
 # RESET
 # ============================================================================
 

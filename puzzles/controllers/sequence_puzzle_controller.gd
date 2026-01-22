@@ -169,6 +169,21 @@ func _show_failure_feedback() -> void:
 		switch.set_incorrect_visual()
 
 # ============================================================================
+# LOAD HANDLING
+# ============================================================================
+
+func _on_load_solved() -> void:
+	"""Called when puzzle is already solved on load - removes all switches"""
+	print("[SequencePuzzle] Already solved, removing switches")
+
+	# Remove all connected switches
+	for switch in connected_switches:
+		if is_instance_valid(switch):
+			switch.queue_free()
+
+	connected_switches.clear()
+
+# ============================================================================
 # HELPERS
 # ============================================================================
 

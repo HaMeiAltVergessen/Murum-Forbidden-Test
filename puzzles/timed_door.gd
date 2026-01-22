@@ -102,6 +102,18 @@ func open() -> void:
 	door_opened.emit()
 	print("[TimedDoor] %s opened (collision completely disabled)" % name)
 
+func open_permanently() -> void:
+	"""Opens the door permanently (for solved puzzles)"""
+	# Cancel any existing close timer
+	if close_timer:
+		close_timer.stop()
+		close_timer.queue_free()
+		close_timer = null
+
+	# Open without timer
+	open()
+	print("[TimedDoor] %s opened permanently (puzzle already solved)" % name)
+
 func close() -> void:
 	"""Closes the door"""
 	if not is_open:
