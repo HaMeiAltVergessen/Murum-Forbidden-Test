@@ -1,60 +1,18 @@
-[gd_scene load_steps=6 format=3 uid="uid://golem_001"]
+[gd_scene load_steps=3 format=3 uid="uid://golem_001"]
 
-[ext_resource type="Script" path="res://enemies/placeholder/golem.gd" id="1"]
-[ext_resource type="Script" path="res://enemies/placeholder/golem_ai.gd" id="2"]
-[ext_resource type="Script" path="res://components/hurtbox_component.gd" id="3"]
-[ext_resource type="Script" path="res://components/hitbox_component.gd" id="4"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Gegner/Golems_Free_Version/Golems_Free_Version/Golem_1/Blue/No_Swoosh_VFX/Golem_1_idle.png" id="5"]
+[ext_resource type="PackedScene" uid="uid://bhjxv6dwpb3ya" path="res://enemies/base_enemy.tscn" id="1_base"]
+[ext_resource type="Texture2D" path="res://Assets/Placeholder/Gegner/Golems_Free_Version/Golems_Free_Version/Golem_1/Blue/No_Swoosh_VFX/Golem_1_walk.png" id="2_sprite"]
 
-[sub_resource type="CapsuleShape2D" id="1"]
-radius = 32.0
-height = 96.0
+[node name="Golem" instance=ExtResource("1_base")]
+max_health = 100
+move_speed = 40.0
+attack_damage = 30
+attack_range = 70.0
+detection_range = 250.0
 
-[sub_resource type="RectangleShape2D" id="2"]
-size = Vector2(64, 96)
-
-[sub_resource type="RectangleShape2D" id="3"]
-size = Vector2(80, 96)
-
-[sub_resource type="CircleShape2D" id="4"]
-radius = 400.0
-
-[node name="Golem" type="CharacterBody2D" groups=["enemies", "golem"]]
-collision_layer = 8
-collision_mask = 7
-script = ExtResource("1")
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("5")
-scale = Vector2(1.5, 1.5)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("1")
-
-[node name="HurtboxComponent" type="Area2D" parent="."]
-collision_layer = 1024
-collision_mask = 48
-script = ExtResource("3")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]
-shape = SubResource("2")
-
-[node name="HitboxComponent" type="Area2D" parent="."]
-collision_layer = 128
-collision_mask = 1030
-monitoring = false
-script = ExtResource("4")
-damage = 30
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
-shape = SubResource("3")
-
-[node name="DetectionArea" type="Area2D" parent="."]
-collision_layer = 0
-collision_mask = 6
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
-shape = SubResource("4")
-
-[node name="GolemAI" type="Node" parent="."]
-script = ExtResource("2")
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2_sprite")
+hframes = 12
+vframes = 1
+frame = 0
+scale = Vector2(2.0, 2.0)
