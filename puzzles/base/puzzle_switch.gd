@@ -42,6 +42,18 @@ func _ready() -> void:
 	monitoring = true
 	monitorable = true
 
+	# COMMIT 018: Set collision mask for both P1 and P2 (bodies + projectiles)
+	collision_layer = 0
+	set_collision_layer_value(8, true)  # Interactables (Layer 8)
+
+	collision_mask = 0
+	set_collision_mask_value(2, true)   # P1 Body (Layer 2)
+	set_collision_mask_value(3, true)   # P2 Body (Layer 3)
+	set_collision_mask_value(5, true)   # P1 Projectiles (Layer 5)
+	set_collision_mask_value(6, true)   # P2 Projectiles (Layer 6)
+
+	print("[PuzzleSwitch] Collision setup - Layer: %d, Mask: %d" % [collision_layer, collision_mask])
+
 	# Connect signals
 	body_entered.connect(_on_body_entered)
 	area_entered.connect(_on_area_entered)
