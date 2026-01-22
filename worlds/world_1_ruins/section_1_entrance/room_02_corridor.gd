@@ -45,7 +45,7 @@ func _ready() -> void:
 	else:
 		_setup_room()
 
-	print("[Room02] Initialized (enemies: %d, cleared: %s)" % [
+	print("[Room02_Corridor] Initialized (enemies: %d, cleared: %s)" % [
 		initial_enemy_count,
 		is_cleared
 	])
@@ -99,7 +99,7 @@ func _on_enemy_killed(enemy: Node, _killer: Node) -> void:
 	# Check remaining enemies
 	var remaining = _get_enemy_count()
 
-	print("[Room02] Enemy killed, remaining: %d" % remaining)
+	print("[Room02_Corridor] Enemy killed, remaining: %d" % remaining)
 
 	if remaining <= 0:
 		_on_room_cleared()
@@ -124,7 +124,7 @@ func _on_room_cleared() -> void:
 
 	is_cleared = true
 
-	print("[Room02] Room cleared!")
+	print("[Room02_Corridor] Room cleared!")
 
 	# Mark cleared in WorldManager
 	var full_room_id = "%s/%s" % [WORLD_ID, ROOM_ID]
@@ -157,13 +157,31 @@ func _activate() -> void:
 	if GameManager.has_method("register_room"):
 		GameManager.register_room(self)
 
+	# Set current room in WorldManager (COMMIT 018)
+	if WorldManager:
+		WorldManager.current_world = WORLD_ID
+		WorldManager.current_room = ROOM_ID
+
 	# If player was transferred from another scene, ensure proper setup
 	if GameManager.player and is_instance_valid(GameManager.player):
 		var player = GameManager.player
 
+		# Move player from root to this scene (if coming from door transition)
+		if player.get_parent() == get_tree().root:
+			get_tree().root.remove_child(player)
+			add_child(player)
+			print("[Room02_Corridor] Player moved from root to scene")
+
+			# Position player at door spawn position (COMMIT 018: Fix door spawning)
+			if GameManager.player_spawn_position != Vector2.ZERO:
+				player.global_position = GameManager.player_spawn_position
+				print("[Room02_Corridor] Player spawned at door position: ", GameManager.player_spawn_position)
+				# Reset spawn position
+				GameManager.player_spawn_position = Vector2.ZERO
+
 		# Ensure player is in this scene
 		if player.get_parent() == self:
-			print("[Room02] Player found in scene, ensuring correct z_index and position")
+			print("[Room02_Corridor] Player setup in scene")
 			player.z_index = 100
 			player.z_as_relative = false
 
@@ -175,4 +193,4 @@ func _activate() -> void:
 			var player_camera = player.get_node_or_null("PlayerCamera")
 			if player_camera and player_camera.has_method("clear_room_bounds"):
 				player_camera.clear_room_bounds()
-				print("[Room02] Camera limits cleared")
+				print("[Room02_Corridor] Camera limits cleared")
