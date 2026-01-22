@@ -9,7 +9,7 @@ class_name ChainPuzzleController
 # ============================================================================
 
 @export var required_crystals: int = 4
-@export var check_delay: float = 0.3  ## Delay before checking if all crystals destroyed
+@export var check_delay: float = 3.0  ## Delay before checking if all crystals destroyed (COMMIT 018: Increased for P2 compatibility - P2 needs time to hit all crystals sequentially)
 
 # ============================================================================
 # STATE

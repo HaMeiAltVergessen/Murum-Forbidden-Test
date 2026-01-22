@@ -39,6 +39,16 @@ func _ready() -> void:
 	monitoring = true
 	monitorable = true
 
+	# COMMIT 018: Set collision mask for both P1 (Layer 2) and P2 (Layer 3)
+	collision_layer = 0
+	set_collision_layer_value(8, true)  # Interactables (Layer 8)
+
+	collision_mask = 0
+	set_collision_mask_value(2, true)   # P1 Body (Layer 2)
+	set_collision_mask_value(3, true)   # P2 Body (Layer 3)
+
+	print("[PressurePlate] Collision setup - Layer: %d, Mask: %d" % [collision_layer, collision_mask])
+
 	# Connect signals
 	body_entered.connect(_on_body_entered)
 
