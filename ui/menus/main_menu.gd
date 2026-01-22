@@ -37,6 +37,12 @@ func _ready():
 		HUDManager.hide_all_hud()
 		print("[MainMenu] HUDManager HUDs hidden (including abilities)")
 
+	# Verstecke PauseMenu im Hauptmenü (COMMIT 017: Pause Menu)
+	if has_node("/root/PauseMenu"):
+		var pause_menu = get_node("/root/PauseMenu")
+		pause_menu.visible = false
+		print("[MainMenu] PauseMenu hidden")
+
 	# Starte Musik
 	if music_player:
 		music_player.play()

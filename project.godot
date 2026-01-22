@@ -32,6 +32,7 @@ CoopManager="*res://core/autoloads/coop_manager.gd"
 HUDManager="*res://core/autoloads/hud_manager.gd"
 InventoryUI="*res://ui/inventory/inventory.tscn"
 HUD="*res://ui/hud.tscn"
+PauseMenu="*res://ui/menus/pause_menu.tscn"
 
 [display]
 
