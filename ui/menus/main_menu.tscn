@@ -127,3 +127,13 @@ text = "Verlassen"
 stream = ExtResource("3_music")
 volume_db = -6.0
 autoplay = false
+
+[node name="OverwriteDialog" type="ConfirmationDialog" parent="."]
+unique_name_in_owner = true
+title = "Spielstand überschreiben?"
+initial_position = 2
+size = Vector2i(500, 150)
+ok_button_text = "Ja"
+cancel_button_text = "Nein"
+dialog_text = "Alter Spielstand wird überschrieben.
+Soll das so sein?"
