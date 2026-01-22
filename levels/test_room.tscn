@@ -168,7 +168,7 @@ connected_door_ids = Array[String](["Door"])
 
 [node name="Door" parent="Environment" instance=ExtResource("6_door_scene")]
 position = Vector2(1590, 888)
-target_scene = "res://worlds/world_1_ruins/rooms/room_01_entry.tscn"
+target_scene = "res://worlds/world_1_ruins/section_1_entrance/room_01_entry.tscn"
 spawn_position = Vector2(200, 600)
 
 [node name="Pickups" type="Node2D" parent="Environment"]

@@ -16,7 +16,7 @@ var options_menu_instance: Control = null
 
 # Constants
 const TEST_ROOM_PATH = "res://levels/test_room.tscn"
-const WORLD_1_ENTRY_PATH = "res://worlds/world_1_ruins/rooms/room_01_entry.tscn"
+const WORLD_1_ENTRY_PATH = "res://worlds/world_1_ruins/section_1_entrance/room_01_entry.tscn"  # UPDATED for section-based structure - COMMIT 018
 const MUSIC_FADE_DURATION = 1.0  # Sekunden
 
 

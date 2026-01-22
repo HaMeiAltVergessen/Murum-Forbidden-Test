@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://b3b0aqm41nxcv"]
 
-[ext_resource type="Script" uid="uid://38pu77ayck84" path="res://worlds/world_1_ruins/rooms/room_05_boss_arena.gd" id="1"]
+[ext_resource type="Script" uid="uid://38pu77ayck84" path="res://worlds/world_1_ruins/section_4_tempel/room_15_boss_urgathon.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://d15iwhwrydlul" path="res://Assets/AIAssets/08da38bd-1f75-4691-9f5e-2be8815ccd2b.jpg" id="2_s1gk5"]
 [ext_resource type="PackedScene" path="res://camera/coop_camera.tscn" id="4_coop_camera"]
 [ext_resource type="AudioStream" uid="uid://doiktxoxnyirb" path="res://Music/Lythrun Boss Theme 4 (1).mp3" id="5_s1gk5"]

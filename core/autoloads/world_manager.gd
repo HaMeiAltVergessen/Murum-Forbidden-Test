@@ -9,6 +9,10 @@ extends Node
 
 const ROOM_PATH: String = "res://levels/%s.tscn"
 
+# Section-based room path format (NEW - COMMIT 018)
+# Format: "worlds/{world_id}/{section_id}/{room_id}"
+# Example: "worlds/world_1_ruins/section_1_entrance/room_01_entry"
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -228,11 +232,22 @@ func _load_scene(scene_path: String) -> void:
 	await get_tree().process_frame
 
 func _get_room_path(room_id: String) -> String:
-	"""Returns scene path for room"""
-	# If room_id already contains path separators, it's a full path
+	"""Returns scene path for room
+
+	Supports three formats:
+	1. Full path: 'worlds/world_1_ruins/section_1_entrance/room_01_entry'
+	   → 'res://worlds/world_1_ruins/section_1_entrance/room_01_entry.tscn'
+	2. Legacy levels path: 'test_room'
+	   → 'res://levels/test_room.tscn'
+	3. Old rooms path: 'world_1_ruins/rooms/room_01_entry' (backwards compat)
+	   → 'res://worlds/world_1_ruins/rooms/room_01_entry.tscn'
+	"""
+
+	# If room_id contains path separators, it's a full/relative path
 	if "/" in room_id:
 		return "res://%s.tscn" % room_id
 	else:
+		# Simple name - use legacy levels format
 		return ROOM_PATH % room_id
 
 # ============================================================================

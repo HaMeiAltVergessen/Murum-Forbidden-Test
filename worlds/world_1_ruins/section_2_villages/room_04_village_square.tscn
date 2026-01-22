@@ -1,6 +1,6 @@
 [gd_scene load_steps=12 format=3 uid="uid://room04hub"]
 
-[ext_resource type="Script" uid="uid://bfmlvetavsi4m" path="res://worlds/world_1_ruins/rooms/room_04_hub.gd" id="1_room04"]
+[ext_resource type="Script" uid="uid://bfmlvetavsi4m" path="res://worlds/world_1_ruins/section_2_villages/room_04_village_square.gd" id="1_room04"]
 [ext_resource type="PackedScene" uid="uid://c2nx5q8v4kmpr" path="res://environment/checkpoint.tscn" id="2_checkpoint"]
 [ext_resource type="Texture2D" uid="uid://dftu0634otf66" path="res://Assets/AIAssets/c7df7238-2e2f-4627-a438-f87cf6ed1b3c.jpg" id="2_lwg8g"]
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="3_door"]
@@ -73,7 +73,7 @@ shape = SubResource("RectangleShape2D_deathbox")
 
 [node name="DoorToArena" parent="Doors" instance=ExtResource("3_door")]
 position = Vector2(100, 760)
-target_scene = "res://worlds/world_1_ruins/rooms/room_03_arena.tscn"
+target_scene = "res://worlds/world_1_ruins/section_1_entrance/room_03_villageEntrance.tscn"
 spawn_position = Vector2(1400, 750)
 
 [node name="DoorLabel" type="Label" parent="Doors/DoorToArena"]
@@ -88,7 +88,7 @@ horizontal_alignment = 1
 
 [node name="DoorToBoss" parent="Doors" instance=ExtResource("3_door")]
 position = Vector2(981, 750)
-target_scene = "res://worlds/world_1_ruins/rooms/Welt01_Tempel_Innen.tscn"
+target_scene = "res://worlds/world_1_ruins/section_4_tempel/room_12_grand_hall.tscn"
 spawn_position = Vector2(240, 60)
 
 [node name="DoorLabel" type="Label" parent="Doors/DoorToBoss"]

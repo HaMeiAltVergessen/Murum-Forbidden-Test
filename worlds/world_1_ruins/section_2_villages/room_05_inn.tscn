@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=3 uid="uid://bjnktf7hgewct"]
 
-[ext_resource type="Script" uid="uid://b2r2vfh85un7r" path="res://worlds/world_1_ruins/rooms/room_01_entry.gd" id="1_kxuel"]
+[ext_resource type="Script" uid="uid://b2r2vfh85un7r" path="res://worlds/world_1_ruins/section_1_entrance/room_01_entry.gd" id="1_kxuel"]
 [ext_resource type="Texture2D" uid="uid://c3sr4d8hovp4k" path="res://Assets/AIAssets/dorf.jpg" id="2_pccw2"]
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="5_43634"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="6_5mjr6"]
@@ -83,17 +83,17 @@ facing_direction = -1
 
 [node name="DoorToTestRoom" parent="Doors" instance=ExtResource("7_nqna5")]
 position = Vector2(58, 656)
-target_scene = "res://worlds/world_1_ruins/rooms/World01_PreDorf.tscn"
+target_scene = "res://worlds/world_1_ruins/section_3_tempel_outside/room_09_temple_path.tscn"
 spawn_position = Vector2(1600, 900)
 
 [node name="DoorToRoom02" parent="Doors" instance=ExtResource("7_nqna5")]
 position = Vector2(1484, 662)
-target_scene = "res://worlds/world_1_ruins/rooms/room_02_corridor.tscn"
+target_scene = "res://worlds/world_1_ruins/section_1_entrance/room_02_corridor.tscn"
 spawn_position = Vector2(200, 640)
 
 [node name="DoorToRoom03" parent="Doors" instance=ExtResource("7_nqna5")]
 position = Vector2(1170, 555)
-target_scene = "res://worlds/world_1_ruins/rooms/Welt01_Dorfhause_Innen.tscn"
+target_scene = "res://worlds/world_1_ruins/section_2_villages/room_05_innhause_Innen.tscn"
 spawn_position = Vector2(200, 640)
 
 [node name="Environment" type="Node2D" parent="."]
