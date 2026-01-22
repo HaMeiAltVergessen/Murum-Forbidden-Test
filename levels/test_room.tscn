@@ -5,6 +5,14 @@
 [ext_resource type="PackedScene" uid="uid://b1k5wfkqxc8yx" path="res://player/murum.tscn" id="2_murum_scene"]
 [ext_resource type="PackedScene" uid="uid://bx7k2qn8nav4p" path="res://enemies/world_1_ruins/geist.tscn" id="3_geist_scene"]
 [ext_resource type="PackedScene" uid="uid://dkc8y7x0ij6nw" path="res://enemies/untote.tscn" id="3_untote_scene"]
+[ext_resource type="PackedScene" uid="uid://bringer_of_death_001" path="res://enemies/placeholder/bringer_of_death.tscn" id="3_bringer"]
+[ext_resource type="PackedScene" uid="uid://nightborne_001" path="res://enemies/placeholder/nightborne.tscn" id="3_nightborne"]
+[ext_resource type="PackedScene" uid="uid://fire_worm_001" path="res://enemies/placeholder/fire_worm.tscn" id="3_fireworm"]
+[ext_resource type="PackedScene" uid="uid://frost_guardian_001" path="res://enemies/placeholder/frost_guardian.tscn" id="3_frostguard"]
+[ext_resource type="PackedScene" uid="uid://golem_001" path="res://enemies/placeholder/golem.tscn" id="3_golem"]
+[ext_resource type="PackedScene" uid="uid://monster_creature_001" path="res://enemies/placeholder/monster_creature.tscn" id="3_monster"]
+[ext_resource type="PackedScene" uid="uid://dark_fantasy_001" path="res://enemies/placeholder/dark_fantasy.tscn" id="3_darkfantasy"]
+[ext_resource type="PackedScene" uid="uid://cthulu_001" path="res://enemies/placeholder/cthulu.tscn" id="3_cthulu"]
 [ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="4_spike_trap_scene"]
 [ext_resource type="PackedScene" uid="uid://cakx4m2v7pqrs" path="res://environment/interactables/lever.tscn" id="5_lever_scene"]
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="6_door_scene"]
@@ -153,6 +161,30 @@ position = Vector2(1500, 950)
 
 [node name="Geist" parent="Enemies" instance=ExtResource("3_geist_scene")]
 position = Vector2(1400, 950)
+
+[node name="BringerOfDeath" parent="Enemies" instance=ExtResource("3_bringer")]
+position = Vector2(600, 700)
+
+[node name="Nightborne" parent="Enemies" instance=ExtResource("3_nightborne")]
+position = Vector2(800, 700)
+
+[node name="FireWorm" parent="Enemies" instance=ExtResource("3_fireworm")]
+position = Vector2(1000, 700)
+
+[node name="FrostGuardian" parent="Enemies" instance=ExtResource("3_frostguard")]
+position = Vector2(1200, 700)
+
+[node name="Golem" parent="Enemies" instance=ExtResource("3_golem")]
+position = Vector2(400, 500)
+
+[node name="MonsterCreature" parent="Enemies" instance=ExtResource("3_monster")]
+position = Vector2(700, 500)
+
+[node name="DarkFantasy" parent="Enemies" instance=ExtResource("3_darkfantasy")]
+position = Vector2(1000, 500)
+
+[node name="Cthulu" parent="Enemies" instance=ExtResource("3_cthulu")]
+position = Vector2(1400, 500)
 
 [node name="Environment" type="Node2D" parent="."]
 
