@@ -31,7 +31,10 @@ func _ready() -> void:
 	# Connect to arena cleared signal
 	GameManager.arena_cleared.connect(_on_arena_cleared)
 
-	print("[Room04] Hub initialized")
+	print("[Room04_VillageSquare] Hub initialized")
+
+	# Activate room (setup player if transitioning from door - COMMIT 018)
+	call_deferred("_activate")
 
 func _setup_checkpoint() -> void:
 	"""Sets up checkpoint (bonfire)"""
@@ -49,7 +52,7 @@ func _setup_checkpoint() -> void:
 		checkpoint.is_activated = true
 		checkpoint._update_visual()
 
-	print("[Room04] Checkpoint configured")
+	print("[Room04_VillageSquare] Checkpoint configured")
 
 func _on_checkpoint_activated() -> void:
 	"""Called when checkpoint is activated"""
@@ -57,13 +60,13 @@ func _on_checkpoint_activated() -> void:
 	# Checkpoint already saved via WorldManager.set_last_checkpoint()
 	# Manual save would require slot_index parameter
 
-	print("[Room04] Checkpoint activated")
+	print("[Room04_VillageSquare] Checkpoint activated")
 
 func _setup_merchant() -> void:
 	"""Sets up merchant NPC"""
 
 	if not merchant:
-		print("[Room04] No merchant in scene")
+		print("[Room04_VillageSquare] No merchant in scene")
 		return
 
 	# Check if arena is cleared
@@ -71,7 +74,7 @@ func _setup_merchant() -> void:
 		_show_merchant()
 	else:
 		merchant.visible = false
-		print("[Room04] Merchant hidden (arena not cleared)")
+		print("[Room04_VillageSquare] Merchant hidden (arena not cleared)")
 
 func _show_merchant() -> void:
 	"""Shows and activates merchant"""
@@ -91,7 +94,7 @@ func _show_merchant() -> void:
 	# Notification
 	EventBus.show_notification.emit("Merchant Available!", 3.0)
 
-	print("[Room04] Merchant unlocked")
+	print("[Room04_VillageSquare] Merchant unlocked")
 
 func _on_arena_cleared() -> void:
 	"""Called when arena is cleared (during this session)"""
@@ -103,7 +106,7 @@ func _setup_boss_door() -> void:
 	"""Sets up boss door (locked for now)"""
 
 	if not door_to_boss:
-		print("[Room04] No boss door in scene")
+		print("[Room04_VillageSquare] No boss door in scene")
 		return
 
 	# Check if boss door should be unlocked (testing: after arena clear)
@@ -124,7 +127,7 @@ func _lock_boss_door() -> void:
 		# Fallback: disable interaction
 		door_to_boss.monitoring = false
 
-	print("[Room04] Boss door locked")
+	print("[Room04_VillageSquare] Boss door locked")
 
 func _unlock_boss_door() -> void:
 	"""Unlocks the boss door (for testing purposes)"""
@@ -150,7 +153,7 @@ func _unlock_boss_door() -> void:
 	# Notification
 	EventBus.show_notification.emit("Boss Arena Unlocked!", 3.0)
 
-	print("[Room04] Boss door unlocked")
+	print("[Room04_VillageSquare] Boss door unlocked")
 
 func _spawn_door_unlock_vfx() -> void:
 	"""Spawns VFX when door unlocks"""
@@ -161,7 +164,7 @@ func _spawn_door_unlock_vfx() -> void:
 	# Check if VFX scene exists
 	var vfx_path = "res://vfx/boss/boss_door_unlock.tscn"
 	if not ResourceLoader.exists(vfx_path):
-		print("[Room04] Boss door unlock VFX not found")
+		print("[Room04_VillageSquare] Boss door unlock VFX not found")
 		return
 
 	var vfx_scene = load(vfx_path)
@@ -173,3 +176,49 @@ func _spawn_door_unlock_vfx() -> void:
 		vfx.emit()
 	elif vfx is GPUParticles2D:
 		vfx.emitting = true
+
+# ============================================================================
+# ROOM ACTIVATION (COMMIT 018)
+# ============================================================================
+
+func _activate() -> void:
+	"""Activates the room and sets up player if transitioning from door"""
+	# Register room with GameManager
+	if GameManager.has_method("register_room"):
+		GameManager.register_room(self)
+
+	# Set current room in WorldManager
+	if WorldManager:
+		WorldManager.current_world = WORLD_ID
+		WorldManager.current_room = ROOM_ID
+
+	# If player was transferred from door, ensure proper setup
+	if GameManager.player and is_instance_valid(GameManager.player):
+		var player = GameManager.player
+
+		# Move player from root to this scene (if coming from door transition)
+		if player.get_parent() == get_tree().root:
+			get_tree().root.remove_child(player)
+			add_child(player)
+			print("[Room04_VillageSquare] Player moved from root to scene")
+
+			# Position player at door spawn position
+			if GameManager.player_spawn_position != Vector2.ZERO:
+				player.global_position = GameManager.player_spawn_position
+				print("[Room04_VillageSquare] Player spawned at door position: ", GameManager.player_spawn_position)
+				# Reset spawn position
+				GameManager.player_spawn_position = Vector2.ZERO
+
+		# Ensure player setup
+		if player.get_parent() == self:
+			player.z_index = 100
+			player.z_as_relative = false
+
+			# Ensure player is on ground
+			if player is CharacterBody2D:
+				player.velocity = Vector2.ZERO
+
+			# Clear camera bounds
+			var player_camera = player.get_node_or_null("PlayerCamera")
+			if player_camera and player_camera.has_method("clear_room_bounds"):
+				player_camera.clear_room_bounds()

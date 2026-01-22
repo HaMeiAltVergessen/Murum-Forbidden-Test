@@ -50,7 +50,10 @@ func _ready() -> void:
 	else:
 		_setup_arena()
 
-	print("[Room03] Arena initialized (cleared: %s)" % is_cleared)
+	print("[Room03_VillageEntrance] Arena initialized (cleared: %s)" % is_cleared)
+
+	# Activate room (setup player if transitioning from door - COMMIT 018)
+	call_deferred("_activate")
 
 func _setup_doors() -> void:
 	"""Configures door properties"""
@@ -143,8 +146,8 @@ func _configure_waves() -> void:
 	wave3.add_enemy(GEIST_SCENE, geist_pos)
 	wave_spawner.add_wave(wave3)
 
-	print("[Room03] Configured 3 waves")
-	print("[Room03] Wave 3 positions: ", wave_spawn_1.global_position, ", ", wave_spawn_2.global_position, ", ", wave_spawn_3.global_position, ", Geist: ", geist_pos)
+	print("[Room03_VillageEntrance] Configured 3 waves")
+	print("[Room03_VillageEntrance] Wave 3 positions: ", wave_spawn_1.global_position, ", ", wave_spawn_2.global_position, ", ", wave_spawn_3.global_position, ", Geist: ", geist_pos)
 
 # ============================================================================
 # ARENA COMPLETION
@@ -153,7 +156,7 @@ func _configure_waves() -> void:
 func _on_all_waves_completed() -> void:
 	"""Called when all waves are cleared"""
 
-	print("[Room03] Arena completed!")
+	print("[Room03_VillageEntrance] Arena completed!")
 
 	# Mark cleared
 	var full_room_id = "%s/%s" % [WORLD_ID, ROOM_ID]
@@ -179,7 +182,7 @@ func _unlock_exit_door() -> void:
 	"""Unlocks exit door to Room 04 (Hub)"""
 
 	if not door_to_room_04:
-		push_warning("[Room03] Exit door not found!")
+		push_warning("[Room03_VillageEntrance] Exit door not found!")
 		return
 
 	# Make door visible/active (if it was hidden)
@@ -197,7 +200,7 @@ func _unlock_exit_door() -> void:
 	if AudioManager:
 		AudioManager.play_sfx("ui/door_unlock", 0.0)
 
-	print("[Room03] Exit door to hub unlocked")
+	print("[Room03_VillageEntrance] Exit door to hub unlocked")
 
 func _activate_checkpoint() -> void:
 	"""Activates checkpoint after arena clear"""
@@ -228,3 +231,49 @@ func _play_arena_complete_effects() -> void:
 	# Audio
 	if AudioManager:
 		AudioManager.play_sfx("ui/arena_complete", 0.0)
+
+# ============================================================================
+# ROOM ACTIVATION (COMMIT 018)
+# ============================================================================
+
+func _activate() -> void:
+	"""Activates the room and sets up player if transitioning from door"""
+	# Register room with GameManager
+	if GameManager.has_method("register_room"):
+		GameManager.register_room(self)
+
+	# Set current room in WorldManager
+	if WorldManager:
+		WorldManager.current_world = WORLD_ID
+		WorldManager.current_room = ROOM_ID
+
+	# If player was transferred from door, ensure proper setup
+	if GameManager.player and is_instance_valid(GameManager.player):
+		var player = GameManager.player
+
+		# Move player from root to this scene (if coming from door transition)
+		if player.get_parent() == get_tree().root:
+			get_tree().root.remove_child(player)
+			add_child(player)
+			print("[Room03_VillageEntrance] Player moved from root to scene")
+
+			# Position player at door spawn position
+			if GameManager.player_spawn_position != Vector2.ZERO:
+				player.global_position = GameManager.player_spawn_position
+				print("[Room03_VillageEntrance] Player spawned at door position: ", GameManager.player_spawn_position)
+				# Reset spawn position
+				GameManager.player_spawn_position = Vector2.ZERO
+
+		# Ensure player setup
+		if player.get_parent() == self:
+			player.z_index = 100
+			player.z_as_relative = false
+
+			# Ensure player is on ground
+			if player is CharacterBody2D:
+				player.velocity = Vector2.ZERO
+
+			# Clear camera bounds
+			var player_camera = player.get_node_or_null("PlayerCamera")
+			if player_camera and player_camera.has_method("clear_room_bounds"):
+				player_camera.clear_room_bounds()

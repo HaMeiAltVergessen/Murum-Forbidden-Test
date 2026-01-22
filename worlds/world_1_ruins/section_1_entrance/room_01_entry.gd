@@ -20,13 +20,17 @@ const WORLD_ID: String = "world_1_ruins"
 # INITIALIZATION
 # ============================================================================
 
-func _ready() -> void:
-	# Door is configured directly in the scene file via target_scene export
-	print("[Room01] Initialized")
+# Track if room content has been spawned (prevents duplicate spawns)
+var has_spawned_content: bool = false
 
-	# Spawn checkpoint and enemies (COMMIT 016: Auto-Save)
-	_spawn_checkpoint()
-	_spawn_enemies()
+func _ready() -> void:
+	print("[Room01_Entry] Initialized")
+
+	# Only spawn checkpoint and enemies ONCE (COMMIT 018: Prevent duplicate spawns)
+	if not has_spawned_content:
+		_spawn_checkpoint()
+		_spawn_enemies()
+		has_spawned_content = true
 
 	# Setup puzzle persistence (COMMIT 015: Puzzle System)
 	_setup_puzzle_persistence()
@@ -45,11 +49,11 @@ func _activate() -> void:
 	if WorldManager:
 		WorldManager.current_world = WORLD_ID
 		WorldManager.current_room = ROOM_ID
-		print("[Room01] WorldManager room set: %s/%s" % [WORLD_ID, ROOM_ID])
+		print("[Room01_Entry] WorldManager room set: %s/%s" % [WORLD_ID, ROOM_ID])
 
 	# Check if player exists, if not spawn a new one (e.g., from main menu)
 	if not GameManager.player or not is_instance_valid(GameManager.player):
-		print("[Room01] No player found, spawning new player")
+		print("[Room01_Entry] No player found, spawning new player")
 		_spawn_new_player()
 		return
 
@@ -57,9 +61,22 @@ func _activate() -> void:
 	if GameManager.player and is_instance_valid(GameManager.player):
 		var player = GameManager.player
 
-		# Ensure player is in this scene
+		# Move player from root to this scene (if coming from door transition)
+		if player.get_parent() == get_tree().root:
+			get_tree().root.remove_child(player)
+			add_child(player)
+			print("[Room01_Entry] Player moved from root to scene")
+
+			# Position player at door spawn position (COMMIT 018: Fix door spawning)
+			if GameManager.player_spawn_position != Vector2.ZERO:
+				player.global_position = GameManager.player_spawn_position
+				print("[Room01_Entry] Player spawned at door position: ", GameManager.player_spawn_position)
+				# Reset spawn position
+				GameManager.player_spawn_position = Vector2.ZERO
+
+		# Ensure player setup
 		if player.get_parent() == self:
-			print("[Room01] Player found in scene, ensuring correct z_index and position")
+			print("[Room01_Entry] Player setup in scene")
 			player.z_index = 100
 			player.z_as_relative = false
 
@@ -71,7 +88,7 @@ func _activate() -> void:
 			var player_camera = player.get_node_or_null("PlayerCamera")
 			if player_camera and player_camera.has_method("clear_room_bounds"):
 				player_camera.clear_room_bounds()
-				print("[Room01] Camera limits cleared")
+				print("[Room01_Entry] Camera limits cleared")
 
 
 func _spawn_new_player() -> void:
@@ -79,7 +96,7 @@ func _spawn_new_player() -> void:
 	# Load player scene
 	var player_scene = preload("res://player/murum.tscn")
 	if not player_scene:
-		print("[Room01] ERROR: Could not load player scene")
+		print("[Room01_Entry] ERROR: Could not load player scene")
 		return
 
 	# Instantiate player
@@ -88,29 +105,42 @@ func _spawn_new_player() -> void:
 	# Check if we have pending player data from save load (COMMIT 016)
 	var has_save_data = SaveManager.pending_player_data and not SaveManager.pending_player_data.is_empty()
 
-	# Get spawn position
+	# Get spawn position (COMMIT 018: Priority - Checkpoint > Door > Default)
 	var spawn_pos = Vector2(50, 360)
 
 	if has_save_data:
-		# Loading from save - use saved position (which is checkpoint position)
-		var pos_data = SaveManager.pending_player_data.get("position", {})
-		if pos_data.has("x") and pos_data.has("y"):
-			spawn_pos = Vector2(pos_data.get("x"), pos_data.get("y"))
-			print("[Room01] Loading from save - using saved checkpoint position: ", spawn_pos)
+		# PRIORITY 1: Loading from save - ALWAYS use WorldManager.last_checkpoint_position
+		# (because SaveManager saves checkpoint position, not current position)
+		if WorldManager and WorldManager.last_checkpoint_position != Vector2.ZERO:
+			spawn_pos = WorldManager.last_checkpoint_position
+			print("[Room01_Entry] Loading from save - using WorldManager checkpoint position: ", spawn_pos)
 		else:
-			# Fallback to default spawn point
+			# Fallback: Try to get position from save data
+			var pos_data = SaveManager.pending_player_data.get("position", {})
+			if pos_data.has("x") and pos_data.has("y"):
+				spawn_pos = Vector2(pos_data.get("x"), pos_data.get("y"))
+				print("[Room01_Entry] Loading from save - using saved checkpoint position: ", spawn_pos)
+			else:
+				# Last fallback: default spawn point
+				var default_spawn = spawn_points.get_node_or_null("Default")
+				if default_spawn:
+					spawn_pos = default_spawn.global_position
+					print("[Room01_Entry] No saved position, using default spawn point: ", spawn_pos)
+	else:
+		# PRIORITY 2: Check for door spawn position (from GameManager)
+		if GameManager.player_spawn_position != Vector2.ZERO:
+			spawn_pos = GameManager.player_spawn_position
+			print("[Room01_Entry] Using door spawn position: ", spawn_pos)
+			# Reset spawn position after using
+			GameManager.player_spawn_position = Vector2.ZERO
+		else:
+			# PRIORITY 3: Normal spawn - use default spawn point
 			var default_spawn = spawn_points.get_node_or_null("Default")
 			if default_spawn:
 				spawn_pos = default_spawn.global_position
-				print("[Room01] No saved position, using default spawn point: ", spawn_pos)
-	else:
-		# Normal spawn - use default spawn point
-		var default_spawn = spawn_points.get_node_or_null("Default")
-		if default_spawn:
-			spawn_pos = default_spawn.global_position
-			print("[Room01] Normal spawn at default spawn point: ", spawn_pos)
-		else:
-			print("[Room01] Using fallback spawn position: ", spawn_pos)
+				print("[Room01_Entry] New game - spawning at default spawn point: ", spawn_pos)
+			else:
+				print("[Room01_Entry] Using fallback spawn position: ", spawn_pos)
 
 	# Set player position
 	player.global_position = spawn_pos
@@ -124,34 +154,34 @@ func _spawn_new_player() -> void:
 
 		# Clear pending data after applying
 		SaveManager.pending_player_data = {}
-		print("[Room01] Saved player data applied and cleared")
+		print("[Room01_Entry] Saved player data applied and cleared")
 
 	# Register with GameManager
 	if GameManager.has_method("set_player"):
 		GameManager.set_player(player)
 
-	print("[Room01] Player spawned successfully at ", spawn_pos)
+	print("[Room01_Entry] Player spawned successfully at ", spawn_pos)
 
 
 func _apply_saved_player_data(player: Node, player_data: Dictionary) -> void:
 	"""Applies saved player stats from loaded game (COMMIT 016)"""
-	print("[Room01] Applying saved player data...")
+	print("[Room01_Entry] Applying saved player data...")
 
 	# Apply HP
 	if "current_hp" in player:
 		player.current_hp = player_data.get("current_hp", player.MAX_HP if "MAX_HP" in player else 100)
-		print("[Room01] Set HP to: %d" % player.current_hp)
+		print("[Room01_Entry] Set HP to: %d" % player.current_hp)
 
 	# Apply Mana
 	if "current_mana" in player:
 		player.current_mana = player_data.get("current_mana", player.MAX_MANA if "MAX_MANA" in player else 100)
-		print("[Room01] Set Mana to: %d" % player.current_mana)
+		print("[Room01_Entry] Set Mana to: %d" % player.current_mana)
 
 	# Apply facing direction
 	if "facing_direction" in player:
 		player.facing_direction = player_data.get("facing_direction", 1)
 
-	print("[Room01] Player data applied successfully")
+	print("[Room01_Entry] Player data applied successfully")
 
 
 # ============================================================================
@@ -162,7 +192,7 @@ func _spawn_checkpoint() -> void:
 	"""Spawns a checkpoint in the room for auto-save"""
 	var checkpoint_scene = preload("res://environment/checkpoint.tscn")
 	if not checkpoint_scene:
-		print("[Room01] WARNING: Checkpoint scene not found")
+		print("[Room01_Entry] WARNING: Checkpoint scene not found")
 		return
 
 	var checkpoint = checkpoint_scene.instantiate()
@@ -170,14 +200,14 @@ func _spawn_checkpoint() -> void:
 	checkpoint.checkpoint_id = "room_01_entry/start_checkpoint"
 
 	add_child(checkpoint)
-	print("[Room01] Checkpoint spawned at ", checkpoint.global_position)
+	print("[Room01_Entry] Checkpoint spawned at ", checkpoint.global_position)
 
 
 func _spawn_enemies() -> void:
 	"""Spawns 8 Untote enemies for combat testing"""
 	var untote_scene = preload("res://enemies/untote.tscn")
 	if not untote_scene:
-		print("[Room01] WARNING: Untote scene not found")
+		print("[Room01_Entry] WARNING: Untote scene not found")
 		return
 
 	# Spawn positions spread across the room
@@ -197,7 +227,7 @@ func _spawn_enemies() -> void:
 		enemy.global_position = pos
 		add_child(enemy)
 
-	print("[Room01] Spawned %d Untote enemies" % spawn_positions.size())
+	print("[Room01_Entry] Spawned %d Untote enemies" % spawn_positions.size())
 
 
 # ============================================================================
@@ -216,7 +246,7 @@ func _setup_puzzle_persistence() -> void:
 	# Find crystals in scene (they should be in a CrystalPuzzle node)
 	var puzzle_node = get_node_or_null("CrystalPuzzle")
 	if not puzzle_node:
-		print("[Room01] No CrystalPuzzle node found")
+		print("[Room01_Entry] No CrystalPuzzle node found")
 		return
 
 	# Get all crystal children
@@ -224,7 +254,7 @@ func _setup_puzzle_persistence() -> void:
 
 	# Check if puzzle is already solved
 	if WorldManager and WorldManager.is_puzzle_solved(PUZZLE_ID):
-		print("[Room01] Puzzle already solved, removing crystals")
+		print("[Room01_Entry] Puzzle already solved, removing crystals")
 		puzzle_node.queue_free()
 		return
 
@@ -232,13 +262,13 @@ func _setup_puzzle_persistence() -> void:
 	for crystal in puzzle_crystals:
 		crystal.crystal_hit.connect(_on_crystal_hit.bind(crystal))
 
-	print("[Room01] Crystal puzzle ready (%d crystals)" % puzzle_crystals.size())
+	print("[Room01_Entry] Crystal puzzle ready (%d crystals)" % puzzle_crystals.size())
 
 
 func _on_crystal_hit(projectile_owner: Node2D, crystal: PuzzleCrystal) -> void:
 	"""Called when a crystal is hit"""
 	var crystal_id = crystal.crystal_id
-	print("[Room01] Crystal %d hit! Current sequence: %s" % [crystal_id, str(hit_sequence)])
+	print("[Room01_Entry] Crystal %d hit! Current sequence: %s" % [crystal_id, str(hit_sequence)])
 
 	# Add to hit sequence
 	hit_sequence.append(crystal_id)
@@ -254,7 +284,7 @@ func _on_crystal_hit(projectile_owner: Node2D, crystal: PuzzleCrystal) -> void:
 
 	if not is_correct:
 		# Wrong sequence - reset all crystals
-		print("[Room01] Wrong sequence! Resetting...")
+		print("[Room01_Entry] Wrong sequence! Resetting...")
 		if EventBus:
 			EventBus.show_notification.emit("Falsche Reihenfolge!", 2.0)
 
@@ -276,7 +306,7 @@ func _on_crystal_hit(projectile_owner: Node2D, crystal: PuzzleCrystal) -> void:
 
 func _on_puzzle_solved() -> void:
 	"""Called when puzzle is solved"""
-	print("[Room01] Puzzle solved: %s" % PUZZLE_ID)
+	print("[Room01_Entry] Puzzle solved: %s" % PUZZLE_ID)
 
 	# Disable reset on all crystals (prevents respawn)
 	for crystal in puzzle_crystals:
@@ -284,7 +314,7 @@ func _on_puzzle_solved() -> void:
 			crystal.can_reset = false
 			crystal.is_being_removed = true  # Mark for removal
 
-	print("[Room01] Disabled crystal reset - puzzle permanently solved")
+	print("[Room01_Entry] Disabled crystal reset - puzzle permanently solved")
 
 	# Mark puzzle as solved in WorldManager
 	if WorldManager:
@@ -293,7 +323,7 @@ func _on_puzzle_solved() -> void:
 	# Auto-save after solving puzzle
 	if SaveManager:
 		SaveManager.save_current_game()
-		print("[Room01] Auto-saved after puzzle completion")
+		print("[Room01_Entry] Auto-saved after puzzle completion")
 
 	# Visual/audio feedback
 	if EventBus:

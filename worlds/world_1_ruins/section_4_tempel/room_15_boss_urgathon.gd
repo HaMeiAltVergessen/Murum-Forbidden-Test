@@ -35,8 +35,13 @@ var dialog_label: Label = null  # COMMIT 023.8: Dialog placeholder
 # ============================================================================
 
 func _ready() -> void:
-	print("[Room05] Arena initialized")
-	print("[Room05] P2 Active (initial): ", CoopManager.is_p2_active)
+	print("[Room15_BossUrgathon] Arena initialized")
+	print("[Room15_BossUrgathon] P2 Active (initial): ", CoopManager.is_p2_active)
+
+	# Set current room in WorldManager (COMMIT 018)
+	if WorldManager:
+		WorldManager.current_world = WORLD_ID
+		WorldManager.current_room = ROOM_ID
 
 	_setup_arena()
 	_spawn_player()
@@ -60,7 +65,7 @@ func _setup_arena() -> void:
 	if arena_boundary:
 		arena_boundary.modulate = Color(1, 1, 1, 0.3)
 
-	print("[Room05] Arena setup complete")
+	print("[Room15_BossUrgathon] Arena setup complete")
 
 
 func _spawn_player() -> void:
@@ -70,7 +75,7 @@ func _spawn_player() -> void:
 	player = get_tree().get_first_node_in_group("player")
 
 	if not player:
-		print("[Room05] No player found in scene tree")
+		print("[Room15_BossUrgathon] No player found in scene tree")
 		return
 
 	if player_spawn:
@@ -81,7 +86,7 @@ func _spawn_player() -> void:
 		player.disable_movement()
 
 	var spawn_pos = player_spawn.global_position if player_spawn else Vector2.ZERO
-	print("[Room05] P1 spawned at: ", spawn_pos)
+	print("[Room15_BossUrgathon] P1 spawned at: ", spawn_pos)
 
 	# If P2 is already active, position them in arena too
 	var p2_instance = CoopManager.get_p2_instance()
@@ -95,7 +100,7 @@ func _spawn_player() -> void:
 		if player2.has_method("disable_movement"):
 			player2.disable_movement()
 
-		print("[Room05] P2 spawned at: ", player2.global_position)
+		print("[Room15_BossUrgathon] P2 spawned at: ", player2.global_position)
 
 
 func _check_arena_mode_and_start() -> void:
@@ -105,20 +110,20 @@ func _check_arena_mode_and_start() -> void:
 	var p2_instance = CoopManager.get_p2_instance()
 	var is_p2_present = CoopManager.is_p2_active and p2_instance != null and is_instance_valid(p2_instance)
 
-	print("[Room05] === ARENA MODE CHECK ===")
-	print("[Room05] P2 Active Flag: ", CoopManager.is_p2_active)
-	print("[Room05] P2 Instance: ", p2_instance)
-	print("[Room05] P2 Valid: ", is_p2_present)
+	print("[Room15_BossUrgathon] === ARENA MODE CHECK ===")
+	print("[Room15_BossUrgathon] P2 Active Flag: ", CoopManager.is_p2_active)
+	print("[Room15_BossUrgathon] P2 Instance: ", p2_instance)
+	print("[Room15_BossUrgathon] P2 Valid: ", is_p2_present)
 
 	if is_p2_present:
 		# 2 PLAYERS → PvP MODE
-		print("[Room05] >>> MODE: PvP (2 Players detected)")
+		print("[Room15_BossUrgathon] >>> MODE: PvP (2 Players detected)")
 		player2 = p2_instance
 		is_pvp_mode = true
 		_start_pvp_sequence()
 	else:
 		# 1 PLAYER → SOLO MODE (Boss Fight)
-		print("[Room05] >>> MODE: Solo (1 Player, spawning boss)")
+		print("[Room15_BossUrgathon] >>> MODE: Solo (1 Player, spawning boss)")
 		is_pvp_mode = false
 		_play_intro_cutscene()
 
@@ -130,7 +135,7 @@ func _check_arena_mode_and_start() -> void:
 func _play_intro_cutscene() -> void:
 	"""Plays the boss intro cutscene"""
 
-	print("[Room05] Starting intro cutscene")
+	print("[Room15_BossUrgathon] Starting intro cutscene")
 
 	var active_camera = get_viewport().get_camera_2d()
 
@@ -164,11 +169,11 @@ func _spawn_boss() -> void:
 
 	# SAFETY CHECK: Do NOT spawn boss in PvP mode
 	if is_pvp_mode:
-		print("[Room05] ABORT: Cannot spawn boss in PvP mode!")
+		print("[Room15_BossUrgathon] ABORT: Cannot spawn boss in PvP mode!")
 		return
 
 	if not ResourceLoader.exists(BOSS_SCENE_PATH):
-		push_error("[Room05] Boss scene not found: " + BOSS_SCENE_PATH)
+		push_error("[Room15_BossUrgathon] Boss scene not found: " + BOSS_SCENE_PATH)
 		return
 
 	var boss_scene = load(BOSS_SCENE_PATH)
@@ -190,7 +195,7 @@ func _spawn_boss() -> void:
 	# Spawn VFX
 	_spawn_boss_vfx()
 
-	print("[Room05] Boss spawned (Solo Mode)")
+	print("[Room15_BossUrgathon] Boss spawned (Solo Mode)")
 
 
 func _spawn_boss_vfx() -> void:
@@ -199,7 +204,7 @@ func _spawn_boss_vfx() -> void:
 	var vfx_path = "res://vfx/boss/lythrun_spawn.tscn"
 
 	if not ResourceLoader.exists(vfx_path):
-		print("[Room05] Boss spawn VFX not found")
+		print("[Room15_BossUrgathon] Boss spawn VFX not found")
 		return
 
 	var vfx_scene = load(vfx_path)
@@ -242,7 +247,7 @@ func _start_fight() -> void:
 		if audio_manager.has_method("play_boss_music"):
 			audio_manager.play_boss_music("lythrun_theme")
 
-	print("[Room05] Fight started!")
+	print("[Room15_BossUrgathon] Fight started!")
 
 
 func _on_boss_defeated() -> void:
@@ -262,13 +267,13 @@ func _on_boss_defeated() -> void:
 	# Set game flag
 	GameManager.set_flag("world1_boss_defeated", true)
 
-	print("[Room05] Boss defeated! Fight complete.")
+	print("[Room15_BossUrgathon] Boss defeated! Fight complete.")
 
 
 func _on_boss_phase_changed(phase: int) -> void:
 	"""Called when boss changes phase"""
 
-	print("[Room05] Boss entered phase: ", phase)
+	print("[Room15_BossUrgathon] Boss entered phase: ", phase)
 
 	# Change arena atmosphere based on phase
 	match phase:
@@ -300,7 +305,7 @@ func _intensify_arena_phase3() -> void:
 		tween.tween_property(arena_boundary, "modulate", Color.DARK_RED, 1.0)
 
 	# Spawn hazards (placeholder)
-	print("[Room05] Phase 3 arena hazards activated")
+	print("[Room15_BossUrgathon] Phase 3 arena hazards activated")
 
 
 # ============================================================================
@@ -310,16 +315,16 @@ func _intensify_arena_phase3() -> void:
 func _start_pvp_sequence() -> void:
 	"""Start the PvP sequence when 2 players are detected"""
 
-	print("[Room05] === STARTING PVP SEQUENCE ===")
+	print("[Room15_BossUrgathon] === STARTING PVP SEQUENCE ===")
 
 	# Lock both players in place for intro
 	if player and player.has_method("disable_movement"):
 		player.disable_movement()
-		print("[Room05] P1 movement locked")
+		print("[Room15_BossUrgathon] P1 movement locked")
 
 	if player2 and player2.has_method("disable_movement"):
 		player2.disable_movement()
-		print("[Room05] P2 movement locked")
+		print("[Room15_BossUrgathon] P2 movement locked")
 
 	# Get camera
 	var active_camera = get_viewport().get_camera_2d()
@@ -350,57 +355,57 @@ func _start_pvp_sequence() -> void:
 	if player:
 		player.remove_from_group("player")  # No longer a player
 		player.add_to_group("enemies")      # Now an enemy
-		print("[Room05] P1 converted to enemy")
+		print("[Room15_BossUrgathon] P1 converted to enemy")
 
 		# COMMIT 023.9.2: Change hurtbox layer from PlayerHurtbox (10) to EnemyHurtbox (9)
 		if player.has_node("HurtboxComponent"):
 			var hurtbox = player.get_node("HurtboxComponent")
 			hurtbox.collision_layer = 0
 			hurtbox.set_collision_layer_value(9, true)  # EnemyHurtbox
-			print("[Room05] P1 hurtbox changed to EnemyHurtbox layer")
+			print("[Room15_BossUrgathon] P1 hurtbox changed to EnemyHurtbox layer")
 
 		# COMMIT 023.9.3: Change hitbox mask to check EnemyHurtbox (9) instead of PlayerHurtbox (10)
 		if player.has_node("CombatSystem/HitboxComponent"):
 			var hitbox = player.get_node("CombatSystem/HitboxComponent")
 			hitbox.set_collision_mask_value(10, false)  # Stop checking PlayerHurtbox
 			hitbox.set_collision_mask_value(9, true)    # Start checking EnemyHurtbox
-			print("[Room05] P1 hitbox mask updated for PvP (checks EnemyHurtbox)")
+			print("[Room15_BossUrgathon] P1 hitbox mask updated for PvP (checks EnemyHurtbox)")
 
 	if player2:
 		player2.remove_from_group("player2")  # No longer player2
 		player2.add_to_group("enemies")       # Now an enemy
-		print("[Room05] P2 converted to enemy")
+		print("[Room15_BossUrgathon] P2 converted to enemy")
 
 		# COMMIT 023.9.2: Change hurtbox layer from PlayerHurtbox (10) to EnemyHurtbox (9)
 		if player2.has_node("HurtboxComponent"):
 			var hurtbox = player2.get_node("HurtboxComponent")
 			hurtbox.collision_layer = 0
 			hurtbox.set_collision_layer_value(9, true)  # EnemyHurtbox
-			print("[Room05] P2 hurtbox changed to EnemyHurtbox layer")
+			print("[Room15_BossUrgathon] P2 hurtbox changed to EnemyHurtbox layer")
 
 		# COMMIT 023.9.3: Change hitbox mask to check EnemyHurtbox (9) instead of PlayerHurtbox (10)
 		if player2.has_node("CombatSystem/HitboxComponent"):
 			var hitbox = player2.get_node("CombatSystem/HitboxComponent")
 			hitbox.set_collision_mask_value(10, false)  # Stop checking PlayerHurtbox
 			hitbox.set_collision_mask_value(9, true)    # Start checking EnemyHurtbox
-			print("[Room05] P2 hitbox mask updated for PvP (checks EnemyHurtbox)")
+			print("[Room15_BossUrgathon] P2 hitbox mask updated for PvP (checks EnemyHurtbox)")
 
 	# Enable PvP mode (allows enemy-to-enemy damage in HitboxComponent)
 	CoopManager.pvp_mode = true
-	print("[Room05] >>> PVP MODE ENABLED (friendly fire ON)")
+	print("[Room15_BossUrgathon] >>> PVP MODE ENABLED (friendly fire ON)")
 
 	# Enable PvP collision
 	CoopManager.set_pvp_collision()
-	print("[Room05] PvP collision enabled")
+	print("[Room15_BossUrgathon] PvP collision enabled")
 
 	# Unlock both players
 	if player and player.has_method("enable_movement"):
 		player.enable_movement()
-		print("[Room05] P1 movement unlocked")
+		print("[Room15_BossUrgathon] P1 movement unlocked")
 
 	if player2 and player2.has_method("enable_movement"):
 		player2.enable_movement()
-		print("[Room05] P2 movement unlocked")
+		print("[Room15_BossUrgathon] P2 movement unlocked")
 
 	# Change music to PvP theme
 	if has_node("/root/AudioManager"):
@@ -416,7 +421,7 @@ func _start_pvp_sequence() -> void:
 
 	fight_started = true
 
-	print("[Room05] >>> PVP FIGHT STARTED <<<")
+	print("[Room15_BossUrgathon] >>> PVP FIGHT STARTED <<<")
 
 
 func _connect_pvp_death_signals() -> void:
@@ -427,14 +432,14 @@ func _connect_pvp_death_signals() -> void:
 		var p1_health = player.get_node("HealthComponent")
 		if p1_health.has_signal("health_depleted"):
 			p1_health.health_depleted.connect(_on_p1_death_pvp)
-			print("[Room05] Connected to P1 death signal")
+			print("[Room15_BossUrgathon] Connected to P1 death signal")
 
 	# Connect P2 death signal
 	if player2 and player2.has_node("HealthComponent"):
 		var p2_health = player2.get_node("HealthComponent")
 		if p2_health.has_signal("health_depleted"):
 			p2_health.health_depleted.connect(_on_p2_death_pvp)
-			print("[Room05] Connected to P2 death signal")
+			print("[Room15_BossUrgathon] Connected to P2 death signal")
 
 
 func _on_p1_death_pvp() -> void:
@@ -442,22 +447,22 @@ func _on_p1_death_pvp() -> void:
 
 	# CRITICAL: Check if fight already ended (both died simultaneously)
 	if fight_ended:
-		print("[Room05] Fight already ended, ignoring P1 death")
+		print("[Room15_BossUrgathon] Fight already ended, ignoring P1 death")
 		return
 
-	print("[Room05] === P1 DIED - P2 WINS! ===")
+	print("[Room15_BossUrgathon] === P1 DIED - P2 WINS! ===")
 
 	# Disable further damage
 	fight_ended = true
 
 	# Show victory message
-	print("[Room05] >>> VICTORY: Player 2 (Lythrun) wins! <<<")
+	print("[Room15_BossUrgathon] >>> VICTORY: Player 2 (Lythrun) wins! <<<")
 	# TODO: Show victory screen / pause game
 
 	await get_tree().create_timer(2.0).timeout
 
 	# For now: Just show message and pause
-	print("[Room05] PvP ended - P2 victorious. Game should show victory screen here.")
+	print("[Room15_BossUrgathon] PvP ended - P2 victorious. Game should show victory screen here.")
 	get_tree().paused = true
 
 
@@ -466,10 +471,10 @@ func _on_p2_death_pvp() -> void:
 
 	# CRITICAL: Check if fight already ended (both died simultaneously)
 	if fight_ended:
-		print("[Room05] Fight already ended, ignoring P2 death")
+		print("[Room15_BossUrgathon] Fight already ended, ignoring P2 death")
 		return
 
-	print("[Room05] === P2 DIED - P1 WINS! ===")
+	print("[Room15_BossUrgathon] === P2 DIED - P1 WINS! ===")
 
 	# Disable further damage
 	fight_ended = true
@@ -478,38 +483,38 @@ func _on_p2_death_pvp() -> void:
 	if player:
 		player.remove_from_group("enemies")
 		player.add_to_group("player")
-		print("[Room05] P1 restored to player group")
+		print("[Room15_BossUrgathon] P1 restored to player group")
 
 		# COMMIT 023.9.2: Restore hurtbox layer from EnemyHurtbox (9) to PlayerHurtbox (10)
 		if player.has_node("HurtboxComponent"):
 			var hurtbox = player.get_node("HurtboxComponent")
 			hurtbox.collision_layer = 0
 			hurtbox.set_collision_layer_value(10, true)  # PlayerHurtbox
-			print("[Room05] P1 hurtbox restored to PlayerHurtbox layer")
+			print("[Room15_BossUrgathon] P1 hurtbox restored to PlayerHurtbox layer")
 
 		# COMMIT 023.9.3: Restore hitbox mask to check PlayerHurtbox (10) instead of EnemyHurtbox (9)
 		if player.has_node("CombatSystem/HitboxComponent"):
 			var hitbox = player.get_node("CombatSystem/HitboxComponent")
 			hitbox.set_collision_mask_value(9, false)   # Stop checking EnemyHurtbox
 			hitbox.set_collision_mask_value(10, true)   # Start checking PlayerHurtbox
-			print("[Room05] P1 hitbox mask restored to normal (checks PlayerHurtbox)")
+			print("[Room15_BossUrgathon] P1 hitbox mask restored to normal (checks PlayerHurtbox)")
 
 	# Disable PvP mode
 	CoopManager.pvp_mode = false
 	CoopManager.set_coop_collision()
-	print("[Room05] PvP mode disabled, co-op collision restored")
+	print("[Room15_BossUrgathon] PvP mode disabled, co-op collision restored")
 
 	# Unlock exit door
 	if exit_door and exit_door.has_method("unlock_door"):
 		exit_door.unlock_door()
-		print("[Room05] Exit door unlocked")
+		print("[Room15_BossUrgathon] Exit door unlocked")
 
 	# Fade arena boundary
 	if arena_boundary:
 		var tween = create_tween()
 		tween.tween_property(arena_boundary, "modulate:a", 0.0, 2.0)
 
-	print("[Room05] >>> VICTORY: Player 1 (Murum) wins! P1 can exit arena. <<<")
+	print("[Room15_BossUrgathon] >>> VICTORY: Player 1 (Murum) wins! P1 can exit arena. <<<")
 
 
 func _close_arena_barrier() -> void:
@@ -524,7 +529,7 @@ func _close_arena_barrier() -> void:
 	if exit_door and exit_door.has_method("lock_door"):
 		exit_door.lock_door()
 
-	print("[Room05] Arena barrier closed")
+	print("[Room15_BossUrgathon] Arena barrier closed")
 
 
 func _show_dialog(text: String) -> void:
@@ -556,14 +561,14 @@ func _show_dialog(text: String) -> void:
 
 	dialog_label.text = text
 	dialog_label.visible = true
-	print("[Room05] Dialog shown: ", text)
+	print("[Room15_BossUrgathon] Dialog shown: ", text)
 
 
 func _hide_dialog() -> void:
 	"""Hide dialog placeholder"""
 	if dialog_label:
 		dialog_label.visible = false
-	print("[Room05] Dialog hidden")
+	print("[Room15_BossUrgathon] Dialog hidden")
 
 
 # ============================================================================
