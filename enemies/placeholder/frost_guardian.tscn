@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://frost_guardian_001"]
 
 [ext_resource type="PackedScene" uid="uid://bhjxv6dwpb3ya" path="res://enemies/base_enemy.tscn" id="1_base"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Gegner/Frost_Guardian_FREE_v1.0/Frost_Guardian_FREE_v1.0/PNG files/2_walk/2_walk.png" id="2_sprite"]
+[ext_resource type="Texture2D" path="res://Assets/Placeholder/Gegner/Frost_Guardian_FREE_v1.0/Frost_Guardian_FREE_v1.0/PNG files/idle/idle_1.png" id="2_sprite"]
 
 [node name="FrostGuardian" instance=ExtResource("1_base")]
 max_health = 80
@@ -12,7 +12,4 @@ detection_range = 300.0
 
 [node name="Sprite2D" parent="." index="0"]
 texture = ExtResource("2_sprite")
-hframes = 18
-vframes = 1
-frame = 0
 scale = Vector2(1.5, 1.5)

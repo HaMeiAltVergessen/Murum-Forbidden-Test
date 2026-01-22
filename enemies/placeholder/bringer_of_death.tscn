@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bringer_of_death_001"]
 
 [ext_resource type="PackedScene" uid="uid://bhjxv6dwpb3ya" path="res://enemies/base_enemy.tscn" id="1_base"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Gegner/Bringer-Of-Death/Bringer-Of-Death/Individual Sprite/Walk/Bringer-of-Death_Walk.png" id="2_sprite"]
+[ext_resource type="Texture2D" path="res://Assets/Placeholder/Gegner/Bringer-Of-Death/Bringer-Of-Death/Individual Sprite/Idle/Bringer-of-Death_Idle_1.png" id="2_sprite"]
 
 [node name="BringerOfDeath" instance=ExtResource("1_base")]
 max_health = 50
@@ -12,7 +12,4 @@ detection_range = 350.0
 
 [node name="Sprite2D" parent="." index="0"]
 texture = ExtResource("2_sprite")
-hframes = 8
-vframes = 1
-frame = 0
 scale = Vector2(2.0, 2.0)
