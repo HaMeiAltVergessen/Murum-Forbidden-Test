@@ -13,7 +13,7 @@ signal door_entered
 @export var locked: bool = true
 @export var interaction_text: String = "Versiegelt durch uralte Magie"
 @export var unlocked_text: String = "[E] Zur Boss-Arena (Lythrun)"
-@export var target_scene: String = "res://worlds/world_1_ruins/rooms/room_05_boss_arena.tscn"
+@export var target_scene: String = "res://worlds/world_1_ruins/section_4_tempel/room_15_boss_urgathon.tscn"  # UPDATED for section-based structure - COMMIT 018
 
 var player_in_range: bool = false
 

@@ -1,6 +1,6 @@
 [gd_scene load_steps=14 format=3 uid="uid://csm4wax2ntpqr"]
 
-[ext_resource type="Script" uid="uid://cm3e5pkoi5u4r" path="res://worlds/world_1_ruins/rooms/room_02_corridor.gd" id="1_room02"]
+[ext_resource type="Script" uid="uid://cm3e5pkoi5u4r" path="res://worlds/world_1_ruins/section_1_entrance/room_02_corridor.gd" id="1_room02"]
 [ext_resource type="Texture2D" uid="uid://bb1oeaxgt20et" path="res://Assets/AIAssets/world1lvl1bg03.jpg" id="2_qe3w4"]
 [ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="2_spike"]
 [ext_resource type="PackedScene" uid="uid://cakx4m2v7pqrs" path="res://environment/interactables/lever.tscn" id="3_lever"]
@@ -106,12 +106,12 @@ position = Vector2(1000, 600)
 
 [node name="DoorToRoom01" parent="Doors" instance=ExtResource("5_door")]
 position = Vector2(53, 825)
-target_scene = "res://worlds/world_1_ruins/rooms/Welt01_Dorf.tscn"
+target_scene = "res://worlds/world_1_ruins/section_2_villages/room_05_inn.tscn"
 spawn_position = Vector2(150, 640)
 
 [node name="DoorToRoom03" parent="Doors" instance=ExtResource("5_door")]
 position = Vector2(1848, 818)
-target_scene = "res://worlds/world_1_ruins/rooms/room_03_arena.tscn"
+target_scene = "res://worlds/world_1_ruins/section_1_entrance/room_03_villageEntrance.tscn"
 spawn_position = Vector2(150, 780)
 
 [node name="SpawnPoints" type="Node2D" parent="."]

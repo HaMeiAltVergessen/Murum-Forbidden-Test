@@ -198,8 +198,8 @@ func _spawn_loot() -> void:
 		coin.global_position = global_position + offset
 		coin.gold_value = 1
 
-		# Add to scene
-		get_tree().root.add_child(coin)
+		# Add to current scene (not root) - coins should be removed on scene change
+		get_tree().current_scene.add_child(coin)
 
 	print("[Geist] Spawned %d gold coins at %v" % [coin_count, global_position])
 

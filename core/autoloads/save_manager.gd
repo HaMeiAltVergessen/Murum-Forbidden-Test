@@ -473,8 +473,8 @@ func _apply_save_data(save_data: Dictionary) -> void:
 		get_tree().change_scene_to_file(scene_path)
 	else:
 		push_error("[SaveManager] ERROR: Saved room scene not found: %s" % scene_path)
-		# Fallback to room_01_entry
-		get_tree().change_scene_to_file("res://worlds/world_1_ruins/rooms/room_01_entry.tscn")
+		# Fallback to room_01_entry (UPDATED for section-based structure - COMMIT 018)
+		get_tree().change_scene_to_file("res://worlds/world_1_ruins/section_1_entrance/room_01_entry.tscn")
 
 	print("[SaveManager] Stored player data for application after scene load")
 

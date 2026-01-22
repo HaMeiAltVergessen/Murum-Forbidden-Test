@@ -1,6 +1,6 @@
 [gd_scene load_steps=15 format=3 uid="uid://ddnxcv5d8idn"]
 
-[ext_resource type="Script" uid="uid://d3ga2xnikulhm" path="res://worlds/world_1_ruins/rooms/room_03_arena.gd" id="1_08f4h"]
+[ext_resource type="Script" uid="uid://d3ga2xnikulhm" path="res://worlds/world_1_ruins/section_1_entrance/room_03_villageEntrance.gd" id="1_08f4h"]
 [ext_resource type="Texture2D" uid="uid://ra4sbnoii35r" path="res://Assets/AIAssets/0b1bef95-fa79-46b5-920d-1039c84dc1c8.jpg" id="2_08f4h"]
 [ext_resource type="Texture2D" uid="uid://dgoqciw5hx2m0" path="res://Assets/AIAssets/8f3db250-9684-4ef9-9483-7fb1e18eebc1.jpg" id="3_l5uik"]
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="4_448ij"]
@@ -144,12 +144,12 @@ position = Vector2(1717, 602)
 
 [node name="DoorFromRoom02" parent="Doors" instance=ExtResource("7_mg4my")]
 position = Vector2(202, 760)
-target_scene = "res://worlds/world_1_ruins/rooms/Welt01_Tempel_Innen02.tscn"
+target_scene = "res://worlds/world_1_ruins/section_4_tempel/room_12_grand_hall02.tscn"
 spawn_position = Vector2(1130, 600)
 
 [node name="DoorToRoom04" parent="Doors" instance=ExtResource("7_mg4my")]
 position = Vector2(2531, 746)
-target_scene = "res://worlds/world_1_ruins/rooms/room_05_boss_arena.tscn"
+target_scene = "res://worlds/world_1_ruins/section_4_tempel/room_15_boss_urgathon.tscn"
 spawn_position = Vector2(0, 0)
 
 [node name="DoorLabel" type="Label" parent="Doors/DoorToRoom04"]

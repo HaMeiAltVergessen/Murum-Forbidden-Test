@@ -1,6 +1,6 @@
 [gd_scene load_steps=16 format=3 uid="uid://b8mx4n7raprst"]
 
-[ext_resource type="Script" uid="uid://b2r2vfh85un7r" path="res://worlds/world_1_ruins/rooms/room_01_entry.gd" id="1_room01"]
+[ext_resource type="Script" uid="uid://b2r2vfh85un7r" path="res://worlds/world_1_ruins/section_1_entrance/room_01_entry.gd" id="1_room01"]
 [ext_resource type="Texture2D" uid="uid://cced6bgpaux0q" path="res://Assets/AIAssets/world1lvl1bg02.jpg" id="2_cqwq7"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="2_spawn"]
 [ext_resource type="Texture2D" uid="uid://b47pb7yowqkwr" path="res://Assets/AIAssets/wolrd01lvl0102.jpg" id="3_cqwq7"]
@@ -106,7 +106,7 @@ spawn_position = Vector2(1600, 900)
 
 [node name="DoorToRoom02" parent="Doors" instance=ExtResource("3_door")]
 position = Vector2(3019, 539)
-target_scene = "res://worlds/world_1_ruins/rooms/World01_PreDorf.tscn"
+target_scene = "res://worlds/world_1_ruins/section_3_tempel_outside/room_09_temple_path.tscn"
 spawn_position = Vector2(200, 640)
 
 [node name="Environment" type="Node2D" parent="."]

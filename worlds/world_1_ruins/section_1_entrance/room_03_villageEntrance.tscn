@@ -1,6 +1,6 @@
 [gd_scene load_steps=14 format=3 uid="uid://dq7m4n8x3vspt"]
 
-[ext_resource type="Script" uid="uid://d3ga2xnikulhm" path="res://worlds/world_1_ruins/rooms/room_03_arena.gd" id="1_room03"]
+[ext_resource type="Script" uid="uid://d3ga2xnikulhm" path="res://worlds/world_1_ruins/section_1_entrance/room_03_villageEntrance.gd" id="1_room03"]
 [ext_resource type="Texture2D" uid="uid://ddshbf3nio6lw" path="res://Assets/AIAssets/8d33fd80-90de-40ba-a387-b68c6792874b.jpg" id="2_pdr4c"]
 [ext_resource type="Script" uid="uid://dedqqgmekjfmv" path="res://worlds/wave_spawner.gd" id="2_wave_spawner"]
 [ext_resource type="PackedScene" uid="uid://c2nx5q8v4kmpr" path="res://environment/checkpoint.tscn" id="3_checkpoint"]
@@ -110,12 +110,12 @@ position = Vector2(800, 450)
 
 [node name="DoorFromRoom02" parent="Doors" instance=ExtResource("4_door")]
 position = Vector2(100, 780)
-target_scene = "res://worlds/world_1_ruins/rooms/room_02_corridor.tscn"
+target_scene = "res://worlds/world_1_ruins/section_1_entrance/room_02_corridor.tscn"
 spawn_position = Vector2(1130, 600)
 
 [node name="DoorToRoom04" parent="Doors" instance=ExtResource("4_door")]
 position = Vector2(581, 687)
-target_scene = "res://worlds/world_1_ruins/rooms/room_04_hub.tscn"
+target_scene = "res://worlds/world_1_ruins/section_2_villages/room_04_village_square.tscn"
 spawn_position = Vector2(200, 750)
 
 [node name="DoorLabel" type="Label" parent="Doors/DoorToRoom04"]
