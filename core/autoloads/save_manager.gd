@@ -461,11 +461,17 @@ func _apply_save_data(save_data: Dictionary) -> void:
 
 	# Fallback if room is empty
 	if saved_room.is_empty():
-		saved_room = "room_01_entry"
+		saved_room = "worlds/world_1_ruins/section_1_entrance/room_01_entry"
 		print("[SaveManager] WARNING: Empty room in save, using fallback: %s" % saved_room)
 
-	# Build scene path and load directly
-	var scene_path = "res://worlds/%s/rooms/%s.tscn" % [saved_world, saved_room]
+	# Use WorldManager to get correct scene path (supports section-based structure)
+	var scene_path = ""
+	if WorldManager and WorldManager.has_method("_get_room_path"):
+		scene_path = WorldManager._get_room_path(saved_room)
+	else:
+		# Fallback if WorldManager not available
+		scene_path = "res://%s.tscn" % saved_room if "/" in saved_room else "res://levels/%s.tscn" % saved_room
+
 	print("[SaveManager] Loading saved room: %s (path: %s)" % [saved_room, scene_path])
 
 	# Load scene directly
@@ -473,7 +479,7 @@ func _apply_save_data(save_data: Dictionary) -> void:
 		get_tree().change_scene_to_file(scene_path)
 	else:
 		push_error("[SaveManager] ERROR: Saved room scene not found: %s" % scene_path)
-		# Fallback to room_01_entry (UPDATED for section-based structure - COMMIT 018)
+		# Fallback to room_01_entry (UPDATED for section-based structure - COMMIT 019d)
 		get_tree().change_scene_to_file("res://worlds/world_1_ruins/section_1_entrance/room_01_entry.tscn")
 
 	print("[SaveManager] Stored player data for application after scene load")
