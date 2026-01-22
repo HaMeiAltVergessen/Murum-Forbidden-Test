@@ -278,14 +278,23 @@ func _gather_player_data(player: Node) -> Dictionary:
 		current_room = WorldManager.current_room
 		last_checkpoint = WorldManager.last_checkpoint
 
+	# Use checkpoint position if available, otherwise use current position
+	# This ensures player always spawns at checkpoint when loading
+	var save_position = player.global_position
+	if WorldManager and WorldManager.last_checkpoint_position != Vector2.ZERO:
+		save_position = WorldManager.last_checkpoint_position
+		print("[SaveManager] Using checkpoint position for save: %v" % save_position)
+	else:
+		print("[SaveManager] No checkpoint, using current position: %v" % save_position)
+
 	return {
 		"current_hp": player.current_hp if "current_hp" in player else 100,
 		"max_hp": player.MAX_HP if "MAX_HP" in player else 100,
 		"current_mana": player.current_mana if "current_mana" in player else 100,
 		"max_mana": player.MAX_MANA if "MAX_MANA" in player else 100,
 		"position": {
-			"x": player.global_position.x,
-			"y": player.global_position.y
+			"x": save_position.x,
+			"y": save_position.y
 		},
 		"facing_direction": 1,
 		"current_world": current_world,

@@ -313,18 +313,15 @@ func _spawn_player_at_point(spawn_point_name: String) -> void:
 		player.velocity = Vector2.ZERO
 
 	# Determine spawn position:
-	# - If loading from save with checkpoint: Use checkpoint position
+	# - If loading from save: Use saved position (which is checkpoint position)
 	# - Otherwise: Use spawn point
 	var final_spawn_position = spawn_position
 
-	if not pending_player_data.is_empty():
-		# Loading from save - use checkpoint position if available
-		if last_checkpoint_position != Vector2.ZERO:
-			final_spawn_position = last_checkpoint_position
-			print("[WorldManager] Loading save - spawning at checkpoint: %v" % final_spawn_position)
-		else:
-			# No checkpoint yet, use spawn point
-			print("[WorldManager] Loading save - no checkpoint, using spawn point: %v" % final_spawn_position)
+	if not pending_player_data.is_empty() and pending_player_data.has("position"):
+		# Loading from save - use saved position (which is checkpoint position)
+		var pos = pending_player_data["position"]
+		final_spawn_position = Vector2(pos["x"], pos["y"])
+		print("[WorldManager] Loading save - spawning at saved checkpoint position: %v" % final_spawn_position)
 	else:
 		# Normal room transition - use spawn point
 		print("[WorldManager] Normal transition - spawning at spawn point: %v" % final_spawn_position)
