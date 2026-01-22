@@ -98,17 +98,31 @@ func deactivate() -> void:
 
 func _on_body_entered(body: Node2D) -> void:
 	"""Handles body collision (player interaction)"""
+	# COMMIT 018: P2 Support - both P1 (player) and P2 (player2) can activate
 	if body.is_in_group("player") or body.is_in_group("player2"):
 		activate(body)
 
 func _on_area_entered(area: Area2D) -> void:
-	"""Handles area collision (staff projectile or shadow scythe)"""
-	# Support both P1 Staff Throw and P2 Shadow Scythe
-	if area.is_in_group("staff_projectile") or area.is_in_group("staff_projectiles") or area.is_in_group("shadow_scythe"):
+	"""Handles area collision (staff projectile, shadow scythe, or any player attack)"""
+	# COMMIT 018: P2 Support - detect both P1 and P2 projectiles/attacks
+	var is_valid_attack = (
+		# Groups (P1 & P2)
+		area.is_in_group("staff_projectile") or
+		area.is_in_group("staff_projectiles") or
+		area.is_in_group("shadow_scythe") or
+		area.is_in_group("p2_projectiles") or
+		# Collision layers (P1: Layer 5, P2: Layer 6)
+		area.collision_layer & (1 << 4) or  # Layer 5 (Staff Projectiles - P1)
+		area.collision_layer & (1 << 5) or  # Layer 6 (P2 Projectiles)
+		# Name patterns
+		"Projectile" in area.name
+	)
+
+	if is_valid_attack:
 		# Try to get owner player from metadata
 		var owner_player = area.get_meta("owner_player", null) if area.has_meta("owner_player") else area.owner
 		activate(owner_player)
-		print("[PuzzleSwitch] Hit by projectile (owner: %s)" % (owner_player.name if owner_player else "unknown"))
+		print("[PuzzleSwitch] Hit by attack (owner: %s)" % (owner_player.name if owner_player else "unknown"))
 
 # ============================================================================
 # VISUAL FEEDBACK

@@ -101,7 +101,8 @@ func _load_shop_data() -> void:
 func _on_body_entered(body: Node2D) -> void:
 	"""Called when player enters interaction range"""
 
-	if not body.is_in_group("player"):
+	# COMMIT 018: P2 Support - both P1 and P2 can talk to merchants
+	if not body.is_in_group("player") and not body.is_in_group("player2"):
 		return
 
 	player_in_range = true
@@ -113,7 +114,8 @@ func _on_body_entered(body: Node2D) -> void:
 func _on_body_exited(body: Node2D) -> void:
 	"""Called when player exits interaction range"""
 
-	if not body.is_in_group("player"):
+	# COMMIT 018: P2 Support
+	if not body.is_in_group("player") and not body.is_in_group("player2"):
 		return
 
 	player_in_range = false
