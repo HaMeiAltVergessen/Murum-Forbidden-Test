@@ -52,7 +52,8 @@ func _ready() -> void:
 	set_collision_layer_value(8, true)  # Interactables (Layer 8)
 
 	collision_mask = 0
-	set_collision_mask_value(5, true)   # Staff Projectiles (Layer 5)
+	set_collision_mask_value(5, true)   # Staff Projectiles (Layer 5) - P1
+	set_collision_mask_value(6, true)   # P2 Projectiles (Layer 6) - COMMIT 018: P2 Support
 	set_collision_mask_value(11, true)  # Other Projectiles (Layer 11)
 
 	# Connect signals (only area_entered for projectiles)
@@ -81,15 +82,20 @@ func _on_area_entered(area: Area2D) -> void:
 		return
 
 	# Accept projectiles OR player melee attacks (HitboxComponent)
+	# COMMIT 018: Added P2 support - detects P2 projectiles (Layer 6) and attacks
 	var is_valid_attack = (
-		# Projectiles
-		area.is_in_group("staff_projectiles") or
-		area.is_in_group("shadow_scythe") or
+		# Projectiles (P1 & P2)
+		area.is_in_group("staff_projectiles") or  # P1 staff
+		area.is_in_group("shadow_scythe") or       # P2 scythe
 		area.is_in_group("projectiles") or
+		area.is_in_group("p2_projectiles") or      # P2 void orbs
 		"Projectile" in area.name or
-		# Melee attacks (HitboxComponent on Layer 16)
+		# Melee attacks (HitboxComponent on Layer 16 - both P1 & P2)
 		"Hitbox" in area.name or
-		"hitbox" in area.name.to_lower()
+		"hitbox" in area.name.to_lower() or
+		# Check collision layers (P1: Layer 5, P2: Layer 6)
+		area.collision_layer & (1 << 4) or  # Layer 5 (Staff Projectiles - P1)
+		area.collision_layer & (1 << 5)     # Layer 6 (P2 Projectiles)
 	)
 
 	if not is_valid_attack:

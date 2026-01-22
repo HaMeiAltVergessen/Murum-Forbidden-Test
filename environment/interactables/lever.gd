@@ -158,7 +158,8 @@ func _find_door_by_id(door_id: String) -> Node:
 # ============================================================================
 
 func _on_body_entered(body: Node2D) -> void:
-	if body.is_in_group("player"):
+	# COMMIT 018: P2 Support - both P1 and P2 can interact with levers
+	if body.is_in_group("player") or body.is_in_group("player2"):
 		player_in_range = true
 
 		if prompt:
@@ -166,7 +167,8 @@ func _on_body_entered(body: Node2D) -> void:
 			prompt.text = "Press E to Toggle"
 
 func _on_body_exited(body: Node2D) -> void:
-	if body.is_in_group("player"):
+	# COMMIT 018: P2 Support
+	if body.is_in_group("player") or body.is_in_group("player2"):
 		player_in_range = false
 
 		if prompt:

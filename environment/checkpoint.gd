@@ -46,7 +46,8 @@ func _ready() -> void:
 
 func _on_body_entered(body: Node2D) -> void:
 	"""Activates checkpoint when player enters"""
-	if not body.is_in_group("player"):
+	# COMMIT 018: P2 Support - both P1 and P2 can activate checkpoints
+	if not body.is_in_group("player") and not body.is_in_group("player2"):
 		return
 
 	if is_activated:
