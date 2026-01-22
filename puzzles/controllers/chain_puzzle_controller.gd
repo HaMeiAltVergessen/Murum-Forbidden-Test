@@ -153,7 +153,13 @@ func _remove_all_crystals() -> void:
 
 func _on_load_solved() -> void:
 	"""Called when puzzle is already solved on load - removes all crystals"""
-	print("[ChainPuzzle] Already solved, removing crystals")
+	print("[ChainPuzzle] Already solved, waiting for elements to connect...")
+
+	# Wait for child elements to be connected first
+	await get_tree().process_frame
+	await get_tree().process_frame  # Extra frame to ensure _connect_crystals() finished
+
+	print("[ChainPuzzle] Removing %d crystals" % connected_crystals.size())
 	_remove_all_crystals()
 
 # ============================================================================

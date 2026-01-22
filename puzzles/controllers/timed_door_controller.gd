@@ -82,7 +82,13 @@ func _on_switch_activated(_switch_id: int, _activator: Node2D) -> void:
 
 func _on_load_solved() -> void:
 	"""Called when puzzle is already solved on load - removes switch and opens door permanently"""
-	print("[TimedDoorPuzzle] Already solved, opening door permanently and removing switch")
+	print("[TimedDoorPuzzle] Already solved, waiting for elements to connect...")
+
+	# Wait for child elements to be connected first
+	await get_tree().process_frame
+	await get_tree().process_frame  # Extra frame to ensure _find_components() finished
+
+	print("[TimedDoorPuzzle] Opening door permanently and removing switch")
 
 	# Open door permanently
 	if timed_door and is_instance_valid(timed_door):

@@ -87,7 +87,13 @@ func check_solution() -> bool:
 
 func _on_load_solved() -> void:
 	"""Called when puzzle is already solved on load - removes all pressure plates"""
-	print("[DualPlatePuzzle] Already solved, removing pressure plates")
+	print("[DualPlatePuzzle] Already solved, waiting for elements to connect...")
+
+	# Wait for child elements to be connected first
+	await get_tree().process_frame
+	await get_tree().process_frame  # Extra frame to ensure _connect_plates() finished
+
+	print("[DualPlatePuzzle] Removing %d pressure plates" % connected_plates.size())
 
 	# Remove all connected pressure plates
 	for plate in connected_plates:
