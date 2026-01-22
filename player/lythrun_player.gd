@@ -933,12 +933,17 @@ func spawn_attack_hitbox(damage: float) -> void:
 	hitbox.set_collision_layer_value(6, true)  # P2 Projectiles
 	hitbox.collision_mask = 0
 	hitbox.set_collision_mask_value(4, true)  # Enemies
+	hitbox.set_collision_mask_value(8, true)  # Interactables (COMMIT 018: For Puzzles)
 	# NOTE: P1 collision (Layer 2) only in PvP mode - not in co-op!
 	# CoopManager.set_pvp_collision() handles this
 
 	# CRITICAL: Enable monitoring for Area2D
 	hitbox.monitoring = true
 	hitbox.monitorable = true
+
+	# COMMIT 018: Add to group and set metadata for puzzle detection
+	hitbox.add_to_group("p2_projectiles")
+	hitbox.set_meta("owner_player", self)
 
 	print("[Void Strike] Hitbox created - Layer: %d, Mask: %d, Monitoring: %s" % [
 		hitbox.collision_layer,
@@ -1022,13 +1027,18 @@ func void_strike_charged() -> void:
 
 	# Collision setup (COMMIT 023.9.9: Check BOTH Layer 9 (PVP) AND Layer 11 (Enemies)!)
 	hitbox.collision_layer = 0
-	hitbox.set_collision_layer_value(9, true)  # P2 Abilities (Layer 9)
+	hitbox.set_collision_layer_value(6, true)  # P2 Projectiles (Layer 6) - COMMIT 018: Changed from Layer 9 for puzzle consistency
 	hitbox.collision_mask = 0
+	hitbox.set_collision_mask_value(8, true)   # Interactables (COMMIT 018: For Puzzles)
 	hitbox.set_collision_mask_value(9, true)   # EnemyHurtbox (PVP - Layer 9)
 	hitbox.set_collision_mask_value(11, true)  # PlayerHurtbox/EnemyHurtbox (Normal - Layer 11)
 
 	hitbox.monitoring = true
 	hitbox.monitorable = true
+
+	# COMMIT 018: Add to group and set metadata for puzzle detection
+	hitbox.add_to_group("p2_projectiles")
+	hitbox.set_meta("owner_player", self)
 
 	print("[Void Strike Charged] Hitbox created - Damage: %.1f, Radius: %.0f" % [charged_damage, charged_radius])
 
@@ -1775,11 +1785,16 @@ func spawn_void_orb_projectile(damage: float, charge_factor: float) -> void:
 	aoe.collision_layer = 0
 	aoe.set_collision_layer_value(6, true)  # P2 Projectiles (Layer 6)
 	aoe.collision_mask = 0
+	aoe.set_collision_mask_value(8, true)   # Interactables (COMMIT 018: For Puzzles)
 	aoe.set_collision_mask_value(9, true)   # EnemyHurtbox (PVP - Layer 9)
 	aoe.set_collision_mask_value(11, true)  # PlayerHurtbox/EnemyHurtbox (Normal - Layer 11)
 
 	aoe.monitoring = true
 	aoe.monitorable = false
+
+	# COMMIT 018: Add to group and set metadata for puzzle detection
+	aoe.add_to_group("p2_projectiles")
+	aoe.set_meta("owner_player", self)
 
 	print("[Void Orb AoE] Released! Charge: %.1fs | Damage: %.1f | Radius: %.0fpx" % [
 		orb_charge_time,

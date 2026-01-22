@@ -20,6 +20,11 @@ var hit_enemies: Array = []
 func _ready() -> void:
 	print("[Shadow Scythe] Spawned")
 
+	# COMMIT 018: Set owner_player metadata for puzzle detection
+	if owner_player:
+		set_meta("owner_player", owner_player)
+		print("[Shadow Scythe] Owner metadata set: %s" % owner_player.name)
+
 	# Visual setup - BRIGHTER and MORE VISIBLE
 	if sprite:
 		sprite.modulate = Color(0.8, 0.4, 1.0)  # Much brighter violet/purple
@@ -38,8 +43,13 @@ func _ready() -> void:
 	set_collision_layer_value(6, true)  # P2 Projectiles
 	collision_mask = 0
 	set_collision_mask_value(1, true)   # World (for walls)
+	set_collision_mask_value(8, true)   # Interactables (Layer 8) - COMMIT 018: For Puzzles
 	set_collision_mask_value(9, true)   # EnemyHurtbox (PVP - Layer 9)
 	set_collision_mask_value(11, true)  # PlayerHurtbox/EnemyHurtbox (Normal - Layer 11)
+
+	# Add to group for puzzle detection (COMMIT 018)
+	add_to_group("shadow_scythe")
+	add_to_group("p2_projectiles")
 
 	# Connect signals
 	area_entered.connect(_on_area_entered)  # Use area_entered for hurtboxes
