@@ -92,12 +92,20 @@ func _spawn_new_player() -> void:
 	var spawn_pos = Vector2(50, 360)
 
 	if has_save_data:
-		# Use saved position
-		var pos_data = SaveManager.pending_player_data.get("position", {})
-		spawn_pos = Vector2(pos_data.get("x", 50), pos_data.get("y", 360))
-		print("[Room01] Using saved position: ", spawn_pos)
+		# Loading from save - use checkpoint position if available
+		if WorldManager and WorldManager.last_checkpoint_position != Vector2.ZERO:
+			spawn_pos = WorldManager.last_checkpoint_position
+			print("[Room01] Using checkpoint position: ", spawn_pos)
+		else:
+			# No checkpoint yet - use default spawn point
+			var default_spawn = spawn_points.get_node_or_null("Default")
+			if default_spawn:
+				spawn_pos = default_spawn.global_position
+				print("[Room01] No checkpoint, using default spawn point: ", spawn_pos)
+			else:
+				print("[Room01] No checkpoint, using fallback position: ", spawn_pos)
 	else:
-		# Use default spawn point if it exists
+		# Normal spawn - use default spawn point
 		var default_spawn = spawn_points.get_node_or_null("Default")
 		if default_spawn:
 			spawn_pos = default_spawn.global_position
