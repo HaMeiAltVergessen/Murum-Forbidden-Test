@@ -7,6 +7,11 @@ class_name MainMenu
 @onready var options_button: Button = %OptionsButton
 @onready var quit_button: Button = %QuitButton
 @onready var music_player: AudioStreamPlayer = $MusicPlayer
+@onready var main_menu_container: Control = %MenuContainer
+
+# Options Menu
+const OPTIONS_MENU_SCENE = preload("res://ui/menus/options_submenu.tscn")
+var options_menu_instance: Control = null
 
 # Constants
 const TEST_ROOM_PATH = "res://levels/test_room.tscn"
@@ -49,8 +54,14 @@ func _ready():
 	new_game_button.pressed.connect(_on_new_game_pressed)
 	new_game_button.mouse_entered.connect(func(): print("[MainMenu DEBUG] Mouse entered: New Game Button"))
 
+	options_button.pressed.connect(_on_options_pressed)
+	options_button.mouse_entered.connect(func(): print("[MainMenu DEBUG] Mouse entered: Options Button"))
+
 	quit_button.pressed.connect(_on_quit_pressed)
 	quit_button.mouse_entered.connect(func(): print("[MainMenu DEBUG] Mouse entered: Quit Button"))
+
+	# Initialize Options Menu (create but keep hidden)
+	_setup_options_menu()
 
 	# Setup Focus Navigation (Skip disabled buttons)
 	_setup_focus_neighbors()
@@ -84,6 +95,18 @@ func _setup_focus_neighbors():
 		btn.focus_neighbor_bottom = btn.get_path_to(active_buttons[next_index])
 		btn.focus_previous = btn.get_path_to(active_buttons[prev_index])
 		btn.focus_next = btn.get_path_to(active_buttons[next_index])
+
+
+func _setup_options_menu():
+	"""Creates and hides options menu instance (COMMIT 017: Options Menu)"""
+	options_menu_instance = OPTIONS_MENU_SCENE.instantiate()
+	add_child(options_menu_instance)
+	options_menu_instance.visible = false
+
+	# Connect back signal
+	options_menu_instance.back_pressed.connect(_on_options_back_pressed)
+
+	print("[MainMenu] Options menu initialized (hidden)")
 
 
 # Button Callbacks
@@ -168,6 +191,42 @@ func _start_game(scene_path: String):
 	# Szene laden
 	print("[MainMenu] Calling change_scene_to_file...")
 	get_tree().change_scene_to_file(scene_path)
+
+
+func _on_options_pressed():
+	"""Shows options menu (COMMIT 017: Options Menu)"""
+	print("[MainMenu] ========== OPTIONS BUTTON PRESSED ==========")
+
+	# Hide main menu buttons
+	if main_menu_container:
+		main_menu_container.visible = false
+
+	# Show options menu
+	if options_menu_instance:
+		options_menu_instance.visible = true
+		print("[MainMenu] Options menu shown")
+
+
+func _on_options_back_pressed():
+	"""Returns from options menu to main menu (COMMIT 017: Options Menu)"""
+	print("[MainMenu] ========== RETURNING FROM OPTIONS ==========")
+
+	# Hide options menu
+	if options_menu_instance:
+		options_menu_instance.visible = false
+
+	# Show main menu buttons
+	if main_menu_container:
+		main_menu_container.visible = true
+
+	# Restore focus
+	var save_exists = SaveManager.has_save_file()
+	if save_exists and continue_button.visible:
+		continue_button.grab_focus()
+	else:
+		new_game_button.grab_focus()
+
+	print("[MainMenu] Returned to main menu")
 
 
 func _on_quit_pressed():

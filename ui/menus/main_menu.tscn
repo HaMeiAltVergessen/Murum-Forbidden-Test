@@ -45,6 +45,7 @@ grow_vertical = 2
 mouse_filter = 1
 
 [node name="MenuContainer" type="VBoxContainer" parent="CenterContainer"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
 mouse_filter = 1
@@ -109,7 +110,6 @@ theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_colors/font_pressed_color = Color(0.8, 0.8, 0.8, 1)
 theme_override_colors/font_disabled_color = Color(0.266667, 0.266667, 0.266667, 1)
 theme_override_font_sizes/font_size = 28
-disabled = true
 text = "Optionen"
 
 [node name="QuitButton" type="Button" parent="CenterContainer/MenuContainer/ButtonsContainer"]
