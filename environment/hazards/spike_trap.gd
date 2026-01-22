@@ -40,6 +40,16 @@ func _ready() -> void:
 		hitbox.monitoring = false
 		hitbox.body_entered.connect(_on_body_entered)
 
+		# COMMIT 018: Set collision mask for both P1 and P2
+		hitbox.collision_layer = 0
+		hitbox.set_collision_layer_value(7, true)  # Hazards (Layer 7)
+
+		hitbox.collision_mask = 0
+		hitbox.set_collision_mask_value(2, true)   # P1 Body (Layer 2)
+		hitbox.set_collision_mask_value(3, true)   # P2 Body (Layer 3)
+
+		print("[SpikeTrap] Collision setup - Layer: %d, Mask: %d" % [hitbox.collision_layer, hitbox.collision_mask])
+
 	# Setup warning zone
 	if warning_zone:
 		warning_zone.monitoring = false
@@ -141,7 +151,8 @@ func _enter_active() -> void:
 
 func _on_body_entered(body: Node2D) -> void:
 	"""Damages player on contact"""
-	if not body.is_in_group("player"):
+	# COMMIT 018: P2 Support - check both player groups
+	if not body.is_in_group("player") and not body.is_in_group("player2"):
 		return
 
 	if current_state != State.ACTIVE:
@@ -153,7 +164,7 @@ func _on_body_entered(body: Node2D) -> void:
 		var knockback_direction = (body.global_position - global_position).normalized()
 		var knockback = knockback_direction * 200.0  # Knockback force
 		hurtbox.take_damage(DAMAGE, knockback, 0.3)
-		print("[SpikeTrap] Hit player for %d damage" % DAMAGE)
+		print("[SpikeTrap] Hit %s for %d damage" % [body.name, DAMAGE])
 
 # ============================================================================
 # VISUALS

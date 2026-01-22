@@ -88,7 +88,16 @@ func _setup_trigger_mode() -> void:
 				pressure_plate.monitorable = true
 				pressure_plate.body_entered.connect(_on_plate_entered)
 				pressure_plate.body_exited.connect(_on_plate_exited)
-				print("[ArrowTrap] Pressure plate mode enabled")
+
+				# COMMIT 018: Set collision mask for both P1 and P2
+				pressure_plate.collision_layer = 0
+				pressure_plate.set_collision_layer_value(7, true)  # Hazards (Layer 7)
+
+				pressure_plate.collision_mask = 0
+				pressure_plate.set_collision_mask_value(2, true)   # P1 Body (Layer 2)
+				pressure_plate.set_collision_mask_value(3, true)   # P2 Body (Layer 3)
+
+				print("[ArrowTrap] Pressure plate mode enabled (Mask: %d)" % pressure_plate.collision_mask)
 
 		TriggerMode.PROXIMITY:
 			if proximity_detector:
@@ -97,12 +106,20 @@ func _setup_trigger_mode() -> void:
 				proximity_detector.body_entered.connect(_on_proximity_entered)
 				proximity_detector.body_exited.connect(_on_proximity_exited)
 
+				# COMMIT 018: Set collision mask for both P1 and P2
+				proximity_detector.collision_layer = 0
+				proximity_detector.set_collision_layer_value(7, true)  # Hazards (Layer 7)
+
+				proximity_detector.collision_mask = 0
+				proximity_detector.set_collision_mask_value(2, true)   # P1 Body (Layer 2)
+				proximity_detector.set_collision_mask_value(3, true)   # P2 Body (Layer 3)
+
 				# Set proximity range
 				var collision_shape = proximity_detector.get_node_or_null("CollisionShape2D")
 				if collision_shape and collision_shape.shape is CircleShape2D:
 					collision_shape.shape.radius = proximity_range
 
-				print("[ArrowTrap] Proximity mode enabled (range: %.0f)" % proximity_range)
+				print("[ArrowTrap] Proximity mode enabled (range: %.0f, Mask: %d)" % [proximity_range, proximity_detector.collision_mask])
 
 		TriggerMode.ALWAYS_ACTIVE:
 			print("[ArrowTrap] Always active mode")
