@@ -312,23 +312,27 @@ func _spawn_player_at_point(spawn_point_name: String) -> void:
 	if player is CharacterBody2D:
 		player.velocity = Vector2.ZERO
 
-	# Position player at spawn point
-	player.global_position = spawn_position
+	# Determine spawn position:
+	# - If loading from save: Use saved position (which is checkpoint position)
+	# - Otherwise: Use spawn point
+	var final_spawn_position = spawn_position
 
-	# If we have pending player data with position, use saved X but keep spawn Y
-	# This prevents player from spawning under floor or in air
 	if not pending_player_data.is_empty() and pending_player_data.has("position"):
+		# Loading from save - use saved position (which is checkpoint position)
 		var pos = pending_player_data["position"]
-		# Use saved X position but keep spawn point's Y position
-		player.global_position = Vector2(pos["x"], spawn_position.y)
-		print("[WorldManager] Player spawned at saved X (%.1f) with spawn Y (%.1f)" % [pos["x"], spawn_position.y])
+		final_spawn_position = Vector2(pos["x"], pos["y"])
+		print("[WorldManager] Loading save - spawning at saved checkpoint position: %v" % final_spawn_position)
 	else:
-		print("[WorldManager] Player spawned at spawn point: %v" % player.global_position)
+		# Normal room transition - use spawn point
+		print("[WorldManager] Normal transition - spawning at spawn point: %v" % final_spawn_position)
+
+	# Apply final position
+	player.global_position = final_spawn_position
 
 	# Update GameManager spawn position for respawning
-	# This ensures that if player dies, they respawn at room entrance
+	# This ensures that if player dies, they respawn at current position
 	GameManager.update_spawn_position(player.global_position)
-	print("[WorldManager] Updated respawn point to room entrance: %v" % player.global_position)
+	print("[WorldManager] Updated respawn point: %v" % player.global_position)
 
 func _restore_player_data() -> void:
 	"""Restores player state from pending data (after save load)"""
