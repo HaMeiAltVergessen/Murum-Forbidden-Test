@@ -56,7 +56,8 @@ func _ready() -> void:
 	set_collision_layer_value(11, true)  # Projectiles layer
 	collision_mask = 0
 	set_collision_mask_value(1, true)   # World
-	set_collision_mask_value(2, true)   # Player
+	set_collision_mask_value(2, true)   # P1 Body (Layer 2)
+	set_collision_mask_value(3, true)   # P2 Body (Layer 3) - COMMIT 018
 
 	# Trail
 	if trail:

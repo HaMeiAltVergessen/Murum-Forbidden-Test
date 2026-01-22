@@ -62,6 +62,16 @@ func _ready() -> void:
 		proximity_detector.monitorable = false
 		proximity_detector.body_entered.connect(_on_proximity_entered)
 
+		# COMMIT 018: Set collision mask for both P1 and P2
+		proximity_detector.collision_layer = 0
+		proximity_detector.set_collision_layer_value(7, true)  # Hazards (Layer 7)
+
+		proximity_detector.collision_mask = 0
+		proximity_detector.set_collision_mask_value(2, true)   # P1 Body (Layer 2)
+		proximity_detector.set_collision_mask_value(3, true)   # P2 Body (Layer 3)
+
+		print("[FallingRock] Proximity collision setup - Layer: %d, Mask: %d" % [proximity_detector.collision_layer, proximity_detector.collision_mask])
+
 	# Setup damage area
 	if damage_area:
 		damage_area.monitoring = false
