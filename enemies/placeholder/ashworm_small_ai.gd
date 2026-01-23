@@ -125,10 +125,10 @@ func _process_crawl(_delta: float) -> void:
 		_change_state(State.BURROW)
 		return
 
-	# Crawl toward player
+	# Crawl toward player (velocity applied, move_and_slide in _physics_process)
 	var direction = (target_player.global_position - owner_enemy.global_position).normalized()
-	owner_enemy.velocity = direction * CRAWL_SPEED
-	owner_enemy.move_and_slide()
+	owner_enemy.velocity.x = direction.x * CRAWL_SPEED
+	# Note: gravity applied in _physics_process
 
 	# Face direction
 	if sprite and "flip_h" in sprite:
@@ -168,8 +168,7 @@ func _process_underground() -> void:
 func _process_lunge(_delta: float) -> void:
 	# Lunge out of ground toward target position
 	var direction = (lunge_target_position - owner_enemy.global_position).normalized()
-	owner_enemy.velocity = direction * 300.0  # Fast lunge
-	owner_enemy.move_and_slide()
+	owner_enemy.velocity = direction * 300.0  # Fast lunge (move_and_slide in _physics_process)
 
 	# Show sprite emerging
 	if sprite:
