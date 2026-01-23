@@ -129,16 +129,20 @@ func _process_crawl(_delta: float) -> void:
 func _process_burrow() -> void:
 	owner_enemy.velocity = Vector2.ZERO
 
-	# Large burrow creates visual ground crack
+	# Large burrow: Move down + shake effect (ground crack)
 	if sprite and state_timer < BURROW_DURATION:
-		sprite.modulate.a = 1.0 - (state_timer / BURROW_DURATION)
-		# Shake effect
+		var burrow_progress = state_timer / BURROW_DURATION
+		sprite.position.y = burrow_progress * 140.0  # Move 140px down (large sized)
+
+		# Shake effect (ground rumble)
 		if int(state_timer * 20) % 2 == 0:
-			sprite.position.x = randf_range(-2, 2)
+			sprite.position.x = randf_range(-3, 3)
+		else:
+			sprite.position.x = 0
 
 	if state_timer >= BURROW_DURATION:
 		if sprite:
-			sprite.position = Vector2.ZERO
+			sprite.position.x = 0  # Stop shake
 		_change_state(State.UNDERGROUND)
 
 func _process_underground() -> void:
@@ -147,8 +151,10 @@ func _process_underground() -> void:
 	if owner_enemy.has_node("HurtboxComponent"):
 		owner_enemy.get_node("HurtboxComponent").monitorable = false
 
+	# Keep sprite underground
 	if sprite:
-		sprite.visible = false
+		sprite.position.y = 140.0
+		sprite.position.x = 0
 
 	aoe_center = target_player.global_position
 
@@ -156,18 +162,23 @@ func _process_underground() -> void:
 		_change_state(State.TELEGRAPH)
 
 func _process_telegraph(_delta: float) -> void:
-	# Create expanding circles as warning (visual telegraph)
+	# Create expanding warning lines
 	if telegraph_circles.is_empty():
 		_create_telegraph_circles()
 
-	# Animate circles
+	# Animate lines as expanding thin rings
 	for i in range(telegraph_circles.size()):
-		var circle = telegraph_circles[i]
-		if circle:
-			var t = state_timer / TELEGRAPH_DURATION
-			var radius = lerp(0.0, float(AOE_RANGE), t)
-			circle.scale = Vector2.ONE * (radius / 50.0)  # Assuming base circle is 50px
-			circle.modulate.a = 1.0 - t
+		var line = telegraph_circles[i]
+		if line:
+			var t = (state_timer / TELEGRAPH_DURATION) + (i * 0.15)  # Stagger each ring
+			t = clamp(t, 0.0, 1.0)
+			var current_radius = lerp(0.0, float(AOE_RANGE), t)
+
+			# Thin line expanding from center (only 3px thick)
+			var line_thickness = 3.0
+			line.size = Vector2(current_radius * 2, line_thickness)
+			line.position = aoe_center - Vector2(current_radius, line_thickness / 2)
+			line.modulate.a = 0.6 - (t * 0.5)  # Fade out as expanding
 
 	if state_timer >= TELEGRAPH_DURATION:
 		_clear_telegraph_circles()
@@ -183,10 +194,11 @@ func _process_aoe_lunge(_delta: float) -> void:
 		if AudioManager:
 			AudioManager.play_sfx("enemies/geist_death", 0.2)  # Placeholder impact sound
 
-	# Show sprite emerging
+	# Sprite bursts from underground (140px → 0px)
 	if sprite:
-		sprite.visible = true
-		sprite.modulate.a = min(1.0, state_timer / 0.2)
+		var emerge_progress = min(1.0, state_timer / 0.2)
+		sprite.position.y = lerp(140.0, 0.0, emerge_progress)
+		sprite.position.x = 0
 
 	# Deal AoE damage
 	if state_timer >= 0.1 and state_timer < 0.15:
@@ -203,12 +215,14 @@ func _process_vulnerable() -> void:
 		owner_enemy.get_node("HurtboxComponent").monitorable = true
 
 	if sprite:
-		sprite.visible = true
+		sprite.position.y = 0.0  # Keep at ground level
 		sprite.modulate = original_modulate
 
 		# Stagger animation (slight shake)
 		if int(state_timer * 10) % 2 == 0:
 			sprite.position.x = randf_range(-1, 1)
+		else:
+			sprite.position.x = 0
 
 	if state_timer >= VULNERABLE_DURATION:
 		if sprite:
@@ -220,14 +234,15 @@ func _process_vulnerable() -> void:
 # ============================================================================
 
 func _create_telegraph_circles() -> void:
-	"""Creates visual telegraph circles"""
+	"""Creates visual telegraph warning lines (thin rings)"""
 	for i in range(3):
-		var circle = ColorRect.new()
-		circle.size = Vector2(100, 100)
-		circle.position = aoe_center - circle.size / 2
-		circle.color = Color(1, 0, 0, 0.3)
-		get_tree().root.add_child(circle)
-		telegraph_circles.append(circle)
+		var line = ColorRect.new()
+		line.size = Vector2(4, 4)  # Thin line, will be scaled
+		line.position = aoe_center - Vector2(2, 2)  # Center on target
+		line.color = Color(1, 0, 0, 0.5 - i * 0.15)  # Fade each ring
+		line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		get_tree().root.add_child(line)
+		telegraph_circles.append(line)
 
 func _clear_telegraph_circles() -> void:
 	"""Removes telegraph circles"""
