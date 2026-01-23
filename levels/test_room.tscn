@@ -13,6 +13,9 @@
 [ext_resource type="PackedScene" uid="uid://monster_creature_001" path="res://enemies/placeholder/monster_creature.tscn" id="3_monster"]
 [ext_resource type="PackedScene" uid="uid://dark_fantasy_001" path="res://enemies/placeholder/dark_fantasy.tscn" id="3_darkfantasy"]
 [ext_resource type="PackedScene" uid="uid://cthulu_001" path="res://enemies/placeholder/cthulu.tscn" id="3_cthulu"]
+[ext_resource type="PackedScene" uid="uid://ashworm_small_001" path="res://enemies/placeholder/ashworm_small.tscn" id="3_ashworm_small"]
+[ext_resource type="PackedScene" uid="uid://ashworm_medium_001" path="res://enemies/placeholder/ashworm_medium.tscn" id="3_ashworm_medium"]
+[ext_resource type="PackedScene" uid="uid://ashworm_large_001" path="res://enemies/placeholder/ashworm_large.tscn" id="3_ashworm_large"]
 [ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="4_spike_trap_scene"]
 [ext_resource type="PackedScene" uid="uid://cakx4m2v7pqrs" path="res://environment/interactables/lever.tscn" id="5_lever_scene"]
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="6_door_scene"]
@@ -185,6 +188,24 @@ position = Vector2(1000, 500)
 
 [node name="Cthulu" parent="Enemies" instance=ExtResource("3_cthulu")]
 position = Vector2(1400, 500)
+
+[node name="AshwormSmall" parent="Enemies" instance=ExtResource("3_ashworm_small")]
+position = Vector2(500, 300)
+
+[node name="AshwormSmall2" parent="Enemies" instance=ExtResource("3_ashworm_small")]
+position = Vector2(600, 300)
+
+[node name="AshwormSmall3" parent="Enemies" instance=ExtResource("3_ashworm_small")]
+position = Vector2(700, 300)
+
+[node name="AshwormMedium" parent="Enemies" instance=ExtResource("3_ashworm_medium")]
+position = Vector2(900, 300)
+
+[node name="AshwormMedium2" parent="Enemies" instance=ExtResource("3_ashworm_medium")]
+position = Vector2(1050, 300)
+
+[node name="AshwormLarge" parent="Enemies" instance=ExtResource("3_ashworm_large")]
+position = Vector2(1300, 300)
 
 [node name="Environment" type="Node2D" parent="."]
 
