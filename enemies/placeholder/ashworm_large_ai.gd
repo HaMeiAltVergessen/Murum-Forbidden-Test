@@ -120,8 +120,8 @@ func _process_crawl(_delta: float) -> void:
 		return
 
 	var direction = (target_player.global_position - owner_enemy.global_position).normalized()
-	owner_enemy.velocity = direction * CRAWL_SPEED
-	owner_enemy.move_and_slide()
+	owner_enemy.velocity.x = direction.x * CRAWL_SPEED
+	# Note: gravity applied in _physics_process
 
 	if sprite and "flip_h" in sprite:
 		sprite.flip_h = direction.x < 0

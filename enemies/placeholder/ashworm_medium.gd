@@ -70,6 +70,19 @@ func _process(delta: float) -> void:
 		return
 
 # ============================================================================
+# PHYSICS - GRAVITY (like undead enemies)
+# ============================================================================
+
+func _physics_process(delta: float) -> void:
+	# Apply gravity when not burrowed (grounded worms!)
+	if not is_burrowed and not is_on_floor():
+		velocity.y += 980.0 * delta
+
+	# Apply gravity even when burrowed is ending
+	if not is_on_floor():
+		move_and_slide()
+
+# ============================================================================
 # DAMAGE HANDLING
 # ============================================================================
 
