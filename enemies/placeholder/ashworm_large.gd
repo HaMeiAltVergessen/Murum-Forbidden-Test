@@ -112,11 +112,11 @@ func _flash_damage() -> void:
 # BURROW STATE
 # ============================================================================
 
-func set_burrowed(burrowed: bool) -> void:
+func set_burrowed(is_underground: bool) -> void:
 	"""Controls invulnerability during burrow"""
-	is_burrowed = burrowed
+	is_burrowed = is_underground
 
-	if burrowed:
+	if is_underground:
 		burrowed.emit()
 		print("[AshwormLarge] Burrowed (invulnerable)")
 	else:
