@@ -459,18 +459,34 @@ func _apply_save_data(save_data: Dictionary) -> void:
 	var saved_world = player_data.get("current_world", "world_1_ruins")
 	var saved_room = player_data.get("current_room", "room_01_entry")
 
-	# Fallback if room is empty
-	if saved_room.is_empty():
-		saved_room = "worlds/world_1_ruins/section_1_entrance/room_01_entry"
-		print("[SaveManager] WARNING: Empty room in save, using fallback: %s" % saved_room)
+	# Build full path for section-based structure (COMMIT 019d FIX)
+	# If saved_room doesn't contain "/", it's a legacy simple room name
+	# Construct full path: worlds/{world}/{section}/{room}
+	var full_room_path = saved_room
 
-	# Use WorldManager to get correct scene path (supports section-based structure)
+	if "/" not in saved_room:
+		# Legacy format - construct section-based path
+		# Map room_01, room_02, room_03 → section_1_entrance
+		# Map room_04, room_05 → section_2_village
+		# etc.
+		var section = "section_1_entrance"  # Default to entrance section
+
+		# Simple heuristic: room_01-03 = entrance, room_04-06 = village, etc.
+		if saved_room.begins_with("room_0"):
+			var room_num = saved_room.substr(6, 1).to_int()
+			if room_num >= 4:
+				section = "section_2_village"
+
+		full_room_path = "worlds/%s/%s/%s" % [saved_world, section, saved_room]
+		print("[SaveManager] Constructed full path from legacy room: %s → %s" % [saved_room, full_room_path])
+
+	# Use WorldManager to get correct scene path
 	var scene_path = ""
 	if WorldManager and WorldManager.has_method("_get_room_path"):
-		scene_path = WorldManager._get_room_path(saved_room)
+		scene_path = WorldManager._get_room_path(full_room_path)
 	else:
 		# Fallback if WorldManager not available
-		scene_path = "res://%s.tscn" % saved_room if "/" in saved_room else "res://levels/%s.tscn" % saved_room
+		scene_path = "res://%s.tscn" % full_room_path
 
 	print("[SaveManager] Loading saved room: %s (path: %s)" % [saved_room, scene_path])
 
