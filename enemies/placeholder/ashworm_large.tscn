@@ -7,16 +7,16 @@
 [ext_resource type="Script" path="res://components/hitbox_component.gd" id="5"]
 
 [sub_resource type="RectangleShape2D" id="1"]
-size = Vector2(60, 60)
+size = Vector2(180, 180)
 
 [sub_resource type="RectangleShape2D" id="2"]
-size = Vector2(70, 70)
+size = Vector2(210, 210)
 
 [sub_resource type="RectangleShape2D" id="3"]
-size = Vector2(80, 80)
+size = Vector2(240, 240)
 
 [sub_resource type="CircleShape2D" id="4"]
-radius = 350.0
+radius = 1050.0
 
 [node name="AshwormLarge" type="CharacterBody2D" groups=["enemies", "ashworm_large"]]
 collision_layer = 8
@@ -29,7 +29,7 @@ hframes = 9
 vframes = 1
 frame = 0
 modulate = Color(0.157, 0.157, 0.157, 1)
-scale = Vector2(1.8, 1.8)
+scale = Vector2(5.4, 5.4)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("1")

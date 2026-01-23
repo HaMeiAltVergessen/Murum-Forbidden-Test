@@ -9,8 +9,8 @@ class_name AshwormMediumAI
 # CONSTANTS
 # ============================================================================
 
-const DETECTION_RANGE: float = 300.0
-const LUNGE_RANGE: float = 120.0
+const DETECTION_RANGE: float = 900.0
+const LUNGE_RANGE: float = 360.0
 const CRAWL_SPEED: float = 80.0
 const CRAWL_DURATION: float = 2.5
 const BURROW_DURATION: float = 0.7

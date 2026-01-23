@@ -9,8 +9,8 @@ class_name AshwormSmallAI
 # CONSTANTS
 # ============================================================================
 
-const DETECTION_RANGE: float = 250.0
-const LUNGE_RANGE: float = 50.0
+const DETECTION_RANGE: float = 750.0
+const LUNGE_RANGE: float = 150.0
 const CRAWL_SPEED: float = 60.0
 const CRAWL_DURATION: float = 3.0
 const BURROW_DURATION: float = 0.5

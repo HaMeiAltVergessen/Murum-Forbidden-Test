@@ -9,8 +9,8 @@ class_name AshwormLargeAI
 # CONSTANTS
 # ============================================================================
 
-const DETECTION_RANGE: float = 350.0
-const AOE_RANGE: float = 250.0
+const DETECTION_RANGE: float = 1050.0
+const AOE_RANGE: float = 750.0
 const CRAWL_SPEED: float = 100.0
 const CRAWL_DURATION: float = 2.0
 const BURROW_DURATION: float = 1.0
