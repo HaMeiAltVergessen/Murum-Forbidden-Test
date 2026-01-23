@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://ashworm_small_001"]
+
+[ext_resource type="PackedScene" uid="uid://bhjxv6dwpb3ya" path="res://enemies/base_enemy.tscn" id="1_base"]
+[ext_resource type="Texture2D" path="res://Assets/Placeholder/Gegner/Fire Worm/Fire Worm/Sprites/Worm/Walk.png" id="2_sprite"]
+
+[node name="AshwormSmall" instance=ExtResource("1_base")]
+max_health = 15
+move_speed = 60.0
+attack_damage = 8
+attack_range = 50.0
+detection_range = 250.0
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2_sprite")
+hframes = 9
+vframes = 1
+frame = 0
+modulate = Color(0.5, 0.5, 0.5, 1)
+scale = Vector2(0.8, 0.8)
