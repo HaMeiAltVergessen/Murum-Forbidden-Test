@@ -128,8 +128,10 @@ func _process_crawl(_delta: float) -> void:
 func _process_burrow() -> void:
 	owner_enemy.velocity = Vector2.ZERO
 
+	# Move sprite down into ground
 	if sprite and state_timer < BURROW_DURATION:
-		sprite.modulate.a = 1.0 - (state_timer / BURROW_DURATION)
+		var burrow_progress = state_timer / BURROW_DURATION
+		sprite.position.y = burrow_progress * 100.0  # Move 100px down (medium sized)
 
 	if state_timer >= BURROW_DURATION:
 		_change_state(State.UNDERGROUND)
@@ -140,8 +142,9 @@ func _process_underground() -> void:
 	if owner_enemy.has_node("HurtboxComponent"):
 		owner_enemy.get_node("HurtboxComponent").monitorable = false
 
+	# Keep sprite underground
 	if sprite:
-		sprite.visible = false
+		sprite.position.y = 100.0
 
 	lunge_target_position = target_player.global_position
 
@@ -152,9 +155,10 @@ func _process_lunge(_delta: float, is_first_lunge: bool) -> void:
 	var direction = (lunge_target_position - owner_enemy.global_position).normalized()
 	owner_enemy.velocity = direction * 350.0  # move_and_slide in _physics_process
 
+	# Sprite emerges from underground (100px → 0px)
 	if sprite:
-		sprite.visible = true
-		sprite.modulate.a = min(1.0, state_timer / LUNGE_DURATION)
+		var emerge_progress = min(1.0, state_timer / LUNGE_DURATION)
+		sprite.position.y = lerp(100.0, 0.0, emerge_progress)
 
 	if owner_enemy.has_node("HitboxComponent"):
 		owner_enemy.get_node("HitboxComponent").monitoring = true
@@ -171,8 +175,10 @@ func _process_lunge(_delta: float, is_first_lunge: bool) -> void:
 func _process_reburrow() -> void:
 	owner_enemy.velocity = Vector2.ZERO
 
+	# Move sprite back down into ground
 	if sprite and state_timer < 0.3:
-		sprite.modulate.a = 1.0 - (state_timer / 0.3)
+		var reburrow_progress = state_timer / 0.3
+		sprite.position.y = reburrow_progress * 100.0  # Move back down
 
 	if state_timer >= 0.3:
 		# Go underground and prepare second lunge from player's direction
@@ -198,8 +204,9 @@ func _process_surface() -> void:
 	if owner_enemy.has_node("HitboxComponent"):
 		owner_enemy.get_node("HitboxComponent").monitoring = false
 
+	# Restore sprite to ground level
 	if sprite:
-		sprite.visible = true
+		sprite.position.y = 0.0
 		sprite.modulate = original_modulate
 
 	if state_timer >= SURFACE_DURATION:

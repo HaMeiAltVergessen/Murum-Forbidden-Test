@@ -137,10 +137,10 @@ func _process_crawl(_delta: float) -> void:
 func _process_burrow() -> void:
 	owner_enemy.velocity = Vector2.ZERO
 
-	# Visual: Hide sprite gradually (burrowing underground)
+	# Visual: Move sprite down into ground (burrowing underground)
 	if sprite and state_timer < BURROW_DURATION:
-		var alpha = 1.0 - (state_timer / BURROW_DURATION)
-		sprite.modulate.a = alpha
+		var burrow_progress = state_timer / BURROW_DURATION
+		sprite.position.y = burrow_progress * 80.0  # Move 80px down into ground
 
 	if state_timer >= BURROW_DURATION:
 		# Fully underground - become invulnerable
@@ -154,9 +154,9 @@ func _process_underground() -> void:
 		var hurtbox = owner_enemy.get_node("HurtboxComponent")
 		hurtbox.monitorable = false
 
-	# Hide sprite completely
+	# Keep sprite underground
 	if sprite:
-		sprite.visible = false
+		sprite.position.y = 80.0  # Fully underground
 
 	# Store target position for lunge
 	lunge_target_position = target_player.global_position
@@ -170,11 +170,10 @@ func _process_lunge(_delta: float) -> void:
 	var direction = (lunge_target_position - owner_enemy.global_position).normalized()
 	owner_enemy.velocity = direction * 300.0  # Fast lunge (move_and_slide in _physics_process)
 
-	# Show sprite emerging
+	# Sprite emerges from underground (80px → 0px)
 	if sprite:
-		sprite.visible = true
-		var alpha = min(1.0, state_timer / LUNGE_DURATION)
-		sprite.modulate.a = alpha
+		var emerge_progress = min(1.0, state_timer / LUNGE_DURATION)
+		sprite.position.y = lerp(80.0, 0.0, emerge_progress)
 
 	# Enable hitbox during lunge
 	if owner_enemy.has_node("HitboxComponent"):
@@ -202,9 +201,9 @@ func _process_surface() -> void:
 		var hitbox = owner_enemy.get_node("HitboxComponent")
 		hitbox.monitoring = false
 
-	# Restore sprite
+	# Restore sprite to ground level
 	if sprite:
-		sprite.visible = true
+		sprite.position.y = 0.0
 		sprite.modulate = original_modulate
 
 	if state_timer >= SURFACE_DURATION:
