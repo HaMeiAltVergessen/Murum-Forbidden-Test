@@ -240,6 +240,16 @@ signal subtitle_hidden()
 ## Emitted when user requests to skip a cutscene
 signal cutscene_skip_requested(cutscene_id: String)
 
+# ============ DIALOG SIGNALS ============
+## Emitted when a dialog starts
+signal dialog_started(dialog_id: String)
+
+## Emitted when a dialog finishes (completed or choice selected)
+signal dialog_finished(dialog_id: String)
+
+## Emitted when a dialog choice is selected
+signal dialog_choice_selected(dialog_id: String, choice_index: int)
+
 # ============ SAVE/LOAD SIGNALS ============
 ## Emitted when checkpoint is activated
 signal checkpoint_activated(checkpoint: Node)
