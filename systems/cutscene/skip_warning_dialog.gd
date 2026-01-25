@@ -68,9 +68,9 @@ func _input(event: InputEvent) -> void:
 
 	# Hold-to-Skip Input
 	if _use_hold_mode:
-		if event.is_action_pressed("ui_accept") or event.is_action_pressed("interact"):
+		if event.is_action_pressed("ui_accept") or event.is_action_pressed("p1_interact"):
 			_is_holding = true
-		elif event.is_action_released("ui_accept") or event.is_action_released("interact"):
+		elif event.is_action_released("ui_accept") or event.is_action_released("p1_interact"):
 			_is_holding = false
 
 	# Escape zum Abbrechen

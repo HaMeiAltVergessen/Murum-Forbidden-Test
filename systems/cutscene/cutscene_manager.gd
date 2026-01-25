@@ -58,8 +58,8 @@ func _input(event: InputEvent) -> void:
 	if not _is_playing or _is_paused:
 		return
 
-	# Skip-Input erkennen
-	if event.is_action_pressed("ui_cancel") or event.is_action_pressed("interact"):
+	# Skip-Input erkennen (ESC oder E/Interact)
+	if event.is_action_pressed("ui_cancel") or event.is_action_pressed("p1_interact"):
 		_handle_skip_request()
 
 
@@ -68,7 +68,7 @@ func _process(delta: float) -> void:
 		return
 
 	# Track hold-to-skip
-	if Input.is_action_pressed("ui_cancel") or Input.is_action_pressed("interact"):
+	if Input.is_action_pressed("ui_cancel") or Input.is_action_pressed("p1_interact"):
 		_skip_hold_time += delta
 		if _skip_hold_time >= SKIP_HOLD_DURATION and not _skip_requested:
 			_handle_skip_request()
