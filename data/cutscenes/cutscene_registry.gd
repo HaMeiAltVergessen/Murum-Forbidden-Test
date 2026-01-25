@@ -74,11 +74,19 @@ static func _register_all_cutscenes() -> void:
 	# INTRO CUTSCENE - Wird nach "Neues Spiel" abgespielt
 	# ==========================================================================
 
-	var intro = CutsceneDefinition.new("intro", CutsceneType.SEQUENCE)
-	intro.video_path = "res://Assets/AIVids/AIRandomvid01.ogv"
-	intro.image_paths = ["res://Assets/AIAssets/tempel01.jpg"]
-	intro.audio_path = "res://Music/Welt 3 Spiegel.mp3"
-	intro.image_duration = 10.0
+	var intro = CutsceneDefinition.new("intro", CutsceneType.IMAGE)
+	intro.image_paths = [
+		"res://Assets/AIAssets/tempel01.jpg",
+		"res://Assets/AIAssets/Tempel02.jpg",
+		"res://Assets/AIAssets/tempel03.jpg",
+		"res://Assets/AIAssets/world1lvl01.jpg",
+		"res://Assets/AIAssets/wolrd01lvl0102.jpg",
+		"res://Assets/AIAssets/world1lvl1bg02.jpg",
+		"res://Assets/AIAssets/world1lvl1bg03.jpg",
+		"res://Assets/AIAssets/dorf.jpg"
+	]
+	intro.audio_path = "res://Music/Welt 01 Ruins.mp3"
+	intro.image_duration = 3.75  # 30 Sekunden / 8 Bilder = 3.75 Sek pro Bild
 	intro.skippable = true
 	intro.show_skip_warning = false
 	intro.title = "Prolog"
