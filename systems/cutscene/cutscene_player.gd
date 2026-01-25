@@ -32,7 +32,7 @@ var _show_skip_warning: bool = false
 ## Cutscene-Daten
 var _video_path: String = ""
 var _audio_path: String = ""
-var _image_paths: Array[String] = []
+var _image_paths: Array = []  # Untyped to avoid assignment issues
 var _subtitle_path: String = ""
 var _duration: float = 0.0
 var _current_time: float = 0.0
@@ -103,7 +103,7 @@ func _setup_ui() -> void:
 	# Audio Player für Voice-Over oder Audio-Only
 	_audio_player = AudioStreamPlayer.new()
 	_audio_player.name = "AudioPlayer"
-	_audio_player.bus = "SFX"  # Oder eigener "Cutscene" Bus
+	_audio_player.bus = "Master"  # Use Master bus (SFX bus doesn't exist)
 	_audio_player.finished.connect(_on_audio_finished)
 	add_child(_audio_player)
 
@@ -150,13 +150,18 @@ func play_video(video_path: String, cutscene_id: String = "", subtitle_path: Str
 
 ## Spielt eine Bild-Cutscene ab (Einzelbild oder Sequenz)
 func play_image(image_paths: Variant, duration: float = IMAGE_DISPLAY_DURATION, cutscene_id: String = "", audio_path: String = "", subtitle_path: String = "", skippable: bool = true, show_warning: bool = false) -> void:
+	print("[CutscenePlayer] play_image() called with id: ", cutscene_id)
 	_reset_state()
 
 	# Konvertiere zu Array falls einzelner Pfad
 	if image_paths is String:
 		_image_paths = [image_paths]
+		print("[CutscenePlayer] Converted single image path to array")
 	else:
-		_image_paths.assign(image_paths)
+		_image_paths.clear()
+		for path in image_paths:
+			_image_paths.append(path)
+		print("[CutscenePlayer] Copied ", _image_paths.size(), " image paths")
 
 	if _image_paths.is_empty():
 		push_error("CutscenePlayer: No images provided")
@@ -190,8 +195,10 @@ func play_image(image_paths: Variant, duration: float = IMAGE_DISPLAY_DURATION, 
 	_start_playback()
 
 	# Starte Image Timer
+	print("[CutscenePlayer] Starting image timer with duration: ", duration)
 	_image_timer.wait_time = duration
 	_image_timer.start()
+	print("[CutscenePlayer] Timer started, is_stopped=", _image_timer.is_stopped())
 
 
 ## Spielt eine Audio-Only Cutscene ab
@@ -372,19 +379,31 @@ func _on_audio_finished() -> void:
 
 ## Image Timer Callback
 func _on_image_timer_timeout() -> void:
+	print("[CutscenePlayer] _on_image_timer_timeout() called, _current_time=", _current_time)
+
 	# Zeige nächstes Bild oder beende
 	var current_image_index = int(_current_time / IMAGE_DISPLAY_DURATION)
 	var next_index = current_image_index + 1
+
+	print("[CutscenePlayer] current_index=", current_image_index, " next_index=", next_index, " images=", _image_paths.size())
 
 	if next_index < _image_paths.size():
 		_show_image(next_index)
 		_image_timer.start()
 	else:
+		print("[CutscenePlayer] No more images, finishing cutscene")
 		_finish_cutscene()
 
 
 ## Beendet die Cutscene
 func _finish_cutscene() -> void:
+	print("[CutscenePlayer] _finish_cutscene() called for: ", _cutscene_id)
+
+	# Prevent double-finish
+	if not _is_playing:
+		print("[CutscenePlayer] Already finished, skipping")
+		return
+
 	_is_playing = false
 	set_process(false)
 
@@ -400,18 +419,29 @@ func _finish_cutscene() -> void:
 		_subtitle_display.queue_free()
 		_subtitle_display = null
 
+	# Capture values for callback (in case they change)
+	var finished_id = _cutscene_id
+	var was_skipped = _was_skipped
+
 	# Fade Out
 	if _fade_tween and _fade_tween.is_valid():
 		_fade_tween.kill()
 
 	_fade_tween = create_tween()
-	_fade_tween.tween_property(_background, "modulate:a", 0.0, FADE_DURATION)
-	_fade_tween.tween_callback(func():
+	if _fade_tween:
+		_fade_tween.tween_property(_background, "modulate:a", 0.0, FADE_DURATION)
+		_fade_tween.tween_callback(func():
+			visible = false
+			_video_player.visible = false
+			_texture_rect.visible = false
+			print("[CutscenePlayer] Emitting cutscene_finished for: ", finished_id)
+			cutscene_finished.emit(finished_id, was_skipped)
+		)
+	else:
+		# Fallback if tween creation failed
+		print("[CutscenePlayer] Tween creation failed, emitting signal directly")
 		visible = false
-		_video_player.visible = false
-		_texture_rect.visible = false
-		cutscene_finished.emit(_cutscene_id, _was_skipped)
-	)
+		cutscene_finished.emit(finished_id, was_skipped)
 
 
 ## Gibt den aktuellen Fortschritt zurück (0.0 - 1.0)
