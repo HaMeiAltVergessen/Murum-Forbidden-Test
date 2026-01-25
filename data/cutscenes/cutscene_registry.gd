@@ -74,9 +74,10 @@ static func _register_all_cutscenes() -> void:
 	# INTRO CUTSCENE - Wird nach "Neues Spiel" abgespielt
 	# ==========================================================================
 
-	var intro = CutsceneDefinition.new("intro", CutsceneType.IMAGE)
+	var intro = CutsceneDefinition.new("intro", CutsceneType.SEQUENCE)
+	intro.video_path = "res://Assets/AIVids/AIRandomvid01.ogv"
 	intro.image_paths = ["res://Assets/AIAssets/tempel01.jpg"]
-	intro.audio_path = "res://Music/Welt 01 Ruins.mp3"
+	intro.audio_path = "res://Music/Welt 3 Spiegel.mp3"
 	intro.image_duration = 10.0
 	intro.skippable = true
 	intro.show_skip_warning = false
