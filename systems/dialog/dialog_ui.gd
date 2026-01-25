@@ -7,14 +7,16 @@ signal advance_requested
 
 @onready var blur_background: ColorRect = $BlurBackground
 @onready var character_sprite: TextureRect = $CharacterSprite
-@onready var dialog_box: Panel = $DialogBox
+@onready var dialog_box: PanelContainer = $DialogBox
 @onready var speaker_label: Label = $DialogBox/MarginContainer/VBoxContainer/SpeakerLabel
-@onready var text_label: Label = $DialogBox/MarginContainer/VBoxContainer/TextLabel
+@onready var text_label: RichTextLabel = $DialogBox/MarginContainer/VBoxContainer/TextLabel
 @onready var choices_container: VBoxContainer = $DialogBox/MarginContainer/VBoxContainer/ChoicesContainer
 
 var current_entry: DialogEntry = null
 var typewriter_timer: Timer = null
 var is_typing: bool = false
+var current_char_index: int = 0
+var full_text: String = ""
 
 
 func _ready() -> void:
@@ -38,29 +40,40 @@ func _input(event: InputEvent) -> void:
 	if not visible:
 		return
 
-	if event.is_action_pressed("ui_accept") or (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed):
+	# Only handle dialog-specific inputs
+	if event.is_action_pressed("ui_accept") or event.is_action_pressed("p1_interact"):
+		get_viewport().set_input_as_handled()
+		advance_requested.emit()
+		return
+
+	# Also accept left mouse click
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		get_viewport().set_input_as_handled()
 		advance_requested.emit()
 
 
 func show_entry(entry: DialogEntry) -> void:
 	current_entry = entry
-	print("[DialogUI] show_entry called - visible: ", visible, " text_label: ", text_label != null)
+	print("[DialogUI] show_entry called - speaker: ", entry.speaker_name)
 
+	# Character sprite
 	if entry.speaker_sprite:
 		character_sprite.texture = entry.speaker_sprite
 		character_sprite.visible = true
 	else:
 		character_sprite.visible = false
 
+	# Speaker name
 	if entry.speaker_name.is_empty():
 		speaker_label.visible = false
 	else:
 		speaker_label.text = entry.speaker_name
 		speaker_label.visible = true
 
-	text_label.text = entry.text
-	text_label.visible_characters = 0
+	# Setup text for typewriter
+	full_text = entry.text
+	current_char_index = 0
+	text_label.text = ""
 
 	_clear_choices()
 	_start_typewriter(entry.text_speed)
@@ -70,28 +83,34 @@ func _start_typewriter(chars_per_second: float) -> void:
 	is_typing = true
 	typewriter_timer.wait_time = 1.0 / chars_per_second
 	typewriter_timer.start()
+	print("[DialogUI] Typewriter started - speed: ", chars_per_second)
 
 
 func _on_typewriter_tick() -> void:
-	text_label.visible_characters += 1
+	if current_char_index < full_text.length():
+		current_char_index += 1
+		text_label.text = full_text.substr(0, current_char_index)
 
-	if text_label.visible_characters >= text_label.text.length():
+	if current_char_index >= full_text.length():
 		_stop_typewriter()
 
 
 func _stop_typewriter() -> void:
 	typewriter_timer.stop()
 	is_typing = false
+	text_label.text = full_text
+	print("[DialogUI] Typewriter stopped - text complete")
 
 
 func complete_text_immediately() -> void:
 	if is_typing:
-		text_label.visible_characters = text_label.text.length()
+		current_char_index = full_text.length()
+		text_label.text = full_text
 		_stop_typewriter()
 
 
 func is_text_fully_shown() -> bool:
-	return not is_typing and text_label.visible_characters >= text_label.text.length()
+	return not is_typing and current_char_index >= full_text.length()
 
 
 func show_choices(choices: Array[DialogChoice]) -> void:
@@ -100,12 +119,15 @@ func show_choices(choices: Array[DialogChoice]) -> void:
 	for i in choices.size():
 		var button := Button.new()
 		button.text = choices[i].choice_text
-		button.custom_minimum_size = Vector2(400, 40)
+		button.custom_minimum_size = Vector2(400, 50)
 		button.pressed.connect(_on_choice_button_pressed.bind(i))
+		button.focus_mode = Control.FOCUS_ALL
 		choices_container.add_child(button)
 
 	choices_container.visible = true
 
+	# Focus first button
+	await get_tree().process_frame
 	if choices_container.get_child_count() > 0:
 		choices_container.get_child(0).grab_focus()
 
@@ -125,3 +147,4 @@ func hide_dialog() -> void:
 	_stop_typewriter()
 	_clear_choices()
 	character_sprite.visible = false
+	print("[DialogUI] Dialog hidden")
