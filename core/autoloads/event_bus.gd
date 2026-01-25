@@ -215,6 +215,31 @@ signal game_unpaused()
 ## Emitted when returning to main menu
 signal return_to_menu()
 
+# ============ CUTSCENE SIGNALS ============
+## Emitted when a cutscene starts playing
+signal cutscene_started(cutscene_id: String)
+
+## Emitted when a cutscene finishes (completed or skipped)
+signal cutscene_finished(cutscene_id: String, was_skipped: bool)
+
+## Emitted when a cutscene is paused
+signal cutscene_paused(cutscene_id: String)
+
+## Emitted when a cutscene is resumed
+signal cutscene_resumed(cutscene_id: String)
+
+## Emitted when an engine cutscene (in-game camera sequence) starts
+signal engine_cutscene_started(cutscene_id: String)
+
+## Emitted when a subtitle is shown
+signal subtitle_shown(text: String, speaker: String)
+
+## Emitted when a subtitle is hidden
+signal subtitle_hidden()
+
+## Emitted when user requests to skip a cutscene
+signal cutscene_skip_requested(cutscene_id: String)
+
 # ============ SAVE/LOAD SIGNALS ============
 ## Emitted when checkpoint is activated
 signal checkpoint_activated(checkpoint: Node)

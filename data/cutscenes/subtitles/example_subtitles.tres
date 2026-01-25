@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="SubtitleData" load_steps=2 format=3]
+
+; Beispiel-Untertitel-Resource für das Cutscene-System
+; Zeigt die Struktur für Untertitel-Daten
+;
+; Um diese Resource zu verwenden:
+; 1. Lade die CutsceneResources in deinem Script
+; 2. Erstelle SubtitleData und SubtitleEntry Instanzen programmatisch
+;
+; Beispiel-Code:
+;   var subtitle_data = CutsceneResources.SubtitleData.new()
+;   subtitle_data.add_entry(0.5, "Die Reise beginnt...", 3.0, "Erzähler", Color.WHITE)
+;   subtitle_data.add_entry(4.0, "Was ist das für ein Ort?", 2.5, "Murum", Color.CYAN)
+;
+; Diese .tres Datei dient als Referenz für die Datenstruktur.
+
+[ext_resource type="Script" path="res://resources/cutscene_resources.gd" id="1_resources"]
+
+[resource]
+script = ExtResource("1_resources")
+; Hinweis: Die tatsächlichen Untertitel werden programmatisch erstellt
+; da Godot keine verschachtelten Custom Resources in .tres gut unterstützt
