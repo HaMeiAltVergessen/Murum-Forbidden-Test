@@ -32,15 +32,15 @@ class CutsceneDefinition extends RefCounted:
 	var show_skip_warning: bool = false
 	var subtitle_file: String = ""
 
-	# Typ-spezifische Felder
+	# Typ-spezifische Felder (ohne strikte Typisierung um Fehler zu vermeiden)
 	var video_path: String = ""
 	var audio_path: String = ""
-	var image_paths: Array[String] = []
+	var image_paths: Array = []  # Array von Strings
 	var image_duration: float = 5.0
 	var engine_cutscene_path: String = ""  # Pfad zur EngineCutscene Resource
 
 	# Für Sequenzen
-	var segments: Array[CutsceneSegment] = []
+	var segments: Array = []  # Array von CutsceneSegment
 
 	# Metadaten
 	var title: String = ""
@@ -71,75 +71,20 @@ static func initialize() -> void:
 ## Registriert alle Cutscenes (hier werden alle Cutscenes definiert)
 static func _register_all_cutscenes() -> void:
 	# ==========================================================================
-	# BEISPIEL-CUTSCENES (können durch echte ersetzt werden)
+	# INTRO CUTSCENE - Wird nach "Neues Spiel" abgespielt
 	# ==========================================================================
 
-	# Intro-Cutscene (Video)
-	var intro = CutsceneDefinition.new("intro", CutsceneType.VIDEO)
-	intro.video_path = "res://data/cutscenes/videos/intro.ogv"
-	intro.subtitle_file = "res://data/cutscenes/subtitles/intro_subtitles.tres"
+	var intro = CutsceneDefinition.new("intro", CutsceneType.IMAGE)
+	intro.image_paths = ["res://Assets/AIAssets/tempel01.jpg"]
+	intro.audio_path = "res://Music/Welt 01 Ruins.mp3"
+	intro.image_duration = 10.0
 	intro.skippable = true
-	intro.show_skip_warning = true
+	intro.show_skip_warning = false
 	intro.title = "Prolog"
-	intro.description = "Die Geschichte beginnt..."
+	intro.description = "Die Reise beginnt..."
 	intro.chapter = "Prolog"
-	intro.is_story_critical = true
+	intro.is_story_critical = false
 	_register(intro)
-
-	# Ruinen-Intro (Video mit Untertiteln)
-	var ruins_intro = CutsceneDefinition.new("intro_ruins", CutsceneType.VIDEO)
-	ruins_intro.video_path = "res://data/cutscenes/videos/intro_ruins.ogv"
-	ruins_intro.subtitle_file = "res://data/cutscenes/subtitles/intro_ruins_subtitles.tres"
-	ruins_intro.skippable = true
-	ruins_intro.show_skip_warning = false
-	ruins_intro.title = "Die Ruinen"
-	ruins_intro.chapter = "Kapitel 1"
-	_register(ruins_intro)
-
-	# Boss-Enthüllung (Engine-Cutscene)
-	var boss_reveal = CutsceneDefinition.new("boss_reveal", CutsceneType.ENGINE)
-	boss_reveal.engine_cutscene_path = "res://data/cutscenes/engine/boss_reveal.tres"
-	boss_reveal.subtitle_file = "res://data/cutscenes/subtitles/boss_reveal_subtitles.tres"
-	boss_reveal.skippable = true
-	boss_reveal.show_skip_warning = true
-	boss_reveal.title = "Der Wächter erwacht"
-	boss_reveal.is_story_critical = true
-	_register(boss_reveal)
-
-	# Arena-Eingang (Engine-Cutscene, kurz)
-	var arena_entrance = CutsceneDefinition.new("arena_entrance", CutsceneType.ENGINE)
-	arena_entrance.engine_cutscene_path = "res://data/cutscenes/engine/arena_entrance.tres"
-	arena_entrance.skippable = true
-	arena_entrance.show_skip_warning = false
-	arena_entrance.title = "Die Arena"
-	_register(arena_entrance)
-
-	# Boss-Niederlage (Bild + Audio)
-	var boss_defeat = CutsceneDefinition.new("boss_defeat", CutsceneType.IMAGE)
-	boss_defeat.image_paths = ["res://data/cutscenes/images/boss_defeat_01.png"]
-	boss_defeat.audio_path = "res://data/cutscenes/audio/boss_defeat_narration.ogg"
-	boss_defeat.subtitle_file = "res://data/cutscenes/subtitles/boss_defeat_subtitles.tres"
-	boss_defeat.image_duration = 8.0
-	boss_defeat.skippable = true
-	boss_defeat.title = "Sieg"
-	_register(boss_defeat)
-
-	# Gemischte Sequenz: Boss-Intro (Video -> Engine)
-	var boss_intro_sequence = CutsceneDefinition.new("boss_intro_sequence", CutsceneType.SEQUENCE)
-	boss_intro_sequence.segments = [
-		CutsceneSegment.new(CutsceneType.VIDEO, {
-			"video_path": "res://data/cutscenes/videos/boss_approach.ogv",
-			"subtitle_file": "res://data/cutscenes/subtitles/boss_approach_subtitles.tres"
-		}),
-		CutsceneSegment.new(CutsceneType.ENGINE, {
-			"engine_path": "res://data/cutscenes/engine/boss_reveal.tres"
-		})
-	]
-	boss_intro_sequence.skippable = true
-	boss_intro_sequence.show_skip_warning = true
-	boss_intro_sequence.title = "Boss-Einführung"
-	boss_intro_sequence.is_story_critical = true
-	_register(boss_intro_sequence)
 
 
 ## Registriert eine Cutscene
@@ -172,18 +117,18 @@ static func has_cutscene(id: String) -> bool:
 
 
 ## Gibt alle Cutscene-IDs zurück
-static func get_all_ids() -> Array[String]:
+static func get_all_ids() -> Array:
 	initialize()
-	var ids: Array[String] = []
+	var ids: Array = []
 	for key in _cutscenes.keys():
 		ids.append(key)
 	return ids
 
 
 ## Gibt alle Cutscenes eines Typs zurück
-static func get_cutscenes_by_type(type: CutsceneType) -> Array[CutsceneDefinition]:
+static func get_cutscenes_by_type(type: CutsceneType) -> Array:
 	initialize()
-	var result: Array[CutsceneDefinition] = []
+	var result: Array = []
 	for definition in _cutscenes.values():
 		if definition.type == type:
 			result.append(definition)
@@ -191,9 +136,9 @@ static func get_cutscenes_by_type(type: CutsceneType) -> Array[CutsceneDefinitio
 
 
 ## Gibt alle Story-kritischen Cutscenes zurück
-static func get_story_critical_cutscenes() -> Array[CutsceneDefinition]:
+static func get_story_critical_cutscenes() -> Array:
 	initialize()
-	var result: Array[CutsceneDefinition] = []
+	var result: Array = []
 	for definition in _cutscenes.values():
 		if definition.is_story_critical:
 			result.append(definition)
@@ -201,9 +146,9 @@ static func get_story_critical_cutscenes() -> Array[CutsceneDefinition]:
 
 
 ## Gibt alle Cutscenes eines Kapitels zurück
-static func get_cutscenes_by_chapter(chapter: String) -> Array[CutsceneDefinition]:
+static func get_cutscenes_by_chapter(chapter: String) -> Array:
 	initialize()
-	var result: Array[CutsceneDefinition] = []
+	var result: Array = []
 	for definition in _cutscenes.values():
 		if definition.chapter == chapter:
 			result.append(definition)
@@ -227,15 +172,10 @@ static func detect_type(path_or_id: String) -> CutsceneType:
 		"ogg", "mp3", "wav":
 			return CutsceneType.AUDIO
 		"tres", "res":
-			# Könnte EngineCutscene sein, prüfe Resource
-			if ResourceLoader.exists(path_or_id):
-				var res = load(path_or_id)
-				if res is CutsceneResources.EngineCutscene:
-					return CutsceneType.ENGINE
-			return CutsceneType.VIDEO  # Fallback
+			return CutsceneType.ENGINE
 
-	# Default: Video
-	return CutsceneType.VIDEO
+	# Default: Image
+	return CutsceneType.IMAGE
 
 
 ## Erstellt eine temporäre Cutscene-Definition aus einem Pfad
@@ -254,11 +194,6 @@ static func create_from_path(path: String) -> CutsceneDefinition:
 			definition.audio_path = path
 		CutsceneType.ENGINE:
 			definition.engine_cutscene_path = path
-
-	# Versuche automatisch Untertitel zu finden
-	var subtitle_path = path.get_base_dir() + "/subtitles/" + id + "_subtitles.tres"
-	if ResourceLoader.exists(subtitle_path):
-		definition.subtitle_file = subtitle_path
 
 	return definition
 

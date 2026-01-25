@@ -61,13 +61,27 @@ func _input(event: InputEvent) -> void:
 
 # ============ GAME STATE MANAGEMENT ============
 func start_new_game() -> void:
-	"""Starts a new game session"""
+	"""Starts a new game session with intro cutscene"""
 	current_state = GameState.PLAYING
 	enemies_killed = 0
 	deaths = 0
 	coins_collected = 0
 
-	# Load test room
+	# Spiele Intro-Cutscene ab, dann lade Level
+	if CutsceneManager and CutsceneManager.has_cutscene("intro"):
+		CutsceneManager.play_cutscene("intro", _on_intro_cutscene_finished)
+	else:
+		# Falls keine Cutscene, direkt Level laden
+		_load_game_level()
+
+
+func _on_intro_cutscene_finished(_cutscene_id: String, _was_skipped: bool) -> void:
+	"""Callback nach Intro-Cutscene"""
+	_load_game_level()
+
+
+func _load_game_level() -> void:
+	"""Lädt das Spiel-Level"""
 	var test_room_scene: PackedScene = load("res://levels/test_room.tscn")
 	if test_room_scene:
 		get_tree().change_scene_to_packed(test_room_scene)
