@@ -17,7 +17,9 @@ var is_active: bool:
 
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	_setup_dialog_ui()
+	print("[DialogManager] Initialized")
 
 
 func _setup_dialog_ui() -> void:
@@ -57,6 +59,7 @@ func play_dialog(dialog_id: String) -> void:
 func _show_entry(entry: DialogEntry) -> void:
 	current_state = States.SHOWING_TEXT
 	dialog_ui.visible = true
+	print("[DialogManager] Showing entry: ", entry.speaker_name, " - ", entry.text.substr(0, 30), "...")
 	dialog_ui.show_entry(entry)
 
 
