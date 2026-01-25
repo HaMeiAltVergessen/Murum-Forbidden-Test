@@ -36,6 +36,8 @@ var _image_paths: Array = []  # Untyped to avoid assignment issues
 var _subtitle_path: String = ""
 var _duration: float = 0.0
 var _current_time: float = 0.0
+var _image_duration_per_image: float = 5.0  # Dauer pro Bild
+var _current_image_index: int = 0  # Aktueller Bild-Index
 
 ## UI Nodes
 var _background: ColorRect
@@ -175,12 +177,15 @@ func play_image(image_paths: Variant, duration: float = IMAGE_DISPLAY_DURATION, 
 	_skippable = skippable
 	_show_skip_warning = show_warning
 	_duration = duration * _image_paths.size()
+	_image_duration_per_image = duration  # Speichere Dauer pro Bild
+	_current_image_index = 0  # Starte bei erstem Bild
 
 	_video_player.visible = false
 	_texture_rect.visible = true
 
 	# Lade erstes Bild
 	_show_image(0)
+	print("[CutscenePlayer] Total duration: ", _duration, " sec, per image: ", _image_duration_per_image, " sec")
 
 	# Setup Audio
 	if not audio_path.is_empty():
@@ -243,6 +248,8 @@ func _reset_state() -> void:
 	_audio_path = ""
 	_image_paths.clear()
 	_subtitle_path = ""
+	_image_duration_per_image = 5.0
+	_current_image_index = 0
 
 	_video_player.stop()
 	_audio_player.stop()
@@ -379,16 +386,15 @@ func _on_audio_finished() -> void:
 
 ## Image Timer Callback
 func _on_image_timer_timeout() -> void:
-	print("[CutscenePlayer] _on_image_timer_timeout() called, _current_time=", _current_time)
+	print("[CutscenePlayer] _on_image_timer_timeout() called, image ", _current_image_index + 1, "/", _image_paths.size())
 
-	# Zeige nächstes Bild oder beende
-	var current_image_index = int(_current_time / IMAGE_DISPLAY_DURATION)
-	var next_index = current_image_index + 1
+	# Gehe zum nächsten Bild
+	_current_image_index += 1
 
-	print("[CutscenePlayer] current_index=", current_image_index, " next_index=", next_index, " images=", _image_paths.size())
+	print("[CutscenePlayer] Switching to image index: ", _current_image_index)
 
-	if next_index < _image_paths.size():
-		_show_image(next_index)
+	if _current_image_index < _image_paths.size():
+		_show_image(_current_image_index)
 		_image_timer.start()
 	else:
 		print("[CutscenePlayer] No more images, finishing cutscene")
