@@ -282,7 +282,8 @@ func _play_image_cutscene() -> void:
 		_current_definition.audio_path,
 		_current_definition.subtitle_file,
 		_current_definition.skippable,
-		_current_definition.show_skip_warning
+		_current_definition.show_skip_warning,
+		_current_definition.image_texts
 	)
 
 

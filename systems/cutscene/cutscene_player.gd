@@ -19,6 +19,7 @@ enum CutsceneType {
 ## Konstanten
 const FADE_DURATION: float = 0.5
 const IMAGE_DISPLAY_DURATION: float = 5.0  # Standard-Anzeigedauer für Bilder
+const IMAGE_FADE_DURATION: float = 1.0  # Fade-Dauer zwischen Bildern
 
 ## State
 var _cutscene_id: String = ""
@@ -33,6 +34,7 @@ var _show_skip_warning: bool = false
 var _video_path: String = ""
 var _audio_path: String = ""
 var _image_paths: Array = []  # Untyped to avoid assignment issues
+var _image_texts: Array = []  # Texte für jedes Bild
 var _subtitle_path: String = ""
 var _duration: float = 0.0
 var _current_time: float = 0.0
@@ -45,9 +47,12 @@ var _video_player: VideoStreamPlayer
 var _texture_rect: TextureRect
 var _audio_player: AudioStreamPlayer
 var _subtitle_display: Node
+var _story_text_label: Label  # Text-Overlay für Bilder
+var _story_text_panel: PanelContainer  # Hintergrund für Text
 
 ## Tweens
 var _fade_tween: Tween = null
+var _image_tween: Tween = null  # Für Bild-Übergänge
 var _image_timer: Timer = null
 
 
@@ -116,6 +121,45 @@ func _setup_ui() -> void:
 	_image_timer.timeout.connect(_on_image_timer_timeout)
 	add_child(_image_timer)
 
+	# Story Text Panel (unten zentriert)
+	_story_text_panel = PanelContainer.new()
+	_story_text_panel.name = "StoryTextPanel"
+	_story_text_panel.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	_story_text_panel.anchor_left = 0.1
+	_story_text_panel.anchor_right = 0.9
+	_story_text_panel.anchor_top = 0.75
+	_story_text_panel.anchor_bottom = 0.95
+	_story_text_panel.offset_left = 0
+	_story_text_panel.offset_right = 0
+	_story_text_panel.offset_top = 0
+	_story_text_panel.offset_bottom = 0
+	_story_text_panel.visible = false
+	_story_text_panel.modulate.a = 0.0
+
+	# Transparenter Hintergrund für Panel
+	var panel_style = StyleBoxFlat.new()
+	panel_style.bg_color = Color(0, 0, 0, 0.7)
+	panel_style.corner_radius_top_left = 10
+	panel_style.corner_radius_top_right = 10
+	panel_style.corner_radius_bottom_left = 10
+	panel_style.corner_radius_bottom_right = 10
+	panel_style.content_margin_left = 30
+	panel_style.content_margin_right = 30
+	panel_style.content_margin_top = 20
+	panel_style.content_margin_bottom = 20
+	_story_text_panel.add_theme_stylebox_override("panel", panel_style)
+	add_child(_story_text_panel)
+
+	# Story Text Label
+	_story_text_label = Label.new()
+	_story_text_label.name = "StoryTextLabel"
+	_story_text_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_story_text_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_story_text_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_story_text_label.add_theme_font_size_override("font_size", 24)
+	_story_text_label.add_theme_color_override("font_color", Color.WHITE)
+	_story_text_panel.add_child(_story_text_label)
+
 	# Initial versteckt
 	_background.modulate.a = 0.0
 	visible = false
@@ -151,7 +195,7 @@ func play_video(video_path: String, cutscene_id: String = "", subtitle_path: Str
 
 
 ## Spielt eine Bild-Cutscene ab (Einzelbild oder Sequenz)
-func play_image(image_paths: Variant, duration: float = IMAGE_DISPLAY_DURATION, cutscene_id: String = "", audio_path: String = "", subtitle_path: String = "", skippable: bool = true, show_warning: bool = false) -> void:
+func play_image(image_paths: Variant, duration: float = IMAGE_DISPLAY_DURATION, cutscene_id: String = "", audio_path: String = "", subtitle_path: String = "", skippable: bool = true, show_warning: bool = false, image_texts: Array = []) -> void:
 	print("[CutscenePlayer] play_image() called with id: ", cutscene_id)
 	_reset_state()
 
@@ -164,6 +208,11 @@ func play_image(image_paths: Variant, duration: float = IMAGE_DISPLAY_DURATION, 
 		for path in image_paths:
 			_image_paths.append(path)
 		print("[CutscenePlayer] Copied ", _image_paths.size(), " image paths")
+
+	# Kopiere Bild-Texte
+	_image_texts.clear()
+	for text in image_texts:
+		_image_texts.append(text)
 
 	if _image_paths.is_empty():
 		push_error("CutscenePlayer: No images provided")
@@ -182,10 +231,7 @@ func play_image(image_paths: Variant, duration: float = IMAGE_DISPLAY_DURATION, 
 
 	_video_player.visible = false
 	_texture_rect.visible = true
-
-	# Lade erstes Bild
-	_show_image(0)
-	print("[CutscenePlayer] Total duration: ", _duration, " sec, per image: ", _image_duration_per_image, " sec")
+	_texture_rect.modulate.a = 0.0  # Start transparent für Fade-In
 
 	# Setup Audio
 	if not audio_path.is_empty():
@@ -198,6 +244,10 @@ func play_image(image_paths: Variant, duration: float = IMAGE_DISPLAY_DURATION, 
 
 	# Starte Wiedergabe
 	_start_playback()
+
+	# Zeige erstes Bild mit Fade-In
+	_show_image_with_fade(0)
+	print("[CutscenePlayer] Total duration: ", _duration, " sec, per image: ", _image_duration_per_image, " sec")
 
 	# Starte Image Timer
 	print("[CutscenePlayer] Starting image timer with duration: ", duration)
@@ -247,6 +297,7 @@ func _reset_state() -> void:
 	_video_path = ""
 	_audio_path = ""
 	_image_paths.clear()
+	_image_texts.clear()
 	_subtitle_path = ""
 	_image_duration_per_image = 5.0
 	_current_image_index = 0
@@ -254,6 +305,15 @@ func _reset_state() -> void:
 	_video_player.stop()
 	_audio_player.stop()
 	_image_timer.stop()
+
+	# Reset image tween
+	if _image_tween and _image_tween.is_valid():
+		_image_tween.kill()
+
+	# Reset text panel
+	_story_text_panel.visible = false
+	_story_text_panel.modulate.a = 0.0
+	_story_text_label.text = ""
 
 	if _subtitle_display:
 		_subtitle_display.queue_free()
@@ -308,7 +368,7 @@ func _on_fade_in_complete() -> void:
 	cutscene_started.emit(_cutscene_id)
 
 
-## Zeigt ein Bild aus der Sequenz
+## Zeigt ein Bild aus der Sequenz (ohne Fade)
 func _show_image(index: int) -> void:
 	if index < 0 or index >= _image_paths.size():
 		return
@@ -316,6 +376,74 @@ func _show_image(index: int) -> void:
 	var texture = load(_image_paths[index])
 	if texture:
 		_texture_rect.texture = texture
+
+
+## Zeigt ein Bild mit Fade-In und Text
+func _show_image_with_fade(index: int) -> void:
+	if index < 0 or index >= _image_paths.size():
+		return
+
+	print("[CutscenePlayer] Showing image ", index + 1, "/", _image_paths.size(), " with fade")
+
+	# Lade Bild
+	var texture = load(_image_paths[index])
+	if texture:
+		_texture_rect.texture = texture
+
+	# Setze Text wenn vorhanden
+	if index < _image_texts.size() and not _image_texts[index].is_empty():
+		_story_text_label.text = _image_texts[index]
+		_story_text_panel.visible = true
+	else:
+		_story_text_panel.visible = false
+
+	# Stoppe vorherigen Tween
+	if _image_tween and _image_tween.is_valid():
+		_image_tween.kill()
+
+	# Fade In: Bild und Text
+	_image_tween = create_tween()
+	_image_tween.set_parallel(true)
+	_image_tween.tween_property(_texture_rect, "modulate:a", 1.0, IMAGE_FADE_DURATION)
+	if _story_text_panel.visible:
+		_story_text_panel.modulate.a = 0.0
+		_image_tween.tween_property(_story_text_panel, "modulate:a", 1.0, IMAGE_FADE_DURATION)
+
+	# Starte Timer für nächstes Bild (nach Fade-In abgeschlossen)
+	_image_tween.chain().tween_callback(func():
+		# Timer für Anzeigedauer (minus Fade-Zeiten)
+		var display_time = _image_duration_per_image - (IMAGE_FADE_DURATION * 2)
+		if display_time < 0.5:
+			display_time = 0.5  # Minimum Anzeigezeit
+		_image_timer.wait_time = display_time
+		_image_timer.start()
+	)
+
+
+## Fade-Out für aktuelles Bild, dann nächstes zeigen
+func _fade_to_next_image() -> void:
+	print("[CutscenePlayer] Fading out image ", _current_image_index + 1)
+
+	# Stoppe vorherigen Tween
+	if _image_tween and _image_tween.is_valid():
+		_image_tween.kill()
+
+	# Fade Out: Bild und Text
+	_image_tween = create_tween()
+	_image_tween.set_parallel(true)
+	_image_tween.tween_property(_texture_rect, "modulate:a", 0.0, IMAGE_FADE_DURATION)
+	if _story_text_panel.visible:
+		_image_tween.tween_property(_story_text_panel, "modulate:a", 0.0, IMAGE_FADE_DURATION)
+
+	# Nach Fade-Out: Nächstes Bild oder Ende
+	_image_tween.chain().tween_callback(func():
+		_current_image_index += 1
+		if _current_image_index < _image_paths.size():
+			_show_image_with_fade(_current_image_index)
+		else:
+			print("[CutscenePlayer] No more images, finishing cutscene")
+			_finish_cutscene()
+	)
 
 
 ## Pausiert die Cutscene
@@ -384,21 +512,10 @@ func _on_audio_finished() -> void:
 		_finish_cutscene()
 
 
-## Image Timer Callback
+## Image Timer Callback - startet Fade-Out zum nächsten Bild
 func _on_image_timer_timeout() -> void:
-	print("[CutscenePlayer] _on_image_timer_timeout() called, image ", _current_image_index + 1, "/", _image_paths.size())
-
-	# Gehe zum nächsten Bild
-	_current_image_index += 1
-
-	print("[CutscenePlayer] Switching to image index: ", _current_image_index)
-
-	if _current_image_index < _image_paths.size():
-		_show_image(_current_image_index)
-		_image_timer.start()
-	else:
-		print("[CutscenePlayer] No more images, finishing cutscene")
-		_finish_cutscene()
+	print("[CutscenePlayer] Timer timeout - starting fade to next image")
+	_fade_to_next_image()
 
 
 ## Beendet die Cutscene
