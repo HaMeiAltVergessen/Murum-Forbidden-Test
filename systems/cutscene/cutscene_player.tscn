@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://c2cutscene_player"]
+
+[ext_resource type="Script" path="res://systems/cutscene/cutscene_player.gd" id="1_cutscene"]
+
+[node name="CutscenePlayer" type="CanvasLayer"]
+layer = 90
+script = ExtResource("1_cutscene")

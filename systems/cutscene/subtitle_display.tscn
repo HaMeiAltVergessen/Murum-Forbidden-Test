@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://d4subtitle_display"]
+
+[ext_resource type="Script" path="res://systems/cutscene/subtitle_display.gd" id="1_subtitle"]
+
+[node name="SubtitleDisplay" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_subtitle")

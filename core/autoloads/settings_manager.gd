@@ -13,6 +13,7 @@ const CONFIG_SECTION_AUDIO = "audio"
 const CONFIG_SECTION_VIDEO = "video"
 const CONFIG_SECTION_INPUT = "input"
 const CONFIG_SECTION_GAMEPLAY = "gameplay"
+const CONFIG_SECTION_CUTSCENE = "cutscene"
 
 # ============================================================================
 # SIGNALS
@@ -23,6 +24,7 @@ signal settings_saved()
 signal audio_settings_changed(master: float, music: float, sfx: float)
 signal video_settings_changed()
 signal input_settings_changed()
+signal cutscene_settings_changed()
 
 # ============================================================================
 # AUDIO SETTINGS
@@ -60,6 +62,17 @@ var resolution_options: Array[Vector2i] = [
 # ============================================================================
 
 var preferred_input_device: int = 0  ## 0=Auto, 1=Keyboard, 2=Gamepad
+
+# ============================================================================
+# CUTSCENE / SUBTITLE SETTINGS
+# ============================================================================
+
+var subtitles_enabled: bool = true  ## Untertitel ein/aus
+var subtitle_size: int = 1  ## 0=Klein, 1=Mittel, 2=Groß
+var subtitle_fade_speed: float = 0.3  ## Fade-Dauer in Sekunden (0.1 - 1.0)
+
+# Subtitle size enum values for reference
+enum SubtitleSize { SMALL = 0, MEDIUM = 1, LARGE = 2 }
 
 # ============================================================================
 # INITIALIZATION
@@ -213,6 +226,53 @@ func set_preferred_input_device(device: int) -> void:
 	input_settings_changed.emit()
 
 # ============================================================================
+# CUTSCENE / SUBTITLE METHODS
+# ============================================================================
+
+func set_subtitles_enabled(enabled: bool) -> void:
+	"""Enables/disables subtitles"""
+	subtitles_enabled = enabled
+	cutscene_settings_changed.emit()
+
+func set_subtitle_size(size: int) -> void:
+	"""Sets subtitle size (0=Small, 1=Medium, 2=Large)"""
+	subtitle_size = clamp(size, 0, 2)
+	cutscene_settings_changed.emit()
+
+func set_subtitle_fade_speed(speed: float) -> void:
+	"""Sets subtitle fade duration (0.1 - 1.0 seconds)"""
+	subtitle_fade_speed = clamp(speed, 0.1, 1.0)
+	cutscene_settings_changed.emit()
+
+func get_setting(setting_name: String, default_value: Variant = null) -> Variant:
+	"""Generic getter for any setting by name"""
+	match setting_name:
+		"subtitles_enabled":
+			return subtitles_enabled
+		"subtitle_size":
+			return subtitle_size
+		"subtitle_fade_speed":
+			return subtitle_fade_speed
+		"master_volume":
+			return master_volume
+		"music_volume":
+			return music_volume
+		"sfx_volume":
+			return sfx_volume
+		"window_mode":
+			return window_mode
+		"resolution_index":
+			return resolution_index
+		"brightness":
+			return brightness
+		"vsync_enabled":
+			return vsync_enabled
+		"preferred_input_device":
+			return preferred_input_device
+		_:
+			return default_value
+
+# ============================================================================
 # APPLY ALL
 # ============================================================================
 
@@ -253,6 +313,11 @@ func save_settings() -> bool:
 	# Input section
 	config.set_value(CONFIG_SECTION_INPUT, "preferred_input_device", preferred_input_device)
 
+	# Cutscene section
+	config.set_value(CONFIG_SECTION_CUTSCENE, "subtitles_enabled", subtitles_enabled)
+	config.set_value(CONFIG_SECTION_CUTSCENE, "subtitle_size", subtitle_size)
+	config.set_value(CONFIG_SECTION_CUTSCENE, "subtitle_fade_speed", subtitle_fade_speed)
+
 	# Save to file
 	var error = config.save(SETTINGS_FILE)
 
@@ -287,6 +352,11 @@ func load_settings() -> bool:
 	# Load Input
 	preferred_input_device = config.get_value(CONFIG_SECTION_INPUT, "preferred_input_device", 0)
 
+	# Load Cutscene
+	subtitles_enabled = config.get_value(CONFIG_SECTION_CUTSCENE, "subtitles_enabled", true)
+	subtitle_size = config.get_value(CONFIG_SECTION_CUTSCENE, "subtitle_size", 1)
+	subtitle_fade_speed = config.get_value(CONFIG_SECTION_CUTSCENE, "subtitle_fade_speed", 0.3)
+
 	print("[SettingsManager] Settings loaded from: %s" % SETTINGS_FILE)
 	settings_loaded.emit()
 	return true
@@ -310,6 +380,11 @@ func reset_to_defaults() -> void:
 
 	# Input defaults
 	preferred_input_device = 0
+
+	# Cutscene defaults
+	subtitles_enabled = true
+	subtitle_size = 1  # Medium
+	subtitle_fade_speed = 0.3
 
 	# Apply and save
 	apply_all_settings()

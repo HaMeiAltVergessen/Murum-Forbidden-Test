@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://a1skip_warning_dialog"]
+
+[ext_resource type="Script" path="res://systems/cutscene/skip_warning_dialog.gd" id="1_skip"]
+
+[node name="SkipWarningDialog" type="CanvasLayer"]
+layer = 110
+script = ExtResource("1_skip")
