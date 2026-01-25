@@ -26,6 +26,7 @@ var _is_holding: bool = false
 var _use_hold_mode: bool = false  # Alternative: Halten statt Button
 
 ## UI Nodes
+var _root_container: Control  # Root container für Fade-Effekt
 var _panel: PanelContainer
 var _title_label: Label
 var _message_label: Label
@@ -80,19 +81,25 @@ func _input(event: InputEvent) -> void:
 
 ## Erstellt die UI-Struktur
 func _setup_ui() -> void:
+	# Root Container für Fade-Effekt (CanvasLayer hat kein modulate)
+	_root_container = Control.new()
+	_root_container.name = "RootContainer"
+	_root_container.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(_root_container)
+
 	# Dunkler Hintergrund
 	var bg = ColorRect.new()
 	bg.name = "Background"
 	bg.color = Color(0, 0, 0, 0.8)
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	bg.mouse_filter = Control.MOUSE_FILTER_STOP
-	add_child(bg)
+	_root_container.add_child(bg)
 
 	# Zentrierender Container
 	var center = CenterContainer.new()
 	center.name = "Center"
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(center)
+	_root_container.add_child(center)
 
 	# Panel
 	_panel = PanelContainer.new()
@@ -189,7 +196,7 @@ func _setup_ui() -> void:
 	vbox.add_child(_hold_progress_bar)
 
 	# Initial modulate für Fade
-	modulate.a = 0.0
+	_root_container.modulate.a = 0.0
 
 
 ## Zeigt den Dialog an
@@ -214,7 +221,7 @@ func show_dialog(use_hold_mode: bool = false) -> void:
 		_fade_tween.kill()
 
 	_fade_tween = create_tween()
-	_fade_tween.tween_property(self, "modulate:a", 1.0, FADE_DURATION)
+	_fade_tween.tween_property(_root_container, "modulate:a", 1.0, FADE_DURATION)
 
 	# Focus auf Cancel Button (sicherer Default)
 	if not use_hold_mode:
@@ -231,7 +238,7 @@ func hide_dialog() -> void:
 		_fade_tween.kill()
 
 	_fade_tween = create_tween()
-	_fade_tween.tween_property(self, "modulate:a", 0.0, FADE_DURATION)
+	_fade_tween.tween_property(_root_container, "modulate:a", 0.0, FADE_DURATION)
 	_fade_tween.tween_callback(func(): visible = false)
 
 
