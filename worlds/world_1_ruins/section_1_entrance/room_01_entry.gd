@@ -15,6 +15,9 @@ const WORLD_ID: String = "world_1_ruins"
 
 @onready var door_to_room_02: Node = $Doors/DoorToRoom02
 @onready var spawn_points: Node2D = $SpawnPoints
+@onready var dialog_trigger: Area2D = $DialogTrigger
+
+var dialog_triggered: bool = false
 
 # ============================================================================
 # INITIALIZATION
@@ -34,6 +37,9 @@ func _ready() -> void:
 
 	# Setup puzzle persistence (COMMIT 015: Puzzle System)
 	_setup_puzzle_persistence()
+
+	# Setup dialog trigger
+	_setup_dialog_trigger()
 
 	# Activate room (register with GameManager, setup player)
 	call_deferred("_activate")
@@ -331,3 +337,30 @@ func _on_puzzle_solved() -> void:
 
 	if AudioManager:
 		AudioManager.play_sfx("puzzle/puzzle_solved")
+
+
+# ============================================================================
+# DIALOG TRIGGER (Murum & Umbra Introduction)
+# ============================================================================
+
+func _setup_dialog_trigger() -> void:
+	"""Setup the dialog trigger area for Murum-Umbra conversation"""
+	if dialog_trigger:
+		dialog_trigger.body_entered.connect(_on_dialog_trigger_body_entered)
+		print("[Room01_Entry] Dialog trigger setup complete")
+
+
+func _on_dialog_trigger_body_entered(body: Node2D) -> void:
+	"""Triggered when player enters the dialog area"""
+	if dialog_triggered:
+		return
+
+	if body.is_in_group("player") or body.name == "Murum":
+		dialog_triggered = true
+		print("[Room01_Entry] Dialog triggered: world01room01")
+
+		# Small delay before starting dialog
+		await get_tree().create_timer(0.3).timeout
+
+		if DialogManager:
+			DialogManager.play_dialog("world01room01")

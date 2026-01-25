@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://b8mx4n7raprst"]
+[gd_scene load_steps=17 format=3 uid="uid://b8mx4n7raprst"]
 
 [ext_resource type="Script" uid="uid://b2r2vfh85un7r" path="res://worlds/world_1_ruins/section_1_entrance/room_01_entry.gd" id="1_room01"]
 [ext_resource type="Texture2D" uid="uid://cced6bgpaux0q" path="res://Assets/AIAssets/world1lvl1bg02.jpg" id="2_cqwq7"]
@@ -23,6 +23,9 @@ size = Vector2(4735, 200)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8m3rk"]
 size = Vector2(114, 250)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dialog_trigger"]
+size = Vector2(150, 200)
 
 [node name="Room01Entry" type="Node2D"]
 script = ExtResource("1_room01")
@@ -174,3 +177,11 @@ position = Vector2(1600, 400)
 crystal_id = 3
 can_reset = true
 max_hp = 1
+
+[node name="DialogTrigger" type="Area2D" parent="."]
+position = Vector2(600, 500)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DialogTrigger"]
+shape = SubResource("RectangleShape2D_dialog_trigger")

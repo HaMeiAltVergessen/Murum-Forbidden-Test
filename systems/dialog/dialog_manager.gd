@@ -118,4 +118,7 @@ func _on_choice_selected(choice_index: int) -> void:
 
 func _on_advance_requested() -> void:
 	if current_state == States.SHOWING_TEXT:
-		dialog_ui.complete_text_immediately()
+		if dialog_ui.is_text_fully_shown():
+			_on_text_completed()
+		else:
+			dialog_ui.complete_text_immediately()
