@@ -204,8 +204,27 @@ func _start_new_game():
 	SaveManager.create_new_save()
 	print("[MainMenu] New save created")
 
-	# Start new game
-	_start_game(WORLD_1_ENTRY_PATH)
+	# HUD Autoload wieder anzeigen
+	if has_node("/root/HUD"):
+		var hud_autoload = get_node("/root/HUD")
+		hud_autoload.visible = true
+		print("[MainMenu] HUD Autoload shown")
+
+	# HUDManager HUDs wieder anzeigen
+	if HUDManager:
+		HUDManager.show_all_hud()
+		print("[MainMenu] HUDManager HUDs shown")
+
+	# Musik fade-out
+	if music_player and music_player.playing:
+		var tween = create_tween()
+		tween.tween_property(music_player, "volume_db", -80, MUSIC_FADE_DURATION)
+		tween.tween_callback(music_player.stop)
+		print("[MainMenu] Music fading out...")
+
+	# Start new game via GameManager (plays intro cutscene first)
+	print("[MainMenu] Calling GameManager.start_new_game()")
+	GameManager.start_new_game()
 
 
 func _start_game(scene_path: String):
