@@ -23,11 +23,13 @@ func _ready() -> void:
 
 	_setup_typewriter_timer()
 	_clear_choices()
+	print("[DialogUI] Initialized - layer: ", layer)
 
 
 func _setup_typewriter_timer() -> void:
 	typewriter_timer = Timer.new()
 	typewriter_timer.one_shot = false
+	typewriter_timer.process_mode = Node.PROCESS_MODE_ALWAYS
 	typewriter_timer.timeout.connect(_on_typewriter_tick)
 	add_child(typewriter_timer)
 
@@ -43,6 +45,7 @@ func _input(event: InputEvent) -> void:
 
 func show_entry(entry: DialogEntry) -> void:
 	current_entry = entry
+	print("[DialogUI] show_entry called - visible: ", visible, " text_label: ", text_label != null)
 
 	if entry.speaker_sprite:
 		character_sprite.texture = entry.speaker_sprite
