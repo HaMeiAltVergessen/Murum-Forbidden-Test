@@ -74,7 +74,6 @@ func _on_typewriter_tick() -> void:
 
 	if text_label.visible_characters >= text_label.text.length():
 		_stop_typewriter()
-		text_completed.emit()
 
 
 func _stop_typewriter() -> void:
@@ -86,7 +85,10 @@ func complete_text_immediately() -> void:
 	if is_typing:
 		text_label.visible_characters = text_label.text.length()
 		_stop_typewriter()
-		text_completed.emit()
+
+
+func is_text_fully_shown() -> bool:
+	return not is_typing and text_label.visible_characters >= text_label.text.length()
 
 
 func show_choices(choices: Array[DialogChoice]) -> void:
