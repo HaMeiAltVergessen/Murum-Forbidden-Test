@@ -36,6 +36,7 @@ class CutsceneDefinition extends RefCounted:
 	var video_path: String = ""
 	var audio_path: String = ""
 	var image_paths: Array = []  # Array von Strings
+	var image_texts: Array = []  # Texte für jedes Bild (Exposition/Story)
 	var image_duration: float = 5.0
 	var engine_cutscene_path: String = ""  # Pfad zur EngineCutscene Resource
 
@@ -84,6 +85,16 @@ static func _register_all_cutscenes() -> void:
 		"res://Assets/AIAssets/world1lvl1bg02.jpg",
 		"res://Assets/AIAssets/world1lvl1bg03.jpg",
 		"res://Assets/AIAssets/dorf.jpg"
+	]
+	intro.image_texts = [
+		"Vor langer Zeit existierte eine Welt voller Magie und Wunder...",
+		"Die alten Tempel bewahrten Geheimnisse, die kein Sterblicher verstehen sollte.",
+		"Doch die Gier der Menschen kannte keine Grenzen. Sie suchten nach verbotenem Wissen.",
+		"Die Ruinen, die einst prächtige Hallen waren, verfielen unter dem Fluch der Alten.",
+		"Schatten erwachten in den vergessenen Kammern, hungrig nach Leben.",
+		"Die Welt wurde dunkel. Hoffnung schwand wie Morgentau in der Sonne.",
+		"Doch eine Prophezeiung sprach von einem Wanderer, der das Gleichgewicht wiederherstellen würde.",
+		"Und so beginnt deine Reise... im Schatten der verbotenen Mauern."
 	]
 	intro.audio_path = "res://Music/Welt 01 Ruins.mp3"
 	intro.image_duration = 3.75  # 30 Sekunden / 8 Bilder = 3.75 Sek pro Bild
