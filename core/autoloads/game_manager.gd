@@ -62,17 +62,25 @@ func _input(event: InputEvent) -> void:
 # ============ GAME STATE MANAGEMENT ============
 func start_new_game() -> void:
 	"""Starts a new game session with intro cutscene"""
+	print("[GameManager] start_new_game() called")
 	current_state = GameState.PLAYING
 	enemies_killed = 0
 	deaths = 0
 	coins_collected = 0
 
 	# Spiele Intro-Cutscene ab, dann lade Level
-	if CutsceneManager and CutsceneManager.has_cutscene("intro"):
-		CutsceneManager.play_cutscene("intro", _on_intro_cutscene_finished)
-	else:
-		# Falls keine Cutscene, direkt Level laden
-		_load_game_level()
+	print("[GameManager] Checking CutsceneManager: ", CutsceneManager)
+	if CutsceneManager:
+		print("[GameManager] CutsceneManager exists, checking for intro cutscene...")
+		var has_intro = CutsceneManager.has_cutscene("intro")
+		print("[GameManager] has_cutscene('intro'): ", has_intro)
+		if has_intro:
+			print("[GameManager] Playing intro cutscene...")
+			CutsceneManager.play_cutscene("intro", _on_intro_cutscene_finished)
+			return
+
+	print("[GameManager] No cutscene, loading level directly")
+	_load_game_level()
 
 
 func _on_intro_cutscene_finished(_cutscene_id: String, _was_skipped: bool) -> void:
@@ -82,9 +90,21 @@ func _on_intro_cutscene_finished(_cutscene_id: String, _was_skipped: bool) -> vo
 
 func _load_game_level() -> void:
 	"""Lädt das Spiel-Level"""
-	var test_room_scene: PackedScene = load("res://levels/test_room.tscn")
-	if test_room_scene:
-		get_tree().change_scene_to_packed(test_room_scene)
+	print("[GameManager] _load_game_level() called")
+
+	# Lade World 1 Entry Level (oder test_room als Fallback)
+	var level_path = "res://worlds/world_1_ruins/section_1_entrance/room_01_entry.tscn"
+	var level_scene: PackedScene = load(level_path)
+
+	if not level_scene:
+		print("[GameManager] Warning: Could not load ", level_path, " - trying test_room")
+		level_scene = load("res://levels/test_room.tscn")
+
+	if level_scene:
+		get_tree().change_scene_to_packed(level_scene)
+		print("[GameManager] Level loaded: ", level_path)
+	else:
+		push_error("[GameManager] Failed to load any level!")
 
 	EventBus.game_started.emit()
 	print("[GameManager] New game started")

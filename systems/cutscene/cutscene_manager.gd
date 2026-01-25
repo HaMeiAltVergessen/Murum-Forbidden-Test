@@ -51,6 +51,7 @@ func _ready() -> void:
 	CutsceneRegistry.initialize()
 
 	set_process_input(false)
+	print("[CutsceneManager] Initialized")
 
 
 func _input(event: InputEvent) -> void:
@@ -81,6 +82,8 @@ func _process(delta: float) -> void:
 
 ## Spielt eine Cutscene ab (automatische Typ-Erkennung)
 func play_cutscene(cutscene_id: String, callback: Callable = Callable()) -> void:
+	print("[CutsceneManager] play_cutscene() called with id: ", cutscene_id)
+
 	if _is_playing:
 		push_warning("CutsceneManager: Already playing cutscene: " + _current_cutscene_id)
 		return
@@ -90,9 +93,11 @@ func play_cutscene(cutscene_id: String, callback: Callable = Callable()) -> void
 	# Hole Definition
 	if CutsceneRegistry.has_cutscene(cutscene_id):
 		_current_definition = CutsceneRegistry.get_cutscene(cutscene_id)
+		print("[CutsceneManager] Found cutscene in registry: ", _current_definition)
 	else:
 		# Versuche als Pfad zu interpretieren
 		_current_definition = CutsceneRegistry.create_from_path(cutscene_id)
+		print("[CutsceneManager] Created cutscene from path: ", _current_definition)
 
 	if not _current_definition:
 		push_error("CutsceneManager: Cannot find or create cutscene: " + cutscene_id)
@@ -103,17 +108,24 @@ func play_cutscene(cutscene_id: String, callback: Callable = Callable()) -> void
 	_skip_requested = false
 	_skip_hold_time = 0.0
 
+	print("[CutsceneManager] Cutscene type: ", _current_definition.type)
+
 	# Starte basierend auf Typ
 	match _current_definition.type:
 		CutsceneRegistry.CutsceneType.VIDEO:
+			print("[CutsceneManager] Starting VIDEO cutscene")
 			_play_video_cutscene()
 		CutsceneRegistry.CutsceneType.IMAGE:
+			print("[CutsceneManager] Starting IMAGE cutscene")
 			_play_image_cutscene()
 		CutsceneRegistry.CutsceneType.AUDIO:
+			print("[CutsceneManager] Starting AUDIO cutscene")
 			_play_audio_cutscene()
 		CutsceneRegistry.CutsceneType.ENGINE:
+			print("[CutsceneManager] Starting ENGINE cutscene")
 			_play_engine_cutscene()
 		CutsceneRegistry.CutsceneType.SEQUENCE:
+			print("[CutsceneManager] Starting SEQUENCE cutscene")
 			_play_sequence_cutscene()
 
 
