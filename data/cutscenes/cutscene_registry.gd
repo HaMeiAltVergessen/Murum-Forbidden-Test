@@ -97,7 +97,7 @@ static func _register_all_cutscenes() -> void:
 		"Und so beginnt deine Reise... im Schatten der verbotenen Mauern."
 	]
 	intro.audio_path = "res://Music/Welt 01 Ruins.mp3"
-	intro.image_duration = 3.75  # 30 Sekunden / 8 Bilder = 3.75 Sek pro Bild
+	intro.image_duration = 9.0  # 9 Sekunden pro Bild (+ 3s Fade = ~72 Sek total)
 	intro.skippable = true
 	intro.show_skip_warning = false
 	intro.title = "Prolog"

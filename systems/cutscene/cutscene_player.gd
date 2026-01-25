@@ -19,7 +19,7 @@ enum CutsceneType {
 ## Konstanten
 const FADE_DURATION: float = 0.5
 const IMAGE_DISPLAY_DURATION: float = 5.0  # Standard-Anzeigedauer für Bilder
-const IMAGE_FADE_DURATION: float = 1.0  # Fade-Dauer zwischen Bildern
+const IMAGE_FADE_DURATION: float = 3.0  # Fade-Dauer zwischen Bildern
 
 ## State
 var _cutscene_id: String = ""
