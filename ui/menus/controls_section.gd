@@ -79,8 +79,9 @@ func _connect_signals() -> void:
 
 func _rebuild_bindings_list() -> void:
 	"""Rebuilds the list of remappable actions for current player/device"""
-	# Clear existing buttons
+	# Clear existing buttons - remove immediately to avoid signal issues
 	for child in bindings_container.get_children():
+		bindings_container.remove_child(child)
 		child.queue_free()
 	remap_buttons.clear()
 
