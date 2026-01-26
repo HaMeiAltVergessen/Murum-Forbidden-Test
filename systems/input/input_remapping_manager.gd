@@ -105,6 +105,9 @@ var has_unsaved_changes: bool = false
 # ============================================================================
 
 func _ready() -> void:
+	# Ensure we receive input even when game is paused
+	process_mode = Node.PROCESS_MODE_ALWAYS
+
 	# Define all remappable actions
 	_define_remappable_actions()
 
