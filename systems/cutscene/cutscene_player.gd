@@ -58,6 +58,7 @@ var _image_timer: Timer = null
 
 func _ready() -> void:
 	layer = 90  # Unter Untertiteln aber über Gameplay
+	process_mode = Node.PROCESS_MODE_ALWAYS  # Work even when game is paused
 	_setup_ui()
 	set_process(false)
 
@@ -118,6 +119,7 @@ func _setup_ui() -> void:
 	_image_timer = Timer.new()
 	_image_timer.name = "ImageTimer"
 	_image_timer.one_shot = true
+	_image_timer.process_mode = Node.PROCESS_MODE_ALWAYS  # Work even when paused
 	_image_timer.timeout.connect(_on_image_timer_timeout)
 	add_child(_image_timer)
 
@@ -245,15 +247,9 @@ func play_image(image_paths: Variant, duration: float = IMAGE_DISPLAY_DURATION, 
 	# Starte Wiedergabe
 	_start_playback()
 
-	# Zeige erstes Bild mit Fade-In
+	# Zeige erstes Bild mit Fade-In (Timer wird im Tween-Callback gestartet)
 	_show_image_with_fade(0)
 	print("[CutscenePlayer] Total duration: ", _duration, " sec, per image: ", _image_duration_per_image, " sec")
-
-	# Starte Image Timer
-	print("[CutscenePlayer] Starting image timer with duration: ", duration)
-	_image_timer.wait_time = duration
-	_image_timer.start()
-	print("[CutscenePlayer] Timer started, is_stopped=", _image_timer.is_stopped())
 
 
 ## Spielt eine Audio-Only Cutscene ab
@@ -345,6 +341,7 @@ func _start_playback() -> void:
 		_fade_tween.kill()
 
 	_fade_tween = create_tween()
+	_fade_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)  # Work during pause
 	_fade_tween.tween_property(_background, "modulate:a", 1.0, FADE_DURATION)
 	_fade_tween.tween_callback(_on_fade_in_complete)
 
@@ -403,6 +400,7 @@ func _show_image_with_fade(index: int) -> void:
 
 	# Fade In: Bild und Text
 	_image_tween = create_tween()
+	_image_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)  # Work during pause
 	_image_tween.set_parallel(true)
 	_image_tween.tween_property(_texture_rect, "modulate:a", 1.0, IMAGE_FADE_DURATION)
 	if _story_text_panel.visible:
@@ -430,6 +428,7 @@ func _fade_to_next_image() -> void:
 
 	# Fade Out: Bild und Text
 	_image_tween = create_tween()
+	_image_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)  # Work during pause
 	_image_tween.set_parallel(true)
 	_image_tween.tween_property(_texture_rect, "modulate:a", 0.0, IMAGE_FADE_DURATION)
 	if _story_text_panel.visible:
@@ -552,6 +551,7 @@ func _finish_cutscene() -> void:
 
 	_fade_tween = create_tween()
 	if _fade_tween:
+		_fade_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)  # Work during pause
 		_fade_tween.tween_property(_background, "modulate:a", 0.0, FADE_DURATION)
 		_fade_tween.tween_callback(func():
 			visible = false
