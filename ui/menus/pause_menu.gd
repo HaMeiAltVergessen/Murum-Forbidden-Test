@@ -104,6 +104,10 @@ func _input(event: InputEvent) -> void:
 	if _is_in_main_menu():
 		return
 
+	# Don't allow pause during dialog or cutscene
+	if _is_dialog_or_cutscene_active():
+		return
+
 	if event.is_action_pressed("ui_cancel"):
 		if is_paused:
 			# If in submenu, go back
@@ -124,6 +128,19 @@ func _is_in_main_menu() -> bool:
 	var current_scene = get_tree().current_scene
 	if current_scene:
 		return current_scene is MainMenu or current_scene.name == "MainMenu"
+	return false
+
+
+func _is_dialog_or_cutscene_active() -> bool:
+	"""Checks if dialog or cutscene is currently active"""
+	# Check dialog
+	if DialogManager and DialogManager.is_active:
+		return true
+
+	# Check cutscene
+	if CutsceneManager and CutsceneManager.has_method("is_playing") and CutsceneManager.is_playing():
+		return true
+
 	return false
 
 # ============================================================================

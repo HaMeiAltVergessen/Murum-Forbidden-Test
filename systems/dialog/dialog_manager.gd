@@ -1,13 +1,14 @@
 extends Node
 ## Minimal DialogManager - handles dialog playback and state
 
-enum States { IDLE, SHOWING_TEXT, WAITING_FOR_CHOICE }
+enum States { IDLE, SHOWING_TEXT, WAITING_FOR_CHOICE, SHOWING_RESPONSE }
 
 const DIALOG_PATH := "res://data/dialogs/"
 
 var current_state: States = States.IDLE
 var current_dialog: DialogData = null
 var current_entry_index: int = 0
+var pending_response: Dictionary = {}
 
 var dialog_ui: Node = null
 
@@ -118,12 +119,32 @@ func _on_choice_selected(choice_index: int) -> void:
 	print("[DialogManager] Choice selected: ", choice_index)
 	if EventBus and current_dialog:
 		EventBus.dialog_choice_selected.emit(current_dialog.dialog_id, choice_index)
+
+	# Check if choice has a response
+	var entry := current_dialog.entries[current_entry_index]
+	if choice_index < entry.choices.size():
+		var choice := entry.choices[choice_index]
+		if not choice.response_text.is_empty():
+			_show_response(choice.response_speaker, choice.response_text)
+			return
+
 	_end_dialog()
+
+
+func _show_response(speaker: String, text: String) -> void:
+	current_state = States.SHOWING_RESPONSE
+	print("[DialogManager] Showing response: ", speaker, " - ", text.substr(0, 30), "...")
+	dialog_ui.show_response(speaker, text)
 
 
 func _on_advance_requested() -> void:
 	if current_state == States.SHOWING_TEXT:
 		if dialog_ui.is_text_fully_shown():
 			_on_text_completed()
+		else:
+			dialog_ui.complete_text_immediately()
+	elif current_state == States.SHOWING_RESPONSE:
+		if dialog_ui.is_text_fully_shown():
+			_end_dialog()
 		else:
 			dialog_ui.complete_text_immediately()
