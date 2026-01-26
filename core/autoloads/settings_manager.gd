@@ -94,9 +94,15 @@ func _ready() -> void:
 
 func _cache_audio_bus_indices() -> void:
 	"""Caches audio bus indices for faster access"""
+	print("[SettingsManager] Audio bus count: %d" % AudioServer.bus_count)
+	for i in range(AudioServer.bus_count):
+		print("[SettingsManager] Bus %d: %s" % [i, AudioServer.get_bus_name(i)])
+
 	master_bus_index = AudioServer.get_bus_index("Master")
 	music_bus_index = AudioServer.get_bus_index("Music")
 	sfx_bus_index = AudioServer.get_bus_index("SFX")
+
+	print("[SettingsManager] Bus indices - Master: %d, Music: %d, SFX: %d" % [master_bus_index, music_bus_index, sfx_bus_index])
 
 	# Master should always exist at index 0
 	if master_bus_index == -1:
@@ -120,18 +126,21 @@ func _cache_audio_bus_indices() -> void:
 func set_master_volume(volume: float) -> void:
 	"""Sets master volume (0.0 - 1.0)"""
 	master_volume = clamp(volume, 0.0, 1.0)
+	print("[SettingsManager] Setting master volume: %.2f (bus %d)" % [master_volume, master_bus_index])
 	_apply_audio_volume(master_bus_index, master_volume)
 	audio_settings_changed.emit(master_volume, music_volume, sfx_volume)
 
 func set_music_volume(volume: float) -> void:
 	"""Sets music volume (0.0 - 1.0)"""
 	music_volume = clamp(volume, 0.0, 1.0)
+	print("[SettingsManager] Setting music volume: %.2f (bus %d)" % [music_volume, music_bus_index])
 	_apply_audio_volume(music_bus_index, music_volume)
 	audio_settings_changed.emit(master_volume, music_volume, sfx_volume)
 
 func set_sfx_volume(volume: float) -> void:
 	"""Sets SFX volume (0.0 - 1.0)"""
 	sfx_volume = clamp(volume, 0.0, 1.0)
+	print("[SettingsManager] Setting SFX volume: %.2f (bus %d)" % [sfx_volume, sfx_bus_index])
 	_apply_audio_volume(sfx_bus_index, sfx_volume)
 	audio_settings_changed.emit(master_volume, music_volume, sfx_volume)
 
