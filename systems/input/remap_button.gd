@@ -62,6 +62,21 @@ func _ready() -> void:
 
 	_update_display()
 
+func _exit_tree() -> void:
+	"""Cleanup signal connections when removed from tree"""
+	if Engine.is_editor_hint():
+		return
+
+	if InputRemappingManager:
+		if InputRemappingManager.binding_changed.is_connected(_on_binding_changed):
+			InputRemappingManager.binding_changed.disconnect(_on_binding_changed)
+		if InputRemappingManager.listening_started.is_connected(_on_listening_started):
+			InputRemappingManager.listening_started.disconnect(_on_listening_started)
+		if InputRemappingManager.listening_stopped.is_connected(_on_listening_stopped):
+			InputRemappingManager.listening_stopped.disconnect(_on_listening_stopped)
+		if InputRemappingManager.conflict_detected.is_connected(_on_conflict_detected):
+			InputRemappingManager.conflict_detected.disconnect(_on_conflict_detected)
+
 func _create_ui() -> void:
 	"""Creates the UI structure programmatically"""
 	# Set container properties

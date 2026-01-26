@@ -286,6 +286,11 @@ func start_listening(action_name: String, device_type: int) -> void:
 		push_error("[InputRemappingManager] Unknown action: %s" % action_name)
 		return
 
+	# Release GUI focus so gamepad/keyboard input is not intercepted by UI
+	var focused = get_viewport().gui_get_focus_owner()
+	if focused:
+		focused.release_focus()
+
 	is_listening = true
 	listening_action = action_name
 	listening_device_type = device_type
