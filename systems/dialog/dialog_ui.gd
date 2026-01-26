@@ -17,6 +17,7 @@ var typewriter_timer: Timer = null
 var is_typing: bool = false
 var current_char_index: int = 0
 var full_text: String = ""
+var current_state_is_choosing: bool = false
 
 
 func _ready() -> void:
@@ -45,20 +46,31 @@ func _input(event: InputEvent) -> void:
 	if not visible:
 		return
 
-	# Only handle dialog-specific inputs
-	if event.is_action_pressed("ui_accept") or event.is_action_pressed("p1_interact"):
-		get_viewport().set_input_as_handled()
-		advance_requested.emit()
-		return
+	# Handle choice selection with keyboard/gamepad
+	if current_state_is_choosing and event.is_action_pressed("ui_accept"):
+		var focused = get_viewport().gui_get_focus_owner()
+		if focused and focused.get_parent() == choices_container:
+			var index = focused.get_index()
+			print("[DialogUI] Choice selected via keyboard: ", index)
+			get_viewport().set_input_as_handled()
+			choice_selected.emit(index)
+			return
 
-	# Also accept left mouse click
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		get_viewport().set_input_as_handled()
-		advance_requested.emit()
+	# Handle dialog advance
+	if not current_state_is_choosing:
+		if event.is_action_pressed("ui_accept") or event.is_action_pressed("p1_interact"):
+			get_viewport().set_input_as_handled()
+			advance_requested.emit()
+			return
+
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			get_viewport().set_input_as_handled()
+			advance_requested.emit()
 
 
 func show_entry(entry: DialogEntry) -> void:
 	current_entry = entry
+	current_state_is_choosing = false
 	print("[DialogUI] show_entry called - speaker: ", entry.speaker_name)
 
 	# Character sprite
@@ -120,6 +132,7 @@ func is_text_fully_shown() -> bool:
 
 func show_choices(choices: Array[DialogChoice]) -> void:
 	_clear_choices()
+	current_state_is_choosing = true
 	print("[DialogUI] Showing ", choices.size(), " choices")
 
 	for i in choices.size():
@@ -128,6 +141,7 @@ func show_choices(choices: Array[DialogChoice]) -> void:
 		button.custom_minimum_size = Vector2(400, 50)
 		button.process_mode = Node.PROCESS_MODE_ALWAYS
 		button.focus_mode = Control.FOCUS_ALL
+		button.mouse_filter = Control.MOUSE_FILTER_STOP
 		button.pressed.connect(_on_choice_button_pressed.bind(i))
 		choices_container.add_child(button)
 		print("[DialogUI] Created choice button: ", choices[i].choice_text)
@@ -155,6 +169,7 @@ func _clear_choices() -> void:
 
 func hide_dialog() -> void:
 	visible = false
+	current_state_is_choosing = false
 	_stop_typewriter()
 	_clear_choices()
 	character_sprite.visible = false
