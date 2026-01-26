@@ -343,11 +343,23 @@ func _on_puzzle_solved() -> void:
 # DIALOG TRIGGER (Murum & Umbra Introduction)
 # ============================================================================
 
+const DIALOG_ID = "world01room01"
+
 func _setup_dialog_trigger() -> void:
 	"""Setup the dialog trigger area for Murum-Umbra conversation"""
+	# Check if dialog was already played (persistence)
+	if WorldManager and WorldManager.is_dialog_played(DIALOG_ID):
+		dialog_triggered = true
+		print("[Room01_Entry] Dialog already played, disabling trigger")
+		return
+
 	if dialog_trigger:
 		dialog_trigger.body_entered.connect(_on_dialog_trigger_body_entered)
 		print("[Room01_Entry] Dialog trigger setup complete")
+
+	# Connect to dialog finished signal to mark as played
+	if EventBus and EventBus.has_signal("dialog_finished"):
+		EventBus.dialog_finished.connect(_on_dialog_finished)
 
 
 func _on_dialog_trigger_body_entered(body: Node2D) -> void:
@@ -357,10 +369,18 @@ func _on_dialog_trigger_body_entered(body: Node2D) -> void:
 
 	if body.is_in_group("player") or body.name == "Murum":
 		dialog_triggered = true
-		print("[Room01_Entry] Dialog triggered: world01room01")
+		print("[Room01_Entry] Dialog triggered: %s" % DIALOG_ID)
 
 		# Small delay before starting dialog
 		await get_tree().create_timer(0.3).timeout
 
 		if DialogManager:
-			DialogManager.play_dialog("world01room01")
+			DialogManager.play_dialog(DIALOG_ID)
+
+
+func _on_dialog_finished(dialog_id: String) -> void:
+	"""Called when any dialog finishes - marks our dialog as played"""
+	if dialog_id == DIALOG_ID:
+		if WorldManager:
+			WorldManager.mark_dialog_played(DIALOG_ID)
+			print("[Room01_Entry] Dialog marked as played: %s" % DIALOG_ID)

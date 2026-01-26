@@ -30,6 +30,7 @@ var visited_rooms: Array[String] = []
 var unlocked_doors: Array[String] = []
 var collected_items: Array[String] = []  # Tracks collected pickups to prevent respawn
 var solved_puzzles: Array[String] = []  # Tracks solved puzzles to prevent re-solving
+var played_dialogs: Array[String] = []  # Tracks played dialogs to prevent replay
 
 # World Progression
 var bosses_defeated: Array[String] = []
@@ -516,7 +517,8 @@ func get_progression_data() -> Dictionary:
 		"unlocked_doors": unlocked_doors,
 		"bosses_defeated": bosses_defeated,
 		"collected_items": collected_items,
-		"solved_puzzles": solved_puzzles
+		"solved_puzzles": solved_puzzles,
+		"played_dialogs": played_dialogs
 	}
 
 func load_progression_data(data: Dictionary) -> void:
@@ -559,7 +561,11 @@ func load_progression_data(data: Dictionary) -> void:
 	for puzzle_id in data.get("solved_puzzles", []):
 		solved_puzzles.append(puzzle_id)
 
-	print("[WorldManager] Progression data loaded: %d items, %d puzzles" % [collected_items.size(), solved_puzzles.size()])
+	played_dialogs.clear()
+	for dialog_id in data.get("played_dialogs", []):
+		played_dialogs.append(dialog_id)
+
+	print("[WorldManager] Progression data loaded: %d items, %d puzzles, %d dialogs" % [collected_items.size(), solved_puzzles.size(), played_dialogs.size()])
 
 # ============================================================================
 # UTILITY
@@ -588,6 +594,16 @@ func mark_puzzle_solved(puzzle_id: String) -> void:
 func is_puzzle_solved(puzzle_id: String) -> bool:
 	"""Returns true if puzzle was already solved"""
 	return puzzle_id in solved_puzzles
+
+func mark_dialog_played(dialog_id: String) -> void:
+	"""Marks a dialog as played to prevent replay"""
+	if dialog_id not in played_dialogs:
+		played_dialogs.append(dialog_id)
+		print("[WorldManager] Dialog played: %s" % dialog_id)
+
+func is_dialog_played(dialog_id: String) -> bool:
+	"""Returns true if dialog was already played"""
+	return dialog_id in played_dialogs
 
 func get_enemies_in_room() -> Array:
 	"""Returns all enemies in current room"""
