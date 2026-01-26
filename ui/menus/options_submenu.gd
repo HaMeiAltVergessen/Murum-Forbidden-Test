@@ -3,6 +3,7 @@ extends Control
 ## Options Menu - Verwaltung aller Spieleinstellungen
 ## Godot 4.4 kompatibel
 ## COMMIT 017: Options Menu Foundation
+## Erweitert: Control Remapping System
 
 # ============================================================================
 # SIGNALS
@@ -38,10 +39,11 @@ signal back_pressed()
 @onready var vsync_checkbox: CheckBox = %VSyncCheckBox
 
 # ============================================================================
-# REFERENCES - Input Tab
+# REFERENCES - Controls Tab
 # ============================================================================
 
-@onready var input_device_option: OptionButton = %InputDeviceOption
+@onready var controls_section = %ControlsSection
+@onready var confirm_dialog: ConfirmationDialog = %ConfirmDialog
 
 # ============================================================================
 # REFERENCES - Buttons
@@ -51,6 +53,12 @@ signal back_pressed()
 @onready var back_button: Button = %BackButton
 
 # ============================================================================
+# STATE
+# ============================================================================
+
+var _pending_confirm_callback: Callable
+
+# ============================================================================
 # INITIALIZATION
 # ============================================================================
 
@@ -58,7 +66,7 @@ func _ready() -> void:
 	# Setup UI
 	_setup_audio_tab()
 	_setup_video_tab()
-	_setup_input_tab()
+	_setup_confirm_dialog()
 
 	# Load current settings
 	_load_current_settings()
@@ -111,12 +119,11 @@ func _setup_video_tab() -> void:
 	brightness_slider.max_value = 1.5
 	brightness_slider.step = 0.01
 
-func _setup_input_tab() -> void:
-	"""Configures input options"""
-	input_device_option.clear()
-	input_device_option.add_item("Auto", 0)
-	input_device_option.add_item("Keyboard", 1)
-	input_device_option.add_item("Gamepad", 2)
+func _setup_confirm_dialog() -> void:
+	"""Configures the confirmation dialog"""
+	if confirm_dialog:
+		confirm_dialog.confirmed.connect(_on_confirm_dialog_confirmed)
+		confirm_dialog.canceled.connect(_on_confirm_dialog_canceled)
 
 func _setup_tab_navigation() -> void:
 	"""Sets up input actions for tab navigation"""
@@ -159,9 +166,6 @@ func _load_current_settings() -> void:
 	vsync_checkbox.button_pressed = SettingsManager.vsync_enabled
 	_update_brightness_label()
 
-	# Input
-	input_device_option.selected = SettingsManager.preferred_input_device
-
 	print("[OptionsMenu] Current settings loaded into UI")
 
 # ============================================================================
@@ -181,8 +185,9 @@ func _connect_signals() -> void:
 	brightness_slider.value_changed.connect(_on_brightness_slider_changed)
 	vsync_checkbox.toggled.connect(_on_vsync_toggled)
 
-	# Input
-	input_device_option.item_selected.connect(_on_input_device_selected)
+	# Controls section
+	if controls_section:
+		controls_section.show_confirm_dialog.connect(_on_show_confirm_dialog)
 
 	# Buttons
 	reset_button.pressed.connect(_on_reset_pressed)
@@ -194,6 +199,10 @@ func _connect_signals() -> void:
 
 func _input(event: InputEvent) -> void:
 	if not visible:
+		return
+
+	# Don't process input while listening for new keybind
+	if InputRemappingManager and InputRemappingManager.is_listening:
 		return
 
 	# Tab navigation
@@ -263,13 +272,6 @@ func _update_brightness_label() -> void:
 	brightness_value_label.text = "%d%%" % (brightness_slider.value * 100)
 
 # ============================================================================
-# INPUT SIGNAL HANDLERS
-# ============================================================================
-
-func _on_input_device_selected(index: int) -> void:
-	SettingsManager.set_preferred_input_device(index)
-
-# ============================================================================
 # BUTTON HANDLERS
 # ============================================================================
 
@@ -289,6 +291,15 @@ func _on_reset_pressed() -> void:
 
 func _on_back_pressed() -> void:
 	"""Returns to main menu and saves settings"""
+	# Check for unsaved control remapping changes
+	if controls_section and controls_section.has_unsaved_changes():
+		_show_unsaved_changes_dialog()
+		return
+
+	_do_back()
+
+func _do_back() -> void:
+	"""Actually performs the back action"""
 	print("[OptionsMenu] Returning to main menu")
 
 	# Play sound
@@ -300,4 +311,58 @@ func _on_back_pressed() -> void:
 
 	# Emit signal for main menu
 	back_pressed.emit()
+
+# ============================================================================
+# CONFIRMATION DIALOG HANDLERS
+# ============================================================================
+
+func _show_unsaved_changes_dialog() -> void:
+	"""Shows dialog for unsaved control remapping changes"""
+	if not confirm_dialog:
+		# No dialog available, just save and exit
+		if controls_section:
+			controls_section.save_and_apply()
+		_do_back()
+		return
+
+	confirm_dialog.title = "Ungespeicherte Änderungen"
+	confirm_dialog.dialog_text = "Sie haben ungespeicherte Änderungen an den Tastenbelegungen.\n\nMöchten Sie diese Änderungen speichern?"
+	confirm_dialog.ok_button_text = "Speichern & Verlassen"
+	confirm_dialog.cancel_button_text = "Verwerfen"
+
+	_pending_confirm_callback = func():
+		if controls_section:
+			controls_section.save_and_apply()
+		_do_back()
+
+	confirm_dialog.popup_centered()
+
+func _on_show_confirm_dialog(title: String, message: String, callback: Callable) -> void:
+	"""Shows a confirmation dialog from controls section"""
+	if not confirm_dialog:
+		# No dialog available, execute callback directly
+		callback.call()
+		return
+
+	confirm_dialog.title = title
+	confirm_dialog.dialog_text = message
+	confirm_dialog.ok_button_text = "Bestätigen"
+	confirm_dialog.cancel_button_text = "Abbrechen"
+
+	_pending_confirm_callback = callback
+	confirm_dialog.popup_centered()
+
+func _on_confirm_dialog_confirmed() -> void:
+	"""Called when confirm dialog is confirmed"""
+	if _pending_confirm_callback.is_valid():
+		_pending_confirm_callback.call()
+	_pending_confirm_callback = Callable()
+
+func _on_confirm_dialog_canceled() -> void:
+	"""Called when confirm dialog is canceled"""
+	# For unsaved changes dialog, discard and exit
+	if controls_section and controls_section.has_unsaved_changes():
+		controls_section.discard_changes()
+		_do_back()
+	_pending_confirm_callback = Callable()
 
