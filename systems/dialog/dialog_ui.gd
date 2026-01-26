@@ -23,6 +23,11 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	layer = 100
 
+	# Ensure all UI elements can process during pause
+	blur_background.process_mode = Node.PROCESS_MODE_ALWAYS
+	dialog_box.process_mode = Node.PROCESS_MODE_ALWAYS
+	choices_container.process_mode = Node.PROCESS_MODE_ALWAYS
+
 	_setup_typewriter_timer()
 	_clear_choices()
 	print("[DialogUI] Initialized - layer: ", layer)
@@ -115,24 +120,30 @@ func is_text_fully_shown() -> bool:
 
 func show_choices(choices: Array[DialogChoice]) -> void:
 	_clear_choices()
+	print("[DialogUI] Showing ", choices.size(), " choices")
 
 	for i in choices.size():
 		var button := Button.new()
 		button.text = choices[i].choice_text
 		button.custom_minimum_size = Vector2(400, 50)
-		button.pressed.connect(_on_choice_button_pressed.bind(i))
+		button.process_mode = Node.PROCESS_MODE_ALWAYS
 		button.focus_mode = Control.FOCUS_ALL
+		button.pressed.connect(_on_choice_button_pressed.bind(i))
 		choices_container.add_child(button)
+		print("[DialogUI] Created choice button: ", choices[i].choice_text)
 
 	choices_container.visible = true
 
-	# Focus first button
+	# Focus first button after frame
 	await get_tree().process_frame
 	if choices_container.get_child_count() > 0:
-		choices_container.get_child(0).grab_focus()
+		var first_button = choices_container.get_child(0)
+		first_button.grab_focus()
+		print("[DialogUI] Focused first choice button")
 
 
 func _on_choice_button_pressed(index: int) -> void:
+	print("[DialogUI] Choice button pressed: ", index)
 	choice_selected.emit(index)
 
 

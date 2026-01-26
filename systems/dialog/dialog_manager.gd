@@ -75,6 +75,7 @@ func _advance_to_next_entry() -> void:
 
 func _show_choices(choices: Array[DialogChoice]) -> void:
 	current_state = States.WAITING_FOR_CHOICE
+	print("[DialogManager] Showing choices: ", choices.size())
 	dialog_ui.show_choices(choices)
 
 
@@ -114,6 +115,7 @@ func _on_text_completed() -> void:
 
 
 func _on_choice_selected(choice_index: int) -> void:
+	print("[DialogManager] Choice selected: ", choice_index)
 	if EventBus and current_dialog:
 		EventBus.dialog_choice_selected.emit(current_dialog.dialog_id, choice_index)
 	_end_dialog()

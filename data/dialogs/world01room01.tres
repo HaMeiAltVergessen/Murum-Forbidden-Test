@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="DialogData" load_steps=9 format=3 uid="uid://cworld01room01dialog"]
+[gd_resource type="Resource" script_class="DialogData" load_steps=12 format=3 uid="uid://cworld01room01dialog"]
 
 [ext_resource type="Script" path="res://resources/dialog/dialog_data.gd" id="1_data"]
 [ext_resource type="Script" path="res://resources/dialog/dialog_entry.gd" id="2_entry"]
 [ext_resource type="Script" path="res://resources/dialog/dialog_choice.gd" id="3_choice"]
+[ext_resource type="Texture2D" uid="uid://dmurum_placeholder" path="res://Assets/AIPlaceholder/Char/Murum/Murum.png" id="4_murum"]
 
 [sub_resource type="Resource" id="Resource_entry1"]
 script = ExtResource("2_entry")
@@ -38,16 +39,16 @@ choices = []
 
 [sub_resource type="Resource" id="Resource_choice1"]
 script = ExtResource("3_choice")
-choice_text = "..."
+choice_text = "Schweigen und Weitergehen"
 
 [sub_resource type="Resource" id="Resource_choice2"]
 script = ExtResource("3_choice")
-choice_text = "[Schweigen]"
+choice_text = "Umbra, sei still."
 
 [sub_resource type="Resource" id="Resource_entry5"]
 script = ExtResource("2_entry")
 speaker_name = "Murum"
-speaker_sprite = null
+speaker_sprite = ExtResource("4_murum")
 text = "Es muss immer noch hier sein."
 text_speed = 22.0
 choices = [SubResource("Resource_choice1"), SubResource("Resource_choice2")]
