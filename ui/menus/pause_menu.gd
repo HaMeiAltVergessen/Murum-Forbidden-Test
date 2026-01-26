@@ -25,6 +25,7 @@ signal pause_menu_closed()
 # ============================================================================
 
 @onready var resume_button: Button = %ResumeButton
+@onready var p2_join_button: Button = %P2JoinButton
 @onready var load_checkpoint_button: Button = %LoadCheckpointButton
 @onready var save_checkpoint_button: Button = %SaveCheckpointButton
 @onready var character_button: Button = %CharacterButton
@@ -86,6 +87,7 @@ func _connect_signals() -> void:
 	"""Connects all button signals"""
 	# Main menu buttons
 	resume_button.pressed.connect(_on_resume_pressed)
+	p2_join_button.pressed.connect(_on_p2_join_pressed)
 	load_checkpoint_button.pressed.connect(_on_load_checkpoint_pressed)
 	save_checkpoint_button.pressed.connect(_on_save_checkpoint_pressed)
 	character_button.pressed.connect(_on_character_pressed)
@@ -174,6 +176,9 @@ func pause() -> void:
 	# Update checkpoint button states
 	_update_checkpoint_buttons()
 
+	# Update P2 join button visibility
+	_update_p2_join_button()
+
 	# Focus resume button
 	resume_button.grab_focus()
 
@@ -214,6 +219,54 @@ func _update_checkpoint_buttons() -> void:
 	else:
 		load_checkpoint_button.tooltip_text = "Kein Checkpoint verfügbar"
 		save_checkpoint_button.tooltip_text = "Kein Checkpoint verfügbar"
+
+# ============================================================================
+# PLAYER 2 JOIN
+# ============================================================================
+
+func _update_p2_join_button() -> void:
+	"""Updates P2 join button visibility and state"""
+	if not p2_join_button:
+		return
+
+	# Check if P2 is already active
+	var p2_active = CoopManager and CoopManager.is_p2_active
+
+	if p2_active:
+		p2_join_button.text = "Spieler 2 aktiv"
+		p2_join_button.disabled = true
+	else:
+		p2_join_button.text = "Spieler 2 beitreten"
+		# Check if join is blocked
+		if CoopManager and not CoopManager.can_join():
+			p2_join_button.disabled = true
+			p2_join_button.tooltip_text = "Beitritt momentan nicht möglich"
+		else:
+			p2_join_button.disabled = false
+			p2_join_button.tooltip_text = "Controller verbinden und Spieler 2 starten"
+
+func _on_p2_join_pressed() -> void:
+	"""Handles P2 join button press"""
+	print("[PauseMenu] P2 Join pressed")
+
+	if not CoopManager:
+		push_warning("[PauseMenu] CoopManager not available")
+		return
+
+	if CoopManager.is_p2_active:
+		print("[PauseMenu] P2 already active")
+		return
+
+	# Play sound
+	if AudioManager:
+		AudioManager.play_sfx("ui/menu_accept")
+
+	# Close pause menu first
+	unpause()
+
+	# Spawn P2 (small delay to ensure unpause is complete)
+	await get_tree().create_timer(0.1).timeout
+	CoopManager.spawn_p2()
 
 # ============================================================================
 # CHARACTER STATS
