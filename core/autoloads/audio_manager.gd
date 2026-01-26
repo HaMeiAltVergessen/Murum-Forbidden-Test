@@ -44,7 +44,7 @@ func _create_sfx_pool() -> void:
 	for i in range(SFX_POOL_SIZE):
 		var player: AudioStreamPlayer = AudioStreamPlayer.new()
 		player.name = "SFXPlayer_" + str(i)
-		player.bus = "Master"
+		player.bus = "SFX"  # Route to SFX bus for volume control
 		add_child(player)
 		sfx_pool.append(player)
 
@@ -53,7 +53,7 @@ func _create_music_player() -> void:
 	"""Creates the music player"""
 	music_player = AudioStreamPlayer.new()
 	music_player.name = "MusicPlayer"
-	music_player.bus = "Master"
+	music_player.bus = "Music"  # Route to Music bus for volume control
 	add_child(music_player)
 
 
@@ -132,7 +132,8 @@ func play_sfx(sfx_name: String, pitch_variation: float = 0.0) -> void:
 
 	# Configure and play
 	player.stream = audio_stream
-	player.volume_db = linear_to_db(sfx_volume * master_volume)
+	# Volume is controlled by the SFX audio bus via SettingsManager
+	player.volume_db = 0.0
 
 	# Dark Fantasy/Sci-Fi base pitch (0.75 = darker, more ominous)
 	var base_pitch = 0.75
@@ -181,7 +182,8 @@ func play_music(track_name: String, fade_in: bool = true) -> void:
 
 	# Play new music
 	music_player.stream = audio_stream
-	music_player.volume_db = linear_to_db(music_volume * master_volume)
+	# Volume is controlled by the Music audio bus via SettingsManager
+	music_player.volume_db = 0.0
 
 	if fade_in:
 		await fade_in_music()
@@ -215,10 +217,11 @@ func fade_in_music() -> void:
 	music_player.play()
 
 	var tween: Tween = create_tween()
+	# Fade to 0 dB (full volume) - actual volume is controlled by Music bus
 	tween.tween_property(
 		music_player,
 		"volume_db",
-		linear_to_db(music_volume * master_volume),
+		0.0,
 		MUSIC_FADE_DURATION
 	)
 	await tween.finished
@@ -242,24 +245,22 @@ func fade_out_music() -> void:
 
 
 # ============ VOLUME CONTROL ============
+# Note: Volume is now controlled via SettingsManager and audio buses (Master, Music, SFX)
+# These methods are kept for backwards compatibility but delegate to SettingsManager
+
 func set_master_volume(volume: float) -> void:
-	"""Sets master volume (0.0 to 1.0)"""
-	master_volume = clamp(volume, 0.0, 1.0)
-	_update_volumes()
+	"""Sets master volume (0.0 to 1.0) - delegates to SettingsManager"""
+	if SettingsManager:
+		SettingsManager.set_master_volume(volume)
 
 
 func set_music_volume(volume: float) -> void:
-	"""Sets music volume (0.0 to 1.0)"""
-	music_volume = clamp(volume, 0.0, 1.0)
-	_update_volumes()
+	"""Sets music volume (0.0 to 1.0) - delegates to SettingsManager"""
+	if SettingsManager:
+		SettingsManager.set_music_volume(volume)
 
 
 func set_sfx_volume(volume: float) -> void:
-	"""Sets SFX volume (0.0 to 1.0)"""
-	sfx_volume = clamp(volume, 0.0, 1.0)
-
-
-func _update_volumes() -> void:
-	"""Updates all active audio players with new volume settings"""
-	if music_player and music_player.playing:
-		music_player.volume_db = linear_to_db(music_volume * master_volume)
+	"""Sets SFX volume (0.0 to 1.0) - delegates to SettingsManager"""
+	if SettingsManager:
+		SettingsManager.set_sfx_volume(volume)
