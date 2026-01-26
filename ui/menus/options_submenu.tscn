@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://cl3nxmr8yv7ro"]
+[gd_scene load_steps=3 format=3 uid="uid://cl3nxmr8yv7ro"]
 
 [ext_resource type="Script" path="res://ui/menus/options_submenu.gd" id="1_options_script"]
+[ext_resource type="PackedScene" uid="uid://dbv2k5hwqnxpl" path="res://ui/menus/controls_section.tscn" id="2_controls_section"]
 
 [node name="OptionsSubmenu" type="Control"]
 layout_mode = 3
@@ -193,43 +194,14 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "VSync aktiviert"
 
-[node name="Steuerung" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer/TabContainer"]
+[node name="Steuerung" type="MarginContainer" parent="PanelContainer/MarginContainer/VBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
-theme_override_constants/separation = 25
+theme_override_constants/margin_top = 10
 
-[node name="InputDevice" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer/TabContainer/Steuerung"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="Label" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/TabContainer/Steuerung/InputDevice"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "Bevorzugtes Eingabegerät"
-
-[node name="InputDeviceOption" type="OptionButton" parent="PanelContainer/MarginContainer/VBoxContainer/TabContainer/Steuerung/InputDevice"]
+[node name="ControlsSection" parent="PanelContainer/MarginContainer/VBoxContainer/TabContainer/Steuerung" instance=ExtResource("2_controls_section")]
 unique_name_in_owner = true
 layout_mode = 2
-
-[node name="Spacer" type="Control" parent="PanelContainer/MarginContainer/VBoxContainer/TabContainer/Steuerung"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="KeybindingInfo" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer/TabContainer/Steuerung"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "Keybinding-System wird in einem zukünftigen Update hinzugefügt.
-
-Aktuelle Steuerung:
-- Bewegung: WASD / Pfeiltasten
-- Springen: Leertaste
-- Angriff: Linke Maustaste
-- Blocken: Rechte Maustaste
-- Inventar: I
-- Interagieren: E"
-horizontal_alignment = 1
-vertical_alignment = 1
-autowrap_mode = 3
 
 [node name="ButtonContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -249,3 +221,9 @@ custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Zurück"
+
+[node name="ConfirmDialog" type="ConfirmationDialog" parent="."]
+unique_name_in_owner = true
+title = "Bestätigung"
+initial_position = 2
+size = Vector2i(450, 150)
