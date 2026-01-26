@@ -167,6 +167,29 @@ func _clear_choices() -> void:
 	choices_container.visible = false
 
 
+func show_response(speaker: String, text: String) -> void:
+	current_state_is_choosing = false
+	_clear_choices()
+
+	# Speaker name
+	if speaker.is_empty():
+		speaker_label.visible = false
+	else:
+		speaker_label.text = speaker
+		speaker_label.visible = true
+
+	# No sprite for responses
+	character_sprite.visible = false
+
+	# Setup text for typewriter
+	full_text = text
+	current_char_index = 0
+	text_label.text = ""
+
+	_start_typewriter(28.0)
+	print("[DialogUI] Showing response from: ", speaker)
+
+
 func hide_dialog() -> void:
 	visible = false
 	current_state_is_choosing = false

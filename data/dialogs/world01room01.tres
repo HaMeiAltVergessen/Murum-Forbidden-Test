@@ -40,10 +40,14 @@ choices = []
 [sub_resource type="Resource" id="Resource_choice1"]
 script = ExtResource("3_choice")
 choice_text = "Schweigen und Weitergehen"
+response_speaker = ""
+response_text = ""
 
 [sub_resource type="Resource" id="Resource_choice2"]
 script = ExtResource("3_choice")
 choice_text = "Umbra, sei still."
+response_speaker = "Umbra"
+response_text = "Meine Stimme ist nur ein Echo deiner verlorenen Gedanken."
 
 [sub_resource type="Resource" id="Resource_entry5"]
 script = ExtResource("2_entry")
