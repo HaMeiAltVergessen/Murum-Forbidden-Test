@@ -98,17 +98,20 @@ func _cache_audio_bus_indices() -> void:
 	music_bus_index = AudioServer.get_bus_index("Music")
 	sfx_bus_index = AudioServer.get_bus_index("SFX")
 
+	# Master should always exist at index 0
 	if master_bus_index == -1:
 		push_warning("[SettingsManager] Master bus not found, using index 0")
 		master_bus_index = 0
 
+	# If Music bus doesn't exist, fall back to Master
 	if music_bus_index == -1:
-		push_warning("[SettingsManager] Music bus not found, using index 1")
-		music_bus_index = 1
+		push_warning("[SettingsManager] Music bus not found, falling back to Master")
+		music_bus_index = master_bus_index
 
+	# If SFX bus doesn't exist, fall back to Master
 	if sfx_bus_index == -1:
-		push_warning("[SettingsManager] SFX bus not found, using index 2")
-		sfx_bus_index = 2
+		push_warning("[SettingsManager] SFX bus not found, falling back to Master")
+		sfx_bus_index = master_bus_index
 
 # ============================================================================
 # AUDIO METHODS
@@ -134,6 +137,11 @@ func set_sfx_volume(volume: float) -> void:
 
 func _apply_audio_volume(bus_index: int, volume: float) -> void:
 	"""Applies volume to audio bus (converts linear to dB)"""
+	# Safety check: ensure bus index is valid
+	if bus_index < 0 or bus_index >= AudioServer.bus_count:
+		push_warning("[SettingsManager] Invalid bus index %d, skipping volume change" % bus_index)
+		return
+
 	if volume <= 0.0:
 		# Mute the bus
 		AudioServer.set_bus_mute(bus_index, true)
@@ -205,7 +213,11 @@ func _apply_brightness() -> void:
 	if not brightness_modulate:
 		brightness_modulate = CanvasModulate.new()
 		brightness_modulate.name = "BrightnessModulate"
-		get_tree().root.add_child(brightness_modulate)
+		# Use call_deferred to avoid "Parent node is busy setting up children" error
+		get_tree().root.call_deferred("add_child", brightness_modulate)
+		# Also defer the color setting to ensure the node is added first
+		brightness_modulate.set_deferred("color", Color(brightness, brightness, brightness, 1.0))
+		return
 
 	brightness_modulate.color = Color(brightness, brightness, brightness, 1.0)
 
