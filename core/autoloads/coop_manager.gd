@@ -74,14 +74,13 @@ func show_join_blocked_message() -> void:
 
 func spawn_p2() -> void:
 	"""Spawn Player 2 (Lythrun)"""
-	# Note: is_p2_active is already set to true in _on_p2_join_requested()
-
 	print("[CoopManager] Spawning Player 2 (Lythrun)...")
 
 	# Load P2 scene
 	var p2_scene = load("res://player/lythrun_player.tscn")
 	if not p2_scene:
 		push_error("[CoopManager] Could not load lythrun_player.tscn!")
+		is_p2_active = false
 		return
 
 	p2_instance = p2_scene.instantiate()
@@ -91,26 +90,81 @@ func spawn_p2() -> void:
 	if not current_scene:
 		push_error("[CoopManager] No current scene!")
 		p2_instance.queue_free()
+		is_p2_active = false
 		return
+
+	# IMPORTANT: Set is_p2_active BEFORE adding to scene tree
+	# This ensures P2 won't be ignored if they take damage during spawn
+	is_p2_active = true
 
 	current_scene.add_child(p2_instance)
 
 	# Set spawn position near P1
 	p2_instance.global_position = p1_instance.global_position + Vector2(50, 0)
 
+	# CRITICAL: Initialize P2's health to max BEFORE anything else
+	if p2_instance.has_node("HealthComponent"):
+		var health_comp = p2_instance.get_node("HealthComponent")
+		# Force health to max (in case it wasn't initialized properly)
+		health_comp.current_health = health_comp.max_health
+		print("[CoopManager] P2 HP initialized: %d/%d" % [health_comp.current_health, health_comp.max_health])
+
+	# Make P2 invulnerable during spawn (set EARLY)
+	if p2_instance.has_method("set_invulnerable"):
+		p2_instance.set_invulnerable(true)
+
+	# Disable P2's collision temporarily to prevent DeathBox issues
+	p2_instance.set_collision_layer_value(3, false)  # Temporarily disable player layer
+
+	# Connect signals BEFORE animation so death is tracked
+	connect_p2_signals()
+
 	# Play spawn animation
 	await play_shadow_spawn_animation()
 
-	# Activate P2
-	is_p2_active = true
+	# Re-enable P2's collision
+	p2_instance.set_collision_layer_value(3, true)
+
+	# Activate P2 input
 	InputManager.set_p2_active(true)
 
-	# Connect signals
-	connect_p2_signals()
-
+	# Emit joined signal AFTER everything is ready
 	p2_joined.emit()
 
+	# Setup co-op camera
+	_setup_coop_camera()
+
 	print("[CoopManager] Player 2 joined!")
+
+func _setup_coop_camera() -> void:
+	"""Setup or activate co-op camera when P2 joins"""
+	# Check if CoopCamera already exists in scene
+	var existing_coop_cam = get_tree().get_first_node_in_group("coop_camera")
+	if existing_coop_cam:
+		print("[CoopManager] Existing CoopCamera found, activating...")
+		if existing_coop_cam.has_method("set_player1"):
+			existing_coop_cam.set_player1(p1_instance)
+		if existing_coop_cam.has_method("set_player2"):
+			existing_coop_cam.set_player2(p2_instance)
+		if existing_coop_cam.has_method("activate_coop_camera"):
+			existing_coop_cam.activate_coop_camera()
+		return
+
+	# No CoopCamera exists - create one dynamically
+	var coop_cam_scene = load("res://camera/coop_camera.tscn")
+	if coop_cam_scene:
+		var coop_cam = coop_cam_scene.instantiate()
+		get_tree().current_scene.add_child(coop_cam)
+		coop_cam.add_to_group("coop_camera")
+
+		# Set player references
+		coop_cam.set_player1(p1_instance)
+		coop_cam.set_player2(p2_instance)
+		coop_cam.activate_coop_camera()
+
+		print("[CoopManager] CoopCamera created and activated")
+	else:
+		push_warning("[CoopManager] Could not load coop_camera.tscn")
 
 func play_shadow_spawn_animation() -> void:
 	"""Play shadow abyss spawn animation"""
@@ -183,7 +237,17 @@ func despawn_p2() -> void:
 	is_p2_active = false
 	InputManager.set_p2_active(false)
 
+	# Deactivate CoopCamera and return to single-player camera
+	_deactivate_coop_camera()
+
 	p2_left.emit()
+
+func _deactivate_coop_camera() -> void:
+	"""Deactivate co-op camera when P2 leaves"""
+	var coop_cam = get_tree().get_first_node_in_group("coop_camera")
+	if coop_cam and coop_cam.has_method("deactivate_coop_camera"):
+		coop_cam.deactivate_coop_camera()
+		print("[CoopManager] CoopCamera deactivated")
 
 func _on_p2_controller_disconnected() -> void:
 	"""Handle P2's controller being disconnected (COMMIT 022.5)"""
