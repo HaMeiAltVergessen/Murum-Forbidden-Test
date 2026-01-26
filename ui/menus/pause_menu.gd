@@ -104,8 +104,10 @@ func _input(event: InputEvent) -> void:
 	if _is_in_main_menu():
 		return
 
-	# Don't allow pause during dialog or cutscene
+	# Don't allow pause during dialog or cutscene - also consume the event
 	if _is_dialog_or_cutscene_active():
+		if event.is_action_pressed("ui_cancel"):
+			get_viewport().set_input_as_handled()
 		return
 
 	if event.is_action_pressed("ui_cancel"):
@@ -138,7 +140,7 @@ func _is_dialog_or_cutscene_active() -> bool:
 		return true
 
 	# Check cutscene
-	if CutsceneManager and CutsceneManager.has_method("is_playing") and CutsceneManager.is_playing():
+	if CutsceneManager and CutsceneManager.is_playing():
 		return true
 
 	return false
