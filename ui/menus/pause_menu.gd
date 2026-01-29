@@ -368,6 +368,23 @@ func _on_load_checkpoint_pressed() -> void:
 	if AudioManager:
 		AudioManager.play_sfx("ui/menu_accept")
 
+	# CRITICAL: Protect P2 from being destroyed when scene reloads
+	var p2_was_active = CoopManager and CoopManager.is_p2_active
+	var p2_instance = null
+	if p2_was_active:
+		p2_instance = CoopManager.get_p2_instance()
+		if p2_instance and is_instance_valid(p2_instance):
+			# Move P2 to root to protect from scene destruction
+			var current_parent = p2_instance.get_parent()
+			if current_parent:
+				current_parent.remove_child(p2_instance)
+				get_tree().root.add_child(p2_instance)
+				print("[PauseMenu] P2 moved to root for protection during checkpoint load")
+			# Hide P2 during transition
+			p2_instance.visible = false
+			p2_instance.set_physics_process(false)
+			p2_instance.set_process(false)
+
 	# Unpause first
 	unpause()
 
@@ -376,8 +393,12 @@ func _on_load_checkpoint_pressed() -> void:
 		SaveManager.load_current_game()
 		print("[PauseMenu] Checkpoint loaded: %s" % WorldManager.last_checkpoint)
 
-	# CRITICAL: Teleport P2 to checkpoint position as well
-	_teleport_p2_to_checkpoint()
+	# CRITICAL: Restore P2 after scene reload
+	if p2_was_active and p2_instance and is_instance_valid(p2_instance):
+		# Wait for scene to be fully loaded
+		await get_tree().process_frame
+		await get_tree().create_timer(0.5).timeout
+		_restore_p2_after_checkpoint_load(p2_instance)
 
 func _on_save_checkpoint_pressed() -> void:
 	"""Saves to last checkpoint"""
@@ -510,23 +531,37 @@ func _on_options_back_pressed() -> void:
 	# Focus options button
 	options_button.grab_focus()
 
-func _teleport_p2_to_checkpoint() -> void:
-	"""Teleports P2 to checkpoint position when loading checkpoint"""
-	if not CoopManager or not CoopManager.is_p2_active:
-		return
-
-	var p2 = CoopManager.get_p2_instance()
+func _restore_p2_after_checkpoint_load(p2: Node) -> void:
+	"""Restores P2 after checkpoint load by adding to new scene and teleporting"""
 	if not p2 or not is_instance_valid(p2):
+		print("[PauseMenu] P2 invalid after checkpoint load")
 		return
 
-	if not WorldManager or WorldManager.last_checkpoint_position == Vector2.ZERO:
+	var current_scene = get_tree().current_scene
+	if not current_scene:
+		print("[PauseMenu] No current scene after checkpoint load")
 		return
 
-	# Wait a frame for the scene to be properly loaded
-	await get_tree().process_frame
+	# Remove P2 from root
+	var current_parent = p2.get_parent()
+	if current_parent:
+		current_parent.remove_child(p2)
 
-	# Teleport P2 next to P1 at checkpoint
-	p2.global_position = WorldManager.last_checkpoint_position + Vector2(50, 0)
+	# Add P2 to new scene
+	current_scene.add_child(p2)
+	current_scene.move_child(p2, current_scene.get_child_count() - 1)
+
+	# Position P2 at checkpoint (next to P1)
+	var checkpoint_pos = WorldManager.last_checkpoint_position if WorldManager else Vector2.ZERO
+	if checkpoint_pos != Vector2.ZERO:
+		p2.global_position = checkpoint_pos + Vector2(50, 0)
+	else:
+		# Fallback: position next to P1
+		var player = GameManager.player if GameManager else null
+		if player and is_instance_valid(player):
+			p2.global_position = player.global_position + Vector2(50, 0)
+
+	# Reset velocity
 	if "velocity" in p2:
 		p2.velocity = Vector2.ZERO
 
@@ -535,8 +570,27 @@ func _teleport_p2_to_checkpoint() -> void:
 		var health_comp = p2.get_node("HealthComponent")
 		health_comp.current_health = health_comp.max_health
 
-	# Reset dead flag if needed
+	# Reset dead flag
 	if "is_dead" in p2:
 		p2.is_dead = false
 
-	print("[PauseMenu] P2 teleported to checkpoint: %s" % str(p2.global_position))
+	# Re-enable P2 visibility and physics
+	p2.visible = true
+	p2.set_physics_process(true)
+	p2.set_process(true)
+
+	# High z_index to render above everything
+	p2.z_index = 100
+	p2.z_as_relative = false
+
+	# Re-initialize input system
+	if p2.has_node("MovementController"):
+		var movement = p2.get_node("MovementController")
+		if InputManager and InputManager.p2_controller_device >= 0:
+			movement.controller_device_id = InputManager.p2_controller_device
+
+	# Re-setup CoopCamera
+	if CoopManager and CoopManager.has_method("_setup_coop_camera"):
+		CoopManager._setup_coop_camera()
+
+	print("[PauseMenu] P2 restored after checkpoint load at: %s" % str(p2.global_position))
