@@ -98,9 +98,9 @@ func _input(event: InputEvent) -> void:
 		if not is_keyboard_mouse:
 			return
 
-	# Activate on Key 2 press OR RT + Y (gamepad)
-	# COMMIT 023.9.5: Check if action exists to prevent errors
-	if InputMap.has_action("p1_ability_2") and event.is_action_pressed("p1_ability_2"):
+	# Activate on remapped key OR RT + Y (gamepad)
+	# Use the remappable action p1_urteil_der_zerstoerung
+	if InputMap.has_action("p1_urteil_der_zerstoerung") and event.is_action_pressed("p1_urteil_der_zerstoerung"):
 		attempt_activation()
 	# Gamepad: RT + Y (Y = button 3)
 	elif event is InputEventJoypadButton:
