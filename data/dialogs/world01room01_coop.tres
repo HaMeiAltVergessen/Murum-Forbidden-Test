@@ -1,0 +1,87 @@
+[gd_resource type="Resource" script_class="DialogData" load_steps=14 format=3 uid="uid://cworld01room01coopdialog"]
+
+[ext_resource type="Script" path="res://resources/dialog/dialog_data.gd" id="1_data"]
+[ext_resource type="Script" path="res://resources/dialog/dialog_entry.gd" id="2_entry"]
+[ext_resource type="Script" path="res://resources/dialog/dialog_choice.gd" id="3_choice"]
+[ext_resource type="Texture2D" uid="uid://dmurum_placeholder" path="res://Assets/AIPlaceholder/Char/Murum/Murum.png" id="4_murum"]
+
+[sub_resource type="Resource" id="Resource_entry1"]
+script = ExtResource("2_entry")
+speaker_name = ""
+speaker_sprite = null
+text = "Eine bedrückende Stille liegt zwischen euch. Zwei Gestalten, vereint in Schatten, doch fremd füreinander."
+text_speed = 30.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_entry2"]
+script = ExtResource("2_entry")
+speaker_name = ""
+speaker_sprite = null
+text = "..."
+text_speed = 50.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_entry3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+speaker_sprite = ExtResource("4_murum")
+text = "Wer bist du?"
+text_speed = 25.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_entry4"]
+script = ExtResource("2_entry")
+speaker_name = ""
+speaker_sprite = null
+text = "..."
+text_speed = 50.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_entry5"]
+script = ExtResource("2_entry")
+speaker_name = "Lythrun"
+speaker_sprite = null
+text = "Das Wesen vom Abgrund deines Schattens."
+text_speed = 22.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_entry6"]
+script = ExtResource("2_entry")
+speaker_name = ""
+speaker_sprite = null
+text = "Murum schweigt. Er wendet sich ab und will weitergehen."
+text_speed = 30.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_entry7"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+speaker_sprite = ExtResource("4_murum")
+text = "Als ob."
+text_speed = 20.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_choice1"]
+script = ExtResource("3_choice")
+choice_text = "..."
+response_speaker = ""
+response_text = ""
+
+[sub_resource type="Resource" id="Resource_choice2"]
+script = ExtResource("3_choice")
+choice_text = "Wohin willst du?"
+response_speaker = "Murum"
+response_text = "Nirgendwo. Ich suche einen Weg zu sterben."
+
+[sub_resource type="Resource" id="Resource_entry8"]
+script = ExtResource("2_entry")
+speaker_name = ""
+speaker_sprite = null
+text = "Lythrun beobachtet Murum, während dieser sich zum Gehen wendet."
+text_speed = 28.0
+choices = [SubResource("Resource_choice1"), SubResource("Resource_choice2")]
+
+[resource]
+script = ExtResource("1_data")
+dialog_id = "world01room01_coop"
+entries = [SubResource("Resource_entry1"), SubResource("Resource_entry2"), SubResource("Resource_entry3"), SubResource("Resource_entry4"), SubResource("Resource_entry5"), SubResource("Resource_entry6"), SubResource("Resource_entry7"), SubResource("Resource_entry8")]

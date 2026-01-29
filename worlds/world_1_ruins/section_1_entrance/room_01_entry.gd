@@ -340,15 +340,16 @@ func _on_puzzle_solved() -> void:
 
 
 # ============================================================================
-# DIALOG TRIGGER (Murum & Umbra Introduction)
+# DIALOG TRIGGER (Murum & Umbra / Murum & Lythrun Introduction)
 # ============================================================================
 
 const DIALOG_ID = "world01room01"
+const DIALOG_ID_COOP = "world01room01_coop"
 
 func _setup_dialog_trigger() -> void:
-	"""Setup the dialog trigger area for Murum-Umbra conversation"""
-	# Check if dialog was already played (persistence)
-	if WorldManager and WorldManager.is_dialog_played(DIALOG_ID):
+	"""Setup the dialog trigger area for Murum-Umbra or Murum-Lythrun conversation"""
+	# Check if dialog was already played (persistence) - check both versions
+	if WorldManager and (WorldManager.is_dialog_played(DIALOG_ID) or WorldManager.is_dialog_played(DIALOG_ID_COOP)):
 		dialog_triggered = true
 		print("[Room01_Entry] Dialog already played, disabling trigger")
 		return
@@ -369,18 +370,23 @@ func _on_dialog_trigger_body_entered(body: Node2D) -> void:
 
 	if body.is_in_group("player") or body.name == "Murum":
 		dialog_triggered = true
-		print("[Room01_Entry] Dialog triggered: %s" % DIALOG_ID)
+
+		# Check if P2 (Lythrun) is active - use alternate dialog
+		var use_coop_dialog = CoopManager and CoopManager.is_p2_active
+		var selected_dialog = DIALOG_ID_COOP if use_coop_dialog else DIALOG_ID
+
+		print("[Room01_Entry] Dialog triggered: %s (Coop: %s)" % [selected_dialog, use_coop_dialog])
 
 		# Small delay before starting dialog
 		await get_tree().create_timer(0.3).timeout
 
 		if DialogManager:
-			DialogManager.play_dialog(DIALOG_ID)
+			DialogManager.play_dialog(selected_dialog)
 
 
 func _on_dialog_finished(dialog_id: String) -> void:
 	"""Called when any dialog finishes - marks our dialog as played"""
-	if dialog_id == DIALOG_ID:
+	if dialog_id == DIALOG_ID or dialog_id == DIALOG_ID_COOP:
 		if WorldManager:
-			WorldManager.mark_dialog_played(DIALOG_ID)
-			print("[Room01_Entry] Dialog marked as played: %s" % DIALOG_ID)
+			WorldManager.mark_dialog_played(dialog_id)
+			print("[Room01_Entry] Dialog marked as played: %s" % dialog_id)
