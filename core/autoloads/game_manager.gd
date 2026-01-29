@@ -351,6 +351,12 @@ func _reposition_p2_in_scene(scene: Node) -> void:
 	# _ready() is NOT called again when re-adding to tree, so we must manually restore controller references
 	_reinitialize_p2_input_system(p2)
 
+	# CRITICAL: Re-setup CoopCamera after level transition
+	# The camera from the previous scene is destroyed, so we need to create/activate a new one
+	if CoopManager and CoopManager.has_method("_setup_coop_camera"):
+		CoopManager._setup_coop_camera()
+		print("[GameManager] CoopCamera re-setup after level transition")
+
 	print("[GameManager] P2 repositioned in scene: ", scene.name)
 	print("[GameManager] Position: ", p2.global_position, " | z_index: ", p2.z_index)
 
