@@ -9,10 +9,9 @@ extends CanvasLayer
 @onready var interaction_prompt: Label = $InteractionPrompt
 @onready var gold_counter: Label = $GoldCounter
 
-# ============ HEART TRACKING ============
-var heart_textures: Array[TextureRect] = []
-const HEARTS_COUNT: int = 5
-const HP_PER_HEART: int = 20
+# ============ HEALTH DISPLAY (Numeric) ============
+var health_label: Label = null
+var health_bar: ProgressBar = null
 
 # ============ PARRY INDICATOR ============
 var parry_indicator: Label = null
@@ -53,8 +52,8 @@ func _ready() -> void:
 	EventBus.echo_cooldown_started.connect(_on_echo_cooldown_started)
 	EventBus.echo_cooldown_finished.connect(_on_echo_cooldown_finished)
 
-	# Create heart icons
-	_create_hearts()
+	# Create health display (numeric)
+	_create_health_display()
 
 	# Create ability icons
 	_create_ability_icons()
@@ -76,45 +75,75 @@ func _ready() -> void:
 	print("[HUD] Initialized")
 
 
-# ============ HEART SYSTEM ============
-func _create_hearts() -> void:
-	"""Creates heart icons for health display"""
+# ============ HEALTH DISPLAY SYSTEM (Numeric) ============
+func _create_health_display() -> void:
+	"""Creates numeric health display with bar and label"""
 	if not health_container:
 		return
 
-	for i in range(HEARTS_COUNT):
-		var heart: TextureRect = TextureRect.new()
-		heart.custom_minimum_size = Vector2(32, 32)
-		heart.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
-		heart.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	# Clear any existing children (old heart icons)
+	for child in health_container.get_children():
+		child.queue_free()
 
-		# Create colored rect as placeholder
-		var heart_rect: ColorRect = ColorRect.new()
-		heart_rect.size = Vector2(32, 32)
-		heart_rect.color = Color(1, 0, 0, 1)  # Red heart
-		heart.add_child(heart_rect)
+	# Create health bar
+	health_bar = ProgressBar.new()
+	health_bar.custom_minimum_size = Vector2(150, 24)
+	health_bar.max_value = 100
+	health_bar.value = 100
+	health_bar.show_percentage = false
 
-		health_container.add_child(heart)
-		heart_textures.append(heart)
+	# Style the health bar (red fill, dark background)
+	var fill_style = StyleBoxFlat.new()
+	fill_style.bg_color = Color(0.8, 0.1, 0.1, 1.0)  # Red
+	fill_style.corner_radius_top_left = 4
+	fill_style.corner_radius_top_right = 4
+	fill_style.corner_radius_bottom_left = 4
+	fill_style.corner_radius_bottom_right = 4
+	health_bar.add_theme_stylebox_override("fill", fill_style)
+
+	var bg_style = StyleBoxFlat.new()
+	bg_style.bg_color = Color(0.2, 0.2, 0.2, 0.8)
+	bg_style.corner_radius_top_left = 4
+	bg_style.corner_radius_top_right = 4
+	bg_style.corner_radius_bottom_left = 4
+	bg_style.corner_radius_bottom_right = 4
+	health_bar.add_theme_stylebox_override("background", bg_style)
+
+	health_container.add_child(health_bar)
+
+	# Create health label (shows current/max)
+	health_label = Label.new()
+	health_label.text = "100/100"
+	health_label.add_theme_font_size_override("font_size", 18)
+	health_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
+	health_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
+	health_label.add_theme_constant_override("shadow_offset_x", 1)
+	health_label.add_theme_constant_override("shadow_offset_y", 1)
+
+	health_container.add_child(health_label)
+
+	print("[HUD] Numeric health display created")
 
 
-func _update_hearts(current_hp: int) -> void:
-	"""Updates heart display based on current HP"""
-	for i in range(HEARTS_COUNT):
-		var heart_hp_threshold: int = (i + 1) * HP_PER_HEART
+func _update_health_display(current_hp: int, max_hp: int) -> void:
+	"""Updates numeric health display"""
+	if health_bar:
+		health_bar.max_value = max_hp
+		health_bar.value = current_hp
 
-		if heart_textures[i].get_child_count() > 0:
-			var heart_rect: ColorRect = heart_textures[i].get_child(0) as ColorRect
-
-			if current_hp >= heart_hp_threshold:
-				# Full heart
-				heart_rect.color = Color(1, 0, 0, 1)
-			elif current_hp > (i * HP_PER_HEART):
-				# Half heart
-				heart_rect.color = Color(1, 0.5, 0.5, 1)
+		# Change bar color based on health percentage
+		var health_percent = float(current_hp) / float(max_hp) if max_hp > 0 else 0.0
+		var fill_style = health_bar.get_theme_stylebox("fill") as StyleBoxFlat
+		if fill_style:
+			if health_percent > 0.5:
+				fill_style.bg_color = Color(0.8, 0.1, 0.1, 1.0)  # Red
+			elif health_percent > 0.25:
+				fill_style.bg_color = Color(0.9, 0.5, 0.1, 1.0)  # Orange
 			else:
-				# Empty heart
-				heart_rect.color = Color(0.3, 0.3, 0.3, 1)
+				fill_style.bg_color = Color(0.9, 0.2, 0.2, 1.0)  # Bright red (danger)
+
+	if health_label:
+		health_label.text = "%d/%d" % [current_hp, max_hp]
 
 
 # ============ PARRY/BLOCK FEEDBACK ============
@@ -151,9 +180,9 @@ func _on_normal_block(_enemy: Node) -> void:
 
 
 # ============ SIGNAL HANDLERS ============
-func _on_player_hp_changed(new_hp: int, _max_hp: int) -> void:
+func _on_player_hp_changed(new_hp: int, max_hp: int) -> void:
 	"""Updates health display"""
-	_update_hearts(new_hp)
+	_update_health_display(new_hp, max_hp)
 
 
 func _on_player_mana_changed(new_mana: int, max_mana: int) -> void:

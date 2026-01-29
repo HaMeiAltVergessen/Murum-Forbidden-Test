@@ -159,8 +159,8 @@ func _define_remappable_actions() -> void:
 		"Urgathon's Will", "Urgathons Wille",
 		Category.ABILITIES, 1
 	)
-	remappable_actions["p1_wolkenbruch"] = ActionData.new(
-		"Wolkenbruch", "Wolkenbruch",
+	remappable_actions["p1_urteil_der_zerstoerung"] = ActionData.new(
+		"Judgment of Destruction", "Urteil der Zerstörung",
 		Category.ABILITIES, 1
 	)
 	remappable_actions["p1_machtstoss"] = ActionData.new(
