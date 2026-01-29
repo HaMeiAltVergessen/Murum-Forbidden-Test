@@ -318,6 +318,23 @@ func _reposition_p2_in_scene(scene: Node) -> void:
 	print("[GameManager] Repositioning P2. Current parent: ", p2.get_parent())
 	print("[GameManager] Target scene: ", scene.name)
 
+	# CRITICAL: Hide P2 and disable physics during transition delay
+	# This prevents P2 from falling out of bounds while waiting
+	p2.visible = false
+	p2.set_physics_process(false)
+	p2.set_process(false)
+	if "velocity" in p2:
+		p2.velocity = Vector2.ZERO
+
+	# Wait 1 second before moving P2 to new scene (prevents out-of-bounds death)
+	print("[GameManager] Waiting 1 second before moving P2 to new scene...")
+	await get_tree().create_timer(1.0).timeout
+
+	# Validate everything is still valid after the wait
+	if not is_instance_valid(p2) or not is_instance_valid(scene):
+		print("[GameManager] P2 or scene became invalid during wait")
+		return
+
 	# Remove from current parent (whether root or another scene)
 	var current_parent = p2.get_parent()
 	if current_parent:
@@ -346,6 +363,11 @@ func _reposition_p2_in_scene(scene: Node) -> void:
 	# Force P2 to be on floor (not falling)
 	if p2.has_method("apply_floor_snap"):
 		p2.apply_floor_snap()
+
+	# Re-enable P2 visibility and physics
+	p2.visible = true
+	p2.set_physics_process(true)
+	p2.set_process(true)
 
 	# CRITICAL: Re-initialize P2's input system after scene transition
 	# _ready() is NOT called again when re-adding to tree, so we must manually restore controller references
