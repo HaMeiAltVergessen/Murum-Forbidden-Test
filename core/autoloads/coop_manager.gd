@@ -83,6 +83,15 @@ func spawn_p2() -> void:
 		is_p2_active = false
 		return
 
+	# CRITICAL: Set P2's controller device BEFORE instantiating P2
+	# This ensures MovementController._ready() gets the correct device ID
+	if InputManager.p2_controller_device < 0:
+		if InputManager.detected_controllers.size() > 0:
+			InputManager.p2_controller_device = InputManager.detected_controllers[0]
+			print("[CoopManager] P2 controller assigned EARLY: Device %d" % InputManager.p2_controller_device)
+		else:
+			push_warning("[CoopManager] No controller detected for P2!")
+
 	p2_instance = p2_scene.instantiate()
 
 	# Add to current scene
@@ -125,17 +134,7 @@ func spawn_p2() -> void:
 	# Re-enable P2's collision
 	p2_instance.set_collision_layer_value(3, true)
 
-	# CRITICAL: Set P2's controller device BEFORE activating P2 input
-	# When joining via menu (not Start button), we must manually assign the controller
-	if InputManager.p2_controller_device < 0:
-		# Assign first available controller (Device 0) to P2
-		if InputManager.detected_controllers.size() > 0:
-			InputManager.p2_controller_device = InputManager.detected_controllers[0]
-			print("[CoopManager] P2 controller assigned: Device %d" % InputManager.p2_controller_device)
-		else:
-			push_warning("[CoopManager] No controller detected for P2!")
-
-	# Activate P2 input
+	# Activate P2 input (controller device already assigned earlier)
 	InputManager.set_p2_active(true)
 
 	# Emit joined signal AFTER everything is ready

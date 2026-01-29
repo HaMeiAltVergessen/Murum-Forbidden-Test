@@ -376,6 +376,9 @@ func _on_load_checkpoint_pressed() -> void:
 		SaveManager.load_current_game()
 		print("[PauseMenu] Checkpoint loaded: %s" % WorldManager.last_checkpoint)
 
+	# CRITICAL: Teleport P2 to checkpoint position as well
+	_teleport_p2_to_checkpoint()
+
 func _on_save_checkpoint_pressed() -> void:
 	"""Saves to last checkpoint"""
 	print("[PauseMenu] Save checkpoint pressed")
@@ -506,3 +509,34 @@ func _on_options_back_pressed() -> void:
 
 	# Focus options button
 	options_button.grab_focus()
+
+func _teleport_p2_to_checkpoint() -> void:
+	"""Teleports P2 to checkpoint position when loading checkpoint"""
+	if not CoopManager or not CoopManager.is_p2_active:
+		return
+
+	var p2 = CoopManager.get_p2_instance()
+	if not p2 or not is_instance_valid(p2):
+		return
+
+	if not WorldManager or WorldManager.last_checkpoint_position == Vector2.ZERO:
+		return
+
+	# Wait a frame for the scene to be properly loaded
+	await get_tree().process_frame
+
+	# Teleport P2 next to P1 at checkpoint
+	p2.global_position = WorldManager.last_checkpoint_position + Vector2(50, 0)
+	if "velocity" in p2:
+		p2.velocity = Vector2.ZERO
+
+	# Reset P2's health to max
+	if p2.has_node("HealthComponent"):
+		var health_comp = p2.get_node("HealthComponent")
+		health_comp.current_health = health_comp.max_health
+
+	# Reset dead flag if needed
+	if "is_dead" in p2:
+		p2.is_dead = false
+
+	print("[PauseMenu] P2 teleported to checkpoint: %s" % str(p2.global_position))
