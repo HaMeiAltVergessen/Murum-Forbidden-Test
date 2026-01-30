@@ -29,6 +29,10 @@ var extra_lives: int = 0
 var current_life: int = 0
 var player_target: CharacterBody2D = null
 var is_charging: bool = false  # Track if currently charging an attack
+var is_hovering: bool = false  # Phase 2+: Boss floats like ghost enemy
+var current_phase: int = 1     # Track current phase for movement logic
+var hover_height: float = 0.0  # Oscillation for hover effect
+var hover_time: float = 0.0    # Timer for hover oscillation
 
 # ============================================================================
 # INITIALIZATION
@@ -121,8 +125,23 @@ func _setup_attack_patterns() -> void:
 
 # Added: Connect adaptive AI to phase changes
 func _on_phase_changed(old_phase: int, new_phase: int) -> void:
-	"""Override to add adaptive AI integration"""
+	"""Override to add adaptive AI integration and hover mode"""
 	super._on_phase_changed(old_phase, new_phase)
+
+	current_phase = new_phase
+
+	# Phase 2+: Activate hover mode (boss floats like ghost enemy)
+	if new_phase >= 2 and not is_hovering:
+		is_hovering = true
+		print("[Lythrun] Phase %d: Hover mode ACTIVATED - Boss now floats!" % new_phase)
+
+		# Visual effect: Boss rises slightly and glows
+		if sprite:
+			var rise_tween = create_tween()
+			rise_tween.tween_property(self, "global_position:y", global_position.y - 30, 0.5)
+
+			# Purple glow for hovering phase
+			sprite.modulate = Color(0.8, 0.6, 1.0)  # Light purple tint
 
 	# Notify adaptive AI
 	var ai = get_adaptive_ai()
@@ -137,6 +156,73 @@ func _find_player() -> void:
 
 	if not player_target:
 		push_error("[Lythrun] No player found!")
+
+
+# Override physics to add hover movement in Phase 2+
+func _physics_process(delta: float) -> void:
+	"""Custom physics: Hover in Phase 2+, normal gravity in Phase 1"""
+
+	# CRITICAL: Check for NaN position
+	if is_nan(global_position.x) or is_nan(global_position.y):
+		print("[Lythrun] CRITICAL: NaN position detected!")
+		global_position = Vector2(0, 300)
+		velocity = Vector2.ZERO
+		return
+
+	if is_hovering:
+		# PHASE 2+: Hover movement (like ghost enemy)
+		_process_hover_movement(delta)
+	else:
+		# PHASE 1: Normal ground movement with gravity
+		if not is_on_floor():
+			velocity.y += 980.0 * delta
+
+		# Move toward player when not attacking
+		if not is_charging and is_active and player_target and is_instance_valid(player_target):
+			var distance = global_position.distance_to(player_target.global_position)
+			if distance > 100.0:
+				var direction = (player_target.global_position - global_position).normalized()
+				velocity.x = direction.x * movement_speed
+			else:
+				velocity.x = 0
+
+		move_and_slide()
+
+
+func _process_hover_movement(delta: float) -> void:
+	"""Hover movement for Phase 2+ - Boss floats and moves toward player"""
+
+	# Update hover oscillation
+	hover_time += delta * 2.0  # Oscillation speed
+	hover_height = sin(hover_time) * 8.0  # ±8 pixels oscillation
+
+	# Move toward player (but float, no gravity)
+	if is_active and player_target and is_instance_valid(player_target) and not is_charging:
+		var target_pos = player_target.global_position
+		var distance = global_position.distance_to(target_pos)
+
+		# Always try to get close to player
+		if distance > 80.0:
+			var direction = (target_pos - global_position).normalized()
+			# Hover speed is faster than ground speed
+			var hover_speed = movement_speed * 1.5
+
+			velocity.x = direction.x * hover_speed
+
+			# Vertical movement to hover above player
+			var target_y = target_pos.y - 50  # Float 50 pixels above player
+			var y_diff = target_y - global_position.y
+			velocity.y = y_diff * 2.0 + hover_height * 20.0  # Smooth vertical + oscillation
+		else:
+			# Close enough - just hover in place
+			velocity.x = 0
+			velocity.y = hover_height * 20.0  # Just oscillation
+	else:
+		# Not active or charging - maintain hover
+		velocity.x = 0
+		velocity.y = hover_height * 20.0
+
+	move_and_slide()
 
 
 # Override start_fight to set faster attack cooldown
