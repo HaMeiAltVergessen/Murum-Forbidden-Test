@@ -41,6 +41,9 @@ var is_active: bool = false
 
 
 func _ready() -> void:
+	# CRITICAL: Fix HurtboxComponent owner for correct team detection
+	_fix_hurtbox_owner()
+
 	# Set boss reference for all components
 	_setup_component_references()
 
@@ -49,6 +52,15 @@ func _ready() -> void:
 
 	# Don't auto-start fight - let the room control the timing
 	# start_fight() will be called by room_05_boss_arena.gd
+
+
+func _fix_hurtbox_owner() -> void:
+	"""Fixes the owner property of HurtboxComponent for correct team detection"""
+	var hurtbox = get_node_or_null("HurtboxComponent")
+	if hurtbox:
+		# Set owner to this boss node so hitbox_component.gd detects us correctly
+		hurtbox.owner = self
+		print("[BaseBoss] HurtboxComponent owner set to: ", name)
 
 
 func _setup_component_references() -> void:

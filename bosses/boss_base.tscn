@@ -34,8 +34,8 @@ max_hp = 1000.0
 
 [node name="HurtboxComponent" parent="." instance=ExtResource("8")]
 position = Vector2(0, -30)
-collision_layer = 7
-collision_mask = 3
+collision_layer = 1024
+collision_mask = 16
 monitorable = true
 
 [node name="CollisionShape2D" parent="HurtboxComponent" index="0"]

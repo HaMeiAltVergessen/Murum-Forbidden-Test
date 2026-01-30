@@ -8,9 +8,9 @@ extends Area2D
 var hit_targets: Array = []  # Track what we've already hit
 
 func _ready() -> void:
-	# Set collision layers
-	collision_layer = 6  # EnemyHitbox
-	collision_mask = 4   # PlayerHurtbox
+	# Set collision layers (Boss attacks -> Player hurtbox)
+	collision_layer = 128   # EnemyHitbox (Layer 8)
+	collision_mask = 1024   # PlayerHurtbox (Layer 11)
 
 	print("[BossSlamHitbox] Spawned at ", global_position, " with damage ", damage)
 	print("[BossSlamHitbox] Collision layer: ", collision_layer, ", mask: ", collision_mask)
