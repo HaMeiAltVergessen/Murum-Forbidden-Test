@@ -29,6 +29,7 @@ var fight_started: bool = false
 var fight_ended: bool = false
 var is_pvp_mode: bool = false
 var dialog_label: Label = null  # COMMIT 023.8: Dialog placeholder
+var player_death_count: int = 0  # Track deaths in solo boss fight
 
 # ============================================================================
 # INITIALIZATION
@@ -236,6 +237,16 @@ func _start_fight() -> void:
 	if player and player.has_method("enable_movement"):
 		player.enable_movement()
 
+	# Connect to player death for solo mode respawn
+	if not is_pvp_mode and player and player.has_node("HealthComponent"):
+		var health_comp = player.get_node("HealthComponent")
+		if health_comp.has_signal("health_depleted"):
+			# Disconnect any existing connections first
+			if health_comp.health_depleted.is_connected(_on_player_death_solo):
+				health_comp.health_depleted.disconnect(_on_player_death_solo)
+			health_comp.health_depleted.connect(_on_player_death_solo)
+			print("[Room15_BossUrgathon] Connected to P1 death signal (Solo Mode)")
+
 	# Start boss fight (if not already started by boss_base)
 	if boss_instance and boss_instance.has_method("start_fight"):
 		if not boss_instance.is_active:
@@ -248,6 +259,61 @@ func _start_fight() -> void:
 			audio_manager.play_boss_music("lythrun_theme")
 
 	print("[Room15_BossUrgathon] Fight started!")
+
+
+func _on_player_death_solo() -> void:
+	"""Called when player dies in Solo Boss Fight - Respawn at arena entrance"""
+
+	if fight_ended or is_pvp_mode:
+		return
+
+	player_death_count += 1
+	print("[Room15_BossUrgathon] Player died in Solo Mode! Deaths: ", player_death_count)
+
+	# Brief delay before respawn
+	await get_tree().create_timer(1.5).timeout
+
+	# Respawn player at arena spawn point
+	if player and player_spawn:
+		# Reset player state
+		if player.has_method("respawn"):
+			player.respawn(player_spawn.global_position)
+		else:
+			player.global_position = player_spawn.global_position
+			if "is_dead" in player:
+				player.is_dead = false
+			player.set_physics_process(true)
+			player.set_process_input(true)
+
+		# Reset health
+		if player.has_node("HealthComponent"):
+			var health_comp = player.get_node("HealthComponent")
+			if health_comp.has_method("reset_health"):
+				health_comp.reset_health()
+
+		# Reset mana
+		if player.has_node("ManaComponent"):
+			var mana_comp = player.get_node("ManaComponent")
+			if mana_comp.has_method("reset_mana"):
+				mana_comp.reset_mana()
+
+		print("[Room15_BossUrgathon] Player respawned at arena entrance")
+
+		# Reset boss to full HP but keep current phase (punishment for dying)
+		if boss_instance and boss_instance.has_node("HealthComponent"):
+			var boss_health = boss_instance.get_node("HealthComponent")
+			if boss_health.has_method("reset_health"):
+				boss_health.reset_health()
+				print("[Room15_BossUrgathon] Boss HP reset to full")
+
+		# Small invulnerability window for player
+		if player.has_node("HealthComponent"):
+			var health_comp = player.get_node("HealthComponent")
+			if health_comp.has_method("start_invulnerability"):
+				health_comp.start_invulnerability()
+
+		# Emit respawn signal
+		EventBus.player_respawned.emit()
 
 
 func _on_boss_defeated() -> void:
