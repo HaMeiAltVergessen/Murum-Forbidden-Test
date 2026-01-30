@@ -12,12 +12,23 @@ const HP_PER_REVIVE_ITEM: float = 750.0
 const REVIVE_ITEM_IDS: Array[String] = ["funken_gnade", "core_reconstructor", "traene_erwachens"]
 
 # ============================================================================
+# CHARGE COLORS (Visual feedback during attack wind-up)
+# ============================================================================
+
+const CHARGE_COLOR_SLAM: Color = Color(1.0, 0.3, 0.0)      # Orange-red for slam
+const CHARGE_COLOR_DASH: Color = Color(0.5, 0.0, 0.8)      # Dark purple for dash
+const CHARGE_COLOR_CAST: Color = Color(0.0, 0.5, 1.0)      # Blue for casting
+const CHARGE_COLOR_AOE: Color = Color(1.0, 0.0, 0.0)       # Red for desperation
+const CHARGE_COLOR_TELEPORT: Color = Color(0.3, 0.0, 0.5)  # Deep purple for teleport
+
+# ============================================================================
 # STATE
 # ============================================================================
 
 var extra_lives: int = 0
 var current_life: int = 0
 var player_target: CharacterBody2D = null
+var is_charging: bool = false  # Track if currently charging an attack
 
 # ============================================================================
 # INITIALIZATION
@@ -126,6 +137,56 @@ func _find_player() -> void:
 
 	if not player_target:
 		push_error("[Lythrun] No player found!")
+
+
+# Override start_fight to set faster attack cooldown
+func start_fight() -> void:
+	"""Starts the boss fight with reduced cooldown for aggressive AI"""
+	# Set faster attack cooldown BEFORE calling parent
+	if attack_manager:
+		attack_manager.attack_cooldown = 0.8  # Reduced from 2.0 to 0.8 seconds
+
+	# Call parent implementation
+	super.start_fight()
+
+	print("[Lythrun] Fight started with attack_cooldown: ", attack_manager.attack_cooldown if attack_manager else "N/A")
+
+
+# ============================================================================
+# CHARGE EFFECT HELPERS
+# ============================================================================
+
+func _start_charge_effect(charge_color: Color, duration: float) -> void:
+	"""Starts visual charge effect - colors boss and pulses"""
+	is_charging = true
+	if sprite:
+		# Create pulsing tween effect
+		var tween = create_tween()
+		tween.set_loops(int(duration / 0.2))  # Pulse every 0.2s
+		tween.tween_property(sprite, "modulate", charge_color * 1.5, 0.1)
+		tween.tween_property(sprite, "modulate", charge_color, 0.1)
+
+
+func _end_charge_effect() -> void:
+	"""Ends visual charge effect - resets color"""
+	is_charging = false
+	if sprite:
+		sprite.modulate = Color.WHITE
+
+
+func _move_toward_player(move_speed: float = 300.0) -> void:
+	"""Actively moves toward player - used between attacks"""
+	if not player_target or not is_instance_valid(player_target):
+		return
+
+	var direction = (player_target.global_position - global_position).normalized()
+	var distance = global_position.distance_to(player_target.global_position)
+
+	# Only move if not too close
+	if distance > 100.0:
+		velocity = direction * move_speed
+	else:
+		velocity = Vector2.ZERO
 
 
 # ============================================================================
@@ -289,10 +350,9 @@ func execute_attack(attack_name: String) -> void:
 # ============================================================================
 
 func perform_staff_slam() -> void:
-	"""Basic staff slam attack"""
+	"""Basic staff slam attack with charge-up visual"""
 
-	print("[Lythrun] Staff Slam - Boss pos: ", global_position)
-	print("[Lythrun] player_target: ", player_target)
+	print("[Lythrun] Staff Slam")
 
 	# Face player
 	face_player()
@@ -302,34 +362,27 @@ func perform_staff_slam() -> void:
 		var target_pos = player_target.global_position
 		var distance = global_position.distance_to(target_pos)
 
-		print("[Lythrun] Player pos: ", target_pos, " Distance: ", distance)
-
-		if distance > 150.0:  # Only move if far away
-			print("[Lythrun] Moving toward player (distance > 150)")
+		if distance > 150.0:
 			var move_direction = (target_pos - global_position).normalized()
-			var move_distance = min(distance * 0.6, 300.0)  # Move 60% or max 300 units
-			var new_pos = global_position + move_direction * move_distance
+			var move_distance = min(distance * 0.6, 300.0)
+			global_position = global_position + move_direction * move_distance
 
-			print("[Lythrun] Moving from ", global_position, " to ", new_pos)
+	# CHARGE PHASE - Visual feedback
+	_start_charge_effect(CHARGE_COLOR_SLAM, 0.4)
 
-			# Direct position set (simplified for debugging)
-			global_position = new_pos
-			print("[Lythrun] Moved! New pos: ", global_position)
-		else:
-			print("[Lythrun] Close enough (distance <= 150), not moving")
-	else:
-		print("[Lythrun] ERROR: No valid player_target!")
-
-	# Telegraph
+	# Telegraph animation if available
 	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("staff_slam_windup"):
 		sprite.play("staff_slam_windup")
-		await get_tree().create_timer(0.3).timeout
 
-	# Slam
+	await get_tree().create_timer(0.4).timeout
+
+	# END CHARGE - Execute attack
+	_end_charge_effect()
+
+	# Slam animation
 	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("staff_slam"):
 		sprite.play("staff_slam")
 
-	print("[Lythrun] Spawning hitbox at: ", global_position + Vector2(0, 60))
 	# Spawn hitbox
 	_spawn_slam_hitbox(global_position + Vector2(0, 60), 80.0, 35.0)
 
@@ -340,7 +393,7 @@ func perform_staff_slam() -> void:
 	# Shockwave VFX
 	_spawn_shockwave_vfx()
 
-	await get_tree().create_timer(0.5).timeout
+	await get_tree().create_timer(0.3).timeout
 
 
 func _spawn_slam_hitbox(pos: Vector2, radius: float, damage: float) -> void:
@@ -384,30 +437,35 @@ func _spawn_shockwave_vfx() -> void:
 
 
 func perform_shadow_dash() -> void:
-	"""Dash attack towards player"""
+	"""Dash attack towards player with charge-up visual"""
 
 	print("[Lythrun] Shadow Dash")
 
-	if not player_target:
-		await get_tree().create_timer(1.0).timeout
+	if not player_target or not is_instance_valid(player_target):
+		await get_tree().create_timer(0.5).timeout
 		return
+
+	# Face player
+	face_player()
 
 	# Calculate dash direction
 	var target_pos = player_target.global_position
 	var dash_direction = (target_pos - global_position).normalized()
 
-	# Telegraph: Charge up
+	# CHARGE PHASE - Visual feedback (pulsing purple)
+	_start_charge_effect(CHARGE_COLOR_DASH, 0.5)
+
+	await get_tree().create_timer(0.5).timeout
+
+	# END CHARGE - Execute dash
+	_end_charge_effect()
+
+	# Flash white briefly during dash
 	if sprite:
-		sprite.modulate = Color(0.5, 0, 0.5)  # Dark purple
+		sprite.modulate = Color(1.5, 1.0, 1.5)  # Bright purple-white
 
-	await get_tree().create_timer(0.4).timeout
-
-	# Dash
-	if sprite:
-		sprite.modulate = Color.WHITE
-
-	var dash_speed = 800.0
-	var dash_duration = 0.3
+	var dash_speed = 900.0  # Faster dash
+	var dash_duration = 0.25
 	var elapsed = 0.0
 
 	# Spawn dash hitbox
@@ -420,11 +478,16 @@ func perform_shadow_dash() -> void:
 		elapsed += get_process_delta_time()
 		await get_tree().process_frame
 
-	if dash_hitbox and dash_hitbox.has_method("deactivate"):
-		dash_hitbox.deactivate()
+	if dash_hitbox and is_instance_valid(dash_hitbox):
+		dash_hitbox.queue_free()
 
 	velocity = Vector2.ZERO
-	await get_tree().create_timer(0.2).timeout
+
+	# Reset color
+	if sprite:
+		sprite.modulate = Color.WHITE
+
+	await get_tree().create_timer(0.15).timeout
 
 
 func _spawn_dash_hitbox():
@@ -449,20 +512,31 @@ func _spawn_dash_hitbox():
 
 
 func perform_void_orbs() -> void:
-	"""Shoots void orbs at player"""
+	"""Shoots void orbs at player with charge-up visual"""
 
 	print("[Lythrun] Void Orbs")
 
-	# Cast animation
+	# Face player
+	face_player()
+
+	# CHARGE PHASE - Blue casting glow
+	_start_charge_effect(CHARGE_COLOR_CAST, 0.3)
+
+	# Cast animation if available
 	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("cast"):
 		sprite.play("cast")
 
-	# Spawn 3 orbs with delay
-	for i in range(3):
-		_spawn_void_orb(i * 0.2)
-		await get_tree().create_timer(0.3).timeout
-
 	await get_tree().create_timer(0.3).timeout
+
+	# END CHARGE
+	_end_charge_effect()
+
+	# Spawn 3 orbs rapidly
+	for i in range(3):
+		_spawn_void_orb(0.0)  # No delay - spawn immediately
+		await get_tree().create_timer(0.2).timeout
+
+	await get_tree().create_timer(0.2).timeout
 
 
 func _spawn_void_orb(delay: float) -> void:
@@ -511,39 +585,61 @@ func perform_staff_slam_combo() -> void:
 
 
 func perform_teleport_strike() -> void:
-	"""Teleport behind player and attack"""
+	"""Teleport behind player and attack with visual feedback"""
 	print("[Lythrun] Teleport Strike")
 
-	if not player_target:
-		await get_tree().create_timer(1.0).timeout
+	if not player_target or not is_instance_valid(player_target):
+		await get_tree().create_timer(0.5).timeout
 		return
 
-	# Vanish
-	if sprite:
-		sprite.modulate.a = 0
-
-	await get_tree().create_timer(0.3).timeout
-
-	# Position behind player
-	var player_pos = player_target.global_position
-	var behind_offset = Vector2(-80, 0) if player_target.global_position.x > global_position.x else Vector2(80, 0)
-	global_position = player_pos + behind_offset
-
-	# Appear
-	if sprite:
-		sprite.modulate.a = 1.0
+	# CHARGE PHASE - Brief teleport charge (deep purple)
+	_start_charge_effect(CHARGE_COLOR_TELEPORT, 0.2)
 
 	await get_tree().create_timer(0.2).timeout
 
-	# Quick attack
+	# Vanish (fade out quickly)
+	_end_charge_effect()
+	if sprite:
+		var tween = create_tween()
+		tween.tween_property(sprite, "modulate:a", 0.0, 0.1)
+		await tween.finished
+
+	await get_tree().create_timer(0.15).timeout
+
+	# Position behind player
+	var player_pos = player_target.global_position
+	var behind_offset = Vector2(-100, 0) if player_target.global_position.x > global_position.x else Vector2(100, 0)
+	global_position = player_pos + behind_offset
+
+	# Appear with flash
+	if sprite:
+		sprite.modulate = Color(1.5, 0.5, 1.5, 1.0)  # Purple flash
+		var tween = create_tween()
+		tween.tween_property(sprite, "modulate", Color.WHITE, 0.15)
+
+	await get_tree().create_timer(0.1).timeout
+
+	# Quick attack (no additional charge)
 	await perform_staff_slam()
 
 
 func perform_void_orbs_spread() -> void:
-	"""Shoots void orbs in all directions"""
+	"""Shoots void orbs in all directions with charge-up"""
 	print("[Lythrun] Void Orbs Spread")
 
-	# 8 orbs in circle
+	# CHARGE PHASE - Blue glow
+	_start_charge_effect(CHARGE_COLOR_CAST, 0.4)
+
+	await get_tree().create_timer(0.4).timeout
+
+	# END CHARGE
+	_end_charge_effect()
+
+	# Flash on release
+	if sprite:
+		sprite.modulate = Color(0.5, 1.0, 1.5)  # Bright blue
+
+	# 8 orbs in circle - spawn all at once
 	var orb_count = 8
 	var angle_step = TAU / orb_count
 
@@ -551,9 +647,12 @@ func perform_void_orbs_spread() -> void:
 		var angle = i * angle_step
 		var direction = Vector2(cos(angle), sin(angle))
 		_spawn_void_orb_directional(direction)
-		await get_tree().create_timer(0.1).timeout
 
-	await get_tree().create_timer(0.5).timeout
+	# Reset color
+	if sprite:
+		sprite.modulate = Color.WHITE
+
+	await get_tree().create_timer(0.4).timeout
 
 
 func _spawn_void_orb_directional(direction: Vector2) -> void:
@@ -593,11 +692,33 @@ func perform_shadow_dash_multi() -> void:
 
 
 func perform_desperation_aoe() -> void:
-	"""Massive AoE explosion"""
+	"""Massive AoE explosion with dramatic charge-up"""
 	print("[Lythrun] Desperation AOE")
 
-	# Charge up
-	await get_tree().create_timer(1.5).timeout
+	# DRAMATIC CHARGE PHASE - Long red glow with camera shake buildup
+	_start_charge_effect(CHARGE_COLOR_AOE, 1.2)
+
+	# Camera shake building during charge
+	if camera_controller:
+		camera_controller.shake(5.0, 0.5)
+
+	await get_tree().create_timer(0.6).timeout
+
+	# Intensify charge
+	if sprite:
+		sprite.modulate = CHARGE_COLOR_AOE * 2.0
+
+	if camera_controller:
+		camera_controller.shake(10.0, 0.6)
+
+	await get_tree().create_timer(0.6).timeout
+
+	# END CHARGE - EXPLOSION
+	_end_charge_effect()
+
+	# Flash white on explosion
+	if sprite:
+		sprite.modulate = Color.WHITE * 2.0
 
 	# Spawn large AoE
 	var aoe_radius = 300.0
@@ -607,11 +728,17 @@ func perform_desperation_aoe() -> void:
 
 	_spawn_aoe_ring(global_position, aoe_radius, 70.0)
 
-	# Camera shake
+	# Big camera shake on explosion
 	if camera_controller:
-		camera_controller.shake(20.0, 1.0)
+		camera_controller.shake(25.0, 0.8)
 
-	await get_tree().create_timer(1.0).timeout
+	await get_tree().create_timer(0.3).timeout
+
+	# Reset color
+	if sprite:
+		sprite.modulate = Color.WHITE
+
+	await get_tree().create_timer(0.5).timeout
 
 
 func _spawn_aoe_ring(pos: Vector2, radius: float, damage: float) -> void:
