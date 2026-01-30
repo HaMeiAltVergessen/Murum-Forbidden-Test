@@ -30,6 +30,7 @@ signal pause_menu_closed()
 @onready var save_checkpoint_button: Button = %SaveCheckpointButton
 @onready var character_button: Button = %CharacterButton
 @onready var options_button: Button = %OptionsButton
+@onready var feedback_button: Button = %FeedbackButton
 @onready var quit_button: Button = %QuitButton
 
 # ============================================================================
@@ -46,7 +47,9 @@ signal pause_menu_closed()
 # ============================================================================
 
 const OPTIONS_MENU_SCENE = preload("res://ui/menus/options_submenu.tscn")
+const FEEDBACK_SCREEN_SCENE = preload("res://ui/menus/feedback_screen.tscn")
 var options_menu_instance: Control = null
+var feedback_screen_instance: Control = null
 
 # ============================================================================
 # STATE
@@ -92,6 +95,7 @@ func _connect_signals() -> void:
 	save_checkpoint_button.pressed.connect(_on_save_checkpoint_pressed)
 	character_button.pressed.connect(_on_character_pressed)
 	options_button.pressed.connect(_on_options_pressed)
+	feedback_button.pressed.connect(_on_feedback_pressed)
 	quit_button.pressed.connect(_on_quit_pressed)
 
 	# Character back button
@@ -475,6 +479,35 @@ func _on_options_pressed() -> void:
 
 	if options_menu_instance:
 		options_menu_instance.visible = true
+
+func _on_feedback_pressed() -> void:
+	"""Opens feedback screen"""
+	print("[PauseMenu] Feedback pressed")
+
+	# Play sound
+	if AudioManager:
+		AudioManager.play_sfx("ui/menu_accept")
+
+	# Hide main panel
+	main_panel.visible = false
+
+	# Create feedback screen
+	feedback_screen_instance = FEEDBACK_SCREEN_SCENE.instantiate()
+	add_child(feedback_screen_instance)
+
+	# Connect closed signal
+	feedback_screen_instance.feedback_closed.connect(_on_feedback_closed)
+
+func _on_feedback_closed() -> void:
+	"""Called when feedback screen is closed"""
+	print("[PauseMenu] Feedback screen closed")
+
+	# Show main panel again
+	main_panel.visible = true
+	current_view = "main"
+
+	# Focus feedback button
+	feedback_button.grab_focus()
 
 func _on_quit_pressed() -> void:
 	"""Returns to main menu"""
