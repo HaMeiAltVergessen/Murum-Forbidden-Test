@@ -1,5 +1,5 @@
 extends Node
-## Minimal DialogManager - handles dialog playback and state
+## DialogManager - handles dialog playback, state, and nested dialog trees
 
 enum States { IDLE, SHOWING_TEXT, WAITING_FOR_CHOICE, SHOWING_RESPONSE }
 
@@ -8,7 +8,8 @@ const DIALOG_PATH := "res://data/dialogs/"
 var current_state: States = States.IDLE
 var current_dialog: DialogData = null
 var current_entry_index: int = 0
-var pending_response: Dictionary = {}
+var current_entries: Array[DialogEntry] = []
+var entry_stack: Array = []  # Stack of {entries, index} for nested dialog navigation
 
 var dialog_ui: Node = null
 
@@ -49,12 +50,35 @@ func play_dialog(dialog_id: String) -> void:
 		push_error("DialogManager: Invalid or empty dialog: " + dialog_id)
 		return
 
+	current_entries = current_dialog.entries
 	current_entry_index = 0
+	entry_stack.clear()
 	_pause_game()
-	_show_entry(current_dialog.entries[0])
+	_show_entry(current_entries[0])
 
 	if EventBus:
 		EventBus.dialog_started.emit(dialog_id)
+
+
+func play_dialog_resource(dialog: DialogData) -> void:
+	"""Play a dialog directly from a resource (no file lookup needed)"""
+	if current_state != States.IDLE:
+		push_warning("DialogManager: Dialog already active")
+		return
+
+	if dialog == null or dialog.entries.is_empty():
+		push_error("DialogManager: Invalid or empty dialog resource")
+		return
+
+	current_dialog = dialog
+	current_entries = dialog.entries
+	current_entry_index = 0
+	entry_stack.clear()
+	_pause_game()
+	_show_entry(current_entries[0])
+
+	if EventBus:
+		EventBus.dialog_started.emit(dialog.dialog_id)
 
 
 func _show_entry(entry: DialogEntry) -> void:
@@ -67,11 +91,18 @@ func _show_entry(entry: DialogEntry) -> void:
 func _advance_to_next_entry() -> void:
 	current_entry_index += 1
 
-	if current_entry_index >= current_dialog.entries.size():
-		_end_dialog()
+	if current_entry_index >= current_entries.size():
+		# Current level exhausted - pop from stack or end
+		if not entry_stack.is_empty():
+			var parent = entry_stack.pop_back()
+			current_entries = parent.entries
+			current_entry_index = parent.index
+			_advance_to_next_entry()
+		else:
+			_end_dialog()
 		return
 
-	_show_entry(current_dialog.entries[current_entry_index])
+	_show_entry(current_entries[current_entry_index])
 
 
 func _show_choices(choices: Array[DialogChoice]) -> void:
@@ -85,7 +116,9 @@ func _end_dialog() -> void:
 
 	current_state = States.IDLE
 	current_dialog = null
+	current_entries = []
 	current_entry_index = 0
+	entry_stack.clear()
 
 	dialog_ui.hide_dialog()
 	_resume_game()
@@ -107,7 +140,7 @@ func _resume_game() -> void:
 
 
 func _on_text_completed() -> void:
-	var entry := current_dialog.entries[current_entry_index]
+	var entry := current_entries[current_entry_index]
 
 	if not entry.choices.is_empty():
 		_show_choices(entry.choices)
@@ -120,18 +153,51 @@ func _on_choice_selected(choice_index: int) -> void:
 	if EventBus and current_dialog:
 		EventBus.dialog_choice_selected.emit(current_dialog.dialog_id, choice_index)
 
-	# Check if choice has a response
-	var entry := current_dialog.entries[current_entry_index]
-	if choice_index < entry.choices.size():
-		var choice := entry.choices[choice_index]
+	var entry := current_entries[current_entry_index]
+	if choice_index >= entry.choices.size():
+		_end_dialog()
+		return
+
+	var choice := entry.choices[choice_index]
+
+	# Check if choice has next_entries (deeper dialog tree)
+	if not choice.next_entries.is_empty():
 		if not choice.response_text.is_empty():
-			_show_response(choice.response_speaker, choice.response_text)
-			return
+			_show_response_then_continue(choice.response_speaker, choice.response_text, choice.next_entries)
+		else:
+			_enter_nested_entries(choice.next_entries)
+		return
+
+	# No nested entries - show response or end
+	if not choice.response_text.is_empty():
+		_show_response(choice.response_speaker, choice.response_text)
+		return
 
 	_end_dialog()
 
 
+func _enter_nested_entries(entries: Array[DialogEntry]) -> void:
+	"""Push current position to stack and enter nested entries"""
+	entry_stack.push_back({
+		"entries": current_entries,
+		"index": current_entry_index + 1
+	})
+	current_entries = entries
+	current_entry_index = 0
+	_show_entry(current_entries[0])
+
+
+var _pending_nested_entries: Array[DialogEntry] = []
+
+func _show_response_then_continue(speaker: String, text: String, next: Array[DialogEntry]) -> void:
+	"""Show a response, then continue into nested entries"""
+	_pending_nested_entries = next
+	current_state = States.SHOWING_RESPONSE
+	dialog_ui.show_response(speaker, text)
+
+
 func _show_response(speaker: String, text: String) -> void:
+	_pending_nested_entries = []
 	current_state = States.SHOWING_RESPONSE
 	print("[DialogManager] Showing response: ", speaker, " - ", text.substr(0, 30), "...")
 	dialog_ui.show_response(speaker, text)
@@ -145,6 +211,11 @@ func _on_advance_requested() -> void:
 			dialog_ui.complete_text_immediately()
 	elif current_state == States.SHOWING_RESPONSE:
 		if dialog_ui.is_text_fully_shown():
-			_end_dialog()
+			if not _pending_nested_entries.is_empty():
+				var next = _pending_nested_entries
+				_pending_nested_entries = []
+				_enter_nested_entries(next)
+			else:
+				_end_dialog()
 		else:
 			dialog_ui.complete_text_immediately()
