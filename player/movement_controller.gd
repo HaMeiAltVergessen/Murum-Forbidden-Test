@@ -15,13 +15,12 @@ class_name MovementController
 
 # ============ MOVEMENT CONFIGURATION ============
 @export var move_speed: float = 300.0
-@export var jump_velocity: float = -800.0  # Powerful but grounded jump
+@export var jump_velocity: float = -1600.0  # Doubled from -800.0
 @export var gravity: float = 1800.0  # High gravity for snappy, impactful feel
 
 # ============ JUMP CONFIGURATION ============
 @export var coyote_time: float = 0.1
 @export var jump_buffer_time: float = 0.15
-@export var max_jumps: int = 2  # Allows double jump
 
 # ============ EDGE CLIMB CONFIGURATION ============
 @export var edge_climb_detection_distance: float = 60.0  # How far to check for edges (increased for better detection)
@@ -280,8 +279,8 @@ func _process_gravity(delta: float) -> void:
 
 # ============ JUMP SYSTEM ============
 func _process_jump() -> void:
-	"""Handles jump input with coyote time and jump buffering"""
-	# Reset jumps when on floor
+	"""Handles jump input with coyote time and jump buffering (single jump only)"""
+	# Reset jump when on floor
 	if player.is_on_floor():
 		jumps_used = 0
 
@@ -293,39 +292,21 @@ func _process_jump() -> void:
 	var jump_action = input_prefix + "jump"
 	var jump_pressed = _is_action_just_pressed(jump_action)
 
-	# CRITICAL DEBUG: Log ALL jump attempts
 	if jump_pressed:
-		var player_name = "P1" if controller_device_id < 0 else "P2"
-		print("[Jump DEBUG %s] Button pressed! jumps_used=%d on_floor=%s coyote=%.2f" % [player_name, jumps_used, player.is_on_floor(), coyote_timer])
-
-	if jump_pressed:
-		# PRIORITY 1: Try edge climb FIRST (regardless of jumps remaining)
-		# Edge climb only succeeds if an actual edge is detected
+		# PRIORITY 1: Try edge climb FIRST
 		if _attempt_edge_climb():
-			print("[Movement] Edge climb successful (jumps_used: %d)" % jumps_used)
+			print("[Movement] Edge climb successful")
 			return
 
-		# PRIORITY 2: If no edge found, attempt normal jump
-		# First jump: use coyote time and jump buffer
+		# PRIORITY 2: Normal jump (single jump only)
 		if jumps_used == 0:
 			jump_buffer_timer = jump_buffer_time
-			# Attempt jump if conditions are met
 			if player.is_on_floor() or coyote_timer > 0:
 				_perform_jump()
-			else:
-				print("[Jump DEBUG] First jump BLOCKED - not on floor and no coyote")
-		# Double jump: can jump in air if jumps remaining
-		elif jumps_used < max_jumps:
-			_perform_jump()
-		else:
-			print("[Jump DEBUG] Jump BLOCKED - max jumps used (%d/%d), no edge found" % [jumps_used, max_jumps])
 
 
 func _perform_jump() -> void:
 	"""Executes the jump"""
-	var player_name = "P1" if controller_device_id < 0 else "P2"
-	print("[Jump SUCCESS %s] Jump executed! jumps_used: %d -> %d" % [player_name, jumps_used, jumps_used + 1])
-
 	player.velocity.y = jump_velocity
 	jump_buffer_timer = 0.0
 	coyote_timer = 0.0
@@ -334,9 +315,6 @@ func _perform_jump() -> void:
 	# Play jump SFX
 	if jump_sfx:
 		jump_sfx.play()
-
-	if jumps_used == 2:
-		print("[Movement] Double jump!")
 
 
 func _process_coyote_time(delta: float) -> void:
