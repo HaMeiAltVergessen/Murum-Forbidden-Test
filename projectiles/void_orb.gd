@@ -15,6 +15,11 @@ func _ready() -> void:
 	collision_layer = 128   # EnemyHitbox (Layer 8)
 	collision_mask = 1024   # PlayerHurtbox (Layer 11)
 
+	# CRITICAL: Add to hitbox group for ParryBlockSystem detection
+	add_to_group("hitbox")
+	add_to_group("projectiles")
+	add_to_group("enemy_attack")
+
 	# Find player target FIRST (before any await!)
 	if not target:
 		var players = get_tree().get_nodes_in_group("player")
@@ -81,6 +86,13 @@ func _deal_damage(target_node: Node2D) -> void:
 	"""Applies damage to target"""
 	hit_targets.append(target_node)
 
+	# CRITICAL: Check if player is blocking/invulnerable via HurtboxComponent
+	if target_node.has_node("HurtboxComponent"):
+		var hurtbox = target_node.get_node("HurtboxComponent")
+		if hurtbox.is_invulnerable:
+			print("[VoidOrb] Player is blocking/invulnerable - damage blocked!")
+			return
+
 	# Deal damage through health component
 	if target_node.has_node("HealthComponent"):
 		var health_component = target_node.get_node("HealthComponent")
@@ -88,9 +100,9 @@ func _deal_damage(target_node: Node2D) -> void:
 			health_component.take_damage(damage)
 			print("[VoidOrb] Dealt ", damage, " damage to player")
 
-	# Apply knockback
+	# Apply knockback (reduced)
 	if target_node is CharacterBody2D:
 		if target_node.has_method("apply_knockback"):
-			target_node.apply_knockback(direction * 200.0)
+			target_node.apply_knockback(direction * 100.0)  # Reduced from 200
 		else:
-			target_node.velocity = direction * 200.0
+			target_node.velocity = direction * 100.0
