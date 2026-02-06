@@ -201,7 +201,7 @@ func _start_fuse() -> void:
 
 
 func _update_fuse_visual() -> void:
-	"""Blinking and color change during fuse countdown"""
+	"""Blinking and color change during fuse countdown - no scale change"""
 	if not sprite:
 		return
 
@@ -209,17 +209,13 @@ func _update_fuse_visual() -> void:
 	var blink_speed = 5.0 + progress * 20.0  # Faster blinking as it gets closer
 	var blink = (sin(fuse_timer * blink_speed) + 1.0) / 2.0
 
-	# Color shifts from white -> red/orange as fuse progresses
+	# Color shifts from white -> red/orange, blink between bright and dark
 	sprite.modulate = Color(
 		1.0 + progress * 1.5 + blink * 0.5,
 		1.0 - progress * 0.7,
 		1.0 - progress * 0.8,
-		1.0
+		0.6 + blink * 0.4  # Alpha blink for flashing effect
 	)
-
-	# Scale pulse
-	var pulse = 1.0 + blink * 0.15 * progress
-	sprite.scale = sprite.scale * pulse / max(sprite.scale.x, 0.01) * sprite.scale.x
 
 
 func _explode() -> void:
