@@ -33,6 +33,9 @@ var is_hovering: bool = false  # Phase 2+: Boss floats like ghost enemy
 var current_phase: int = 1     # Track current phase for movement logic
 var hover_height: float = 0.0  # Oscillation for hover effect
 var hover_time: float = 0.0    # Timer for hover oscillation
+var gap_closer_cooldown: float = 0.0  # Cooldown for gap-closer dashes
+const GAP_CLOSER_DISTANCE: float = 350.0  # Distance to trigger gap closer
+const GAP_CLOSER_COOLDOWN_TIME: float = 3.0  # Cooldown between gap closes
 
 # ============================================================================
 # INITIALIZATION
@@ -169,6 +172,10 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector2.ZERO
 		return
 
+	# Update gap closer cooldown
+	if gap_closer_cooldown > 0:
+		gap_closer_cooldown -= delta
+
 	if is_hovering:
 		# PHASE 2+: Hover movement (like ghost enemy)
 		_process_hover_movement(delta)
@@ -180,7 +187,12 @@ func _physics_process(delta: float) -> void:
 		# Move toward player when not attacking
 		if not is_charging and is_active and player_target and is_instance_valid(player_target):
 			var distance = global_position.distance_to(player_target.global_position)
-			if distance > 100.0:
+
+			# GAP CLOSER: Use shadow_dash when far from player
+			if distance > GAP_CLOSER_DISTANCE and gap_closer_cooldown <= 0:
+				print("[Lythrun] Gap closer triggered! Distance: %.0f" % distance)
+				_perform_gap_closer_dash()
+			elif distance > 100.0:
 				var direction = (player_target.global_position - global_position).normalized()
 				velocity.x = direction.x * movement_speed
 			else:
@@ -201,8 +213,11 @@ func _process_hover_movement(delta: float) -> void:
 		var target_pos = player_target.global_position
 		var distance = global_position.distance_to(target_pos)
 
-		# Always try to get close to player
-		if distance > 80.0:
+		# GAP CLOSER: Use shadow_dash when far from player (also in hover mode)
+		if distance > GAP_CLOSER_DISTANCE and gap_closer_cooldown <= 0:
+			print("[Lythrun] Hover gap closer triggered! Distance: %.0f" % distance)
+			_perform_gap_closer_dash()
+		elif distance > 80.0:
 			var direction = (target_pos - global_position).normalized()
 			# Hover speed is faster than ground speed
 			var hover_speed = movement_speed * 1.5
@@ -223,6 +238,67 @@ func _process_hover_movement(delta: float) -> void:
 		velocity.y = hover_height * 20.0
 
 	move_and_slide()
+
+
+func _perform_gap_closer_dash() -> void:
+	"""Performs a quick shadow dash to close the gap to the player - used as movement"""
+	gap_closer_cooldown = GAP_CLOSER_COOLDOWN_TIME
+
+	# Don't interrupt if already attacking
+	if is_charging:
+		return
+
+	# Quick gap closer - faster than normal attack version
+	print("[Lythrun] Performing gap closer shadow dash!")
+
+	if not player_target or not is_instance_valid(player_target):
+		return
+
+	# Face player
+	face_player()
+
+	# Calculate dash direction toward player
+	var target_pos = player_target.global_position
+	var dash_direction = (target_pos - global_position).normalized()
+	var distance = global_position.distance_to(target_pos)
+
+	# Quick charge visual (shorter than attack)
+	is_charging = true
+	if sprite:
+		sprite.modulate = CHARGE_COLOR_DASH
+
+	# Very brief charge for gap closer (0.2s instead of 0.5s)
+	await get_tree().create_timer(0.2).timeout
+
+	if sprite:
+		sprite.modulate = Color(1.5, 1.0, 1.5)  # Bright purple-white during dash
+
+	# Fast dash toward player
+	var dash_speed = 1000.0  # Faster than attack dash
+	var dash_duration = min(distance / dash_speed, 0.3)  # Cap duration
+	var elapsed = 0.0
+
+	# Spawn dash hitbox (deals damage while dashing)
+	var dash_hitbox = _spawn_dash_hitbox()
+
+	while elapsed < dash_duration:
+		velocity = dash_direction * dash_speed
+		move_and_slide()
+		elapsed += get_process_delta_time()
+		await get_tree().process_frame
+
+	if dash_hitbox and is_instance_valid(dash_hitbox):
+		dash_hitbox.queue_free()
+
+	velocity = Vector2.ZERO
+	is_charging = false
+
+	# Reset color
+	if sprite:
+		if is_hovering:
+			sprite.modulate = Color(0.8, 0.6, 1.0)  # Back to hover purple
+		else:
+			sprite.modulate = Color.WHITE
 
 
 # Override start_fight to set faster attack cooldown
@@ -436,7 +512,7 @@ func execute_attack(attack_name: String) -> void:
 # ============================================================================
 
 func perform_staff_slam() -> void:
-	"""Basic staff slam attack with charge-up visual"""
+	"""Basic staff slam attack with charge-up visual and AoE damage"""
 
 	print("[Lythrun] Staff Slam")
 
@@ -469,8 +545,12 @@ func perform_staff_slam() -> void:
 	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("staff_slam"):
 		sprite.play("staff_slam")
 
-	# Spawn hitbox
-	_spawn_slam_hitbox(global_position + Vector2(0, 60), 80.0, 35.0)
+	# Spawn hitbox at impact point
+	var impact_pos = global_position + Vector2(0, 60)
+	_spawn_slam_hitbox(impact_pos, 80.0, 35.0)
+
+	# ALSO spawn AoE damage ring for area effect
+	_spawn_aoe_ring(impact_pos, 120.0, 25.0)  # 120 radius, 25 damage
 
 	# Camera shake
 	if camera_controller:
@@ -598,29 +678,37 @@ func _spawn_dash_hitbox():
 
 
 func perform_void_orbs() -> void:
-	"""Shoots void orbs at player with charge-up visual"""
+	"""Shoots void orbs at player - count based on current phase (3/6/8)"""
 
-	print("[Lythrun] Void Orbs")
+	print("[Lythrun] Void Orbs (Phase %d)" % current_phase)
 
 	# Face player
 	face_player()
 
 	# CHARGE PHASE - Blue casting glow
-	_start_charge_effect(CHARGE_COLOR_CAST, 0.3)
+	_start_charge_effect(CHARGE_COLOR_CAST, 0.4)
 
 	# Cast animation if available
 	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("cast"):
 		sprite.play("cast")
 
-	await get_tree().create_timer(0.3).timeout
+	await get_tree().create_timer(0.4).timeout
 
 	# END CHARGE
 	_end_charge_effect()
 
-	# Spawn 3 orbs rapidly
-	for i in range(3):
-		_spawn_void_orb(0.0)  # No delay - spawn immediately
-		await get_tree().create_timer(0.2).timeout
+	# Orb count based on phase: Phase 1 = 3, Phase 2 = 6, Phase 3 = 8
+	var orb_count = 3
+	match current_phase:
+		2:
+			orb_count = 6
+		3:
+			orb_count = 8
+
+	# Spawn orbs with slight delay between each
+	for i in range(orb_count):
+		_spawn_void_orb(0.0)
+		await get_tree().create_timer(0.15).timeout
 
 	await get_tree().create_timer(0.2).timeout
 
@@ -762,19 +850,88 @@ func _spawn_void_orb_directional(direction: Vector2) -> void:
 
 
 func perform_teleport_barrage() -> void:
-	"""4x rapid teleports with attacks"""
-	print("[Lythrun] Teleport Barrage")
+	"""4-Hit Combo: Teleport + 4 rapid slams with 0.5s charge each"""
+	print("[Lythrun] Teleport Barrage - 4 Hit Combo")
 
+	if not player_target or not is_instance_valid(player_target):
+		await get_tree().create_timer(0.5).timeout
+		return
+
+	# Initial teleport behind player
+	_start_charge_effect(CHARGE_COLOR_TELEPORT, 0.3)
+	await get_tree().create_timer(0.3).timeout
+	_end_charge_effect()
+
+	# Vanish
+	if sprite:
+		sprite.modulate.a = 0.0
+	await get_tree().create_timer(0.1).timeout
+
+	# Teleport to player
+	var player_pos = player_target.global_position
+	var behind_offset = Vector2(-80, 0) if player_target.global_position.x > global_position.x else Vector2(80, 0)
+	global_position = player_pos + behind_offset
+
+	# Appear
+	if sprite:
+		sprite.modulate = Color(1.5, 0.5, 1.5, 1.0)
+
+	# 4 rapid hits with 0.5s charge each
 	for i in range(4):
-		await perform_teleport_strike()
-		await get_tree().create_timer(0.2).timeout
+		# Charge for hit
+		_start_charge_effect(CHARGE_COLOR_SLAM, 0.5)
+		await get_tree().create_timer(0.5).timeout
+		_end_charge_effect()
+
+		# Execute hit
+		face_player()
+		var impact_pos = global_position + Vector2(0, 60)
+		_spawn_slam_hitbox(impact_pos, 80.0, 30.0)
+
+		# Small camera shake per hit
+		if camera_controller:
+			camera_controller.shake(5.0, 0.15)
+
+		await get_tree().create_timer(0.15).timeout
+
+	# Reset color
+	if sprite:
+		sprite.modulate = Color.WHITE
 
 
 func perform_shadow_dash_multi() -> void:
-	"""3x shadow dashes"""
+	"""3x shadow dashes followed by massive AoE explosion"""
+	print("[Lythrun] Shadow Dash Multi + AoE Finisher")
+
+	# 3 dashes
 	for i in range(3):
 		await perform_shadow_dash()
+		await get_tree().create_timer(0.15).timeout
+
+	# After dashes: BIG AoE explosion as finisher
+	print("[Lythrun] Shadow Dash Multi - AoE Finisher!")
+
+	# Charge for AoE
+	_start_charge_effect(CHARGE_COLOR_AOE, 0.6)
+	if camera_controller:
+		camera_controller.shake(8.0, 0.6)
+	await get_tree().create_timer(0.6).timeout
+	_end_charge_effect()
+
+	# Spawn large AoE
+	_spawn_aoe_ring(global_position, 200.0, 50.0)  # 200 radius, 50 damage
+
+	# Big camera shake
+	if camera_controller:
+		camera_controller.shake(15.0, 0.5)
+
+	# Flash
+	if sprite:
+		sprite.modulate = Color.WHITE * 2.0
 		await get_tree().create_timer(0.2).timeout
+		sprite.modulate = Color.WHITE
+
+	await get_tree().create_timer(0.3).timeout
 
 
 func perform_desperation_aoe() -> void:
