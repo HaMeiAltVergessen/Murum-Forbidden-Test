@@ -210,6 +210,7 @@ func _input(event: InputEvent) -> void:
 				4: "inventory",      # Back/Select button
 				9: "dash",           # LB button (base action, RT+LB for Phase Shift combo)
 				10: "void_orbs",     # RB button (Right Bumper) - Ultimate (CORRECTED!)
+				12: "crouch",        # D-Pad Down - Crouch (Durchgangsboeden)
 				# Button 6 (Start) currently unused - reserved for pause menu
 				# Note: LT = Void Parry (Axis 6), RT = Combo Modifier (Axis 7)
 				# Note: Phase Shift = RT+LB combo (handled in lythrun_player.gd)
