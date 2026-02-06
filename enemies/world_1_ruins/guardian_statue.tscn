@@ -1,0 +1,74 @@
+[gd_scene load_steps=7 format=3 uid="uid://guardian_statue_001"]
+
+[ext_resource type="Script" path="res://enemies/world_1_ruins/guardian_statue.gd" id="1_statue"]
+[ext_resource type="Script" path="res://enemies/world_1_ruins/guardian_statue_ai.gd" id="2_ai"]
+[ext_resource type="Script" path="res://components/hurtbox_component.gd" id="3_hurtbox"]
+[ext_resource type="Script" path="res://components/hitbox_component.gd" id="4_hitbox"]
+[ext_resource type="Script" path="res://player/health_component.gd" id="5_health"]
+[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Ogre/Ogre-sheet.png" id="6_ogre"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
+radius = 40.0
+height = 120.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurtbox"]
+size = Vector2(80, 120)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hitbox"]
+size = Vector2(150, 120)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_detection"]
+radius = 200.0
+
+[node name="GuardianStatue" type="CharacterBody2D" groups=["enemies", "guardian_statue"]]
+collision_layer = 8
+collision_mask = 7
+script = ExtResource("1_statue")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.8, 0.8, 0.8, 1)
+scale = Vector2(3.5, 3.5)
+texture = ExtResource("6_ogre")
+hframes = 5
+vframes = 1
+frame = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_body")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("5_health")
+max_health = 350
+invulnerability_duration = 0.3
+
+[node name="HurtboxComponent" type="Area2D" parent="."]
+collision_layer = 1024
+collision_mask = 48
+script = ExtResource("3_hurtbox")
+invulnerability_duration = 0.3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]
+shape = SubResource("RectangleShape2D_hurtbox")
+
+[node name="HitboxComponent" type="Area2D" parent="."]
+collision_layer = 128
+collision_mask = 1030
+monitoring = false
+script = ExtResource("4_hitbox")
+damage = 60
+knockback_force = 300.0
+hitstun_duration = 0.3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
+shape = SubResource("RectangleShape2D_hitbox")
+
+[node name="DetectionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource("CircleShape2D_detection")
+debug_color = Color(0.8, 0.2, 0.2, 0.1)
+
+[node name="GuardianStatueAI" type="Node" parent="."]
+script = ExtResource("2_ai")
