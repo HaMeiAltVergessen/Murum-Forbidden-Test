@@ -40,6 +40,7 @@ HUD="*res://ui/hud.tscn"
 PauseMenu="*res://ui/menus/pause_menu.tscn"
 CutsceneManager="*res://systems/cutscene/cutscene_manager.gd"
 DialogManager="*res://systems/dialog/dialog_manager.gd"
+MusicScenePlayer="*res://core/autoloads/music_scene_player.tscn"
 
 [display]
 
