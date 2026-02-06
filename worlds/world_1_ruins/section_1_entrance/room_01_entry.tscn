@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://b8mx4n7raprst"]
+[gd_scene load_steps=19 format=3 uid="uid://b8mx4n7raprst"]
 
 [ext_resource type="Script" uid="uid://b2r2vfh85un7r" path="res://worlds/world_1_ruins/section_1_entrance/room_01_entry.gd" id="1_room01"]
 [ext_resource type="Texture2D" uid="uid://cced6bgpaux0q" path="res://Assets/AIAssets/world1lvl1bg02.jpg" id="2_cqwq7"]
@@ -11,6 +11,8 @@
 [ext_resource type="PackedScene" path="res://environment/pickups/pickup_base.tscn" id="9_cqwq7"]
 [ext_resource type="Texture2D" uid="uid://dbecpug8upc2v" path="res://Assets/Placeholder/Background/Environments/ships-graveyard/PNG/layers/boat-front.png" id="10_8m3rk"]
 [ext_resource type="PackedScene" uid="uid://puzzle_crystal_component" path="res://puzzles/scenes/components/puzzle_crystal.tscn" id="11_crystal"]
+[ext_resource type="PackedScene" uid="uid://guardian_statue_001" path="res://enemies/world_1_ruins/guardian_statue.tscn" id="12_guardian"]
+[ext_resource type="PackedScene" uid="uid://corpse_trap_001" path="res://enemies/world_1_ruins/corpse_trap.tscn" id="13_corpse"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(4598, 80)
@@ -185,3 +187,14 @@ collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DialogTrigger"]
 shape = SubResource("RectangleShape2D_dialog_trigger")
+
+[node name="Enemies" type="Node2D" parent="."]
+
+[node name="GuardianStatue" parent="Enemies" instance=ExtResource("12_guardian")]
+position = Vector2(2000, 570)
+
+[node name="CorpseTrap1" parent="Enemies" instance=ExtResource("13_corpse")]
+position = Vector2(1000, 620)
+
+[node name="CorpseTrap2" parent="Enemies" instance=ExtResource("13_corpse")]
+position = Vector2(1800, 620)
