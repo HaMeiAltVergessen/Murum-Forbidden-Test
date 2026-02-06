@@ -561,14 +561,14 @@ func perform_staff_slam() -> void:
 			var move_distance = min(distance - MIN_DISTANCE, 200.0)
 			global_position = global_position + move_direction * move_distance
 
-	# CHARGE PHASE - Visual feedback
-	_start_charge_effect(CHARGE_COLOR_SLAM, 0.4)
+	# CHARGE PHASE - Visual feedback (doubled for better readability)
+	_start_charge_effect(CHARGE_COLOR_SLAM, 0.8)
 
 	# Telegraph animation if available
 	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("staff_slam_windup"):
 		sprite.play("staff_slam_windup")
 
-	await get_tree().create_timer(0.4).timeout
+	await get_tree().create_timer(0.8).timeout
 
 	# END CHARGE - Execute attack
 	_end_charge_effect()
@@ -650,10 +650,10 @@ func perform_shadow_dash() -> void:
 	var target_pos = player_target.global_position
 	var dash_direction = (target_pos - global_position).normalized()
 
-	# CHARGE PHASE - Visual feedback (pulsing purple)
-	_start_charge_effect(CHARGE_COLOR_DASH, 0.5)
+	# CHARGE PHASE - Visual feedback (pulsing purple, doubled)
+	_start_charge_effect(CHARGE_COLOR_DASH, 1.0)
 
-	await get_tree().create_timer(0.5).timeout
+	await get_tree().create_timer(1.0).timeout
 
 	# END CHARGE - Execute dash
 	_end_charge_effect()
@@ -717,14 +717,14 @@ func perform_void_orbs() -> void:
 	# Face player
 	face_player()
 
-	# CHARGE PHASE - Blue casting glow
-	_start_charge_effect(CHARGE_COLOR_CAST, 0.4)
+	# CHARGE PHASE - Blue casting glow (doubled)
+	_start_charge_effect(CHARGE_COLOR_CAST, 0.8)
 
 	# Cast animation if available
 	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("cast"):
 		sprite.play("cast")
 
-	await get_tree().create_timer(0.4).timeout
+	await get_tree().create_timer(0.8).timeout
 
 	# END CHARGE
 	_end_charge_effect()
@@ -763,6 +763,9 @@ func _spawn_void_orb(delay: float) -> void:
 	var orb = orb_scene.instantiate()
 	get_parent().add_child(orb)
 
+	# CRITICAL: Set owner for ParryBlockSystem detection
+	orb.owner = self
+
 	orb.global_position = global_position + Vector2(0, -30)
 
 	# Set properties
@@ -798,10 +801,10 @@ func perform_teleport_strike() -> void:
 		await get_tree().create_timer(0.5).timeout
 		return
 
-	# CHARGE PHASE - Brief teleport charge (deep purple)
-	_start_charge_effect(CHARGE_COLOR_TELEPORT, 0.2)
+	# CHARGE PHASE - Brief teleport charge (deep purple, doubled)
+	_start_charge_effect(CHARGE_COLOR_TELEPORT, 0.4)
 
-	await get_tree().create_timer(0.2).timeout
+	await get_tree().create_timer(0.4).timeout
 
 	# Vanish (fade out quickly)
 	_end_charge_effect()
@@ -833,10 +836,10 @@ func perform_void_orbs_spread() -> void:
 	"""Shoots void orbs in all directions with charge-up"""
 	print("[Lythrun] Void Orbs Spread")
 
-	# CHARGE PHASE - Blue glow
-	_start_charge_effect(CHARGE_COLOR_CAST, 0.4)
+	# CHARGE PHASE - Blue glow (doubled)
+	_start_charge_effect(CHARGE_COLOR_CAST, 0.8)
 
-	await get_tree().create_timer(0.4).timeout
+	await get_tree().create_timer(0.8).timeout
 
 	# END CHARGE
 	_end_charge_effect()
@@ -872,6 +875,9 @@ func _spawn_void_orb_directional(direction: Vector2) -> void:
 	var orb = orb_scene.instantiate()
 	get_parent().add_child(orb)
 
+	# CRITICAL: Set owner for ParryBlockSystem detection
+	orb.owner = self
+
 	orb.global_position = global_position + Vector2(0, -30)
 
 	# Set direction instead of target
@@ -889,9 +895,9 @@ func perform_teleport_barrage() -> void:
 		await get_tree().create_timer(0.5).timeout
 		return
 
-	# Initial teleport behind player
-	_start_charge_effect(CHARGE_COLOR_TELEPORT, 0.3)
-	await get_tree().create_timer(0.3).timeout
+	# Initial teleport behind player (doubled)
+	_start_charge_effect(CHARGE_COLOR_TELEPORT, 0.6)
+	await get_tree().create_timer(0.6).timeout
 	_end_charge_effect()
 
 	# Vanish
@@ -908,11 +914,11 @@ func perform_teleport_barrage() -> void:
 	if sprite:
 		sprite.modulate = Color(1.5, 0.5, 1.5, 1.0)
 
-	# 4 rapid hits with 0.5s charge each
+	# 4 rapid hits with 1.0s charge each (doubled)
 	for i in range(4):
 		# Charge for hit
-		_start_charge_effect(CHARGE_COLOR_SLAM, 0.5)
-		await get_tree().create_timer(0.5).timeout
+		_start_charge_effect(CHARGE_COLOR_SLAM, 1.0)
+		await get_tree().create_timer(1.0).timeout
 		_end_charge_effect()
 
 		# Execute hit
@@ -943,11 +949,11 @@ func perform_shadow_dash_multi() -> void:
 	# After dashes: BIG AoE explosion as finisher
 	print("[Lythrun] Shadow Dash Multi - AoE Finisher!")
 
-	# Charge for AoE
-	_start_charge_effect(CHARGE_COLOR_AOE, 0.6)
+	# Charge for AoE (doubled)
+	_start_charge_effect(CHARGE_COLOR_AOE, 1.2)
 	if camera_controller:
-		camera_controller.shake(8.0, 0.6)
-	await get_tree().create_timer(0.6).timeout
+		camera_controller.shake(8.0, 1.2)
+	await get_tree().create_timer(1.2).timeout
 	_end_charge_effect()
 
 	# Spawn large AoE
@@ -970,23 +976,23 @@ func perform_desperation_aoe() -> void:
 	"""Massive AoE explosion with dramatic charge-up"""
 	print("[Lythrun] Desperation AOE")
 
-	# DRAMATIC CHARGE PHASE - Long red glow with camera shake buildup
-	_start_charge_effect(CHARGE_COLOR_AOE, 1.2)
+	# DRAMATIC CHARGE PHASE - Long red glow with camera shake buildup (doubled)
+	_start_charge_effect(CHARGE_COLOR_AOE, 2.4)
 
 	# Camera shake building during charge
 	if camera_controller:
-		camera_controller.shake(5.0, 0.5)
+		camera_controller.shake(5.0, 1.0)
 
-	await get_tree().create_timer(0.6).timeout
+	await get_tree().create_timer(1.2).timeout
 
 	# Intensify charge
 	if sprite:
 		sprite.modulate = CHARGE_COLOR_AOE * 2.0
 
 	if camera_controller:
-		camera_controller.shake(10.0, 0.6)
+		camera_controller.shake(10.0, 1.2)
 
-	await get_tree().create_timer(0.6).timeout
+	await get_tree().create_timer(1.2).timeout
 
 	# END CHARGE - EXPLOSION
 	_end_charge_effect()
