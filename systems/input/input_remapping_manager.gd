@@ -190,6 +190,11 @@ func _define_remappable_actions() -> void:
 		Category.ACTION, 2
 	)
 
+	remappable_actions["p2_crouch"] = ActionData.new(
+		"Crouch", "Ducken",
+		Category.ACTION, 2
+	)
+
 	# Combat category
 	remappable_actions["p2_shadow_scythe"] = ActionData.new(
 		"Shadow Scythe", "Schattensensnse",
