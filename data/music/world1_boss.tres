@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MusicScene" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://resources/audio/music_scene.gd" id="1_script"]
+[ext_resource type="AudioStream" path="res://Music/Welt 01 Boss Build Up.mp3" id="2_track1"]
+[ext_resource type="AudioStream" path="res://Music/Welt 01 Boss Build Up (1).mp3" id="3_track2"]
+
+[resource]
+script = ExtResource("1_script")
+scene_name = "World1Boss"
+level_paths = Array[String]([
+	"res://worlds/world_1_ruins/section_4_tempel/room_15_boss_urgathon.tscn"
+])
+tracks = Array[AudioStream]([ExtResource("2_track1"), ExtResource("3_track2")])
