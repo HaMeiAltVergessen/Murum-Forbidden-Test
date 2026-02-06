@@ -1,19 +1,28 @@
 extends Area2D
 ## Void Orb projectile - homing projectile that seeks player
 
-@export var damage: float = 20.0
-@export var speed: float = 200.0
-@export var lifetime: float = 5.0
-@export var homing_strength: float = 0.5  # 0 = no homing, 1 = full homing
+@export var damage: float = 25.0
+@export var speed: float = 400.0  # Doubled from 200
+@export var lifetime: float = 8.0  # Increased from 5.0
+@export var homing_strength: float = 0.8  # Stronger homing
 
 var direction: Vector2 = Vector2.RIGHT
 var target: Node2D = null
 var hit_targets: Array = []
 
 func _ready() -> void:
-	# Set collision layers
-	collision_layer = 6  # EnemyHitbox
-	collision_mask = 4   # PlayerHurtbox
+	# Set collision layers (Boss projectile -> Player hurtbox)
+	collision_layer = 128   # EnemyHitbox (Layer 8)
+	collision_mask = 1024   # PlayerHurtbox (Layer 11)
+
+	# Find player target FIRST (before any await!)
+	if not target:
+		var players = get_tree().get_nodes_in_group("player")
+		if players.size() > 0:
+			target = players[0]
+			# Set initial direction toward player
+			if target:
+				direction = (target.global_position - global_position).normalized()
 
 	# Connect signals
 	body_entered.connect(_on_body_entered)
@@ -22,12 +31,6 @@ func _ready() -> void:
 	# Auto-destroy after lifetime
 	await get_tree().create_timer(lifetime).timeout
 	queue_free()
-
-	# Try to find player target
-	if not target:
-		var players = get_tree().get_nodes_in_group("player")
-		if players.size() > 0:
-			target = players[0]
 
 
 func _physics_process(delta: float) -> void:
