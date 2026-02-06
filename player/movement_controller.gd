@@ -155,11 +155,13 @@ func _physics_process(delta: float) -> void:
 func _process_crouch() -> void:
 	"""Handles crouching state"""
 	var crouch_action = input_prefix + "crouch" if InputMap.has_action(input_prefix + "crouch") else "crouch"
-	var wants_to_crouch: bool = _is_action_pressed(crouch_action) and player.is_on_floor()
+	var holding_crouch: bool = _is_action_pressed(crouch_action)
 
-	if wants_to_crouch and not is_crouching:
+	# Start crouch: nur auf dem Boden. Crouch halten: solange Taste gedrueckt
+	# (auch in der Luft - wichtig fuer Durchgangsboeden)
+	if holding_crouch and not is_crouching and player.is_on_floor():
 		_start_crouch()
-	elif not wants_to_crouch and is_crouching:
+	elif not holding_crouch and is_crouching:
 		_end_crouch()
 
 

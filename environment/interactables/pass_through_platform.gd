@@ -83,8 +83,20 @@ func _physics_process(_delta: float) -> void:
 
 		if is_crouching and body not in _falling_through:
 			_start_fall_through(body)
-		elif not is_crouching and body in _falling_through:
-			_stop_fall_through(body)
+
+	# Spieler die nicht mehr crouchen und nicht mehr in der Area sind -> Exception aufheben
+	# Spieler die crouchen behalten die Exception (auch ausserhalb der Area)
+	var to_remove: Array = []
+	for player_node in _falling_through:
+		if not is_instance_valid(player_node):
+			to_remove.append(player_node)
+			continue
+		# Exception aufheben wenn Spieler NICHT mehr croucht
+		if not _player_is_crouching(player_node):
+			to_remove.append(player_node)
+
+	for player_node in to_remove:
+		_stop_fall_through(player_node)
 
 
 func _start_fall_through(player: CharacterBody2D) -> void:
@@ -104,10 +116,10 @@ func _on_body_entered(_body: Node2D) -> void:
 	pass
 
 
-func _on_body_exited(body: Node2D) -> void:
-	# Wenn Spieler die Area verlaesst, Exception aufheben
-	if body in _falling_through:
-		_stop_fall_through(body as CharacterBody2D)
+func _on_body_exited(_body: Node2D) -> void:
+	# Exception bleibt aktiv solange Spieler croucht
+	# Wird in _physics_process aufgeraeumt wenn Crouch endet
+	pass
 
 
 # ============================================================================
