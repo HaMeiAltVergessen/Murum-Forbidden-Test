@@ -12,6 +12,10 @@ func _ready() -> void:
 	collision_layer = 128   # EnemyHitbox (Layer 8)
 	collision_mask = 1024   # PlayerHurtbox (Layer 11)
 
+	# CRITICAL: Add to hitbox group for ParryBlockSystem detection
+	add_to_group("hitbox")
+	add_to_group("enemy_attack")
+
 	print("[BossSlamHitbox] Spawned at ", global_position, " with damage ", damage)
 	print("[BossSlamHitbox] Collision layer: ", collision_layer, ", mask: ", collision_mask)
 
@@ -69,6 +73,13 @@ func _deal_damage(target: Node2D) -> void:
 	"""Applies damage to target"""
 	hit_targets.append(target)
 
+	# CRITICAL: Check if player is blocking/invulnerable via HurtboxComponent
+	if target.has_node("HurtboxComponent"):
+		var hurtbox = target.get_node("HurtboxComponent")
+		if hurtbox.is_invulnerable:
+			print("[BossSlamHitbox] Player is blocking/invulnerable - damage blocked!")
+			return
+
 	# Deal damage through health component
 	if target.has_node("HealthComponent"):
 		var health_component = target.get_node("HealthComponent")
@@ -76,11 +87,12 @@ func _deal_damage(target: Node2D) -> void:
 			health_component.take_damage(damage)
 			print("[BossSlamHitbox] Dealt ", damage, " damage to player")
 
-	# Apply knockback
+	# Apply knockback (reduced when close to walls to prevent out-of-bounds)
 	if target is CharacterBody2D:
 		var direction = (target.global_position - global_position).normalized()
+		# Safety: Clamp knockback direction to prevent pushing into walls
+		var safe_knockback = direction * knockback_force * 0.5  # Reduced knockback
 		if target.has_method("apply_knockback"):
-			target.apply_knockback(direction * knockback_force)
+			target.apply_knockback(safe_knockback)
 		else:
-			# Fallback: direct velocity modification
-			target.velocity = direction * knockback_force
+			target.velocity = safe_knockback

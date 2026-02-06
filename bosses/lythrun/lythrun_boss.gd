@@ -37,6 +37,11 @@ var gap_closer_cooldown: float = 0.0  # Cooldown for gap-closer dashes
 const GAP_CLOSER_DISTANCE: float = 350.0  # Distance to trigger gap closer
 const GAP_CLOSER_COOLDOWN_TIME: float = 3.0  # Cooldown between gap closes
 
+# Boss distance preferences - NEVER stand on top of player!
+const PREFERRED_DISTANCE: float = 180.0  # Preferred distance from player
+const MIN_DISTANCE: float = 120.0  # NEVER get closer than this
+const MAX_DISTANCE: float = 250.0  # Start approaching if beyond this
+
 # ============================================================================
 # INITIALIZATION
 # ============================================================================
@@ -184,54 +189,71 @@ func _physics_process(delta: float) -> void:
 		if not is_on_floor():
 			velocity.y += 980.0 * delta
 
-		# Move toward player when not attacking
+		# Move toward/away from player based on distance - NEVER stand on player!
 		if not is_charging and is_active and player_target and is_instance_valid(player_target):
 			var distance = global_position.distance_to(player_target.global_position)
+			var direction = (player_target.global_position - global_position).normalized()
 
 			# GAP CLOSER: Use shadow_dash when far from player
 			if distance > GAP_CLOSER_DISTANCE and gap_closer_cooldown <= 0:
 				print("[Lythrun] Gap closer triggered! Distance: %.0f" % distance)
 				_perform_gap_closer_dash()
-			elif distance > 100.0:
-				var direction = (player_target.global_position - global_position).normalized()
+			elif distance < MIN_DISTANCE:
+				# TOO CLOSE! Move away from player
+				velocity.x = -direction.x * movement_speed * 1.5
+			elif distance > MAX_DISTANCE:
+				# Too far, approach player
 				velocity.x = direction.x * movement_speed
 			else:
+				# Good distance - stop or strafe
 				velocity.x = 0
 
 		move_and_slide()
 
 
 func _process_hover_movement(delta: float) -> void:
-	"""Hover movement for Phase 2+ - Boss floats and moves toward player"""
+	"""Hover movement for Phase 2+ - Boss floats BESIDE player, not on top!"""
 
 	# Update hover oscillation
 	hover_time += delta * 2.0  # Oscillation speed
 	hover_height = sin(hover_time) * 8.0  # ±8 pixels oscillation
 
-	# Move toward player (but float, no gravity)
+	# Move toward/away from player - NEVER hover directly on top!
 	if is_active and player_target and is_instance_valid(player_target) and not is_charging:
 		var target_pos = player_target.global_position
 		var distance = global_position.distance_to(target_pos)
+		var direction = (target_pos - global_position).normalized()
 
 		# GAP CLOSER: Use shadow_dash when far from player (also in hover mode)
 		if distance > GAP_CLOSER_DISTANCE and gap_closer_cooldown <= 0:
 			print("[Lythrun] Hover gap closer triggered! Distance: %.0f" % distance)
 			_perform_gap_closer_dash()
-		elif distance > 80.0:
-			var direction = (target_pos - global_position).normalized()
-			# Hover speed is faster than ground speed
+		elif distance < MIN_DISTANCE:
+			# TOO CLOSE! Move away from player
 			var hover_speed = movement_speed * 1.5
+			velocity.x = -direction.x * hover_speed
 
+			# Stay at same height level as player (not above)
+			var target_y = target_pos.y - 30  # Slight float, not directly on
+			var y_diff = target_y - global_position.y
+			velocity.y = y_diff * 2.0 + hover_height * 20.0
+		elif distance > MAX_DISTANCE:
+			# Too far, approach player
+			var hover_speed = movement_speed * 1.5
 			velocity.x = direction.x * hover_speed
 
-			# Vertical movement to hover above player
-			var target_y = target_pos.y - 50  # Float 50 pixels above player
+			# Move to same level
+			var target_y = target_pos.y - 30
 			var y_diff = target_y - global_position.y
-			velocity.y = y_diff * 2.0 + hover_height * 20.0  # Smooth vertical + oscillation
+			velocity.y = y_diff * 2.0 + hover_height * 20.0
 		else:
-			# Close enough - just hover in place
+			# Good distance - hover in place beside player
 			velocity.x = 0
-			velocity.y = hover_height * 20.0  # Just oscillation
+
+			# Stay beside player, not above
+			var target_y = target_pos.y - 30
+			var y_diff = target_y - global_position.y
+			velocity.y = y_diff * 1.0 + hover_height * 20.0
 	else:
 		# Not active or charging - maintain hover
 		velocity.x = 0
@@ -241,7 +263,7 @@ func _process_hover_movement(delta: float) -> void:
 
 
 func _perform_gap_closer_dash() -> void:
-	"""Performs a quick shadow dash to close the gap to the player - used as movement"""
+	"""Performs a quick shadow dash toward player - stops at PREFERRED_DISTANCE"""
 	gap_closer_cooldown = GAP_CLOSER_COOLDOWN_TIME
 
 	# Don't interrupt if already attacking
@@ -257,10 +279,13 @@ func _perform_gap_closer_dash() -> void:
 	# Face player
 	face_player()
 
-	# Calculate dash direction toward player
+	# Calculate dash direction toward player, but stop at preferred distance
 	var target_pos = player_target.global_position
 	var dash_direction = (target_pos - global_position).normalized()
 	var distance = global_position.distance_to(target_pos)
+
+	# Calculate dash distance - stop at PREFERRED_DISTANCE from player
+	var dash_distance = max(0, distance - PREFERRED_DISTANCE)
 
 	# Quick charge visual (shorter than attack)
 	is_charging = true
@@ -273,15 +298,20 @@ func _perform_gap_closer_dash() -> void:
 	if sprite:
 		sprite.modulate = Color(1.5, 1.0, 1.5)  # Bright purple-white during dash
 
-	# Fast dash toward player
-	var dash_speed = 1000.0  # Faster than attack dash
-	var dash_duration = min(distance / dash_speed, 0.3)  # Cap duration
+	# Fast dash toward player (but stop at preferred distance)
+	var dash_speed = 1000.0
+	var dash_duration = min(dash_distance / dash_speed, 0.3)  # Cap duration
 	var elapsed = 0.0
 
 	# Spawn dash hitbox (deals damage while dashing)
 	var dash_hitbox = _spawn_dash_hitbox()
 
 	while elapsed < dash_duration:
+		# Re-check distance to player to avoid overshooting
+		var current_distance = global_position.distance_to(player_target.global_position)
+		if current_distance <= PREFERRED_DISTANCE:
+			break  # Reached preferred distance
+
 		velocity = dash_direction * dash_speed
 		move_and_slide()
 		elapsed += get_process_delta_time()
@@ -519,14 +549,16 @@ func perform_staff_slam() -> void:
 	# Face player
 	face_player()
 
-	# Move toward player (60% of distance)
+	# Move toward player - but stop at MIN_DISTANCE (never stand on player!)
 	if player_target and is_instance_valid(player_target):
 		var target_pos = player_target.global_position
 		var distance = global_position.distance_to(target_pos)
 
-		if distance > 150.0:
+		# Only move if far away, and stop at MIN_DISTANCE
+		if distance > MIN_DISTANCE + 50:
 			var move_direction = (target_pos - global_position).normalized()
-			var move_distance = min(distance * 0.6, 300.0)
+			# Move close but maintain minimum distance
+			var move_distance = min(distance - MIN_DISTANCE, 200.0)
 			global_position = global_position + move_direction * move_distance
 
 	# CHARGE PHASE - Visual feedback
