@@ -36,6 +36,7 @@
 [ext_resource type="PackedScene" uid="uid://timed_door_controller" path="res://puzzles/scenes/controllers/timed_door_controller.tscn" id="23_timed_door_controller"]
 [ext_resource type="PackedScene" uid="uid://timed_door_component" path="res://puzzles/scenes/components/timed_door.tscn" id="24_timed_door"]
 [ext_resource type="PackedScene" uid="uid://master_puzzle_door" path="res://puzzles/scenes/master_puzzle_door.tscn" id="25_master_door"]
+[ext_resource type="PackedScene" uid="uid://cpass_through_platform" path="res://environment/interactables/pass_through_platform.tscn" id="26_pass_through"]
 
 [ext_resource type="PackedScene" uid="uid://puzzle_block_001" path="res://puzzles/scenes/puzzle_block.tscn" id="17_puzzle_block"]
 [ext_resource type="PackedScene" uid="uid://falling_rock_001" path="res://traps/scenes/falling_rock.tscn" id="18_falling_rock"]
@@ -354,6 +355,17 @@ target_scene = "res://levels/item_room.tscn"
 spawn_position = Vector2(200, 600)
 
 position = Vector2(1000, 900)
+
+[node name="PassThroughPlatforms" type="Node2D" parent="."]
+
+[node name="Tier1" parent="PassThroughPlatforms" instance=ExtResource("26_pass_through")]
+position = Vector2(832, 870)
+
+[node name="Tier2" parent="PassThroughPlatforms" instance=ExtResource("26_pass_through")]
+position = Vector2(832, 740)
+
+[node name="Tier3" parent="PassThroughPlatforms" instance=ExtResource("26_pass_through")]
+position = Vector2(832, 610)
 
 [node name="DeathScreen" parent="." instance=ExtResource("8_death_screen_scene")]
 
