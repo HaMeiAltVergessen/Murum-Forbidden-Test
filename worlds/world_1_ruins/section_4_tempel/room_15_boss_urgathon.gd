@@ -31,6 +31,11 @@ var is_pvp_mode: bool = false
 var dialog_label: Label = null  # COMMIT 023.8: Dialog placeholder
 var player_death_count: int = 0  # Track deaths in solo boss fight
 
+# Arena boundary system - prevent teleport-to-void bug
+var arena_bounds: Rect2 = Rect2()
+var last_valid_player_pos: Vector2 = Vector2.ZERO
+const BOUNDS_CHECK_MARGIN: float = 50.0  # Extra margin outside bounds before reset
+
 # ============================================================================
 # INITIALIZATION
 # ============================================================================
@@ -66,7 +71,87 @@ func _setup_arena() -> void:
 	if arena_boundary:
 		arena_boundary.modulate = Color(1, 1, 1, 0.3)
 
+	# Initialize arena bounds for player position safety check
+	arena_bounds = get_arena_bounds()
+	# Expand bounds slightly for the check (give some leeway)
+	arena_bounds = arena_bounds.grow(BOUNDS_CHECK_MARGIN)
+	print("[Room15_BossUrgathon] Arena bounds: ", arena_bounds)
+
 	print("[Room15_BossUrgathon] Arena setup complete")
+
+
+func _physics_process(_delta: float) -> void:
+	"""Check player position during boss fight - prevent teleport-to-void bug"""
+
+	# Only check during active fight
+	if not fight_started or fight_ended:
+		return
+
+	# Check P1 position
+	if player and is_instance_valid(player):
+		var player_pos = player.global_position
+
+		# Check for invalid position (NaN, inf, or way outside bounds)
+		var is_invalid = is_nan(player_pos.x) or is_nan(player_pos.y)
+		var is_outside = not arena_bounds.has_point(player_pos)
+
+		if is_invalid or is_outside:
+			print("[Room15_BossUrgathon] PLAYER OUT OF BOUNDS! Pos: ", player_pos, " Bounds: ", arena_bounds)
+			_reset_player_to_arena(player)
+		else:
+			# Store last valid position
+			last_valid_player_pos = player_pos
+
+	# Check P2 position (if in PvP mode)
+	if is_pvp_mode and player2 and is_instance_valid(player2):
+		var p2_pos = player2.global_position
+
+		var is_invalid = is_nan(p2_pos.x) or is_nan(p2_pos.y)
+		var is_outside = not arena_bounds.has_point(p2_pos)
+
+		if is_invalid or is_outside:
+			print("[Room15_BossUrgathon] P2 OUT OF BOUNDS! Pos: ", p2_pos)
+			_reset_player_to_arena(player2)
+
+
+func _reset_player_to_arena(target_player: CharacterBody2D) -> void:
+	"""Reset player to safe arena position"""
+
+	var reset_pos = Vector2.ZERO
+
+	# Prefer spawn point
+	if player_spawn:
+		reset_pos = player_spawn.global_position
+	# Fallback to last valid position
+	elif last_valid_player_pos != Vector2.ZERO:
+		reset_pos = last_valid_player_pos
+	# Fallback to arena center
+	else:
+		reset_pos = arena_bounds.get_center()
+
+	print("[Room15_BossUrgathon] Resetting player to: ", reset_pos)
+
+	# Reset position
+	target_player.global_position = reset_pos
+	target_player.velocity = Vector2.ZERO
+
+	# Brief invulnerability to prevent instant death from boss
+	if target_player.has_node("HurtboxComponent"):
+		var hurtbox = target_player.get_node("HurtboxComponent")
+		hurtbox.is_invulnerable = true
+
+		# Reset invulnerability after 0.5s
+		await get_tree().create_timer(0.5).timeout
+		if is_instance_valid(hurtbox):
+			hurtbox.is_invulnerable = false
+
+	# Visual feedback
+	if target_player.has_node("AnimatedSprite2D"):
+		var sprite = target_player.get_node("AnimatedSprite2D")
+		sprite.modulate = Color(1, 1, 1, 0.5)  # Flash transparent
+		await get_tree().create_timer(0.1).timeout
+		if is_instance_valid(sprite):
+			sprite.modulate = Color.WHITE
 
 
 func _spawn_player() -> void:
