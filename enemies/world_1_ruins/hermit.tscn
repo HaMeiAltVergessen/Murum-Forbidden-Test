@@ -1,0 +1,96 @@
+[gd_scene load_steps=11 format=3 uid="uid://hermit_001"]
+
+[ext_resource type="Script" path="res://enemies/world_1_ruins/hermit.gd" id="1_hermit"]
+[ext_resource type="Script" path="res://enemies/world_1_ruins/hermit_ai.gd" id="2_ai"]
+[ext_resource type="Script" path="res://components/hurtbox_component.gd" id="3_hurtbox"]
+[ext_resource type="Script" path="res://components/hitbox_component.gd" id="4_hitbox"]
+[ext_resource type="Script" path="res://player/health_component.gd" id="5_health"]
+[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Monster Pack Files/Sprites/Witch/witch1.png" id="6_witch"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
+radius = 28.0
+height = 90.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurtbox"]
+size = Vector2(56, 90)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hitbox"]
+size = Vector2(80, 90)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_detection"]
+radius = 600.0
+
+[node name="Hermit" type="CharacterBody2D" groups=["enemies", "hermit", "mini_boss"]]
+collision_layer = 8
+collision_mask = 7
+script = ExtResource("1_hermit")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.9, 0.85, 1, 1)
+scale = Vector2(3.0, 3.0)
+texture = ExtResource("6_witch")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_body")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("5_health")
+max_health = 600
+invulnerability_duration = 0.2
+
+[node name="HurtboxComponent" type="Area2D" parent="."]
+collision_layer = 1024
+collision_mask = 48
+script = ExtResource("3_hurtbox")
+invulnerability_duration = 0.2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]
+shape = SubResource("RectangleShape2D_hurtbox")
+
+[node name="HitboxComponent" type="Area2D" parent="."]
+collision_layer = 128
+collision_mask = 1030
+monitoring = false
+script = ExtResource("4_hitbox")
+damage = 50
+knockback_force = 250.0
+hitstun_duration = 0.3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
+shape = SubResource("RectangleShape2D_hitbox")
+
+[node name="DetectionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource("CircleShape2D_detection")
+
+[node name="HermitAI" type="Node" parent="."]
+script = ExtResource("2_ai")
+
+[node name="HealthBarContainer" type="Control" parent="."]
+visible = false
+anchors_preset = 0
+offset_left = -40.0
+offset_top = -70.0
+offset_right = 40.0
+offset_bottom = -55.0
+
+[node name="BossName" type="Label" parent="HealthBarContainer"]
+layout_mode = 0
+offset_right = 80.0
+offset_bottom = 12.0
+theme_override_colors/font_color = Color(0.85, 0.75, 1, 1)
+theme_override_font_sizes/font_size = 10
+text = "Der Eremit"
+horizontal_alignment = 1
+
+[node name="HealthBar" type="ProgressBar" parent="HealthBarContainer"]
+layout_mode = 0
+offset_top = 10.0
+offset_right = 80.0
+offset_bottom = 15.0
+max_value = 600.0
+value = 600.0
+show_percentage = false
