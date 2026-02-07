@@ -1,0 +1,112 @@
+[gd_resource type="Resource" script_class="DialogData" load_steps=18 format=3 uid="uid://eremit_dialog_sp"]
+
+[ext_resource type="Script" path="res://resources/dialog/dialog_data.gd" id="1_data"]
+[ext_resource type="Script" path="res://resources/dialog/dialog_entry.gd" id="2_entry"]
+[ext_resource type="Script" path="res://resources/dialog/dialog_choice.gd" id="3_choice"]
+
+[sub_resource type="Resource" id="Resource_entry1"]
+script = ExtResource("2_entry")
+speaker_name = ""
+speaker_sprite = null
+text = "Eine Gestalt steht reglos vor dem Tempeltor. Der Wind zerrt an seinem zerfetzten Umhang."
+text_speed = 28.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_entry2"]
+script = ExtResource("2_entry")
+speaker_name = "Der Eremit"
+speaker_sprite = null
+text = "Ich bin hier. Und ich habe den Schlüssel."
+text_speed = 22.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_entry3"]
+script = ExtResource("2_entry")
+speaker_name = ""
+speaker_sprite = null
+text = "Er hält einen alten, schimmernden Schlüssel in der Hand. Sein Blick ruht auf dir."
+text_speed = 28.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_entry4"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+speaker_sprite = null
+text = "Gibst du ihn mir?"
+text_speed = 22.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_entry5"]
+script = ExtResource("2_entry")
+speaker_name = "Der Eremit"
+speaker_sprite = null
+text = "Nein."
+text_speed = 18.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_deep_entry1"]
+script = ExtResource("2_entry")
+speaker_name = "Der Eremit"
+speaker_sprite = null
+text = "Damals wusste ich weder wer, noch was du bist."
+text_speed = 24.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_deep_entry2"]
+script = ExtResource("2_entry")
+speaker_name = "Der Eremit"
+speaker_sprite = null
+text = "Jetzt weiß ich es. Und deshalb kann ich dich nicht passieren lassen."
+text_speed = 24.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_deep_entry3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+speaker_sprite = null
+text = "Ich will nicht kämpfen."
+text_speed = 22.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_deep_entry4"]
+script = ExtResource("2_entry")
+speaker_name = "Der Eremit"
+speaker_sprite = null
+text = "Was du willst, spielt keine Rolle mehr. Es ist Schicksal."
+text_speed = 24.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_deep_entry5"]
+script = ExtResource("2_entry")
+speaker_name = ""
+speaker_sprite = null
+text = "Der Eremit hebt seinen Stab. Es gibt kein Zurück."
+text_speed = 26.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_choice_silence"]
+script = ExtResource("3_choice")
+choice_text = "..."
+response_speaker = "Der Eremit"
+response_text = "Dein Schweigen ändert nichts. Du weißt, warum ich hier bin."
+next_entries = [SubResource("Resource_deep_entry4"), SubResource("Resource_deep_entry5")]
+
+[sub_resource type="Resource" id="Resource_choice_why"]
+script = ExtResource("3_choice")
+choice_text = "Warum?"
+response_speaker = ""
+response_text = ""
+next_entries = [SubResource("Resource_deep_entry1"), SubResource("Resource_deep_entry2"), SubResource("Resource_deep_entry3"), SubResource("Resource_deep_entry4"), SubResource("Resource_deep_entry5")]
+
+[sub_resource type="Resource" id="Resource_entry6"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+speaker_sprite = null
+text = ""
+text_speed = 22.0
+choices = [SubResource("Resource_choice_silence"), SubResource("Resource_choice_why")]
+
+[resource]
+script = ExtResource("1_data")
+dialog_id = "eremit_encounter"
+entries = [SubResource("Resource_entry1"), SubResource("Resource_entry2"), SubResource("Resource_entry3"), SubResource("Resource_entry4"), SubResource("Resource_entry5"), SubResource("Resource_entry6")]
