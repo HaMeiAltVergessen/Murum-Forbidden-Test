@@ -517,6 +517,16 @@
       }
     },
     {
+      "id": "temple_key",
+      "name": "Tempelschlüssel",
+      "type": "key_item",
+      "world": 1,
+      "category": "quest",
+      "description": "Ein uralter Schlüssel aus schwarzem Stein, kalt wie der Atem der Ruinen. Er öffnet das Tor zum vergessenen Tempel.",
+      "icon": "res://assets/items/icons/placeholder_key.png",
+      "lore": "Der Eremit hütete diesen Schlüssel seit dem Fall des Tempels. Nur wer ihn besiegt, darf eintreten."
+    },
+    {
       "id": "key_item_1",
       "name": "[PLACEHOLDER] Schlüssel der Ruinen",
       "type": "key_item",
