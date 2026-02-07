@@ -21,6 +21,7 @@ const GEIST_SCENE = preload("res://enemies/world_1_ruins/geist.tscn")
 @onready var checkpoint: Checkpoint = $Checkpoint
 @onready var door_from_room_02: Node = $Doors/DoorFromRoom02
 @onready var door_to_room_04: Node = $Doors/DoorToRoom04
+@onready var hermit: Node = $Hermit
 
 # Spawn Points
 @onready var wave_spawn_1: Marker2D = $SpawnPoints/WaveSpawn1
@@ -32,6 +33,7 @@ const GEIST_SCENE = preload("res://enemies/world_1_ruins/geist.tscn")
 # ============================================================================
 
 var is_cleared: bool = false
+var hermit_defeated: bool = false
 
 # ============================================================================
 # INITIALIZATION
@@ -45,12 +47,18 @@ func _ready() -> void:
 	var full_room_id = "%s/%s" % [WORLD_ID, ROOM_ID]
 	is_cleared = WorldManager.is_room_cleared(full_room_id)
 
+	# Check if hermit already defeated
+	hermit_defeated = WorldManager.is_room_cleared("eremit_defeated")
+
 	if is_cleared:
 		_on_room_already_cleared()
 	else:
 		_setup_arena()
 
-	print("[Room03_VillageEntrance] Arena initialized (cleared: %s)" % is_cleared)
+	# Setup Hermit mini-boss
+	_setup_hermit()
+
+	print("[Room03_VillageEntrance] Arena initialized (cleared: %s, hermit_defeated: %s)" % [is_cleared, hermit_defeated])
 
 	# Activate room (setup player if transitioning from door - COMMIT 018)
 	call_deferred("_activate")
@@ -104,6 +112,41 @@ func _on_room_already_cleared() -> void:
 
 	# Ensure GameManager knows arena is cleared
 	GameManager.world1_arena_cleared = true
+
+
+# ============================================================================
+# HERMIT MINI-BOSS
+# ============================================================================
+
+func _setup_hermit() -> void:
+	"""Sets up the Hermit mini-boss NPC"""
+	if hermit_defeated:
+		# Already defeated - remove hermit
+		if hermit and is_instance_valid(hermit):
+			hermit.queue_free()
+		return
+
+	if not hermit or not is_instance_valid(hermit):
+		return
+
+	# Connect hermit death to door unlock
+	if hermit.has_signal("died"):
+		hermit.died.connect(_on_hermit_defeated)
+
+	print("[Room03_VillageEntrance] Hermit NPC placed, awaiting dialog")
+
+
+func _on_hermit_defeated() -> void:
+	"""Called when the Hermit is defeated"""
+	hermit_defeated = true
+	print("[Room03_VillageEntrance] Hermit defeated! Temple key dropped.")
+
+	# Unlock exit door
+	_unlock_exit_door()
+
+	# Notification
+	EventBus.show_notification.emit("Der Eremit wurde besiegt. Der Tempelschlüssel liegt am Boden.", 4.0)
+
 
 # ============================================================================
 # WAVE CONFIGURATION

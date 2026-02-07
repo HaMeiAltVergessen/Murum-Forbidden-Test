@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://dq7m4n8x3vspt"]
+[gd_scene load_steps=15 format=3 uid="uid://dq7m4n8x3vspt"]
 
 [ext_resource type="Script" uid="uid://d3ga2xnikulhm" path="res://worlds/world_1_ruins/section_1_entrance/room_03_villageEntrance.gd" id="1_room03"]
 [ext_resource type="Texture2D" uid="uid://ddshbf3nio6lw" path="res://Assets/AIAssets/8d33fd80-90de-40ba-a387-b68c6792874b.jpg" id="2_pdr4c"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="5_spawn"]
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="6_deathbox"]
 [ext_resource type="AudioStream" uid="uid://l06dl0uy336p" path="res://Music/Welt 01 temple.mp3" id="9_sky3w"]
+[ext_resource type="PackedScene" uid="uid://hermit_001" path="res://enemies/world_1_ruins/hermit.tscn" id="10_hermit"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1600, 80)
@@ -146,3 +147,6 @@ stream = ExtResource("9_sky3w")
 volume_db = -8.0
 autoplay = true
 parameters/looping = false
+
+[node name="Hermit" parent="." instance=ExtResource("10_hermit")]
+position = Vector2(1300, 780)
