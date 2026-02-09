@@ -1,11 +1,12 @@
-[gd_scene load_steps=5 format=3 uid="uid://cmusic_scene_player"]
+[gd_scene load_steps=7 format=3 uid="uid://gal2jig1ret7"]
 
-[ext_resource type="Script" path="res://core/autoloads/music_scene_player.gd" id="1_script"]
-[ext_resource type="Resource" path="res://data/music/world1_section1_3.tres" id="2_scene1"]
+[ext_resource type="Script" uid="uid://da24g0xx1gj5a" path="res://core/autoloads/music_scene_player.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://dolt5e1qrwg51" path="res://resources/audio/music_scene.gd" id="2_am636"]
+[ext_resource type="Resource" uid="uid://c8ghvujmh6hmb" path="res://data/music/world1_section1_3.tres" id="2_scene1"]
 [ext_resource type="Resource" path="res://data/music/world1_temple.tres" id="3_scene2"]
 [ext_resource type="Resource" path="res://data/music/world1_boss.tres" id="4_scene3"]
+[ext_resource type="Resource" uid="uid://kiodblbs42uy" path="res://data/music/world1_Dorf.tres" id="6_km3oj"]
 
 [node name="MusicScenePlayer" type="Node"]
 script = ExtResource("1_script")
-music_scenes = Array[MusicScene]([ExtResource("2_scene1"), ExtResource("3_scene2"), ExtResource("4_scene3")])
-crossfade_duration = 2.0
+music_scenes = Array[ExtResource("2_am636")]([ExtResource("2_scene1"), ExtResource("3_scene2"), ExtResource("4_scene3"), ExtResource("6_km3oj")])

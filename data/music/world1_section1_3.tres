@@ -1,20 +1,11 @@
-[gd_resource type="Resource" script_class="MusicScene" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="MusicScene" load_steps=4 format=3 uid="uid://c8ghvujmh6hmb"]
 
-[ext_resource type="Script" path="res://resources/audio/music_scene.gd" id="1_script"]
-[ext_resource type="AudioStream" path="res://Music/Welt 01 Ruins.mp3" id="2_track1"]
-[ext_resource type="AudioStream" path="res://Music/Welt 01 Ruins (1).mp3" id="3_track2"]
+[ext_resource type="Script" uid="uid://dolt5e1qrwg51" path="res://resources/audio/music_scene.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://dsdlo6x4sw6sq" path="res://Music/Welt 01 Ruins.mp3" id="2_track1"]
+[ext_resource type="AudioStream" uid="uid://cya12pjeiori5" path="res://Music/Welt 01 Ruins (1).mp3" id="3_track2"]
 
 [resource]
 script = ExtResource("1_script")
 scene_name = "World1Section1-3"
-level_paths = Array[String]([
-	"res://worlds/world_1_ruins/section_1_entrance/room_01_entry.tscn",
-	"res://worlds/world_1_ruins/section_1_entrance/room_02_corridor.tscn",
-	"res://worlds/world_1_ruins/section_1_entrance/room_03_villageEntrance.tscn",
-	"res://worlds/world_1_ruins/section_2_villages/room_04_village_square.tscn",
-	"res://worlds/world_1_ruins/section_2_villages/room_05_inn.tscn",
-	"res://worlds/world_1_ruins/section_2_villages/room_06_blacksmith.tscn",
-	"res://worlds/world_1_ruins/section_3_tempel_outside/room_09_temple_path.tscn",
-	"res://worlds/world_1_ruins/section_3_tempel_outside/room_11_temple_entrance.tscn"
-])
+level_paths = Array[String](["res://worlds/world_1_ruins/section_1_entrance/room_01_entry.tscn", "res://worlds/world_1_ruins/section_1_entrance/room_02_corridor.tscn", "res://worlds/world_1_ruins/section_1_entrance/room_03_villageEntrance.tscn", "res://worlds/world_1_ruins/section_2_villages/room_04_village_square.tscn", "res://worlds/world_1_ruins/section_3_tempel_outside/room_09_temple_path.tscn", "res://worlds/world_1_ruins/section_3_tempel_outside/room_11_temple_entrance.tscn"])
 tracks = Array[AudioStream]([ExtResource("2_track1"), ExtResource("3_track2")])

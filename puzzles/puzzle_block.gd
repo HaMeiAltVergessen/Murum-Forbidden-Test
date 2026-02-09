@@ -10,6 +10,8 @@ class_name PuzzleBlock
 
 @export var block_size: Vector2 = Vector2(64, 64)
 @export var puzzle_controller: NodePath  ## Path to the PuzzleController this block tracks
+@onready var collision_shape: CollisionShape2D = $CollisionShape2D
+
 
 # ============================================================================
 # STATE
@@ -84,21 +86,34 @@ func _connect_controller() -> void:
 # ============================================================================
 
 func _on_puzzle_solved() -> void:
-	"""Handles puzzle being solved - turn block white"""
 	if is_solved:
 		return
 
 	is_solved = true
-
-	# Animate color change from black to white
 	_animate_solve()
+	_start_dissolve()  # Neu
 
 	print("[PuzzleBlock] %s solved - turning white!" % name)
 
 # ============================================================================
 # VISUAL EFFECTS
 # ============================================================================
+func _start_dissolve() -> void:
+	# Node optisch ausblenden
+	var tween := create_tween()
+	tween.tween_property(self, "modulate:a", 0.0, 0.5)  # Alpha von 1 -> 0 in 0.5s
+	tween.tween_callback(_on_dissolve_finished)
 
+func _on_dissolve_finished() -> void:
+	# Kollision ausschalten
+	if collision_shape:
+		collision_shape.disabled = true  # StaticBody2D kollidiert nicht mehr[web:19]
+
+	# Entweder komplett entfernen:
+	queue_free()
+
+	# Oder nur unsichtbar lassen:
+	# visible = false
 func _set_color(color: Color) -> void:
 	"""Sets the block color"""
 	if color_rect:

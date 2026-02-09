@@ -1,9 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://sequence_controller"]
+[gd_scene load_steps=2 format=3 uid="uid://c6yvx6iyh6jgj"]
 
-[ext_resource type="Script" path="res://puzzles/controllers/sequence_puzzle_controller.gd" id="1"]
+[ext_resource type="Script" uid="uid://r8ggmf0f3vt6" path="res://puzzles/controllers/sequence_puzzle_controller.gd" id="1"]
 
 [node name="SequencePuzzleController" type="Node"]
 script = ExtResource("1")
-correct_sequence = [1, 2, 3]
-use_reset_delay = true
-reset_delay = 3.0

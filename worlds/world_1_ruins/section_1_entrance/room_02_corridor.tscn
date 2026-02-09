@@ -1,10 +1,9 @@
-[gd_scene load_steps=14 format=3 uid="uid://csm4wax2ntpqr"]
+[gd_scene load_steps=13 format=3 uid="uid://csm4wax2ntpqr"]
 
-[ext_resource type="Script" uid="uid://cm3e5pkoi5u4r" path="res://worlds/world_1_ruins/section_1_entrance/room_02_corridor.gd" id="1_room02"]
+[ext_resource type="Script" uid="uid://dhherqlrd2s44" path="res://worlds/world_1_ruins/section_1_entrance/room_02_corridor.gd" id="1_room02"]
 [ext_resource type="Texture2D" uid="uid://bb1oeaxgt20et" path="res://Assets/AIAssets/world1lvl1bg03.jpg" id="2_qe3w4"]
 [ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="2_spike"]
 [ext_resource type="PackedScene" uid="uid://cakx4m2v7pqrs" path="res://environment/interactables/lever.tscn" id="3_lever"]
-[ext_resource type="AudioStream" uid="uid://hpevd7oyylnm" path="res://Music/Welt 01 Boss Build Up (1).mp3" id="4_63odc"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="4_spawn"]
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="5_door"]
 [ext_resource type="PackedScene" uid="uid://dkc8y7x0ij6nw" path="res://enemies/untote.tscn" id="6_untote"]
@@ -124,12 +123,3 @@ position = Vector2(1130, 600)
 
 [node name="Default" parent="SpawnPoints" instance=ExtResource("4_spawn")]
 position = Vector2(640, 600)
-
-[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
-position = Vector2(1399, 638)
-rotation = -2.34014
-scale = Vector2(2.17856, -0.660496)
-stream = ExtResource("4_63odc")
-volume_db = -8.0
-autoplay = true
-parameters/looping = false

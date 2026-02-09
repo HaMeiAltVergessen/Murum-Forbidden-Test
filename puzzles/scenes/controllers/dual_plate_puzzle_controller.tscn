@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://dual_plate_controller"]
+[gd_scene load_steps=2 format=3 uid="uid://o8xo6q6qbdiv"]
 
-[ext_resource type="Script" path="res://puzzles/controllers/dual_plate_puzzle_controller.gd" id="1"]
+[ext_resource type="Script" uid="uid://dl7v63xr14fxf" path="res://puzzles/controllers/dual_plate_puzzle_controller.gd" id="1"]
 
 [node name="DualPlatePuzzleController" type="Node"]
 script = ExtResource("1")

@@ -1,12 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://ca4ecsg8jkqtv"]
+[gd_scene load_steps=8 format=3 uid="uid://ca4ecsg8jkqtv"]
 
-[ext_resource type="Script" uid="uid://b2r2vfh85un7r" path="res://worlds/world_1_ruins/section_1_entrance/room_01_entry.gd" id="1_bn5t5"]
-[ext_resource type="Texture2D" uid="uid://sv34s5d8yjkm" path="res://Assets/AIAssets/houseinnen.jpg" id="2_1or17"]
+[ext_resource type="Texture2D" uid="uid://dli2jjjvr4wpa" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_Dorf/Create_a_single_high-resolutio_GPT_Image_15_28080.jpg" id="2_15dee"]
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="5_fqkmx"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="6_edan5"]
-[ext_resource type="AudioStream" uid="uid://hpevd7oyylnm" path="res://Music/Welt 01 Boss Build Up (1).mp3" id="7_1or17"]
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="7_8bsxi"]
-[ext_resource type="PackedScene" uid="uid://cakx4m2v7pqrs" path="res://environment/interactables/lever.tscn" id="8_b852y"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1550, 80)
@@ -17,13 +14,20 @@ size = Vector2(40, 720)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_deathbox"]
 size = Vector2(1691, 200)
 
-[node name="Room01Entry" type="Node2D"]
-script = ExtResource("1_bn5t5")
+[node name="House1" type="Node2D"]
+
+[node name="ColorRect" type="ColorRect" parent="."]
+z_index = -4
+offset_left = -1539.0
+offset_top = -630.0
+offset_right = 3477.0
+offset_bottom = 1502.0
+color = Color(0, 0, 0, 1)
 
 [node name="BackLayer3" type="Sprite2D" parent="."]
 z_index = -3
 position = Vector2(768, 342)
-texture = ExtResource("2_1or17")
+texture = ExtResource("2_15dee")
 
 [node name="TileMap" type="TileMap" parent="."]
 format = 2
@@ -32,7 +36,13 @@ format = 2
 position = Vector2(0, 640)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
-position = Vector2(773, 61)
+position = Vector2(769, -43)
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Ground"]
+position = Vector2(912, -165)
+rotation = -0.529823
+scale = Vector2(0.314991, 1.07712)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="WallLeft" type="StaticBody2D" parent="."]
@@ -73,7 +83,7 @@ shape = SubResource("RectangleShape2D_deathbox")
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Default" parent="SpawnPoints" instance=ExtResource("6_edan5")]
-position = Vector2(645, 616)
+position = Vector2(634, 467)
 
 [node name="FromRoom02" parent="SpawnPoints" instance=ExtResource("6_edan5")]
 position = Vector2(876, 600)
@@ -82,17 +92,8 @@ facing_direction = -1
 [node name="Doors" type="Node2D" parent="."]
 
 [node name="DoorToTestRoom" parent="Doors" instance=ExtResource("7_8bsxi")]
-position = Vector2(613, 491)
+position = Vector2(933, 345)
 target_scene = "res://worlds/world_1_ruins/section_2_villages/room_05_inn.tscn"
-spawn_position = Vector2(800, 200)
+spawn_position = Vector2(50, 0)
 
 [node name="Environment" type="Node2D" parent="."]
-
-[node name="Lever" parent="Environment" instance=ExtResource("8_b852y")]
-position = Vector2(1249, 513)
-
-[node name="MusicBackground" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("7_1or17")
-volume_db = -8.0
-autoplay = true
-parameters/looping = false

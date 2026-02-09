@@ -32,7 +32,7 @@ func _ready() -> void:
 	# Only spawn checkpoint and enemies ONCE (COMMIT 018: Prevent duplicate spawns)
 	if not has_spawned_content:
 		_spawn_checkpoint()
-		_spawn_enemies()
+
 		has_spawned_content = true
 
 	# Setup puzzle persistence (COMMIT 015: Puzzle System)
@@ -209,12 +209,8 @@ func _spawn_checkpoint() -> void:
 	print("[Room01_Entry] Checkpoint spawned at ", checkpoint.global_position)
 
 
-func _spawn_enemies() -> void:
-	"""Spawns 8 Untote enemies for combat testing"""
-	var untote_scene = preload("res://enemies/untote.tscn")
-	if not untote_scene:
-		print("[Room01_Entry] WARNING: Untote scene not found")
-		return
+
+
 
 	# Spawn positions spread across the room
 	var spawn_positions = [
@@ -228,12 +224,7 @@ func _spawn_enemies() -> void:
 		Vector2(2200, 600),
 	]
 
-	for pos in spawn_positions:
-		var enemy = untote_scene.instantiate()
-		enemy.global_position = pos
-		add_child(enemy)
 
-	print("[Room01_Entry] Spawned %d Untote enemies" % spawn_positions.size())
 
 
 # ============================================================================

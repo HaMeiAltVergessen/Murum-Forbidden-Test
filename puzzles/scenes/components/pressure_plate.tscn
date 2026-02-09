@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://pressure_plate_component"]
+[gd_scene load_steps=4 format=3 uid="uid://3qux34opa7wk"]
 
-[ext_resource type="Script" path="res://puzzles/pressure_plate.gd" id="1"]
+[ext_resource type="Script" uid="uid://cjkw3jdoajvyq" path="res://puzzles/pressure_plate.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://ctbeeyty5qwop" path="res://Assets/Placeholder/Legacy Collection/Assets/Packs/asteroid-fighter/PNG/asteroids/asteroid-5.png" id="2_f174i"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_plate"]
 size = Vector2(64, 16)
@@ -9,9 +10,11 @@ size = Vector2(64, 16)
 collision_layer = 0
 collision_mask = 2
 script = ExtResource("1")
-visual_feedback = true
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0.5, 0)
+scale = Vector2(1.02778, 1)
+texture = ExtResource("2_f174i")
 
 [node name="ColorRect" type="ColorRect" parent="Sprite2D"]
 offset_left = -32.0

@@ -1,11 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://guardian_statue_001"]
+[gd_scene load_steps=11 format=3 uid="uid://bxjm0m07w77dm"]
 
-[ext_resource type="Script" path="res://enemies/world_1_ruins/guardian_statue.gd" id="1_statue"]
-[ext_resource type="Script" path="res://enemies/world_1_ruins/guardian_statue_ai.gd" id="2_ai"]
-[ext_resource type="Script" path="res://components/hurtbox_component.gd" id="3_hurtbox"]
-[ext_resource type="Script" path="res://components/hitbox_component.gd" id="4_hitbox"]
-[ext_resource type="Script" path="res://player/health_component.gd" id="5_health"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Ogre/Ogre-sheet.png" id="6_ogre"]
+[ext_resource type="Script" uid="uid://bjisexwg4bcw" path="res://enemies/world_1_ruins/guardian_statue.gd" id="1_statue"]
+[ext_resource type="Script" uid="uid://1lm1chbki7x5" path="res://enemies/world_1_ruins/guardian_statue_ai.gd" id="2_ai"]
+[ext_resource type="Script" uid="uid://be8au7dl6rc4k" path="res://components/hurtbox_component.gd" id="3_hurtbox"]
+[ext_resource type="Script" uid="uid://ccjbelb33h57n" path="res://components/hitbox_component.gd" id="4_hitbox"]
+[ext_resource type="Script" uid="uid://c2qc384qkctay" path="res://player/health_component.gd" id="5_health"]
+[ext_resource type="Texture2D" uid="uid://bkkvcmb332etl" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Ogre/Ogre-sheet.png" id="6_ogre"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
 radius = 40.0
@@ -30,10 +30,9 @@ modulate = Color(0.8, 0.8, 0.8, 1)
 scale = Vector2(3.5, 3.5)
 texture = ExtResource("6_ogre")
 hframes = 5
-vframes = 1
-frame = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(3.46442, 3.48677)
 shape = SubResource("CapsuleShape2D_body")
 
 [node name="HealthComponent" type="Node" parent="."]
@@ -48,6 +47,7 @@ script = ExtResource("3_hurtbox")
 invulnerability_duration = 0.3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]
+scale = Vector2(2.56648, 3.10055)
 shape = SubResource("RectangleShape2D_hurtbox")
 
 [node name="HitboxComponent" type="Area2D" parent="."]
@@ -60,6 +60,7 @@ knockback_force = 300.0
 hitstun_duration = 0.3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
+scale = Vector2(1.65011, 2.9366)
 shape = SubResource("RectangleShape2D_hitbox")
 
 [node name="DetectionArea" type="Area2D" parent="."]
@@ -67,6 +68,7 @@ collision_layer = 0
 collision_mask = 6
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+position = Vector2(0, 23)
 shape = SubResource("CircleShape2D_detection")
 debug_color = Color(0.8, 0.2, 0.2, 0.1)
 

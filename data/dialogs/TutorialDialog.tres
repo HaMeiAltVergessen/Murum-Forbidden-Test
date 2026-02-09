@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="DialogData" load_steps=12 format=3 uid="uid://bn2fffk25a6jd"]
+
+[ext_resource type="Script" uid="uid://dkdprkyi73yrh" path="res://resources/dialog/dialog_entry.gd" id="1_xykv5"]
+[ext_resource type="Script" uid="uid://bv8wy1h236ne5" path="res://resources/dialog/dialog_choice.gd" id="2_gwpjv"]
+[ext_resource type="Texture2D" uid="uid://cpp88cwljuymx" path="res://Assets/AIPlaceholder/Char/Murum/Murum.png" id="3_5jk3a"]
+[ext_resource type="Script" uid="uid://ckftluhf1nt4b" path="res://resources/dialog/dialog_data.gd" id="4_ui12i"]
+
+[sub_resource type="Resource" id="Resource_entry1"]
+script = ExtResource("1_xykv5")
+speaker_name = "Umbra"
+text = "Wieder hier. Weißt du was zu tun ist?"
+text_speed = 30.0
+choices = Array[ExtResource("3_choice")]([])
+
+
+[sub_resource type="Resource" id="Resource_choice1"]
+script = ExtResource("2_gwpjv")
+choice_text = "Schweigen, nicken und Weitergehen"
+response_speaker = ""
+response_text = ""
+next_entries = Array[ExtResource("2_entry")]([])
+
+[sub_resource type="Resource" id="Resource_choice2"]
+script = ExtResource("2_gwpjv")
+choice_text = "Nein, was muss ich wissen?"
+response_speaker = "Umbra"
+response_text = "Du kannst die Steuerung unter Options einstellen. Dein Stabwurf und dein Dash helfen dir auch außerhalb vom Kampf."
+choices = Array[ExtResource("3_choice")]([SubResource("Resource_choice1"), SubResource("Resource_choice2")])
+
+[resource]
+script = ExtResource("4_ui12i")
+dialog_id = "world01rowom01"
+entries = Array[ExtResource("1_xykv5")]([SubResource("Resource_entry1"), SubResource("Resource_entry2"), SubResource("Resource_entry3"), SubResource("Resource_entry4"), SubResource("Resource_entry5")])

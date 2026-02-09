@@ -1,53 +1,51 @@
-[gd_resource type="Resource" script_class="DialogData" load_steps=12 format=3 uid="uid://cworld01room01dialog"]
+[gd_resource type="Resource" script_class="DialogData" load_steps=12 format=3 uid="uid://b3kr0d2ybipxu"]
 
-[ext_resource type="Script" path="res://resources/dialog/dialog_data.gd" id="1_data"]
-[ext_resource type="Script" path="res://resources/dialog/dialog_entry.gd" id="2_entry"]
-[ext_resource type="Script" path="res://resources/dialog/dialog_choice.gd" id="3_choice"]
-[ext_resource type="Texture2D" uid="uid://dmurum_placeholder" path="res://Assets/AIPlaceholder/Char/Murum/Murum.png" id="4_murum"]
+[ext_resource type="Script" uid="uid://ckftluhf1nt4b" path="res://resources/dialog/dialog_data.gd" id="1_data"]
+[ext_resource type="Script" uid="uid://dkdprkyi73yrh" path="res://resources/dialog/dialog_entry.gd" id="2_entry"]
+[ext_resource type="Script" uid="uid://bv8wy1h236ne5" path="res://resources/dialog/dialog_choice.gd" id="3_choice"]
+[ext_resource type="Texture2D" uid="uid://cpp88cwljuymx" path="res://Assets/AIPlaceholder/Char/Murum/Murum.png" id="4_murum"]
 
 [sub_resource type="Resource" id="Resource_entry1"]
 script = ExtResource("2_entry")
 speaker_name = ""
-speaker_sprite = null
 text = "Ein kalter Schatten zieht an deiner Seite entlang. Du spürst eine vertraute Präsenz."
 text_speed = 30.0
-choices = []
+choices = Array[ExtResource("3_choice")]([])
 
 [sub_resource type="Resource" id="Resource_entry2"]
 script = ExtResource("2_entry")
 speaker_name = "Umbra"
-speaker_sprite = null
 text = "Murum... Warum kehrst du zurück? Diese Ruinen sollten für immer hinter dir liegen."
 text_speed = 28.0
-choices = []
+choices = Array[ExtResource("3_choice")]([])
 
 [sub_resource type="Resource" id="Resource_entry3"]
 script = ExtResource("2_entry")
 speaker_name = ""
-speaker_sprite = null
 text = "Du schweigst. Die Worte deines Schattens hallen in der Stille nach."
 text_speed = 30.0
-choices = []
+choices = Array[ExtResource("3_choice")]([])
 
 [sub_resource type="Resource" id="Resource_entry4"]
 script = ExtResource("2_entry")
 speaker_name = "Umbra"
-speaker_sprite = null
 text = "Du weichst aus. Wie immer."
 text_speed = 25.0
-choices = []
+choices = Array[ExtResource("3_choice")]([])
 
 [sub_resource type="Resource" id="Resource_choice1"]
 script = ExtResource("3_choice")
 choice_text = "Schweigen und Weitergehen"
 response_speaker = ""
 response_text = ""
+next_entries = Array[ExtResource("2_entry")]([])
 
 [sub_resource type="Resource" id="Resource_choice2"]
 script = ExtResource("3_choice")
 choice_text = "Umbra, sei still."
 response_speaker = "Umbra"
 response_text = "Meine Stimme ist nur ein Echo deiner verlorenen Gedanken."
+next_entries = Array[ExtResource("2_entry")]([])
 
 [sub_resource type="Resource" id="Resource_entry5"]
 script = ExtResource("2_entry")
@@ -55,9 +53,9 @@ speaker_name = "Murum"
 speaker_sprite = ExtResource("4_murum")
 text = "Es muss immer noch hier sein."
 text_speed = 22.0
-choices = [SubResource("Resource_choice1"), SubResource("Resource_choice2")]
+choices = Array[ExtResource("3_choice")]([SubResource("Resource_choice1"), SubResource("Resource_choice2")])
 
 [resource]
 script = ExtResource("1_data")
 dialog_id = "world01room01"
-entries = [SubResource("Resource_entry1"), SubResource("Resource_entry2"), SubResource("Resource_entry3"), SubResource("Resource_entry4"), SubResource("Resource_entry5")]
+entries = Array[ExtResource("2_entry")]([SubResource("Resource_entry1"), SubResource("Resource_entry2"), SubResource("Resource_entry3"), SubResource("Resource_entry4"), SubResource("Resource_entry5")])

@@ -1,6 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://cdialog_trigger_blueprint"]
+[gd_scene load_steps=3 format=3 uid="uid://dsq3e2nuqwslq"]
 
-[ext_resource type="Script" path="res://environment/interactables/dialog_trigger.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://bie6gp2g5103k" path="res://environment/interactables/dialog_trigger.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://dfak10b7u7i5b" path="res://Assets/Placeholder/Legacy Collection/Assets/Misc/Explosion/sprites/explosion-animation2.png" id="2_ulsjv"]
 
 [node name="DialogTrigger" type="Node2D"]
 script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_ulsjv")

@@ -1,9 +1,9 @@
-[gd_resource type="Resource" script_class="DialogData" load_steps=8 format=3 uid="uid://b4qk7nfr2xgvd"]
+[gd_resource type="Resource" script_class="DialogData" load_steps=11 format=3 uid="uid://b4qk7nfr2xgvd"]
 
-[ext_resource type="Script" path="res://resources/dialog/dialog_data.gd" id="1_data"]
-[ext_resource type="Script" path="res://resources/dialog/dialog_entry.gd" id="2_entry"]
-[ext_resource type="Script" path="res://resources/dialog/dialog_choice.gd" id="3_choice"]
-[ext_resource type="Texture2D" path="res://assets/placeholders/placeholder_character.png" id="4_sprite"]
+[ext_resource type="Script" uid="uid://ckftluhf1nt4b" path="res://resources/dialog/dialog_data.gd" id="1_data"]
+[ext_resource type="Script" uid="uid://dkdprkyi73yrh" path="res://resources/dialog/dialog_entry.gd" id="2_entry"]
+[ext_resource type="Script" uid="uid://bv8wy1h236ne5" path="res://resources/dialog/dialog_choice.gd" id="3_choice"]
+[ext_resource type="Texture2D" uid="uid://cxxxc5clrclva" path="res://assets/placeholders/placeholder_character.png" id="4_sprite"]
 
 [sub_resource type="Resource" id="Resource_entry1"]
 script = ExtResource("2_entry")
@@ -11,27 +11,35 @@ speaker_name = "Mysteriöser Händler"
 speaker_sprite = ExtResource("4_sprite")
 text = "Willkommen, Reisender. Du siehst aus, als hättest du einen weiten Weg hinter dir."
 text_speed = 35.0
-choices = []
+choices = Array[ExtResource("3_choice")]([])
 
 [sub_resource type="Resource" id="Resource_entry2"]
 script = ExtResource("2_entry")
 speaker_name = ""
-speaker_sprite = null
 text = "Der Händler mustert dich mit durchdringendem Blick. Etwas an ihm scheint nicht ganz... menschlich."
 text_speed = 30.0
-choices = []
+choices = Array[ExtResource("3_choice")]([])
 
 [sub_resource type="Resource" id="Resource_choice1"]
 script = ExtResource("3_choice")
 choice_text = "Wer seid Ihr?"
+response_speaker = ""
+response_text = ""
+next_entries = Array[ExtResource("2_entry")]([])
 
 [sub_resource type="Resource" id="Resource_choice2"]
 script = ExtResource("3_choice")
 choice_text = "Was verkauft Ihr?"
+response_speaker = ""
+response_text = ""
+next_entries = Array[ExtResource("2_entry")]([])
 
 [sub_resource type="Resource" id="Resource_choice3"]
 script = ExtResource("3_choice")
 choice_text = "[Weggehen]"
+response_speaker = ""
+response_text = ""
+next_entries = Array[ExtResource("2_entry")]([])
 
 [sub_resource type="Resource" id="Resource_entry3"]
 script = ExtResource("2_entry")
@@ -39,9 +47,9 @@ speaker_name = "Mysteriöser Händler"
 speaker_sprite = ExtResource("4_sprite")
 text = "Ich habe viele Namen... aber das ist unwichtig. Wichtiger ist, was du suchst."
 text_speed = 30.0
-choices = [SubResource("Resource_choice1"), SubResource("Resource_choice2"), SubResource("Resource_choice3")]
+choices = Array[ExtResource("3_choice")]([SubResource("Resource_choice1"), SubResource("Resource_choice2"), SubResource("Resource_choice3")])
 
 [resource]
 script = ExtResource("1_data")
 dialog_id = "test_dialog"
-entries = [SubResource("Resource_entry1"), SubResource("Resource_entry2"), SubResource("Resource_entry3")]
+entries = Array[ExtResource("2_entry")]([SubResource("Resource_entry1"), SubResource("Resource_entry2"), SubResource("Resource_entry3")])
