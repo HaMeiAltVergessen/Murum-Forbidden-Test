@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="CharacterData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://resources/dialog/character_data.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://blh57lb00l77x" path="res://Assets/AIPlaceholder/Char/Lythrun/Lythrun.png" id="2_sprite"]
+
+[resource]
+script = ExtResource("1_script")
+character_name = "Lythrun"
+default_sprite = ExtResource("2_sprite")
+mood_sprites = {}

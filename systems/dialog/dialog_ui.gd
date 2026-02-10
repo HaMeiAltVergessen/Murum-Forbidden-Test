@@ -68,14 +68,15 @@ func _input(event: InputEvent) -> void:
 			advance_requested.emit()
 
 
-func show_entry(entry: DialogEntry) -> void:
+func show_entry(entry: DialogEntry, resolved_sprite: Texture2D = null) -> void:
 	current_entry = entry
 	current_state_is_choosing = false
 	print("[DialogUI] show_entry called - speaker: ", entry.speaker_name)
 
-	# Character sprite
-	if entry.speaker_sprite:
-		character_sprite.texture = entry.speaker_sprite
+	# Character sprite - resolved_sprite kommt vom DialogManager (Registry + Override)
+	var sprite_to_show: Texture2D = resolved_sprite
+	if sprite_to_show:
+		character_sprite.texture = sprite_to_show
 		character_sprite.visible = true
 	else:
 		character_sprite.visible = false
@@ -167,7 +168,7 @@ func _clear_choices() -> void:
 	choices_container.visible = false
 
 
-func show_response(speaker: String, text: String) -> void:
+func show_response(speaker: String, text: String, resolved_sprite: Texture2D = null) -> void:
 	current_state_is_choosing = false
 	_clear_choices()
 
@@ -178,8 +179,12 @@ func show_response(speaker: String, text: String) -> void:
 		speaker_label.text = speaker
 		speaker_label.visible = true
 
-	# No sprite for responses
-	character_sprite.visible = false
+	# Character sprite fuer Responses (aus Registry aufgeloest)
+	if resolved_sprite:
+		character_sprite.texture = resolved_sprite
+		character_sprite.visible = true
+	else:
+		character_sprite.visible = false
 
 	# Setup text for typewriter
 	full_text = text
