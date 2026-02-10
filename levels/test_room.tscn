@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=3 uid="uid://dbvhxpr5y6bww"]
+[gd_scene load_steps=45 format=3 uid="uid://dbvhxpr5y6bww"]
 
 [ext_resource type="Script" uid="uid://cc2sp6gtbqbnh" path="res://levels/test_room.gd" id="1_test_room_script"]
 [ext_resource type="Texture2D" uid="uid://q47f0nofwgxj" path="res://Assets/AIAssets/11a02050-3ac3-4fdb-9da2-f063590399d3.jpg" id="2_lapnv"]
@@ -37,6 +37,7 @@
 [ext_resource type="PackedScene" path="res://puzzles/scenes/components/timed_door.tscn" id="24_timed_door"]
 [ext_resource type="PackedScene" path="res://puzzles/scenes/master_puzzle_door.tscn" id="25_master_door"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="26_pass_through"]
+[ext_resource type="PackedScene" path="res://environment/interactables/climbable_area.tscn" id="27_climbable"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_floor"]
 texture_region_size = Vector2i(32, 32)
@@ -347,6 +348,20 @@ position = Vector2(832, 740)
 
 [node name="Tier3" parent="PassThroughPlatforms" instance=ExtResource("26_pass_through")]
 position = Vector2(832, 610)
+
+[node name="ClimbableAreas" type="Node2D" parent="."]
+
+[node name="TestLadder" parent="ClimbableAreas" instance=ExtResource("27_climbable")]
+position = Vector2(340, 744)
+climb_speed = 200.0
+area_height = 256.0
+
+[node name="TestStaircase" parent="ClimbableAreas" instance=ExtResource("27_climbable")]
+position = Vector2(1140, 494)
+climbable_type = 1
+climb_speed = 250.0
+area_height = 512.0
+visual_color = Color(0.4, 0.4, 0.5, 0.4)
 
 [node name="DeathScreen" parent="." instance=ExtResource("8_death_screen_scene")]
 

@@ -40,11 +40,13 @@ func _process(_delta: float) -> void:
 func _update_animation_state() -> void:
 	var new_animation: String = "idle"
 
-	# Priority: Attack > Dash > Jump/Fall > Walk > Idle
+	# Priority: Attack > Dash > Climbing > Jump/Fall > Walk > Idle
 	if is_attacking:
 		new_animation = "attack"
 	elif movement_controller and movement_controller.is_dashing:
 		new_animation = "dash"
+	elif movement_controller and movement_controller.is_climbing:
+		new_animation = "climb"
 	elif not player.is_on_floor():
 		if player.velocity.y < 0:
 			new_animation = "jump"
