@@ -45,6 +45,8 @@ func _update_animation_state() -> void:
 		new_animation = "ultimate"
 	elif "void_rift_active" in player and player.void_rift_active:
 		new_animation = "special_1"
+	elif movement_controller and movement_controller.is_climbing:
+		new_animation = "climb"
 	elif not player.is_on_floor():
 		if player.velocity.y < -100:
 			new_animation = "jump"

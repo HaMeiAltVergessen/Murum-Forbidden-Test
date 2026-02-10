@@ -54,6 +54,10 @@ var crouch_speed_multiplier: float = 0.5
 # ============ HOVER STATE (for Ende der Schwerkraft) ============
 var is_hovering: bool = false  # When true, gravity is disabled
 
+# ============ CLIMBING STATE ============
+var is_climbing: bool = false
+var current_climbable: Node = null  # Referenz zur ClimbableArea in der sich der Spieler befindet
+
 
 func _ready() -> void:
 	if not player:
@@ -114,6 +118,40 @@ func _get_input_axis(negative: String, positive: String) -> float:
 		return 0.0
 
 
+# ============ CLIMBING INPUT ============
+func _get_climb_direction() -> float:
+	"""Gibt vertikale Kletter-Richtung zurueck: negativ = hoch, positiv = runter, 0 = nichts.
+	Liest Eingabe direkt (keine neuen Input-Actions noetig, vermeidet S-Key/Wolkenbruch-Konflikt)."""
+	var direction: float = 0.0
+
+	if controller_device_id >= 0:
+		# P2: Controller-Stick Y-Achse ueber InputManager
+		var vec = InputManager.get_p2_input_vector() if InputManager else Vector2.ZERO
+		direction = vec.y
+	else:
+		# P1: Abhaengig vom Modus
+		if InputManager and InputManager.p2_active:
+			# Co-op Modus: InputManager liest W/S als Raw-Keys (input_manager.gd Zeile 306-309)
+			direction = InputManager.get_p1_input_vector().y
+		else:
+			# Solo Modus: W/S direkt lesen (p1_input_vector nutzt jump/crouch fuer Y-Achse)
+			if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
+				direction -= 1.0
+			if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
+				direction += 1.0
+			# Controller-Stick (Device 0) fuer Solo P1 mit Gamepad
+			var stick_y = Input.get_joy_axis(0, JOY_AXIS_LEFT_Y)
+			if abs(stick_y) > 0.2:
+				direction = stick_y
+
+	# Crouch-Taste als alternative Runter-Eingabe
+	var crouch_action = input_prefix + "crouch"
+	if _is_action_pressed(crouch_action):
+		direction = max(direction, 0.5)
+
+	return clamp(direction, -1.0, 1.0)
+
+
 func _physics_process(delta: float) -> void:
 	# CRITICAL: Check for NaN position at start of every frame
 	if is_nan(player.global_position.x) or is_nan(player.global_position.y):
@@ -127,6 +165,16 @@ func _physics_process(delta: float) -> void:
 	if is_dashing:
 		_process_dash(delta)
 		return
+
+	if is_climbing:
+		_process_climbing(delta)
+		player.move_and_slide()
+		if is_nan(player.global_position.x) or is_nan(player.global_position.y):
+			player.global_position = Vector2(0, 300)
+			player.velocity = Vector2.ZERO
+		return
+
+	_process_climb_enter()
 
 	_process_gravity(delta)
 	_process_coyote_time(delta)
@@ -271,6 +319,10 @@ func _process_gravity(delta: float) -> void:
 	if is_hovering:
 		# Keep player suspended at current height (stop vertical movement)
 		player.velocity.y = 0.0
+		return
+
+	# Skip gravity if climbing (Sicherheitsnetz, climbing hat eigenen early-return)
+	if is_climbing:
 		return
 
 	if not player.is_on_floor():
@@ -498,6 +550,87 @@ func _perform_edge_climb(target_position: Vector2) -> void:
 
 	print("[Movement] Edge climb to position: ", target_position)
 	# AudioManager.play_sfx("edge_climb")  # Uncomment when audio added
+
+
+# ============ CLIMBING SYSTEM ============
+func _process_climb_enter() -> void:
+	"""Prueft ob der Spieler mit dem Klettern beginnen soll."""
+	if not current_climbable:
+		return
+
+	var climb_dir = _get_climb_direction()
+	if abs(climb_dir) > 0.1:
+		start_climbing()
+
+
+func start_climbing() -> void:
+	"""Klettern starten."""
+	if is_climbing or not current_climbable:
+		return
+
+	is_climbing = true
+	player.velocity = Vector2.ZERO
+	jumps_used = 0
+
+	if is_crouching:
+		_end_crouch()
+
+
+func stop_climbing() -> void:
+	"""Klettern beenden."""
+	if not is_climbing:
+		return
+
+	is_climbing = false
+	jumps_used = 0
+
+
+func _process_climbing(delta: float) -> void:
+	"""Bewegung waehrend des Kletterns. Ersetzt die normale Bewegungs-Pipeline."""
+	if not current_climbable:
+		stop_climbing()
+		return
+
+	var climb_speed: float = current_climbable.climb_speed
+	var climb_dir: float = _get_climb_direction()
+
+	# Vertikale Bewegung (negativ = hoch in Godot 2D)
+	player.velocity.y = climb_dir * climb_speed
+
+	# Reduzierte horizontale Bewegung (30%) waehrend des Kletterns
+	var move_left_action = input_prefix + "move_left"
+	var move_right_action = input_prefix + "move_right"
+	var h_input: float = _get_input_axis(move_left_action, move_right_action)
+	player.velocity.x = h_input * (move_speed * 0.3)
+
+	if h_input > 0:
+		facing_right = true
+	elif h_input < 0:
+		facing_right = false
+
+	# --- EXIT-BEDINGUNGEN ---
+
+	# 1. Abspringen von der Leiter
+	var jump_action = input_prefix + "jump"
+	if _is_action_just_pressed(jump_action):
+		_jump_off_ladder()
+		return
+
+	# 2. Am Boden angekommen und nach unten kletternd oder kein Input
+	if player.is_on_floor() and climb_dir >= -0.1:
+		stop_climbing()
+		return
+
+
+func _jump_off_ladder() -> void:
+	"""Spieler springt von der Leiter ab."""
+	stop_climbing()
+	player.velocity.y = jump_velocity
+	jumps_used = 1
+	coyote_timer = 0.0
+
+	if jump_sfx:
+		jump_sfx.play()
 
 
 # ============ DASH SYSTEM ============
