@@ -77,10 +77,10 @@ vertical_alignment = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -150.0
-offset_top = 20.0
-offset_right = -20.0
-offset_bottom = 50.0
+offset_left = -1927.0
+offset_top = 1037.0
+offset_right = -1797.0
+offset_bottom = 1071.0
 grow_horizontal = 0
 theme_override_font_sizes/font_size = 24
 text = "Gold: 0"
@@ -92,6 +92,7 @@ vertical_alignment = 1
 [node name="WaveIndicator" parent="." instance=ExtResource("5_wave_indicator")]
 
 [node name="AirComboDisplay" parent="." instance=ExtResource("6_air_combo_display")]
+visible = false
 
 [node name="ReboundIndicator" parent="." instance=ExtResource("7_rebound_indicator")]
 

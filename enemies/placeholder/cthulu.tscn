@@ -1,9 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://cthulu_001"]
+[gd_scene load_steps=3 format=3 uid="uid://dmlqfkn08pb4u"]
 
 [ext_resource type="PackedScene" uid="uid://bhjxv6dwpb3ya" path="res://enemies/base_enemy.tscn" id="1_base"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Gegner/free_cthulu_v1/free_cthulu/animations/cthulu_192x112_SpriteSheet.png" id="2_sprite"]
+[ext_resource type="Texture2D" uid="uid://r1k3vdhxonp6" path="res://Assets/Placeholder/Gegner/free_cthulu_v1/free_cthulu/animations/cthulu_192x112_SpriteSheet.png" id="2_sprite"]
 
 [node name="Cthulu" instance=ExtResource("1_base")]
+scale = Vector2(3.65184, 3.65184)
 max_health = 120
 move_speed = 55.0
 attack_damage = 35
@@ -11,8 +12,8 @@ attack_range = 90.0
 detection_range = 400.0
 
 [node name="Sprite2D" parent="." index="0"]
+position = Vector2(24.0975, -1.09534)
+scale = Vector2(1.5, 1.5)
 texture = ExtResource("2_sprite")
 hframes = 13
 vframes = 6
-frame = 0
-scale = Vector2(1.5, 1.5)

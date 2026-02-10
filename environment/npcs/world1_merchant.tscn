@@ -6,3 +6,6 @@
 merchant_name = "Dorfhändler"
 greeting = "Die Arena überlebt... beeindruckend."
 shop_data_path = "res://data/shops/world1_village.json"
+
+[node name="Sprite2D" parent="." index="0"]
+flip_h = true

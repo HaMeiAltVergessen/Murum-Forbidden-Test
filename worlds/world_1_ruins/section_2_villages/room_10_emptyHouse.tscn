@@ -1,10 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://bca6k63g4i87m"]
+[gd_scene load_steps=10 format=3 uid="uid://bca6k63g4i87m"]
 
 [ext_resource type="Texture2D" uid="uid://cuimle8ymyug4" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_Dorf/Create_a_single_high-resolutio_GPT_Image_15_99523.jpg" id="1_2gyx4"]
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="2_ku8ro"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="3_0ejyf"]
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="4_w04yt"]
 [ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="5_87nw0"]
+[ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="6_ku8ro"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1550, 80)
@@ -15,7 +16,7 @@ size = Vector2(228, 1475)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_deathbox"]
 size = Vector2(1691, 200)
 
-[node name="Ausblick" type="Node2D"]
+[node name="AbondendHouse" type="Node2D"]
 
 [node name="ColorRect" type="ColorRect" parent="."]
 z_index = -4
@@ -30,14 +31,17 @@ z_index = -3
 position = Vector2(767, 256)
 texture = ExtResource("1_2gyx4")
 
-[node name="TileMap" type="TileMap" parent="."]
-format = 2
-
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(0, 640)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
 position = Vector2(606, -253)
+scale = Vector2(0.474315, 1.05378)
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="Ground"]
+position = Vector2(1062, -38)
+rotation = -0.342471
 scale = Vector2(0.474315, 1.05378)
 shape = SubResource("RectangleShape2D_ground")
 
@@ -91,7 +95,7 @@ facing_direction = -1
 [node name="Doors" type="Node2D" parent="."]
 
 [node name="DoorToTestRoom" parent="Doors" instance=ExtResource("4_w04yt")]
-position = Vector2(833, 152)
+position = Vector2(873, 65)
 target_scene = "res://worlds/world_1_ruins/section_2_villages/room_05_inn.tscn"
 spawn_position = Vector2(50, 0)
 
@@ -99,3 +103,6 @@ spawn_position = Vector2(50, 0)
 
 [node name="DialogTrigger" parent="." instance=ExtResource("5_87nw0")]
 position = Vector2(693, 599)
+
+[node name="ClimbableArea" parent="." instance=ExtResource("6_ku8ro")]
+position = Vector2(856, 113)

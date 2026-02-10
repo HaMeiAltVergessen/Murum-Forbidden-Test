@@ -1,7 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://golem_001"]
+[gd_scene load_steps=3 format=3 uid="uid://1cy58rjaliol"]
 
 [ext_resource type="PackedScene" uid="uid://bhjxv6dwpb3ya" path="res://enemies/base_enemy.tscn" id="1_base"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Gegner/Golems_Free_Version/Golems_Free_Version/Golem_1/Blue/No_Swoosh_VFX/Golem_1_walk.png" id="2_sprite"]
+[ext_resource type="Texture2D" uid="uid://bvwebh7luprpv" path="res://Assets/Placeholder/Gegner/Golems_Free_Version/Golems_Free_Version/Golem_1/Blue/No_Swoosh_VFX/Golem_1_walk.png" id="2_sprite"]
 
 [node name="Golem" instance=ExtResource("1_base")]
 max_health = 100
@@ -11,8 +11,10 @@ attack_range = 70.0
 detection_range = 250.0
 
 [node name="Sprite2D" parent="." index="0"]
+position = Vector2(-10, -16)
+scale = Vector2(2, 2)
 texture = ExtResource("2_sprite")
 hframes = 12
-vframes = 1
-frame = 0
-scale = Vector2(2.0, 2.0)
+
+[node name="CollisionShape2D" parent="DetectionArea" index="0"]
+position = Vector2(3, -6)

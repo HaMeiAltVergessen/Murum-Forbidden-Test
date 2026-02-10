@@ -40,7 +40,8 @@ shape = SubResource("CapsuleShape2D_player")
 
 [node name="MovementController" type="Node" parent="."]
 script = ExtResource("2_movement")
-move_speed = 1500.0
+move_speed = 800.0
+gravity = 1600.0
 dash_distance = 800.0
 
 [node name="HealthComponent" type="Node" parent="."]

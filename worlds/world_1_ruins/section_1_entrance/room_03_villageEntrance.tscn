@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://dq7m4n8x3vspt"]
+[gd_scene load_steps=14 format=3 uid="uid://dq7m4n8x3vspt"]
 
 [ext_resource type="Texture2D" uid="uid://ddshbf3nio6lw" path="res://Assets/AIAssets/8d33fd80-90de-40ba-a387-b68c6792874b.jpg" id="2_pdr4c"]
 [ext_resource type="Script" uid="uid://dyw6qr3x50uyq" path="res://worlds/wave_spawner.gd" id="2_wave_spawner"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="4_door"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="5_spawn"]
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="6_deathbox"]
+[ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="9_7s7xw"]
 [ext_resource type="PackedScene" path="res://enemies/world_1_ruins/hermit.tscn" id="10_hermit"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
@@ -138,19 +139,9 @@ target_scene = "res://worlds/world_1_ruins/section_1_entrance/room_02_corridor.t
 spawn_position = Vector2(1130, 600)
 
 [node name="DoorToRoom04" parent="Doors" instance=ExtResource("4_door")]
-position = Vector2(669, 416)
+position = Vector2(666, 386)
 target_scene = "res://worlds/world_1_ruins/section_4_tempel/room_12_grand_hall.tscn"
-spawn_position = Vector2(200, 750)
-
-[node name="DoorLabel" type="Label" parent="Doors/DoorToRoom04"]
-offset_left = -40.0
-offset_top = -60.0
-offset_right = 40.0
-offset_bottom = -30.0
-theme_override_colors/font_color = Color(0.5, 1, 0.5, 1)
-theme_override_font_sizes/font_size = 14
-text = "Hub"
-horizontal_alignment = 1
+spawn_position = Vector2(0, -500)
 
 [node name="PlayerSpawns" type="Node2D" parent="."]
 
@@ -165,4 +156,9 @@ facing_direction = -1
 position = Vector2(800, 780)
 
 [node name="Hermit" parent="." instance=ExtResource("10_hermit")]
-position = Vector2(1086, 624)
+position = Vector2(2177, 613)
+
+[node name="ClimbableArea2" parent="." instance=ExtResource("9_7s7xw")]
+position = Vector2(597, 424)
+area_width = 222.0
+area_height = 1200.0

@@ -1,6 +1,13 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=2 format=3 uid="uid://b6uvhk5o3fkdx"]
 
-[ext_resource type="Script" path="res://environment/interactables/climbable_area.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://b0gxlcrry6ft0" path="res://environment/interactables/climbable_area.gd" id="1_script"]
 
 [node name="ClimbableArea" type="Area2D"]
 script = ExtResource("1_script")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -75.0
+offset_top = -76.0
+offset_right = 76.0
+offset_bottom = 86.0
+color = Color(0.364706, 1, 0.239216, 0.407843)

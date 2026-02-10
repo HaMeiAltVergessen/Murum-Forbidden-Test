@@ -37,7 +37,7 @@
 [ext_resource type="PackedScene" path="res://puzzles/scenes/components/timed_door.tscn" id="24_timed_door"]
 [ext_resource type="PackedScene" path="res://puzzles/scenes/master_puzzle_door.tscn" id="25_master_door"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="26_pass_through"]
-[ext_resource type="PackedScene" path="res://environment/interactables/climbable_area.tscn" id="27_climbable"]
+[ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="27_climbable"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_floor"]
 texture_region_size = Vector2i(32, 32)
@@ -353,8 +353,6 @@ position = Vector2(832, 610)
 
 [node name="TestLadder" parent="ClimbableAreas" instance=ExtResource("27_climbable")]
 position = Vector2(340, 744)
-climb_speed = 200.0
-area_height = 256.0
 
 [node name="TestStaircase" parent="ClimbableAreas" instance=ExtResource("27_climbable")]
 position = Vector2(1140, 494)
@@ -369,4 +367,3 @@ visual_color = Color(0.4, 0.4, 0.5, 0.4)
 position = Vector2(960, 540)
 
 [node name="SplitScreenManager" parent="." instance=ExtResource("12_split_screen")]
-visible = false

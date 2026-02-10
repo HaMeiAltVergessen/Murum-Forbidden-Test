@@ -1,11 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://p1_abilities"]
+[gd_scene load_steps=2 format=3 uid="uid://cy2qrsolcx0kc"]
 
-[ext_resource type="Script" path="res://ui/hud/p1_abilities.gd" id="1_p1_abilities"]
+[ext_resource type="Script" uid="uid://bnokruqxxw7he" path="res://ui/hud/p1_abilities.gd" id="1_p1_abilities"]
 
 [node name="P1Abilities" type="CanvasLayer"]
+visible = false
 script = ExtResource("1_p1_abilities")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
+visible = false
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
@@ -18,14 +20,17 @@ theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+visible = false
 layout_mode = 2
 theme_override_constants/separation = 15
 
 [node name="DashAbility" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
+visible = false
 custom_minimum_size = Vector2(80, 80)
 layout_mode = 2
 
 [node name="AbilityContent" type="MarginContainer" parent="MarginContainer/VBoxContainer/DashAbility"]
+visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 5
 theme_override_constants/margin_top = 5
@@ -33,28 +38,32 @@ theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
 [node name="VBox" type="VBoxContainer" parent="MarginContainer/VBoxContainer/DashAbility/AbilityContent"]
+visible = false
 layout_mode = 2
 
 [node name="IconLabel" type="Label" parent="MarginContainer/VBoxContainer/DashAbility/AbilityContent/VBox"]
+visible = false
 layout_mode = 2
 text = "⚡"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/DashAbility/AbilityContent/VBox"]
+visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 10
 text = "Dash"
 horizontal_alignment = 1
 
 [node name="TimerLabel" type="Label" parent="MarginContainer/VBoxContainer/DashAbility/AbilityContent/VBox"]
+visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = ""
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="StaffAbility" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
+visible = false
 custom_minimum_size = Vector2(80, 80)
 layout_mode = 2
 
@@ -83,7 +92,6 @@ horizontal_alignment = 1
 [node name="TimerLabel" type="Label" parent="MarginContainer/VBoxContainer/StaffAbility/AbilityContent/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = ""
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -116,7 +124,6 @@ horizontal_alignment = 1
 [node name="TimerLabel" type="Label" parent="MarginContainer/VBoxContainer/ParryAbility/AbilityContent/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = ""
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -149,7 +156,6 @@ horizontal_alignment = 1
 [node name="TimerLabel" type="Label" parent="MarginContainer/VBoxContainer/MachtstossAbility/AbilityContent/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = ""
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -182,7 +188,6 @@ horizontal_alignment = 1
 [node name="TimerLabel" type="Label" parent="MarginContainer/VBoxContainer/UrteilAbility/AbilityContent/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = ""
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -215,6 +220,5 @@ horizontal_alignment = 1
 [node name="TimerLabel" type="Label" parent="MarginContainer/VBoxContainer/EchoAbility/AbilityContent/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = ""
 horizontal_alignment = 1
 vertical_alignment = 1

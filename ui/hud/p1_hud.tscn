@@ -162,6 +162,7 @@ func update_mana_bar() -> void:
 "
 
 [node name="P1HUD" type="CanvasLayer"]
+visible = false
 script = SubResource("GDScript_7haap")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]

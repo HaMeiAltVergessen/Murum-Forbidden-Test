@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://room04hub"]
+[gd_scene load_steps=13 format=3 uid="uid://room04hub"]
 
 [ext_resource type="Script" uid="uid://bt81ajh4hcw44" path="res://worlds/world_1_ruins/section_2_villages/room_04_village_square.gd" id="1_room04"]
 [ext_resource type="PackedScene" uid="uid://c2nx5q8v4kmpr" path="res://environment/checkpoint.tscn" id="2_checkpoint"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://b1w31ir4mmx8m" path="res://environment/npcs/world1_merchant.tscn" id="4_merchant"]
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="5_deathbox"]
 [ext_resource type="PackedScene" uid="uid://da6c5l414ki8w" path="res://environment/pickups/gold_coin.tscn" id="6_goldcoin"]
+[ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="9_q1kna"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1890, 80)
@@ -87,7 +88,7 @@ text = "Arena"
 horizontal_alignment = 1
 
 [node name="DoorToItemRoom" parent="Doors" instance=ExtResource("3_door")]
-position = Vector2(1202, 760)
+position = Vector2(1831, 178)
 target_scene = "res://levels/item_room.tscn"
 
 [node name="DoorLabel" type="Label" parent="Doors/DoorToItemRoom"]
@@ -101,13 +102,14 @@ text = "Item Room"
 horizontal_alignment = 1
 
 [node name="Door" parent="Doors" instance=ExtResource("3_door")]
-position = Vector2(986, 750)
+position = Vector2(993, 671)
 target_scene = "res://worlds/world_1_ruins/section_4_tempel/room_15_boss_urgathon.tscn"
+spawn_position = Vector2(0, 0)
 
 [node name="Objects" type="Node2D" parent="."]
 
 [node name="Checkpoint" parent="Objects" instance=ExtResource("2_checkpoint")]
-position = Vector2(655, 766)
+position = Vector2(690, 750)
 checkpoint_id = "world_1_ruins/room_04_hub/Checkpoint"
 
 [node name="MoneyBag" parent="Objects" instance=ExtResource("6_goldcoin")]
@@ -115,11 +117,6 @@ position = Vector2(808, 764)
 scale = Vector2(2.20031, 1.72184)
 gold_value = 500
 pickup_radius = 80.0
-
-[node name="NPCs" type="Node2D" parent="."]
-
-[node name="Merchant" parent="NPCs" instance=ExtResource("4_merchant")]
-position = Vector2(1509, 770)
 
 [node name="SpawnPoints" type="Node2D" parent="."]
 
@@ -132,3 +129,10 @@ stream = ExtResource("4_ccilu")
 volume_db = -4.0
 autoplay = true
 parameters/looping = false
+
+[node name="ClimbableArea" parent="." instance=ExtResource("9_q1kna")]
+position = Vector2(993, 662)
+
+[node name="Merchant" parent="." instance=ExtResource("4_merchant")]
+position = Vector2(1234, 691)
+scale = Vector2(1.17108, 1.25211)
