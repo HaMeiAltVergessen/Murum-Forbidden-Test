@@ -1,13 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://merchant_base"]
+[gd_scene load_steps=4 format=3 uid="uid://d2punji8ii1k3"]
 
-[ext_resource type="Script" path="res://environment/npcs/merchant.gd" id="1_merchant"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Lythrun/Free-City-Trader-Character-Sprite-Sheets-Pixel-Art/Trader_1/Idle.png" id="2_trader"]
+[ext_resource type="Script" uid="uid://bjvolr6g2uf8e" path="res://environment/npcs/merchant.gd" id="1_merchant"]
+[ext_resource type="Texture2D" uid="uid://dp3s4e7sabowq" path="res://Assets/Placeholder/Lythrun/Free-City-Trader-Character-Sprite-Sheets-Pixel-Art/Trader_1/Idle.png" id="2_trader"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_interaction"]
 radius = 80.0
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_merchant"]
-radius = 20.0
 
 [node name="Merchant" type="CharacterBody2D"]
 collision_layer = 0
@@ -15,11 +12,9 @@ collision_mask = 0
 script = ExtResource("1_merchant")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(2.0, 2.0)
+scale = Vector2(2, 2)
 texture = ExtResource("2_trader")
 hframes = 6
-vframes = 1
-frame = 0
 
 [node name="InteractionArea" type="Area2D" parent="."]
 collision_layer = 0

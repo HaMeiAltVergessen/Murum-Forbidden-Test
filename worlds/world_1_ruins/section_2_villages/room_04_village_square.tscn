@@ -2,10 +2,10 @@
 
 [ext_resource type="Script" uid="uid://bt81ajh4hcw44" path="res://worlds/world_1_ruins/section_2_villages/room_04_village_square.gd" id="1_room04"]
 [ext_resource type="PackedScene" uid="uid://c2nx5q8v4kmpr" path="res://environment/checkpoint.tscn" id="2_checkpoint"]
-[ext_resource type="Texture2D" uid="uid://dftu0634otf66" path="res://Assets/AIAssets/c7df7238-2e2f-4627-a438-f87cf6ed1b3c.jpg" id="2_lwg8g"]
+[ext_resource type="Texture2D" uid="uid://cotqw6ypcpuhh" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_TempelUnten/prebossroombackground.png" id="2_vymgf"]
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="3_door"]
 [ext_resource type="AudioStream" uid="uid://dxuqv3ffmx07a" path="res://Music/Welt 01 Boss Build Up.mp3" id="4_ccilu"]
-[ext_resource type="PackedScene" path="res://environment/npcs/world1_merchant.tscn" id="4_merchant"]
+[ext_resource type="PackedScene" uid="uid://b1w31ir4mmx8m" path="res://environment/npcs/world1_merchant.tscn" id="4_merchant"]
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="5_deathbox"]
 [ext_resource type="PackedScene" uid="uid://da6c5l414ki8w" path="res://environment/pickups/gold_coin.tscn" id="6_goldcoin"]
 
@@ -25,7 +25,7 @@ script = ExtResource("1_room04")
 z_index = -3
 position = Vector2(966.4, 533.9)
 scale = Vector2(1.26771, 1.08574)
-texture = ExtResource("2_lwg8g")
+texture = ExtResource("2_vymgf")
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(0, 820)
@@ -86,21 +86,6 @@ theme_override_font_sizes/font_size = 14
 text = "Arena"
 horizontal_alignment = 1
 
-[node name="DoorToBoss" parent="Doors" instance=ExtResource("3_door")]
-position = Vector2(981, 750)
-target_scene = "res://worlds/world_1_ruins/section_4_tempel/room_12_grand_hall.tscn"
-spawn_position = Vector2(240, 60)
-
-[node name="DoorLabel" type="Label" parent="Doors/DoorToBoss"]
-offset_left = -60.0
-offset_top = -80.0
-offset_right = 60.0
-offset_bottom = -50.0
-theme_override_colors/font_color = Color(0.6, 0.3, 0.3, 1)
-theme_override_font_sizes/font_size = 14
-text = "SEALED"
-horizontal_alignment = 1
-
 [node name="DoorToItemRoom" parent="Doors" instance=ExtResource("3_door")]
 position = Vector2(1202, 760)
 target_scene = "res://levels/item_room.tscn"
@@ -114,6 +99,10 @@ theme_override_colors/font_color = Color(0.8, 0.7, 0.3, 1)
 theme_override_font_sizes/font_size = 14
 text = "Item Room"
 horizontal_alignment = 1
+
+[node name="Door" parent="Doors" instance=ExtResource("3_door")]
+position = Vector2(986, 750)
+target_scene = "res://worlds/world_1_ruins/section_4_tempel/room_15_boss_urgathon.tscn"
 
 [node name="Objects" type="Node2D" parent="."]
 

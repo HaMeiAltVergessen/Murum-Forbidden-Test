@@ -1,10 +1,10 @@
-[gd_resource type="Resource" script_class="CharacterData" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="CharacterData" load_steps=3 format=3 uid="uid://dgug25itqtsag"]
 
-[ext_resource type="Script" path="res://resources/dialog/character_data.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://cpp88cwljuymx" path="res://Assets/AIPlaceholder/Char/Murum/Murum.png" id="2_sprite"]
+[ext_resource type="Texture2D" uid="uid://b4trq1q87eagb" path="res://Assets/AIPlaceholder/Char/Murum/Murum02.png" id="1_e0av7"]
+[ext_resource type="Script" uid="uid://cnrka8f0kac75" path="res://resources/dialog/character_data.gd" id="1_script"]
 
 [resource]
 script = ExtResource("1_script")
 character_name = "Murum"
-default_sprite = ExtResource("2_sprite")
+default_sprite = ExtResource("1_e0av7")
 mood_sprites = {}

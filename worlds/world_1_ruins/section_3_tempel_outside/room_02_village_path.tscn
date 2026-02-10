@@ -1,10 +1,11 @@
-[gd_scene load_steps=12 format=3 uid="uid://m0u6rac3v1x1"]
+[gd_scene load_steps=13 format=3 uid="uid://m0u6rac3v1x1"]
 
 [ext_resource type="Script" uid="uid://b2bxf8ao4fvsh" path="res://worlds/arena_controller.gd" id="1_mcmpb"]
 [ext_resource type="Texture2D" uid="uid://cff75ben07ww3" path="res://Assets/AIAssets/2444b311-a428-4213-9ced-133f36c01b38.jpg" id="7_c2juv"]
 [ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="8_7f70n"]
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="8_mr3c6"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="9_gabol"]
+[ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="9_tk5nk"]
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="10_m88hh"]
 [ext_resource type="PackedScene" uid="uid://cakx4m2v7pqrs" path="res://environment/interactables/lever.tscn" id="11_qk3q1"]
 [ext_resource type="Texture2D" uid="uid://hkgpumhc6msp" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_PreDorf/Create_detailed_2D_foreground__Nano_Banana_86465.jpg" id="12_mcmpb"]
@@ -20,6 +21,12 @@ size = Vector2(4735, 200)
 
 [node name="Room2Pathtovillage" type="Node2D"]
 script = ExtResource("1_mcmpb")
+
+[node name="CreateDetailed2dForegroundNanoBanana86465" type="Sprite2D" parent="."]
+z_index = -3
+position = Vector2(791, 277)
+scale = Vector2(1.89063, 1.68269)
+texture = ExtResource("12_mcmpb")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 z_index = -4
@@ -68,18 +75,6 @@ shape = SubResource("RectangleShape2D_wall")
 [node name="Treppe" type="CollisionShape2D" parent="WallRight"]
 position = Vector2(1629, 88.0001)
 rotation = 0.960423
-shape = SubResource("RectangleShape2D_wall")
-
-[node name="Treppe2" type="CollisionShape2D" parent="WallRight"]
-position = Vector2(54, 259)
-rotation = 0.960423
-scale = Vector2(2.21701, 0.87679)
-shape = SubResource("RectangleShape2D_wall")
-
-[node name="Treppe3" type="CollisionShape2D" parent="WallRight"]
-position = Vector2(350, 101)
-rotation = 1.57152
-scale = Vector2(2.27773, 0.642913)
 shape = SubResource("RectangleShape2D_wall")
 
 [node name="DeathBoxLeft" type="Area2D" parent="."]
@@ -134,11 +129,17 @@ spawn_position = Vector2(200, 640)
 [node name="Lever" parent="Environment" instance=ExtResource("11_qk3q1")]
 position = Vector2(900, 600)
 
-[node name="CreateDetailed2dForegroundNanoBanana86465" type="Sprite2D" parent="."]
-z_index = -3
-position = Vector2(791, 277)
-scale = Vector2(1.89063, 1.68269)
-texture = ExtResource("12_mcmpb")
-
 [node name="DialogTrigger" parent="." instance=ExtResource("8_7f70n")]
 position = Vector2(1678, 336)
+
+[node name="Tier1" parent="." instance=ExtResource("9_tk5nk")]
+position = Vector2(1484, 425)
+rotation = -0.00564533
+platform_width = 444.0
+platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
+
+[node name="Tier2" parent="." instance=ExtResource("9_tk5nk")]
+position = Vector2(1388, 647)
+rotation = -0.614298
+platform_width = 444.0
+platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)

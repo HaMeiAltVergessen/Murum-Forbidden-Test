@@ -1,10 +1,11 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3 uid="uid://ckw8akyn0mrus"]
 
-[ext_resource type="Script" path="res://systems/dialog/dialog_manager.gd" id="1_script"]
-[ext_resource type="Resource" path="res://data/characters/murum.tres" id="2_murum"]
-[ext_resource type="Resource" path="res://data/characters/lythrun.tres" id="3_lythrun"]
-[ext_resource type="Resource" path="res://data/characters/umbra.tres" id="4_umbra"]
+[ext_resource type="Script" uid="uid://ch3mjl1cnwiu3" path="res://systems/dialog/dialog_manager.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://cnrka8f0kac75" path="res://resources/dialog/character_data.gd" id="2_eh2aa"]
+[ext_resource type="Resource" uid="uid://dgug25itqtsag" path="res://data/characters/murum.tres" id="2_murum"]
+[ext_resource type="Resource" uid="uid://bhv3qa7jkn2ya" path="res://data/characters/lythrun.tres" id="3_lythrun"]
+[ext_resource type="Resource" uid="uid://hbfion5iyngp" path="res://data/characters/umbra.tres" id="4_umbra"]
 
 [node name="DialogManager" type="Node"]
 script = ExtResource("1_script")
-characters = [ExtResource("2_murum"), ExtResource("3_lythrun"), ExtResource("4_umbra")]
+characters = Array[ExtResource("2_eh2aa")]([ExtResource("2_murum"), ExtResource("3_lythrun"), ExtResource("4_umbra")])

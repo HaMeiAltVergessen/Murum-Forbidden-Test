@@ -1,11 +1,11 @@
 [gd_scene load_steps=15 format=3 uid="uid://ddnxcv5d8idn"]
 
-[ext_resource type="Script" uid="uid://d3ga2xnikulhm" path="res://worlds/world_1_ruins/section_1_entrance/room_03_villageEntrance.gd" id="1_08f4h"]
+[ext_resource type="Script" uid="uid://dpy70x2xl8a2b" path="res://worlds/world_1_ruins/section_1_entrance/room_03_villageEntrance.gd" id="1_08f4h"]
 [ext_resource type="Texture2D" uid="uid://ra4sbnoii35r" path="res://Assets/AIAssets/0b1bef95-fa79-46b5-920d-1039c84dc1c8.jpg" id="2_08f4h"]
 [ext_resource type="Texture2D" uid="uid://dgoqciw5hx2m0" path="res://Assets/AIAssets/8f3db250-9684-4ef9-9483-7fb1e18eebc1.jpg" id="3_l5uik"]
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="4_448ij"]
 [ext_resource type="Texture2D" uid="uid://bj3q3horof56u" path="res://Assets/AIAssets/tempel03.jpg" id="4_l5uik"]
-[ext_resource type="Script" uid="uid://dedqqgmekjfmv" path="res://worlds/wave_spawner.gd" id="5_ltuyp"]
+[ext_resource type="Script" uid="uid://dyw6qr3x50uyq" path="res://worlds/wave_spawner.gd" id="5_ltuyp"]
 [ext_resource type="PackedScene" uid="uid://c2nx5q8v4kmpr" path="res://environment/checkpoint.tscn" id="6_nsm88"]
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="7_mg4my"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="8_ghxfn"]

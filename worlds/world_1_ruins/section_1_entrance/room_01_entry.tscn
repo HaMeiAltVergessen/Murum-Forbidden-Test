@@ -561,7 +561,7 @@ platform_width = 666.0
 [node name="Tier15" parent="PassThroughPlatforms" instance=ExtResource("12_dda7m")]
 position = Vector2(1747.71, 456.817)
 rotation = 0.042944
-platform_width = 555.0
+platform_width = 777.0
 
 [node name="Tier14" parent="PassThroughPlatforms" instance=ExtResource("12_dda7m")]
 position = Vector2(-664.332, 176.135)

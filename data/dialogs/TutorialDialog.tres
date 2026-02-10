@@ -9,24 +9,23 @@ script = ExtResource("3_choice")
 choice_text = "Schweigen, nicken und Weitergehen"
 response_speaker = ""
 response_text = ""
-next_entries = []
+next_entries = Array[ExtResource("2_entry")]([])
 
 [sub_resource type="Resource" id="Resource_choice2"]
 script = ExtResource("3_choice")
 choice_text = "Nein, was muss ich wissen?"
 response_speaker = "Umbra"
 response_text = "Du kannst die Steuerung unter Options einstellen. Dein Stabwurf und dein Dash helfen dir auch außerhalb vom Kampf."
-next_entries = []
+next_entries = Array[ExtResource("2_entry")]([])
 
 [sub_resource type="Resource" id="Resource_entry1"]
 script = ExtResource("2_entry")
 speaker_name = "Umbra"
-speaker_sprite = null
 text = "Wieder hier. Weißt du was zu tun ist?"
 text_speed = 30.0
-choices = [SubResource("Resource_choice1"), SubResource("Resource_choice2")]
+choices = Array[ExtResource("3_choice")]([SubResource("Resource_choice1"), SubResource("Resource_choice2")])
 
 [resource]
 script = ExtResource("1_data")
 dialog_id = "tutorial_dialog"
-entries = [SubResource("Resource_entry1")]
+entries = Array[ExtResource("2_entry")]([SubResource("Resource_entry1")])

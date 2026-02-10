@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://world1_merchant"]
+[gd_scene load_steps=2 format=3 uid="uid://b1w31ir4mmx8m"]
 
-[ext_resource type="PackedScene" uid="uid://merchant_base" path="res://environment/npcs/merchant.tscn" id="1_base_merchant"]
+[ext_resource type="PackedScene" uid="uid://d2punji8ii1k3" path="res://environment/npcs/merchant.tscn" id="1_base_merchant"]
 
 [node name="Merchant" instance=ExtResource("1_base_merchant")]
 merchant_name = "Dorfhändler"

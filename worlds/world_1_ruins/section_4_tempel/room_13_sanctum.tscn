@@ -1,6 +1,6 @@
 [gd_scene load_steps=12 format=3 uid="uid://7ihc7pexmcfv"]
 
-[ext_resource type="Script" uid="uid://b2r2vfh85un7r" path="res://worlds/world_1_ruins/section_1_entrance/room_01_entry.gd" id="1_r7ri1"]
+[ext_resource type="Script" uid="uid://86josincpmca" path="res://worlds/world_1_ruins/section_1_entrance/room_01_entry.gd" id="1_r7ri1"]
 [ext_resource type="Texture2D" uid="uid://bj3q3horof56u" path="res://Assets/AIAssets/tempel03.jpg" id="2_r7ri1"]
 [ext_resource type="Texture2D" uid="uid://dn2lx3evnqpsh" path="res://Assets/AIAssets/Tempel02.jpg" id="3_c01ak"]
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="5_orlp3"]
