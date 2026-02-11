@@ -74,21 +74,6 @@ position = Vector2(1261, -17)
 rotation = 1.51523
 collision_mask = 0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight2"]
-position = Vector2(784.441, 247.948)
-rotation = 0.065684
-scale = Vector2(2.04076, 0.599614)
-shape = SubResource("RectangleShape2D_wall_right")
-
-[node name="ColorRect" type="ColorRect" parent="WallRight2"]
-offset_left = 735.666
-offset_top = 494.62
-offset_right = 775.666
-offset_bottom = 534.62
-rotation = -1.53671
-scale = Vector2(11.7965, 2.37736)
-color = Color(0.326631, 0.142551, 7.21961e-08, 1)
-
 [node name="DeathBoxLeft" type="Area2D" parent="."]
 position = Vector2(-120, 450)
 script = ExtResource("6_deathbox")
@@ -156,7 +141,7 @@ facing_direction = -1
 position = Vector2(800, 780)
 
 [node name="Hermit" parent="." instance=ExtResource("10_hermit")]
-position = Vector2(2177, 613)
+position = Vector2(503, 892)
 
 [node name="ClimbableArea2" parent="." instance=ExtResource("9_7s7xw")]
 position = Vector2(597, 424)

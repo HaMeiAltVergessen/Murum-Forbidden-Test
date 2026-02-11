@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://c2cutscene_player"]
+[gd_scene load_steps=2 format=3 uid="uid://be2wrel7o5w4j"]
 
-[ext_resource type="Script" path="res://systems/cutscene/cutscene_player.gd" id="1_cutscene"]
+[ext_resource type="Script" uid="uid://dagfw5a0k3yjp" path="res://systems/cutscene/cutscene_player.gd" id="1_cutscene"]
 
 [node name="CutscenePlayer" type="CanvasLayer"]
 layer = 90

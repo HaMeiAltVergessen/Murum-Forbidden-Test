@@ -90,6 +90,11 @@ position = Vector2(6911, 3636)
 scale = Vector2(0.185227, 0.865135)
 shape = SubResource("RectangleShape2D_ground")
 
+[node name="CollisionShape2D39" type="CollisionShape2D" parent="Ground"]
+position = Vector2(7481, 4070)
+scale = Vector2(0.193249, 1.02535)
+shape = SubResource("RectangleShape2D_ground")
+
 [node name="CollisionShape2D36" type="CollisionShape2D" parent="Ground"]
 position = Vector2(6261, 4189)
 scale = Vector2(0.185227, 0.865135)
@@ -359,6 +364,14 @@ scale = Vector2(0.48034, 0.48034)
 position = Vector2(7595, 1160)
 scale = Vector2(0.48034, 0.48034)
 
+[node name="GuardianStatue5" parent="Enemies/Boden" instance=ExtResource("21_a02lo")]
+position = Vector2(7889, 1169)
+scale = Vector2(0.48034, 0.48034)
+
+[node name="GuardianStatue6" parent="Enemies/Boden" instance=ExtResource("21_a02lo")]
+position = Vector2(8234, 1160)
+scale = Vector2(0.48034, 0.48034)
+
 [node name="Untote1" parent="Enemies/Boden" instance=ExtResource("6_untote")]
 position = Vector2(6113, 5111)
 
@@ -454,12 +467,6 @@ rotation = 0.0158183
 platform_width = 444.0
 platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
 
-[node name="Tier21" parent="PassThroughPlatforms" instance=ExtResource("9_830uw")]
-position = Vector2(-893.533, 274.996)
-rotation = 0.0158183
-platform_width = 444.0
-platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
-
 [node name="Tier8" parent="PassThroughPlatforms" instance=ExtResource("9_830uw")]
 position = Vector2(-1183.89, -1716.79)
 rotation = 0.0310916
@@ -539,7 +546,7 @@ area_width = 222.0
 area_height = 1800.0
 
 [node name="ClimbableArea4" parent="." instance=ExtResource("10_1q160")]
-position = Vector2(7182, 4557)
+position = Vector2(7180, 4561)
 rotation = 0.0201902
 area_width = 222.0
 area_height = 1800.0
@@ -553,7 +560,7 @@ area_height = 555.0
 position = Vector2(6978, 3417)
 rotation = -0.187876
 area_width = 222.0
-area_height = 1800.0
+area_height = 1200.0
 
 [node name="Puzzles" type="Node2D" parent="."]
 position = Vector2(1587, 1898)
@@ -679,6 +686,10 @@ position = Vector2(5014, 4281)
 
 [node name="Wegweise5" parent="Wegweiser" instance=ExtResource("24_a02lo")]
 position = Vector2(6198, 1653)
+rotation = -0.0180972
+
+[node name="Wegweise10" parent="Wegweiser" instance=ExtResource("24_a02lo")]
+position = Vector2(6237, 774)
 rotation = -0.0180972
 
 [node name="Wegweise6" parent="Wegweiser" instance=ExtResource("24_a02lo")]

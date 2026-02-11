@@ -75,17 +75,8 @@ static func _register_all_cutscenes() -> void:
 	# INTRO CUTSCENE - Wird nach "Neues Spiel" abgespielt
 	# ==========================================================================
 
-	var intro = CutsceneDefinition.new("intro", CutsceneType.IMAGE)
-	intro.image_paths = [
-		"res://Assets/AIAssets/tempel01.jpg",
-		"res://Assets/AIAssets/Tempel02.jpg",
-		"res://Assets/AIAssets/tempel03.jpg",
-		"res://Assets/AIAssets/world1lvl01.jpg",
-		"res://Assets/AIAssets/wolrd01lvl0102.jpg",
-		"res://Assets/AIAssets/world1lvl1bg02.jpg",
-		"res://Assets/AIAssets/world1lvl1bg03.jpg",
-		"res://Assets/AIAssets/dorf.jpg"
-	]
+	var intro = CutsceneDefinition.new("intro", CutsceneType.VIDEO)
+	intro.video_path = "res://Assets/AIVids/Intro.ogv"
 	intro.image_texts = [
 		"Vor langer Zeit existierte eine Welt voller Magie und Wunder...",
 		"Die alten Tempel bewahrten Geheimnisse, die kein Sterblicher verstehen sollte.",
@@ -96,7 +87,7 @@ static func _register_all_cutscenes() -> void:
 		"Doch eine Prophezeiung sprach von einem Wanderer, der das Gleichgewicht wiederherstellen würde.",
 		"Und so beginnt deine Reise... im Schatten der verbotenen Mauern."
 	]
-	intro.audio_path = "res://Music/Welt 01 Ruins.mp3"
+	#intro.audio_path = "res://Music/Welt 01 Ruins.mp3"
 	intro.image_duration = 9.0  # 9 Sekunden pro Bild (+ 3s Fade = ~72 Sek total)
 	intro.skippable = true
 	intro.show_skip_warning = false

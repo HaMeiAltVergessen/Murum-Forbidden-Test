@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="3_door"]
 [ext_resource type="PackedScene" uid="uid://bx7k2qn8nav4p" path="res://enemies/world_1_ruins/geist.tscn" id="4_f7d8o"]
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="5_deathbox"]
-[ext_resource type="PackedScene" path="res://environment/pickups/pickup_base.tscn" id="9_cqwq7"]
+[ext_resource type="PackedScene" uid="uid://bk7a8n73qcfla" path="res://environment/pickups/pickup_base.tscn" id="9_cqwq7"]
 [ext_resource type="Texture2D" uid="uid://dbecpug8upc2v" path="res://Assets/Placeholder/Background/Environments/ships-graveyard/PNG/layers/boat-front.png" id="10_8m3rk"]
 [ext_resource type="PackedScene" path="res://puzzles/scenes/components/puzzle_crystal.tscn" id="11_crystal"]
 [ext_resource type="PackedScene" uid="uid://dkc8y7x0ij6nw" path="res://enemies/untote.tscn" id="11_m0wvv"]
@@ -184,16 +184,10 @@ rotation = 3.12345
 scale = Vector2(0.34053, -0.598532)
 shape = SubResource("RectangleShape2D_ground")
 
-[node name="CollisionShape2D11" type="CollisionShape2D" parent="Ground"]
-position = Vector2(14149, 1053)
-rotation = 3.12345
-scale = Vector2(0.50947, -1.0165)
-shape = SubResource("RectangleShape2D_ground")
-
 [node name="CollisionShape2D18" type="CollisionShape2D" parent="Ground"]
-position = Vector2(14667, 1980)
+position = Vector2(13719, 2030)
 rotation = 3.12345
-scale = Vector2(1.20542, -1.35565)
+scale = Vector2(0.686221, -1.35565)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="CollisionShape2D12" type="CollisionShape2D" parent="Ground"]
@@ -247,6 +241,18 @@ shape = SubResource("RectangleShape2D_ground")
 [node name="CollisionShape2D19" type="CollisionShape2D" parent="Ground"]
 position = Vector2(16970, 2307)
 rotation = 0.2977
+scale = Vector2(0.389513, 0.63981)
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="CollisionShape2D36" type="CollisionShape2D" parent="Ground"]
+position = Vector2(15300, 2059)
+rotation = 0.263739
+scale = Vector2(0.389513, 0.63981)
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="CollisionShape2D56" type="CollisionShape2D" parent="Ground"]
+position = Vector2(15965, 2097)
+rotation = -0.237476
 scale = Vector2(0.389513, 0.63981)
 shape = SubResource("RectangleShape2D_ground")
 
@@ -305,8 +311,8 @@ scale = Vector2(0.39018, -0.281567)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="CollisionShape2D55" type="CollisionShape2D" parent="Ground"]
-position = Vector2(3376, -902)
-rotation = 0.00736407
+position = Vector2(3123, -613)
+rotation = -0.645025
 scale = Vector2(0.119659, -0.240447)
 shape = SubResource("RectangleShape2D_ground")
 
@@ -371,27 +377,21 @@ scale = Vector2(0.641439, 1)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="CollisionShape2D30" type="CollisionShape2D" parent="Ground"]
-position = Vector2(2465, 1732)
+position = Vector2(2470, 2109)
 rotation = 0.0381474
-scale = Vector2(0.474707, 0.501675)
+scale = Vector2(0.500372, 2.99826)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="CollisionShape2D31" type="CollisionShape2D" parent="Ground"]
-position = Vector2(1094, 1739)
-rotation = 0.0381474
-scale = Vector2(0.140451, 0.592677)
+position = Vector2(997, 1735)
+rotation = 0.0171049
+scale = Vector2(0.215764, 0.545459)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="CollisionShape2D35" type="CollisionShape2D" parent="Ground"]
-position = Vector2(686, 2382)
-rotation = 0.230262
+position = Vector2(915, 2582)
+rotation = -0.0155435
 scale = Vector2(0.591539, 0.501675)
-shape = SubResource("RectangleShape2D_ground")
-
-[node name="CollisionShape2D36" type="CollisionShape2D" parent="Ground"]
-position = Vector2(1921, 2221)
-rotation = -0.603426
-scale = Vector2(0.474707, 0.501675)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="CollisionShape2D37" type="CollisionShape2D" parent="Ground"]
@@ -407,7 +407,7 @@ scale = Vector2(0.183808, 0.401673)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="CollisionShape2D46" type="CollisionShape2D" parent="Ground"]
-position = Vector2(8871, 437)
+position = Vector2(8873, 474)
 rotation = 0.944808
 scale = Vector2(0.153188, 0.255866)
 shape = SubResource("RectangleShape2D_ground")
@@ -460,7 +460,7 @@ scale = Vector2(2.75998, 5.24381)
 shape = SubResource("RectangleShape2D_wall")
 
 [node name="CollisionShape2D3" type="CollisionShape2D" parent="WallRight"]
-position = Vector2(-1428.18, -752.424)
+position = Vector2(-1577, -745)
 rotation = -0.00624159
 scale = Vector2(2.75998, 5.24381)
 shape = SubResource("RectangleShape2D_wall")
@@ -512,19 +512,19 @@ spawn_position = Vector2(200, 640)
 [node name="Pickups" type="Node2D" parent="."]
 position = Vector2(1083, -433)
 
+[node name="Pickup_fragment_beharrlichkeit" parent="Pickups" instance=ExtResource("9_cqwq7")]
+position = Vector2(-583, -1619)
+item_id = "fragment_beharrlichkeit"
+
 [node name="PickupTitanenblut" parent="Pickups" instance=ExtResource("9_cqwq7")]
 position = Vector2(3382, -102)
 item_id = "titanenblut_stein"
 pickup_id = "room_01_entry/titanenblut_1"
 
 [node name="PickupUrtraene" parent="Pickups" instance=ExtResource("9_cqwq7")]
-position = Vector2(21, 2594)
+position = Vector2(-623, 2623)
 item_id = "urtraene"
 pickup_id = "room_01_entry/urtraene_1"
-
-[node name="Pickup_fragment_beharrlichkeit" parent="Pickups/PickupUrtraene" instance=ExtResource("9_cqwq7")]
-position = Vector2(-577, -4224)
-item_id = "fragment_beharrlichkeit"
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 position = Vector2(1545, 481)
@@ -601,6 +601,10 @@ platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
 position = Vector2(8540.83, 1357.56)
 platform_width = 888.0
 
+[node name="Tier18" parent="PassThroughPlatforms" instance=ExtResource("12_dda7m")]
+position = Vector2(9722.57, 2213.03)
+platform_width = 1888.0
+
 [node name="Tier5" parent="PassThroughPlatforms" instance=ExtResource("12_dda7m")]
 position = Vector2(9887.55, 1370.43)
 platform_width = 888.0
@@ -645,6 +649,11 @@ position = Vector2(-664.332, 176.135)
 rotation = -0.64753
 platform_width = 555.0
 
+[node name="Tier17" parent="PassThroughPlatforms" instance=ExtResource("12_dda7m")]
+position = Vector2(-505.267, -142.218)
+rotation = 0.036028
+platform_width = 555.0
+
 [node name="Tier12" parent="PassThroughPlatforms" instance=ExtResource("12_dda7m")]
 position = Vector2(1498.18, -1596.05)
 rotation = 0.0359606
@@ -657,10 +666,12 @@ platform_width = 555.0
 [node name="Tier10" parent="PassThroughPlatforms" instance=ExtResource("12_dda7m")]
 position = Vector2(-3682.21, 2258.23)
 rotation = 0.0571527
+platform_width = 444.0
 
 [node name="Tier4" parent="PassThroughPlatforms" instance=ExtResource("12_dda7m")]
-position = Vector2(5359.15, 1646.79)
-rotation = 0.487101
+position = Vector2(5345.89, 1698.26)
+rotation = 0.0410387
+platform_width = 444.0
 
 [node name="Puzzles" type="Node2D" parent="."]
 position = Vector2(1568, 527)
@@ -772,12 +783,25 @@ glow_energy = 0.9
 
 [node name="ClimbableArea" parent="." instance=ExtResource("20_180fs")]
 position = Vector2(5042, -2398)
+climb_speed = 600.0
 area_width = 222.0
 area_height = 1511.0
 
 [node name="ClimbableArea2" parent="." instance=ExtResource("20_180fs")]
 position = Vector2(11225, 897)
 rotation = 0.760562
+area_width = 222.0
+area_height = 666.0
+
+[node name="ClimbableArea7" parent="." instance=ExtResource("20_180fs")]
+position = Vector2(13667, 811)
+rotation = -0.587648
+area_width = 222.0
+area_height = 666.0
+
+[node name="ClimbableArea8" parent="." instance=ExtResource("20_180fs")]
+position = Vector2(14107, 1633)
+rotation = -0.0174576
 area_width = 222.0
 area_height = 666.0
 
@@ -789,6 +813,7 @@ area_height = 888.0
 
 [node name="ClimbableArea5" parent="." instance=ExtResource("20_180fs")]
 position = Vector2(9507, 179)
+rotation = 0.552288
 area_width = 222.0
 area_height = 888.0
 
@@ -797,6 +822,12 @@ position = Vector2(8898, 929)
 rotation = -0.604197
 area_width = 222.0
 area_height = 666.0
+
+[node name="ClimbableArea6" parent="." instance=ExtResource("20_180fs")]
+position = Vector2(246, 2194)
+rotation = -0.342965
+area_width = 222.0
+area_height = 888.0
 
 [node name="Items" type="Node2D" parent="."]
 
