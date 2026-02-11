@@ -287,11 +287,27 @@ func _gather_player_data(player: Node) -> Dictionary:
 	else:
 		print("[SaveManager] No checkpoint, using current position: %v" % save_position)
 
+	# Read HP from HealthComponent
+	var current_hp: int = 100
+	var max_hp: int = 100
+	if player.has_node("HealthComponent"):
+		var hc = player.get_node("HealthComponent")
+		current_hp = hc.current_health
+		max_hp = hc.max_health
+
+	# Read Mana from ManaComponent
+	var current_mana: int = 100
+	var max_mana: int = 100
+	if player.has_node("ManaComponent"):
+		var mc = player.get_node("ManaComponent")
+		current_mana = mc.current_mana
+		max_mana = mc.max_mana
+
 	return {
-		"current_hp": player.current_hp if "current_hp" in player else 100,
-		"max_hp": player.MAX_HP if "MAX_HP" in player else 100,
-		"current_mana": player.current_mana if "current_mana" in player else 100,
-		"max_mana": player.MAX_MANA if "MAX_MANA" in player else 100,
+		"current_hp": current_hp,
+		"max_hp": max_hp,
+		"current_mana": current_mana,
+		"max_mana": max_mana,
 		"position": {
 			"x": save_position.x,
 			"y": save_position.y
@@ -357,8 +373,8 @@ func _gather_path_choices() -> Dictionary:
 	}
 
 func _gather_statistics() -> Dictionary:
-	"""Gathers gameplay statistics"""
-	return {
+	"""Gathers gameplay statistics from GameManager"""
+	var stats = {
 		"total_deaths": 0,
 		"enemies_killed": 0,
 		"perfect_parries": 0,
@@ -366,6 +382,10 @@ func _gather_statistics() -> Dictionary:
 		"resonance_modes_activated": 0,
 		"urgathon_uses": 0
 	}
+	if GameManager:
+		stats["total_deaths"] = GameManager.deaths
+		stats["enemies_killed"] = GameManager.enemies_killed
+	return stats
 
 func _gather_abilities_data() -> Dictionary:
 	"""Gathers abilities state"""
@@ -453,6 +473,13 @@ func _apply_save_data(save_data: Dictionary) -> void:
 	# Load inventory data
 	var inventory_data = save_data.get("inventory", {})
 	_restore_inventory(inventory_data)
+
+	# Restore statistics to GameManager
+	var statistics = save_data.get("statistics", {})
+	if GameManager:
+		GameManager.deaths = statistics.get("total_deaths", 0)
+		GameManager.enemies_killed = statistics.get("enemies_killed", 0)
+		print("[SaveManager] Statistics restored: %d deaths, %d kills" % [GameManager.deaths, GameManager.enemies_killed])
 
 	# Get saved room data
 	var player_data = save_data.get("player", {})

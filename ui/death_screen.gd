@@ -12,6 +12,9 @@ class_name DeathScreen
 
 
 func _ready() -> void:
+	# Ensure death screen works even when tree is paused
+	process_mode = Node.PROCESS_MODE_ALWAYS
+
 	# Connect to EventBus
 	EventBus.player_died.connect(_on_player_died)
 	EventBus.player_respawned.connect(_on_player_respawned)

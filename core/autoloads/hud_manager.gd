@@ -10,6 +10,7 @@ var p2_abilities: CanvasLayer = null
 var gold_display: CanvasLayer = null
 var join_prompt: CanvasLayer = null
 var p2_tutorial: CanvasLayer = null
+var death_screen: CanvasLayer = null
 
 # ============ STATE ============
 var huds_loaded: bool = false
@@ -96,6 +97,15 @@ func load_huds() -> void:
 		print("[HUDManager] P2 Tutorial loaded (persistent)")
 	else:
 		print("[HUDManager] WARNING: P2 Tutorial scene not found")
+
+	# Death Screen (persistent across all scenes)
+	var death_screen_scene = load("res://ui/death_screen.tscn")
+	if death_screen_scene:
+		death_screen = death_screen_scene.instantiate()
+		add_child(death_screen)
+		print("[HUDManager] Death Screen loaded (persistent)")
+	else:
+		print("[HUDManager] WARNING: Death Screen scene not found")
 
 	huds_loaded = true
 
