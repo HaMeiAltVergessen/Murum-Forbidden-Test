@@ -361,8 +361,6 @@ climb_speed = 250.0
 area_height = 512.0
 visual_color = Color(0.4, 0.4, 0.5, 0.4)
 
-[node name="DeathScreen" parent="." instance=ExtResource("8_death_screen_scene")]
-
 [node name="CoopCamera" parent="." instance=ExtResource("11_coop_camera")]
 position = Vector2(960, 540)
 

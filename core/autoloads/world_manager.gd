@@ -130,7 +130,6 @@ func _execute_transition(room_id: String) -> void:
 	# 2. Save player and UI elements before unloading
 	var player = get_tree().get_first_node_in_group("player")
 	var hud = get_tree().get_first_node_in_group("hud")
-	var death_screen = get_tree().get_first_node_in_group("death_screen")
 
 	var preserved_nodes = []
 
@@ -148,12 +147,7 @@ func _execute_transition(room_id: String) -> void:
 		preserved_nodes.append(hud)
 		print("[WorldManager] HUD preserved for transition")
 
-	if death_screen:
-		var death_screen_parent = death_screen.get_parent()
-		death_screen_parent.remove_child(death_screen)
-		add_child(death_screen)
-		preserved_nodes.append(death_screen)
-		print("[WorldManager] DeathScreen preserved for transition")
+	# Note: DeathScreen is now persistent via HUDManager (autoload), no need to preserve
 
 	# 3. Unload current scene
 	_unload_current_scene()
@@ -268,7 +262,6 @@ func _spawn_player_at_point(spawn_point_name: String) -> void:
 	# Get preserved nodes (might be children of WorldManager after transition)
 	var player = get_tree().get_first_node_in_group("player")
 	var hud = get_tree().get_first_node_in_group("hud")
-	var death_screen = get_tree().get_first_node_in_group("death_screen")
 
 	if not player:
 		push_warning("[WorldManager] Player not found in scene!")
@@ -290,11 +283,6 @@ func _spawn_player_at_point(spawn_point_name: String) -> void:
 		remove_child(hud)
 		current_scene.add_child(hud)
 		print("[WorldManager] HUD restored to scene")
-
-	if death_screen and death_screen.get_parent() == self and current_scene:
-		remove_child(death_screen)
-		current_scene.add_child(death_screen)
-		print("[WorldManager] DeathScreen restored to scene")
 
 	# Ensure player's camera is active
 	var player_camera = player.get_node_or_null("PlayerCamera")
@@ -367,19 +355,23 @@ func _restore_player_data() -> void:
 	if player_data.is_empty():
 		return
 
-	# Restore HP
-	if player_data.has("current_hp"):
-		player.current_hp = player_data["current_hp"]
-		if player.has("MAX_HP"):
-			EventBus.player_hp_changed.emit(player.current_hp, player.MAX_HP)
+	# Restore HP via HealthComponent
+	if player_data.has("current_hp") and player.has_node("HealthComponent"):
+		var hc = player.get_node("HealthComponent")
+		if player_data.has("max_hp"):
+			hc.max_health = player_data["max_hp"]
+		hc.current_health = player_data["current_hp"]
+		hc.health_changed.emit(hc.current_health, hc.max_health)
 
-	# Restore Mana
-	if player_data.has("current_mana"):
-		player.current_mana = player_data["current_mana"]
-		if player.has("MAX_MANA"):
-			EventBus.player_mana_changed.emit(player.current_mana, player.MAX_MANA)
+	# Restore Mana via ManaComponent
+	if player_data.has("current_mana") and player.has_node("ManaComponent"):
+		var mc = player.get_node("ManaComponent")
+		if player_data.has("max_mana"):
+			mc.max_mana = player_data["max_mana"]
+		mc.current_mana = player_data["current_mana"]
+		mc.mana_changed.emit(mc.current_mana, mc.max_mana)
 
-	print("[WorldManager] Player data restored")
+	print("[WorldManager] Player data restored via components")
 
 	# Clear pending data
 	if SaveManager:
