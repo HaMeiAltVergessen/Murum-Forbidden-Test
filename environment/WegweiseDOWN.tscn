@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://du2kjq0xuewvi"]
+
+[ext_resource type="Texture2D" uid="uid://ch7rt4ajnmd6" path="res://Assets/AIAssets/AIStuff/StatuenDown.png" id="1_r0ifs"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_psmav"]
+size = Vector2(2932.59, 426)
+
+[node name="Wegweise1" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(23, -15)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("1_r0ifs")
+
+[node name="CollisionBlock" type="CollisionShape2D" parent="."]
+position = Vector2(27, -7)
+scale = Vector2(0.0543157, 0.750429)
+shape = SubResource("RectangleShape2D_psmav")

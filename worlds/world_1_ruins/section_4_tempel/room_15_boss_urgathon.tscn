@@ -68,9 +68,6 @@ position = Vector2(630, -60)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_shape")
 
-[node name="TileMap" type="TileMap" parent="."]
-format = 2
-
 [node name="Spawns" type="Node2D" parent="."]
 
 [node name="PlayerSpawn" type="Marker2D" parent="Spawns"]
@@ -81,14 +78,16 @@ position = Vector2(200, 0)
 
 [node name="ArenaBoundary" type="Node2D" parent="."]
 modulate = Color(1, 0.3, 0.3, 0.3)
+scale = Vector2(2.12391, 1.6749)
 
 [node name="Polygon2D" type="Polygon2D" parent="ArenaBoundary"]
+scale = Vector2(2.59918, 2.91208)
 color = Color(0.5, 0, 0, 0.2)
-polygon = PackedVector2Array(-350, 0, -300, -180, -180, -300, 0, -350, 180, -300, 300, -180, 350, 0, 300, 180, 180, 300, 0, 350, -180, 300, -300, 180)
 
 [node name="Doors" type="Node2D" parent="."]
 
 [node name="Environment" type="Node2D" parent="."]
+position = Vector2(-66, -157)
 
 [node name="Lighting" type="CanvasModulate" parent="."]
 

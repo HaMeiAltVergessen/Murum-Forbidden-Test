@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://csm4wax2ntpqr"]
+[gd_scene load_steps=30 format=3 uid="uid://csm4wax2ntpqr"]
 
 [ext_resource type="Script" uid="uid://dhherqlrd2s44" path="res://worlds/world_1_ruins/section_1_entrance/room_02_corridor.gd" id="1_room02"]
 [ext_resource type="Texture2D" uid="uid://bcf1bvmbq8p8g" path="res://Assets/AIPlaceholder/world1preTempel.png" id="2_ptyf6"]
@@ -22,6 +22,10 @@
 [ext_resource type="PackedScene" uid="uid://bp88htlho4s8e" path="res://enemies/world_1_ruins/corpse_trap.tscn" id="20_uhlgo"]
 [ext_resource type="PackedScene" uid="uid://bxjm0m07w77dm" path="res://enemies/world_1_ruins/guardian_statue.tscn" id="21_a02lo"]
 [ext_resource type="PackedScene" uid="uid://b1w31ir4mmx8m" path="res://environment/npcs/world1_merchant.tscn" id="22_c8xrr"]
+[ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="23_uhlgo"]
+[ext_resource type="PackedScene" uid="uid://dfrjdwjipd0ex" path="res://environment/Wegweise1.tscn" id="24_a02lo"]
+[ext_resource type="PackedScene" uid="uid://fsarw2nqycb6" path="res://environment/WegweiseUP.tscn" id="24_ul0io"]
+[ext_resource type="PackedScene" uid="uid://o0fbrvsc2jxd" path="res://environment/Wegweise2.tscn" id="26_4jwuu"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1891, 80)
@@ -41,9 +45,6 @@ z_index = -3
 position = Vector2(6190, 2737)
 scale = Vector2(1.28971, 1.12695)
 texture = ExtResource("2_ptyf6")
-
-[node name="TileMap" type="TileMap" parent="."]
-format = 2
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(0, 640)
@@ -69,6 +70,16 @@ position = Vector2(4548, 3823)
 scale = Vector2(0.771901, 1.40205)
 shape = SubResource("RectangleShape2D_ground")
 
+[node name="CollisionShape2D32" type="CollisionShape2D" parent="Ground"]
+position = Vector2(4561, 3017)
+scale = Vector2(0.438471, 1.71519)
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="CollisionShape2D33" type="CollisionShape2D" parent="Ground"]
+position = Vector2(4543, 4428)
+scale = Vector2(0.259297, 3.19025)
+shape = SubResource("RectangleShape2D_ground")
+
 [node name="CollisionShape2D10" type="CollisionShape2D" parent="Ground"]
 position = Vector2(6808, 3987)
 scale = Vector2(0.366459, 1.06341)
@@ -76,6 +87,21 @@ shape = SubResource("RectangleShape2D_ground")
 
 [node name="CollisionShape2D26" type="CollisionShape2D" parent="Ground"]
 position = Vector2(6911, 3636)
+scale = Vector2(0.185227, 0.865135)
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="CollisionShape2D36" type="CollisionShape2D" parent="Ground"]
+position = Vector2(6261, 4189)
+scale = Vector2(0.185227, 0.865135)
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="CollisionShape2D37" type="CollisionShape2D" parent="Ground"]
+position = Vector2(3613, 4189)
+scale = Vector2(0.185227, 0.865135)
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="CollisionShape2D38" type="CollisionShape2D" parent="Ground"]
+position = Vector2(2669, 4181)
 scale = Vector2(0.185227, 0.865135)
 shape = SubResource("RectangleShape2D_ground")
 
@@ -128,6 +154,12 @@ position = Vector2(8174, 2619)
 scale = Vector2(0.578506, 1.75312)
 shape = SubResource("RectangleShape2D_ground")
 
+[node name="CollisionShape2D34" type="CollisionShape2D" parent="Ground"]
+position = Vector2(7986, 1633)
+rotation = -0.717243
+scale = Vector2(0.578506, 1.75312)
+shape = SubResource("RectangleShape2D_ground")
+
 [node name="CollisionShape2D27" type="CollisionShape2D" parent="Ground"]
 position = Vector2(7523, 3089)
 scale = Vector2(0.21709, 1.58608)
@@ -154,13 +186,18 @@ scale = Vector2(0.566248, 5.16865)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="CollisionShape2D6" type="CollisionShape2D" parent="Ground"]
-position = Vector2(6860, 1541)
-scale = Vector2(0.442682, 2.32792)
+position = Vector2(6792, 1464)
+scale = Vector2(0.362682, 2.32792)
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="CollisionShape2D35" type="CollisionShape2D" parent="Ground"]
+position = Vector2(6774, 2017)
+scale = Vector2(0.362682, 2.32792)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="CollisionShape2D7" type="CollisionShape2D" parent="Ground"]
-position = Vector2(8211, 696)
-scale = Vector2(0.821159, 1.53976)
+position = Vector2(7941, 683)
+scale = Vector2(1.10116, 1.53976)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="CollisionShape2D9" type="CollisionShape2D" parent="Ground"]
@@ -260,14 +297,85 @@ shape = SubResource("RectangleShape2D_deathbox")
 
 [node name="Enemies" type="Node2D" parent="."]
 
-[node name="Untote1" parent="Enemies" instance=ExtResource("6_untote")]
-position = Vector2(3353, 4864)
+[node name="Luft" type="Node2D" parent="Enemies"]
 
-[node name="Geist1" parent="Enemies" instance=ExtResource("7_geist")]
+[node name="Geist1" parent="Enemies/Luft" instance=ExtResource("7_geist")]
 position = Vector2(3763, 1576)
 
-[node name="Untote2" parent="Enemies" instance=ExtResource("6_untote")]
-position = Vector2(4420, 4814)
+[node name="MonsterCreature" parent="Enemies/Luft" instance=ExtResource("19_c8xrr")]
+position = Vector2(5669, 4337)
+
+[node name="Geist2" parent="Enemies/Luft" instance=ExtResource("7_geist")]
+position = Vector2(4996, 580)
+
+[node name="MonsterCreature2" parent="Enemies/Luft" instance=ExtResource("19_c8xrr")]
+position = Vector2(4683, 1936)
+
+[node name="Geist3" parent="Enemies/Luft" instance=ExtResource("7_geist")]
+position = Vector2(2414, 918)
+
+[node name="MonsterCreature3" parent="Enemies/Luft" instance=ExtResource("19_c8xrr")]
+position = Vector2(5436, 3508)
+
+[node name="Geist4" parent="Enemies/Luft" instance=ExtResource("7_geist")]
+position = Vector2(3743, 2724)
+
+[node name="MonsterCreature4" parent="Enemies/Luft" instance=ExtResource("19_c8xrr")]
+position = Vector2(3026, 3340)
+
+[node name="Boden" type="Node2D" parent="Enemies"]
+
+[node name="FireWorm" parent="Enemies/Boden" instance=ExtResource("18_2oco1")]
+position = Vector2(3924, 5130)
+
+[node name="FireWorm3" parent="Enemies/Boden" instance=ExtResource("18_2oco1")]
+position = Vector2(3414, 5130)
+
+[node name="FireWorm4" parent="Enemies/Boden" instance=ExtResource("18_2oco1")]
+position = Vector2(2835, 5145)
+
+[node name="FireWorm2" parent="Enemies/Boden" instance=ExtResource("18_2oco1")]
+position = Vector2(5435, 5149)
+
+[node name="FireWorm5" parent="Enemies/Boden" instance=ExtResource("18_2oco1")]
+position = Vector2(5757, 5116)
+
+[node name="CorpseTrap" parent="Enemies/Boden" instance=ExtResource("20_uhlgo")]
+position = Vector2(2990, 5157)
+
+[node name="GuardianStatue" parent="Enemies/Boden" instance=ExtResource("21_a02lo")]
+position = Vector2(8790, 1763)
+scale = Vector2(0.48034, 0.48034)
+
+[node name="GuardianStatue2" parent="Enemies/Boden" instance=ExtResource("21_a02lo")]
+position = Vector2(9130, 1761)
+scale = Vector2(0.48034, 0.48034)
+
+[node name="GuardianStatue3" parent="Enemies/Boden" instance=ExtResource("21_a02lo")]
+position = Vector2(7255, 1162)
+scale = Vector2(0.48034, 0.48034)
+
+[node name="GuardianStatue4" parent="Enemies/Boden" instance=ExtResource("21_a02lo")]
+position = Vector2(7595, 1160)
+scale = Vector2(0.48034, 0.48034)
+
+[node name="Untote1" parent="Enemies/Boden" instance=ExtResource("6_untote")]
+position = Vector2(6113, 5111)
+
+[node name="Untote2" parent="Enemies/Boden" instance=ExtResource("6_untote")]
+position = Vector2(6674, 5118)
+
+[node name="Untote3" parent="Enemies/Boden" instance=ExtResource("6_untote")]
+position = Vector2(6397, 5091)
+
+[node name="Untote4" parent="Enemies/Boden" instance=ExtResource("6_untote")]
+position = Vector2(8157, 5146)
+
+[node name="Untote5" parent="Enemies/Boden" instance=ExtResource("6_untote")]
+position = Vector2(8718, 5153)
+
+[node name="Untote6" parent="Enemies/Boden" instance=ExtResource("6_untote")]
+position = Vector2(8441, 5126)
 
 [node name="Doors" type="Node2D" parent="."]
 
@@ -340,6 +448,18 @@ rotation = 0.0310916
 platform_width = 444.0
 platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
 
+[node name="Tier19" parent="PassThroughPlatforms" instance=ExtResource("9_830uw")]
+position = Vector2(-1067.25, -401.221)
+rotation = 0.0158183
+platform_width = 444.0
+platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
+
+[node name="Tier21" parent="PassThroughPlatforms" instance=ExtResource("9_830uw")]
+position = Vector2(-893.533, 274.996)
+rotation = 0.0158183
+platform_width = 444.0
+platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
+
 [node name="Tier8" parent="PassThroughPlatforms" instance=ExtResource("9_830uw")]
 position = Vector2(-1183.89, -1716.79)
 rotation = 0.0310916
@@ -361,6 +481,12 @@ platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
 [node name="Tier9" parent="PassThroughPlatforms" instance=ExtResource("9_830uw")]
 position = Vector2(-1893.03, -1747.81)
 rotation = 0.0310916
+platform_width = 444.0
+platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
+
+[node name="Tier20" parent="PassThroughPlatforms" instance=ExtResource("9_830uw")]
+position = Vector2(-1802.23, -2080.53)
+rotation = 0.32529
 platform_width = 444.0
 platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
 
@@ -401,12 +527,36 @@ platform_width = 888.0
 platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
 
 [node name="ClimbableArea" parent="." instance=ExtResource("10_1q160")]
-position = Vector2(8179, 1569)
+position = Vector2(8240, 1588)
+rotation = 0.779846
 area_width = 222.0
-area_height = 2000.0
+area_height = 1200.0
+
+[node name="ClimbableArea3" parent="." instance=ExtResource("10_1q160")]
+position = Vector2(7178, 2397)
+rotation = 0.0201902
+area_width = 222.0
+area_height = 1800.0
+
+[node name="ClimbableArea4" parent="." instance=ExtResource("10_1q160")]
+position = Vector2(7182, 4557)
+rotation = 0.0201902
+area_width = 222.0
+area_height = 1800.0
+
+[node name="ClimbableArea2" parent="." instance=ExtResource("10_1q160")]
+position = Vector2(1829, 4542)
+area_width = 100.0
+area_height = 555.0
+
+[node name="ClimbableArea5" parent="." instance=ExtResource("10_1q160")]
+position = Vector2(6978, 3417)
+rotation = -0.187876
+area_width = 222.0
+area_height = 1800.0
 
 [node name="Puzzles" type="Node2D" parent="."]
-position = Vector2(2527, 4205)
+position = Vector2(1587, 1898)
 
 [node name="R1_SequencePuzzle" type="Node2D" parent="Puzzles"]
 position = Vector2(200, 950)
@@ -460,7 +610,7 @@ crystal_id = 4
 can_reset = true
 
 [node name="PuzzleBlocks" type="Node2D" parent="."]
-position = Vector2(2527, 4205)
+position = Vector2(1587, 1898)
 
 [node name="Block1_Sequence" parent="PuzzleBlocks" instance=ExtResource("18_0lmfs")]
 position = Vector2(100, 100)
@@ -483,18 +633,6 @@ position = Vector2(700, 200)
 [node name="FallingRock2" parent="Traps" instance=ExtResource("19_lj6kx")]
 position = Vector2(1100, 250)
 
-[node name="FireWorm" parent="Traps" instance=ExtResource("18_2oco1")]
-position = Vector2(1517, 923)
-
-[node name="MonsterCreature" parent="Traps" instance=ExtResource("19_c8xrr")]
-position = Vector2(2464, 804)
-
-[node name="CorpseTrap" parent="Traps" instance=ExtResource("20_uhlgo")]
-position = Vector2(463, 952)
-
-[node name="GuardianStatue" parent="Traps" instance=ExtResource("21_a02lo")]
-position = Vector2(6619, -2533)
-
 [node name="Block1_Sequence" parent="." instance=ExtResource("18_0lmfs")]
 position = Vector2(2627, 4305)
 puzzle_controller = NodePath("../Puzzles/R1_SequencePuzzle/SequencePuzzleController")
@@ -511,7 +649,59 @@ puzzle_controller = NodePath("../Puzzles/R3_CrystalChainPuzzle/ChainPuzzleContro
 position = Vector2(2123, 4516)
 greeting = "Moin, ein Fischbrötchen?"
 
-[node name="ClimbableArea2" parent="." instance=ExtResource("10_1q160")]
-position = Vector2(1829, 4542)
-area_width = 100.0
-area_height = 555.0
+[node name="Dialoge" type="Node2D" parent="."]
+
+[node name="DiaPreTempel1" parent="Dialoge" instance=ExtResource("23_uhlgo")]
+position = Vector2(4304, 4360)
+
+[node name="DiaPreTempel2" parent="Dialoge" instance=ExtResource("23_uhlgo")]
+position = Vector2(4518, 4358)
+
+[node name="DiaPreTempel3" parent="Dialoge" instance=ExtResource("23_uhlgo")]
+position = Vector2(4739, 4354)
+
+[node name="DiaPreTempel4" parent="Dialoge" instance=ExtResource("23_uhlgo")]
+position = Vector2(4066, 4358)
+
+[node name="Wegweiser" type="Node2D" parent="."]
+
+[node name="Wegweise3" parent="Wegweiser" instance=ExtResource("24_ul0io")]
+position = Vector2(6816, 4120)
+
+[node name="Wegweise4" parent="Wegweiser" instance=ExtResource("24_ul0io")]
+position = Vector2(8136, 2976)
+
+[node name="Wegweise1" parent="Wegweiser" instance=ExtResource("24_a02lo")]
+position = Vector2(1607, 4110)
+
+[node name="Wegweise2" parent="Wegweiser" instance=ExtResource("24_a02lo")]
+position = Vector2(5014, 4281)
+
+[node name="Wegweise5" parent="Wegweiser" instance=ExtResource("24_a02lo")]
+position = Vector2(6198, 1653)
+rotation = -0.0180972
+
+[node name="Wegweise6" parent="Wegweiser" instance=ExtResource("24_a02lo")]
+position = Vector2(3775, 410)
+rotation = -0.0180972
+
+[node name="Wegweise7" parent="Wegweiser" instance=ExtResource("24_a02lo")]
+position = Vector2(1555, 393)
+rotation = -0.0180972
+
+[node name="Wegweise8" parent="Wegweiser" instance=ExtResource("24_a02lo")]
+position = Vector2(4229, 2729)
+rotation = -0.0180972
+
+[node name="Wegweise11" parent="Wegweiser" instance=ExtResource("24_a02lo")]
+position = Vector2(1568, 2779)
+rotation = -0.0180972
+
+[node name="Wegweise9" parent="Wegweiser" instance=ExtResource("26_4jwuu")]
+position = Vector2(10141, 4639)
+
+[node name="Wegweise12" parent="Wegweiser" instance=ExtResource("26_4jwuu")]
+position = Vector2(10145, 2738)
+
+[node name="Wegweise13" parent="Wegweiser" instance=ExtResource("26_4jwuu")]
+position = Vector2(10172, 843)

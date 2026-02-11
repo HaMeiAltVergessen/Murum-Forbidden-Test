@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://3qux34opa7wk"]
 
-[ext_resource type="Script" uid="uid://cjkw3jdoajvyq" path="res://puzzles/pressure_plate.gd" id="1"]
+[ext_resource type="Script" uid="uid://cjkm0a7d4p76x" path="res://puzzles/pressure_plate.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://ctbeeyty5qwop" path="res://Assets/Placeholder/Legacy Collection/Assets/Packs/asteroid-fighter/PNG/asteroids/asteroid-5.png" id="2_f174i"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_plate"]

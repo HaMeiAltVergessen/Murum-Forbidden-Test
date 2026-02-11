@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://o0fbrvsc2jxd"]
+
+[ext_resource type="Texture2D" uid="uid://c6k13enyilo34" path="res://Assets/AIAssets/AIStuff/Statue3.png" id="1_pf8ar"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ttp3e"]
+
+[node name="Wegweise1" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(42, -7)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("1_pf8ar")
+flip_h = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(17, -8)
+scale = Vector2(8.34971, 9.48319)
+shape = SubResource("CapsuleShape2D_ttp3e")

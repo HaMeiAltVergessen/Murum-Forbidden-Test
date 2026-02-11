@@ -41,7 +41,7 @@ Das Local Co-op System wurde implementiert, aber P2 (Lythrun) Abilities funktion
 ```gdscript
 # lythrun_player.gd versucht:
 if body.has_method("take_damage"):
-    body.take_damage(damage)  # ✗ BaseEnemy hat das nicht!
+	body.take_damage(damage)  # ✗ BaseEnemy hat das nicht!
 ```
 
 ---
@@ -59,10 +59,10 @@ if body.has_method("take_damage"):
 **Code VOR Fix:**
 ```gdscript
 if movement_controller:
-    # Let movement controller handle movement
-    pass  # ❌ NICHTS PASSIERT!
+	# Let movement controller handle movement
+	pass  # ❌ NICHTS PASSIERT!
 else:
-    # Fallback wird nie erreicht
+	# Fallback wird nie erreicht
 ```
 
 **Symptom:**

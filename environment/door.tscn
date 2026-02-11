@@ -1,24 +1,21 @@
-[gd_scene load_steps=5 format=3 uid="uid://brmqwmhp0lbtt"]
+[gd_scene load_steps=4 format=3 uid="uid://brmqwmhp0lbtt"]
 
-[ext_resource type="Script" path="res://environment/door.gd" id="1_door"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Packs/Meta data assets files/Visuals/OBJECTS/sprites/door-blue.png" id="2_door"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
-size = Vector2(64, 96)
+[ext_resource type="Script" uid="uid://2jypdg4vx0n2" path="res://environment/door.gd" id="1_door"]
+[ext_resource type="Texture2D" uid="uid://de17b4ymmy0ir" path="res://Assets/AIAssets/AIStuff/Door.png" id="2_are4n"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_interaction"]
-size = Vector2(100, 120)
+size = Vector2(338, 345)
 
 [node name="Door" type="Area2D"]
-collision_layer = 1
 collision_mask = 2
 script = ExtResource("1_door")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(3, 3)
-texture = ExtResource("2_door")
+position = Vector2(-8, 238)
+texture = ExtResource("2_are4n")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -60)
 shape = SubResource("RectangleShape2D_interaction")
 
 [node name="PromptLabel" type="Label" parent="."]

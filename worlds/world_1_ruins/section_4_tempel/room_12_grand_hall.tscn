@@ -1,7 +1,8 @@
-[gd_scene load_steps=32 format=3 uid="uid://olootelhiqjq"]
+[gd_scene load_steps=39 format=3 uid="uid://olootelhiqjq"]
 
 [ext_resource type="Script" uid="uid://86josincpmca" path="res://worlds/world_1_ruins/section_1_entrance/room_01_entry.gd" id="1_u8d88"]
-[ext_resource type="Texture2D" uid="uid://bd2i5fqltb4d8" path="res://Assets/AIPlaceholder/world01Tempel.png" id="2_5ostq"]
+[ext_resource type="Texture2D" uid="uid://dg2j7sphue6ht" path="res://Assets/AIAssets/tempel01.jpg" id="2_e218r"]
+[ext_resource type="Texture2D" uid="uid://dp5u78xhbo2pa" path="res://Assets/AIPlaceholder/From_this_rough_level_layout_m_GPT_Image_15_55020.jpg" id="2_xlmm0"]
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="5_vsw77"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="6_quvsr"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="6_wvoon"]
@@ -27,6 +28,12 @@
 [ext_resource type="PackedScene" uid="uid://dkc8y7x0ij6nw" path="res://enemies/untote.tscn" id="25_jrtjq"]
 [ext_resource type="PackedScene" path="res://enemies/placeholder/dark_fantasy.tscn" id="26_alafv"]
 [ext_resource type="PackedScene" uid="uid://dmlqfkn08pb4u" path="res://enemies/placeholder/cthulu.tscn" id="27_3tmbj"]
+[ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="28_xlmm0"]
+[ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="30_j8g0h"]
+[ext_resource type="PackedScene" uid="uid://dfrjdwjipd0ex" path="res://environment/Wegweise1.tscn" id="31_jrtjq"]
+[ext_resource type="PackedScene" uid="uid://du2kjq0xuewvi" path="res://environment/WegweiseDOWN.tscn" id="32_3tmbj"]
+[ext_resource type="PackedScene" uid="uid://o0fbrvsc2jxd" path="res://environment/Wegweise2.tscn" id="32_alafv"]
+[ext_resource type="PackedScene" uid="uid://d4me34losr7im" path="res://environment/WegweiseDOWN2.tscn" id="33_k8gvf"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(4617, 183)
@@ -43,80 +50,15 @@ size = Vector2(20, 26.0255)
 [node name="Room01Entry" type="Node2D"]
 script = ExtResource("1_u8d88")
 
+[node name="Tempel01" type="Sprite2D" parent="."]
+position = Vector2(1669, -887)
+texture = ExtResource("2_e218r")
+
 [node name="BackLayer" type="Sprite2D" parent="."]
 z_index = -3
-position = Vector2(4428, 1045)
-scale = Vector2(1.42315, 1.42315)
-texture = ExtResource("2_5ostq")
-
-[node name="Tier2" parent="BackLayer" instance=ExtResource("6_wvoon")]
-position = Vector2(1233.18, 1935.85)
-rotation = -0.496201
-platform_width = 444.0
-platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
-
-[node name="PassThroughPlatform" parent="BackLayer" instance=ExtResource("6_wvoon")]
-position = Vector2(-224.151, -805.959)
-rotation = 0.509296
-platform_width = 555.0
-
-[node name="PassThroughPlatform6" parent="BackLayer" instance=ExtResource("6_wvoon")]
-position = Vector2(-2167.02, 654.885)
-rotation = -0.0215502
-platform_width = 555.0
-
-[node name="PassThroughPlatform12" parent="BackLayer" instance=ExtResource("6_wvoon")]
-position = Vector2(-2170.54, -177.775)
-rotation = 0.658274
-platform_width = 555.0
-
-[node name="PassThroughPlatform7" parent="BackLayer" instance=ExtResource("6_wvoon")]
-position = Vector2(-396.304, 1123.56)
-rotation = -0.410442
-platform_width = 555.0
-
-[node name="PassThroughPlatform8" parent="BackLayer" instance=ExtResource("6_wvoon")]
-position = Vector2(627.481, 951.411)
-rotation = -0.410442
-platform_width = 555.0
-
-[node name="PassThroughPlatform9" parent="BackLayer" instance=ExtResource("6_wvoon")]
-position = Vector2(1592.95, 592.348)
-rotation = -0.410442
-platform_width = 888.0
-
-[node name="PassThroughPlatform10" parent="BackLayer" instance=ExtResource("6_wvoon")]
-position = Vector2(-1505.11, 1769.31)
-rotation = -0.410442
-platform_width = 555.0
-
-[node name="PassThroughPlatform11" parent="BackLayer" instance=ExtResource("6_wvoon")]
-position = Vector2(-392.791, 1227.56)
-rotation = 0.411621
-platform_width = 555.0
-
-[node name="PassThroughPlatform2" parent="BackLayer" instance=ExtResource("6_wvoon")]
-position = Vector2(195.341, -629.589)
-rotation = 0.00162117
-platform_width = 555.0
-
-[node name="PassThroughPlatform4" parent="BackLayer" instance=ExtResource("6_wvoon")]
-position = Vector2(1543.76, -1032.22)
-rotation = -0.654366
-platform_width = 555.0
-
-[node name="PassThroughPlatform5" parent="BackLayer" instance=ExtResource("6_wvoon")]
-position = Vector2(2181.78, -1232.48)
-rotation = -0.586263
-platform_width = 555.0
-
-[node name="PassThroughPlatform3" parent="BackLayer" instance=ExtResource("6_wvoon")]
-position = Vector2(1838.88, -1618.94)
-rotation = 0.00162117
-platform_width = 555.0
-
-[node name="TileMap" type="TileMap" parent="."]
-format = 2
+position = Vector2(4415, 1002)
+scale = Vector2(2.68704, 2.68704)
+texture = ExtResource("2_xlmm0")
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(0, 640)
@@ -224,10 +166,6 @@ rotation = -0.224676
 scale = Vector2(43.1295, 4.32644)
 shape = SubResource("RectangleShape2D_spovd")
 
-[node name="Sprite2D" type="Sprite2D" parent="wall1"]
-position = Vector2(-239, 270)
-scale = Vector2(0.696731, 0.483144)
-
 [node name="wall2" type="StaticBody2D" parent="."]
 position = Vector2(2459, -638)
 rotation = -0.112718
@@ -237,10 +175,6 @@ position = Vector2(585.922, 389.375)
 rotation = 0.104789
 scale = Vector2(24.3078, 8.13701)
 shape = SubResource("RectangleShape2D_spovd")
-
-[node name="Sprite2D" type="Sprite2D" parent="wall2"]
-position = Vector2(-239, 257)
-scale = Vector2(0.696731, 0.483144)
 
 [node name="wall3" type="StaticBody2D" parent="."]
 position = Vector2(1318, -928)
@@ -252,6 +186,12 @@ shape = SubResource("RectangleShape2D_spovd")
 
 [node name="CollisionShape2D3" type="CollisionShape2D" parent="wall3"]
 position = Vector2(3599, 3367)
+scale = Vector2(37.925, 2.55013)
+shape = SubResource("RectangleShape2D_spovd")
+
+[node name="CollisionShape2D15" type="CollisionShape2D" parent="wall3"]
+position = Vector2(5338, 2851)
+rotation = 0.00517151
 scale = Vector2(37.925, 2.55013)
 shape = SubResource("RectangleShape2D_spovd")
 
@@ -315,10 +255,6 @@ position = Vector2(2982, 2314)
 scale = Vector2(71.4694, -10.7967)
 shape = SubResource("RectangleShape2D_spovd")
 
-[node name="Sprite2D" type="Sprite2D" parent="wall3"]
-position = Vector2(-239, 257)
-scale = Vector2(0.696731, 0.483144)
-
 [node name="wall4" type="StaticBody2D" parent="."]
 position = Vector2(2620, -1146)
 
@@ -353,7 +289,7 @@ scale = Vector2(40.9483, 4.94429)
 shape = SubResource("RectangleShape2D_spovd")
 
 [node name="CollisionShape2D11" type="CollisionShape2D" parent="wall4"]
-position = Vector2(415, 3995)
+position = Vector2(391, 3936)
 rotation = -0.0169372
 scale = Vector2(56.8048, 3.84931)
 shape = SubResource("RectangleShape2D_spovd")
@@ -524,29 +460,167 @@ position = Vector2(300, 600)
 
 [node name="enemys" type="Node2D" parent="."]
 
-[node name="MonsterCreature" parent="enemys" instance=ExtResource("19_ka3b0")]
-position = Vector2(2500, -1038)
+[node name="Boden" type="Node2D" parent="enemys"]
 
-[node name="Golem" parent="enemys" instance=ExtResource("20_xlmm0")]
+[node name="Golem" parent="enemys/Boden" instance=ExtResource("20_xlmm0")]
 position = Vector2(3763, -602)
 
-[node name="FireWorm" parent="enemys" instance=ExtResource("21_e218r")]
+[node name="FireWorm" parent="enemys/Boden" instance=ExtResource("21_e218r")]
 position = Vector2(3487, -292)
 
-[node name="GuardianStatue" parent="enemys" instance=ExtResource("22_3r7yw")]
+[node name="GuardianStatue" parent="enemys/Boden" instance=ExtResource("22_3r7yw")]
 position = Vector2(4276, -749)
 
-[node name="Geist" parent="enemys" instance=ExtResource("23_fagy2")]
+[node name="Geist" parent="enemys/Boden" instance=ExtResource("23_fagy2")]
 position = Vector2(3047, -799)
 
-[node name="CorpseTrap" parent="enemys" instance=ExtResource("24_j8g0h")]
+[node name="CorpseTrap" parent="enemys/Boden" instance=ExtResource("24_j8g0h")]
 position = Vector2(3067, -441)
 
-[node name="Untote" parent="enemys" instance=ExtResource("25_jrtjq")]
+[node name="Untote" parent="enemys/Boden" instance=ExtResource("25_jrtjq")]
 position = Vector2(565, -273)
 
-[node name="DarkFantasy" parent="enemys" instance=ExtResource("26_alafv")]
+[node name="Cthulu" parent="enemys/Boden" instance=ExtResource("27_3tmbj")]
+position = Vector2(4873, -1348)
+
+[node name="Luft" type="Node2D" parent="enemys"]
+
+[node name="MonsterCreature" parent="enemys/Luft" instance=ExtResource("19_ka3b0")]
+position = Vector2(2500, -1038)
+
+[node name="DarkFantasy" parent="enemys/Luft" instance=ExtResource("26_alafv")]
 position = Vector2(4043, -982)
 
-[node name="Cthulu" parent="enemys" instance=ExtResource("27_3tmbj")]
-position = Vector2(4873, -1348)
+[node name="Dialogs" type="Node2D" parent="."]
+
+[node name="DiaTempel1" parent="Dialogs" instance=ExtResource("28_xlmm0")]
+position = Vector2(263, 634)
+
+[node name="DiaTempel2" parent="Dialogs" instance=ExtResource("28_xlmm0")]
+position = Vector2(399, 752)
+
+[node name="DiaTempel3" parent="Dialogs" instance=ExtResource("28_xlmm0")]
+position = Vector2(1000, 761)
+
+[node name="DiaTempel4" parent="Dialogs" instance=ExtResource("28_xlmm0")]
+position = Vector2(802, 667)
+
+[node name="DiaTempel5" parent="Dialogs" instance=ExtResource("28_xlmm0")]
+position = Vector2(536, 747)
+
+[node name="Tier2" parent="." instance=ExtResource("6_wvoon")]
+position = Vector2(6183, 3800)
+rotation = -0.496201
+scale = Vector2(1.42315, 1.42315)
+platform_width = 444.0
+platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
+
+[node name="PassThroughPlatform" parent="." instance=ExtResource("6_wvoon")]
+position = Vector2(4109, -102)
+rotation = 0.509296
+scale = Vector2(1.42315, 1.42315)
+platform_width = 555.0
+
+[node name="PassThroughPlatform6" parent="." instance=ExtResource("6_wvoon")]
+position = Vector2(1344.01, 1977)
+rotation = -0.0215502
+scale = Vector2(1.42315, 1.42315)
+platform_width = 555.0
+
+[node name="PassThroughPlatform12" parent="." instance=ExtResource("6_wvoon")]
+position = Vector2(1339, 792)
+rotation = 0.658274
+scale = Vector2(1.42315, 1.42315)
+platform_width = 555.0
+
+[node name="PassThroughPlatform7" parent="." instance=ExtResource("6_wvoon")]
+position = Vector2(3864, 2643.99)
+rotation = -0.410442
+scale = Vector2(1.42315, 1.42315)
+platform_width = 555.0
+
+[node name="PassThroughPlatform8" parent="." instance=ExtResource("6_wvoon")]
+position = Vector2(5321, 2399)
+rotation = -0.410442
+scale = Vector2(1.42315, 1.42315)
+platform_width = 555.0
+
+[node name="PassThroughPlatform9" parent="." instance=ExtResource("6_wvoon")]
+position = Vector2(6695.01, 1888)
+rotation = -0.410442
+scale = Vector2(1.42315, 1.42315)
+platform_width = 888.0
+
+[node name="PassThroughPlatform10" parent="." instance=ExtResource("6_wvoon")]
+position = Vector2(2286, 3562.99)
+rotation = -0.410442
+scale = Vector2(1.42315, 1.42315)
+platform_width = 555.0
+
+[node name="PassThroughPlatform11" parent="." instance=ExtResource("6_wvoon")]
+position = Vector2(3869, 2792)
+rotation = 0.411621
+scale = Vector2(1.42315, 1.42315)
+platform_width = 555.0
+
+[node name="PassThroughPlatform2" parent="." instance=ExtResource("6_wvoon")]
+position = Vector2(4706, 149)
+rotation = 0.00162117
+scale = Vector2(1.42315, 1.42315)
+platform_width = 555.0
+
+[node name="PassThroughPlatform4" parent="." instance=ExtResource("6_wvoon")]
+position = Vector2(6625, -424.004)
+rotation = -0.654366
+scale = Vector2(1.42315, 1.42315)
+platform_width = 555.0
+
+[node name="PassThroughPlatform5" parent="." instance=ExtResource("6_wvoon")]
+position = Vector2(7533, -709.004)
+rotation = -0.586263
+scale = Vector2(1.42315, 1.42315)
+platform_width = 555.0
+
+[node name="PassThroughPlatform3" parent="." instance=ExtResource("6_wvoon")]
+position = Vector2(7045, -1258.99)
+rotation = 0.00162117
+scale = Vector2(1.42315, 1.42315)
+platform_width = 555.0
+
+[node name="Treppen" type="Node2D" parent="."]
+
+[node name="ClimbableArea" parent="Treppen" instance=ExtResource("30_j8g0h")]
+position = Vector2(3947, 2786)
+rotation = -1.06124
+
+[node name="Wegweiser" type="Node2D" parent="."]
+
+[node name="Wegweise1" parent="Wegweiser" instance=ExtResource("31_jrtjq")]
+position = Vector2(141, 3336)
+
+[node name="Wegweise9" parent="Wegweiser" instance=ExtResource("32_3tmbj")]
+position = Vector2(2514, 2592)
+
+[node name="Wegweise3" parent="Wegweiser" instance=ExtResource("33_k8gvf")]
+position = Vector2(8524, -1198)
+
+[node name="Wegweise5" parent="Wegweiser" instance=ExtResource("33_k8gvf")]
+position = Vector2(7164, 793)
+
+[node name="Wegweise10" parent="Wegweiser" instance=ExtResource("33_k8gvf")]
+position = Vector2(7653, 1560)
+
+[node name="Wegweise8" parent="Wegweiser" instance=ExtResource("33_k8gvf")]
+position = Vector2(3110, 1349)
+
+[node name="Wegweise4" parent="Wegweiser" instance=ExtResource("32_3tmbj")]
+position = Vector2(3303, -350)
+
+[node name="Wegweise7" parent="Wegweiser" instance=ExtResource("32_3tmbj")]
+position = Vector2(1276, 671)
+
+[node name="Wegweise6" parent="Wegweiser" instance=ExtResource("32_3tmbj")]
+position = Vector2(421, 1538)
+
+[node name="Wegweise2" parent="Wegweiser" instance=ExtResource("32_alafv")]
+position = Vector2(8481, 3232)
