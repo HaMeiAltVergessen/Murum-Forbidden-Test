@@ -1,13 +1,16 @@
-[gd_scene load_steps=12 format=3 uid="uid://7ihc7pexmcfv"]
+[gd_scene load_steps=16 format=3 uid="uid://7ihc7pexmcfv"]
 
 [ext_resource type="Script" uid="uid://86josincpmca" path="res://worlds/world_1_ruins/section_1_entrance/room_01_entry.gd" id="1_r7ri1"]
 [ext_resource type="Texture2D" uid="uid://bj3q3horof56u" path="res://Assets/AIAssets/tempel03.jpg" id="2_r7ri1"]
+[ext_resource type="PackedScene" uid="uid://bk7a8n73qcfla" path="res://environment/pickups/pickup_base.tscn" id="2_vebk3"]
+[ext_resource type="PackedScene" uid="uid://dfrjdwjipd0ex" path="res://environment/Wegweise1.tscn" id="3_boql1"]
 [ext_resource type="Texture2D" uid="uid://dn2lx3evnqpsh" path="res://Assets/AIAssets/Tempel02.jpg" id="3_c01ak"]
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="5_orlp3"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="6_s7ats"]
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="7_lc7am"]
 [ext_resource type="AudioStream" uid="uid://l06dl0uy336p" path="res://Music/Welt 01 temple.mp3" id="8_dokhw"]
-[ext_resource type="PackedScene" uid="uid://cakx4m2v7pqrs" path="res://environment/interactables/lever.tscn" id="8_o48h4"]
+[ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="10_ynbqa"]
+[ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="11_m1d6d"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(4617, 80)
@@ -18,8 +21,15 @@ size = Vector2(43, 3336.5)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_deathbox"]
 size = Vector2(4718.5, 192.497)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qruq8"]
+size = Vector2(400, 40)
+
 [node name="Room01Entry" type="Node2D"]
 script = ExtResource("1_r7ri1")
+
+[node name="Wegweise1" parent="." instance=ExtResource("3_boql1")]
+position = Vector2(141, 443)
+scale = Vector2(2.5479, 2.5479)
 
 [node name="BackLayer" type="Sprite2D" parent="."]
 z_index = -3
@@ -93,20 +103,12 @@ facing_direction = -1
 
 [node name="Doors" type="Node2D" parent="."]
 
-[node name="DoorToTestRoom" parent="Doors" instance=ExtResource("7_lc7am")]
-position = Vector2(31, 725)
-target_scene = "res://worlds/world_1_ruins/section_4_tempel/room_12_grand_hall.tscn"
-spawn_position = Vector2(1600, 900)
-
 [node name="DoorToRoom02" parent="Doors" instance=ExtResource("7_lc7am")]
 position = Vector2(3022, 709)
-target_scene = "res://worlds/world_1_ruins/section_3_tempel_outside/room_11_temple_entrance.tscn"
-spawn_position = Vector2(200, 640)
+target_scene = "res://worlds/world_1_ruins/section_4_tempel/TutorialRoom02.tscn"
+spawn_position = Vector2(0, 0)
 
 [node name="Environment" type="Node2D" parent="."]
-
-[node name="Lever" parent="Environment" instance=ExtResource("8_o48h4")]
-position = Vector2(900, 600)
 
 [node name="MusicBackground" type="AudioStreamPlayer2D" parent="."]
 position = Vector2(1513, 358)
@@ -115,3 +117,31 @@ volume_db = -8.0
 autoplay = true
 max_distance = 200000.0
 parameters/looping = false
+
+[node name="ClimbableArea" parent="." instance=ExtResource("10_ynbqa")]
+position = Vector2(810, 454)
+area_height = 333.0
+
+[node name="Platform1_Left" type="StaticBody2D" parent="ClimbableArea"]
+position = Vector2(280, 84)
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="ClimbableArea/Platform1_Left"]
+position = Vector2(641, -232)
+shape = SubResource("RectangleShape2D_qruq8")
+
+[node name="Visual" type="ColorRect" parent="ClimbableArea/Platform1_Left/CollisionShape2D2"]
+offset_left = -206.0
+offset_top = -17.0
+offset_right = 194.0
+offset_bottom = 23.0
+color = Color(0.35, 0.35, 0.4, 1)
+
+[node name="PassThroughPlatform" parent="ClimbableArea" instance=ExtResource("11_m1d6d")]
+position = Vector2(-36, 8)
+
+[node name="PassThroughPlatform2" parent="ClimbableArea" instance=ExtResource("11_m1d6d")]
+position = Vector2(361, -99)
+
+[node name="Pickup_titanenblut_stein" parent="ClimbableArea" instance=ExtResource("2_vebk3")]
+position = Vector2(949, -221)
+item_id = "titanenblut_stein"

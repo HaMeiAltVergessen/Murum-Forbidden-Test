@@ -752,7 +752,7 @@ interaction_size = Vector2(222, 120)
 glow_energy = 0.9
 
 [node name="DiaTutorail" parent="Dialogs" instance=ExtResource("12_ry1fm")]
-position = Vector2(711, 571)
+position = Vector2(421, 527)
 scale = Vector2(2.41924, 2.20987)
 dialog_singleplayer = ExtResource("19_twqj3")
 dialog_coop = ExtResource("19_twqj3")
@@ -835,3 +835,9 @@ area_height = 888.0
 position = Vector2(10053, 596.001)
 scale = Vector2(2.59096, 2.59096)
 item_id = "heilkraeuter"
+
+[node name="Door" parent="." instance=ExtResource("3_door")]
+position = Vector2(814, 613)
+scale = Vector2(0.314998, 0.314998)
+target_scene = "res://worlds/world_1_ruins/section_4_tempel/TutorialRoom01.tscn"
+spawn_position = Vector2(0, 0)

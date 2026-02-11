@@ -1,7 +1,7 @@
 [gd_scene load_steps=11 format=3 uid="uid://b7yq7v8xoycin"]
 
 [ext_resource type="Script" uid="uid://re2sh6bilyhi" path="res://levels/item_room.gd" id="1"]
-[ext_resource type="PackedScene" path="res://environment/pickups/pickup_base.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://bk7a8n73qcfla" path="res://environment/pickups/pickup_base.tscn" id="3"]
 [ext_resource type="Script" uid="uid://2jypdg4vx0n2" path="res://environment/door.gd" id="4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
@@ -72,6 +72,9 @@ horizontal_alignment = 1
 position = Vector2(350, 350)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Platform1_Left"]
+shape = SubResource("RectangleShape2D_platform_segment")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Platform1_Left"]
 shape = SubResource("RectangleShape2D_platform_segment")
 
 [node name="Visual" type="ColorRect" parent="Platform1_Left"]

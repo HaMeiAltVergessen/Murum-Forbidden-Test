@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=3 uid="uid://dbvhxpr5y6bww"]
+[gd_scene load_steps=44 format=3 uid="uid://dbvhxpr5y6bww"]
 
 [ext_resource type="Script" uid="uid://cc2sp6gtbqbnh" path="res://levels/test_room.gd" id="1_test_room_script"]
 [ext_resource type="Texture2D" uid="uid://q47f0nofwgxj" path="res://Assets/AIAssets/11a02050-3ac3-4fdb-9da2-f063590399d3.jpg" id="2_lapnv"]
@@ -19,8 +19,7 @@
 [ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="4_spike_trap_scene"]
 [ext_resource type="PackedScene" uid="uid://cakx4m2v7pqrs" path="res://environment/interactables/lever.tscn" id="5_lever_scene"]
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="6_door_scene"]
-[ext_resource type="PackedScene" uid="uid://cnwm5dx2vx7b4" path="res://ui/death_screen.tscn" id="8_death_screen_scene"]
-[ext_resource type="PackedScene" path="res://environment/pickups/pickup_base.tscn" id="10_pickup_scene"]
+[ext_resource type="PackedScene" uid="uid://bk7a8n73qcfla" path="res://environment/pickups/pickup_base.tscn" id="10_pickup_scene"]
 [ext_resource type="PackedScene" path="res://camera/coop_camera.tscn" id="11_coop_camera"]
 [ext_resource type="PackedScene" path="res://camera/split_screen_manager.tscn" id="12_split_screen"]
 [ext_resource type="PackedScene" uid="uid://c5nx05ybb3oul" path="res://puzzles/scenes/controllers/puzzle_block.tscn" id="13_puzzle_block"]
