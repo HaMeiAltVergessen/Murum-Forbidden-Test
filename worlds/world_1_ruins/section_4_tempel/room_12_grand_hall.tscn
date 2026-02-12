@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://olootelhiqjq"]
+[gd_scene load_steps=40 format=3 uid="uid://olootelhiqjq"]
 
 [ext_resource type="Script" uid="uid://86josincpmca" path="res://worlds/world_1_ruins/section_1_entrance/room_01_entry.gd" id="1_u8d88"]
 [ext_resource type="Texture2D" uid="uid://dg2j7sphue6ht" path="res://Assets/AIAssets/tempel01.jpg" id="2_e218r"]
@@ -29,6 +29,7 @@
 [ext_resource type="PackedScene" path="res://enemies/placeholder/dark_fantasy.tscn" id="26_alafv"]
 [ext_resource type="PackedScene" uid="uid://dmlqfkn08pb4u" path="res://enemies/placeholder/cthulu.tscn" id="27_3tmbj"]
 [ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="28_xlmm0"]
+[ext_resource type="Resource" path="res://data/dialogs/dia_tempel1.tres" id="29_dia_t1"]
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="30_j8g0h"]
 [ext_resource type="PackedScene" uid="uid://dfrjdwjipd0ex" path="res://environment/Wegweise1.tscn" id="31_jrtjq"]
 [ext_resource type="PackedScene" uid="uid://du2kjq0xuewvi" path="res://environment/WegweiseDOWN.tscn" id="32_3tmbj"]
@@ -654,6 +655,9 @@ position = Vector2(7996, 666)
 
 [node name="DiaTempel1" parent="Dialogs" instance=ExtResource("28_xlmm0")]
 position = Vector2(263, 634)
+dialog_singleplayer = ExtResource("29_dia_t1")
+interaction_size = Vector2(222, 120)
+glow_energy = 0.9
 
 [node name="DiaTempel2" parent="Dialogs" instance=ExtResource("28_xlmm0")]
 position = Vector2(399, 752)

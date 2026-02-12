@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://d3e3xq3cwg6s"]
+[gd_scene load_steps=23 format=3 uid="uid://d3e3xq3cwg6s"]
 
 [ext_resource type="Script" uid="uid://86josincpmca" path="res://worlds/world_1_ruins/section_1_entrance/room_01_entry.gd" id="1_a4m1n"]
 [ext_resource type="Texture2D" uid="uid://bj3q3horof56u" path="res://Assets/AIAssets/tempel03.jpg" id="2_dy2bj"]
@@ -17,6 +17,8 @@
 [ext_resource type="PackedScene" path="res://puzzles/scenes/components/timed_door.tscn" id="16_r3axs"]
 [ext_resource type="PackedScene" uid="uid://dfrjdwjipd0ex" path="res://environment/Wegweise1.tscn" id="17_nsgjo"]
 [ext_resource type="PackedScene" uid="uid://c5nx05ybb3oul" path="res://puzzles/scenes/controllers/puzzle_block.tscn" id="17_x4fac"]
+[ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="18_dialog"]
+[ext_resource type="Resource" path="res://data/dialogs/tutorial_puzzles.tres" id="19_tut_pz"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(4617, 80)
@@ -208,3 +210,12 @@ puzzle_controller = NodePath("../../Puzzles/R4_TimedDoorPuzzle/TimedDoorControll
 
 [node name="Wegweise1" parent="PuzzleBlocks" instance=ExtResource("17_nsgjo")]
 position = Vector2(-479, 836)
+
+[node name="Dialogs" type="Node2D" parent="."]
+
+[node name="TutorialPuzzles" parent="Dialogs" instance=ExtResource("18_dialog")]
+position = Vector2(350, 580)
+dialog_singleplayer = ExtResource("19_tut_pz")
+one_shot = false
+interaction_size = Vector2(222, 120)
+glow_energy = 0.9

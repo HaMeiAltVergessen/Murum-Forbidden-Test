@@ -1,0 +1,74 @@
+[gd_resource type="Resource" script_class="DialogData" load_steps=12 format=3 uid="uid://dia_pre_tempel1_sp"]
+
+[ext_resource type="Script" path="res://resources/dialog/dialog_data.gd" id="1_data"]
+[ext_resource type="Script" path="res://resources/dialog/dialog_entry.gd" id="2_entry"]
+[ext_resource type="Script" path="res://resources/dialog/dialog_choice.gd" id="3_choice"]
+
+[sub_resource type="Resource" id="Resource_entry1"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+speaker_sprite = null
+text = "Der Weg widerspricht sich."
+text_speed = 24.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_entry2"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+speaker_sprite = null
+text = "Wie du."
+text_speed = 20.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_entry3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+speaker_sprite = null
+text = "Jaja, alles irgendwo bedeutungslos."
+text_speed = 26.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_entry4"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+speaker_sprite = null
+text = "Und doch gehst du."
+text_speed = 22.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_entry5"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+speaker_sprite = null
+text = "Die Richtung ändert sich, vorwärts komm ich nicht."
+text_speed = 26.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_entry6"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+speaker_sprite = null
+text = "Der Ort spiegelt dich."
+text_speed = 22.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_entry7"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+speaker_sprite = null
+text = "Oder ich ihm."
+text_speed = 20.0
+choices = []
+
+[sub_resource type="Resource" id="Resource_entry8"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+speaker_sprite = null
+text = "War das ein Witz? Als ob."
+text_speed = 24.0
+choices = []
+
+[resource]
+script = ExtResource("1_data")
+dialog_id = "dia_pre_tempel1"
+entries = [SubResource("Resource_entry1"), SubResource("Resource_entry2"), SubResource("Resource_entry3"), SubResource("Resource_entry4"), SubResource("Resource_entry5"), SubResource("Resource_entry6"), SubResource("Resource_entry7"), SubResource("Resource_entry8")]
