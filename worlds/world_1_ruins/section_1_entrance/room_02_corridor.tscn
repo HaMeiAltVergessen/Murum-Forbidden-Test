@@ -657,6 +657,7 @@ puzzle_controller = NodePath("../Puzzles/R3_CrystalChainPuzzle/ChainPuzzleContro
 [node name="Merchant" parent="." instance=ExtResource("22_c8xrr")]
 position = Vector2(2123, 4516)
 greeting = "Moin, ein Fischbrötchen?"
+dialog_resource = ExtResource("25_merch1")
 
 [node name="Dialoge" type="Node2D" parent="."]
 
@@ -674,13 +675,6 @@ position = Vector2(4739, 4354)
 
 [node name="DiaPreTempel4" parent="Dialoge" instance=ExtResource("23_uhlgo")]
 position = Vector2(4066, 4358)
-
-[node name="MerchantDialog" parent="Dialoge" instance=ExtResource("23_uhlgo")]
-position = Vector2(2200, 4500)
-dialog_singleplayer = ExtResource("25_merch1")
-one_shot = true
-interaction_size = Vector2(222, 120)
-glow_energy = 0.7
 
 [node name="Wegweiser" type="Node2D" parent="."]
 

@@ -11,6 +11,12 @@ class_name Merchant
 @export var greeting: String = "Welcome, traveler."
 @export var shop_data_path: String = ""
 
+@export_group("Dialog")
+## Dialog fuer Singleplayer (wird vor dem Shop abgespielt)
+@export var dialog_resource: DialogData = null
+## Dialog fuer Coop (wenn Lythrun dabei ist)
+@export var dialog_coop: DialogData = null
+
 # ============================================================================
 # REFERENCES
 # ============================================================================
@@ -27,6 +33,7 @@ var player_in_range: bool = false
 var shop_data: Dictionary = {}
 var interaction_cooldown: float = 0.0
 const INTERACTION_COOLDOWN_TIME: float = 0.5
+var _waiting_for_dialog: bool = false
 
 # ============================================================================
 # INITIALIZATION
@@ -46,6 +53,10 @@ func _ready() -> void:
 		prompt_label.visible = false
 
 	add_to_group("merchants")
+
+	# Connect to dialog finished signal for dialog → shop flow
+	if EventBus:
+		EventBus.dialog_finished.connect(_on_dialog_finished)
 
 	print("[Merchant] %s ready" % merchant_name)
 
@@ -138,12 +149,26 @@ func _input(event: InputEvent) -> void:
 func _attempt_open_shop() -> void:
 	"""Attempts to open shop with cooldown protection"""
 
-	# Don't open if already open
-	if ShopManager.is_open():
+	# Don't open if already open or waiting for dialog
+	if ShopManager.is_open() or _waiting_for_dialog:
+		return
+
+	# Don't interact while dialog is active
+	if DialogManager and DialogManager.is_active:
 		return
 
 	# Set cooldown to prevent double-triggering
 	interaction_cooldown = INTERACTION_COOLDOWN_TIME
+
+	# If dialog is assigned, play it first — shop opens after dialog finishes
+	var use_coop := CoopManager != null and CoopManager.is_p2_active
+	var selected_dialog: DialogData = dialog_coop if use_coop and dialog_coop else dialog_resource
+
+	if selected_dialog and DialogManager:
+		_waiting_for_dialog = true
+		print("[Merchant] Starting dialog for %s" % merchant_name)
+		DialogManager.play_dialog_resource(selected_dialog)
+		return
 
 	print("[Merchant] Opening shop for %s" % merchant_name)
 	_open_shop()
@@ -160,6 +185,25 @@ func _open_shop() -> void:
 	ShopManager.open_shop(shop_data, merchant_name, greeting)
 
 	print("[Merchant] Shop opened: %s" % merchant_name)
+
+# ============================================================================
+# DIALOG
+# ============================================================================
+
+func _on_dialog_finished(dialog_id: String) -> void:
+	"""Called when any dialog finishes — open shop if we were waiting"""
+
+	if not _waiting_for_dialog:
+		return
+
+	# Verify this is our dialog
+	var use_coop := CoopManager != null and CoopManager.is_p2_active
+	var selected_dialog: DialogData = dialog_coop if use_coop and dialog_coop else dialog_resource
+
+	if selected_dialog and selected_dialog.dialog_id == dialog_id:
+		_waiting_for_dialog = false
+		print("[Merchant] Dialog finished, opening shop for %s" % merchant_name)
+		_open_shop()
 
 # ============================================================================
 # ANIMATIONS
