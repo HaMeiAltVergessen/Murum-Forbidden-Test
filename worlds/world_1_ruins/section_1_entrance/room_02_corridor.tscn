@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://csm4wax2ntpqr"]
+[gd_scene load_steps=32 format=3 uid="uid://csm4wax2ntpqr"]
 
 [ext_resource type="Script" uid="uid://dhherqlrd2s44" path="res://worlds/world_1_ruins/section_1_entrance/room_02_corridor.gd" id="1_room02"]
 [ext_resource type="Texture2D" uid="uid://bcf1bvmbq8p8g" path="res://Assets/AIPlaceholder/world1preTempel.png" id="2_ptyf6"]
@@ -23,6 +23,8 @@
 [ext_resource type="PackedScene" uid="uid://bxjm0m07w77dm" path="res://enemies/world_1_ruins/guardian_statue.tscn" id="21_a02lo"]
 [ext_resource type="PackedScene" uid="uid://b1w31ir4mmx8m" path="res://environment/npcs/world1_merchant.tscn" id="22_c8xrr"]
 [ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="23_uhlgo"]
+[ext_resource type="Resource" path="res://data/dialogs/dia_pre_tempel1.tres" id="24_dia_pt1"]
+[ext_resource type="Resource" path="res://data/dialogs/merchant_world1_loc1.tres" id="25_merch1"]
 [ext_resource type="PackedScene" uid="uid://dfrjdwjipd0ex" path="res://environment/Wegweise1.tscn" id="24_a02lo"]
 [ext_resource type="PackedScene" uid="uid://fsarw2nqycb6" path="res://environment/WegweiseUP.tscn" id="24_ul0io"]
 [ext_resource type="PackedScene" uid="uid://o0fbrvsc2jxd" path="res://environment/Wegweise2.tscn" id="26_4jwuu"]
@@ -660,6 +662,9 @@ greeting = "Moin, ein Fischbrötchen?"
 
 [node name="DiaPreTempel1" parent="Dialoge" instance=ExtResource("23_uhlgo")]
 position = Vector2(4304, 4360)
+dialog_singleplayer = ExtResource("24_dia_pt1")
+interaction_size = Vector2(222, 120)
+glow_energy = 0.9
 
 [node name="DiaPreTempel2" parent="Dialoge" instance=ExtResource("23_uhlgo")]
 position = Vector2(4518, 4358)
@@ -669,6 +674,13 @@ position = Vector2(4739, 4354)
 
 [node name="DiaPreTempel4" parent="Dialoge" instance=ExtResource("23_uhlgo")]
 position = Vector2(4066, 4358)
+
+[node name="MerchantDialog" parent="Dialoge" instance=ExtResource("23_uhlgo")]
+position = Vector2(2200, 4500)
+dialog_singleplayer = ExtResource("25_merch1")
+one_shot = true
+interaction_size = Vector2(222, 120)
+glow_energy = 0.7
 
 [node name="Wegweiser" type="Node2D" parent="."]
 

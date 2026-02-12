@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://7ihc7pexmcfv"]
+[gd_scene load_steps=18 format=3 uid="uid://7ihc7pexmcfv"]
 
 [ext_resource type="Script" uid="uid://86josincpmca" path="res://worlds/world_1_ruins/section_1_entrance/room_01_entry.gd" id="1_r7ri1"]
 [ext_resource type="Texture2D" uid="uid://bj3q3horof56u" path="res://Assets/AIAssets/tempel03.jpg" id="2_r7ri1"]
@@ -11,6 +11,8 @@
 [ext_resource type="AudioStream" uid="uid://l06dl0uy336p" path="res://Music/Welt 01 temple.mp3" id="8_dokhw"]
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="10_ynbqa"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="11_m1d6d"]
+[ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="12_dialog"]
+[ext_resource type="Resource" path="res://data/dialogs/tutorial_movement.tres" id="13_tut_mv"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(4617, 80)
@@ -145,3 +147,12 @@ position = Vector2(361, -99)
 [node name="Pickup_titanenblut_stein" parent="ClimbableArea" instance=ExtResource("2_vebk3")]
 position = Vector2(949, -221)
 item_id = "titanenblut_stein"
+
+[node name="Dialogs" type="Node2D" parent="."]
+
+[node name="TutorialMovement" parent="Dialogs" instance=ExtResource("12_dialog")]
+position = Vector2(350, 580)
+dialog_singleplayer = ExtResource("13_tut_mv")
+one_shot = false
+interaction_size = Vector2(222, 120)
+glow_energy = 0.9

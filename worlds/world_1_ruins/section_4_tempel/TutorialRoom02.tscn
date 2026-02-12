@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cx1y08d510wh8"]
+[gd_scene load_steps=16 format=3 uid="uid://cx1y08d510wh8"]
 
 [ext_resource type="Script" uid="uid://86josincpmca" path="res://worlds/world_1_ruins/section_1_entrance/room_01_entry.gd" id="1_l05ah"]
 [ext_resource type="Texture2D" uid="uid://bj3q3horof56u" path="res://Assets/AIAssets/tempel03.jpg" id="2_atm8n"]
@@ -10,6 +10,8 @@
 [ext_resource type="AudioStream" uid="uid://l06dl0uy336p" path="res://Music/Welt 01 temple.mp3" id="8_vwkpd"]
 [ext_resource type="PackedScene" uid="uid://bx7k2qn8nav4p" path="res://enemies/world_1_ruins/geist.tscn" id="9_m3i01"]
 [ext_resource type="PackedScene" uid="uid://dfrjdwjipd0ex" path="res://environment/Wegweise1.tscn" id="10_m3i01"]
+[ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="11_dialog"]
+[ext_resource type="Resource" path="res://data/dialogs/tutorial_combat.tres" id="12_tut_cb"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(4617, 80)
@@ -132,3 +134,12 @@ position = Vector2(1627, 412)
 
 [node name="Wegweise1" parent="." instance=ExtResource("10_m3i01")]
 position = Vector2(787, 603)
+
+[node name="Dialogs" type="Node2D" parent="."]
+
+[node name="TutorialCombat" parent="Dialogs" instance=ExtResource("11_dialog")]
+position = Vector2(350, 580)
+dialog_singleplayer = ExtResource("12_tut_cb")
+one_shot = false
+interaction_size = Vector2(222, 120)
+glow_energy = 0.9
