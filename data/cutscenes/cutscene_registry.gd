@@ -76,7 +76,7 @@ static func _register_all_cutscenes() -> void:
 	# ==========================================================================
 
 	var intro = CutsceneDefinition.new("intro", CutsceneType.VIDEO)
-	intro.video_path = "res://Assets/AIVids/Intro.ogv"
+	intro.video_path = "res://Assets/AIVids/AIRandomvid01.ogv"
 	intro.image_texts = [
 		"Vor langer Zeit existierte eine Welt voller Magie und Wunder...",
 		"Die alten Tempel bewahrten Geheimnisse, die kein Sterblicher verstehen sollte.",

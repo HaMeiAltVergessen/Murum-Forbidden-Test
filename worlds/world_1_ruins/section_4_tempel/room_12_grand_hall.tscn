@@ -15,13 +15,13 @@
 [ext_resource type="PackedScene" path="res://puzzles/scenes/controllers/chain_puzzle_controller.tscn" id="12_aor0m"]
 [ext_resource type="PackedScene" path="res://puzzles/scenes/components/puzzle_crystal.tscn" id="13_ktvvd"]
 [ext_resource type="PackedScene" path="res://puzzles/scenes/controllers/timed_door_controller.tscn" id="14_kg8fp"]
-[ext_resource type="PackedScene" path="res://puzzles/scenes/components/timed_door.tscn" id="15_n21yn"]
+[ext_resource type="PackedScene" uid="uid://beqj6dhsvcv31" path="res://puzzles/scenes/components/timed_door.tscn" id="15_n21yn"]
 [ext_resource type="PackedScene" uid="uid://c5nx05ybb3oul" path="res://puzzles/scenes/controllers/puzzle_block.tscn" id="16_ka3b0"]
 [ext_resource type="PackedScene" path="res://traps/scenes/falling_rock.tscn" id="17_xlmm0"]
 [ext_resource type="PackedScene" path="res://traps/scenes/arrow_trap.tscn" id="18_e218r"]
 [ext_resource type="PackedScene" uid="uid://c7m4lvjkpao0i" path="res://enemies/placeholder/monster_creature.tscn" id="19_ka3b0"]
 [ext_resource type="PackedScene" uid="uid://1cy58rjaliol" path="res://enemies/placeholder/golem.tscn" id="20_xlmm0"]
-[ext_resource type="PackedScene" path="res://enemies/placeholder/fire_worm.tscn" id="21_e218r"]
+[ext_resource type="PackedScene" uid="uid://c1muun1q15jb1" path="res://enemies/placeholder/fire_worm.tscn" id="21_e218r"]
 [ext_resource type="PackedScene" uid="uid://bxjm0m07w77dm" path="res://enemies/world_1_ruins/guardian_statue.tscn" id="22_3r7yw"]
 [ext_resource type="PackedScene" uid="uid://bx7k2qn8nav4p" path="res://enemies/world_1_ruins/geist.tscn" id="23_fagy2"]
 [ext_resource type="PackedScene" uid="uid://bp88htlho4s8e" path="res://enemies/world_1_ruins/corpse_trap.tscn" id="24_j8g0h"]
@@ -126,7 +126,8 @@ facing_direction = -1
 [node name="Doors" type="Node2D" parent="."]
 
 [node name="DoorToTestRoom" parent="Doors" instance=ExtResource("7_3qdk6")]
-position = Vector2(317, -454)
+position = Vector2(234, -574)
+scale = Vector2(0.441294, 0.441294)
 target_scene = "res://worlds/world_1_ruins/section_1_entrance/room_03_villageEntrance.tscn"
 spawn_position = Vector2(1600, 900)
 
@@ -222,8 +223,18 @@ scale = Vector2(19.3155, 3.0834)
 shape = SubResource("RectangleShape2D_spovd")
 
 [node name="CollisionShape2D6" type="CollisionShape2D" parent="wall3"]
-position = Vector2(4195, 4327)
+position = Vector2(4233, 4318)
 scale = Vector2(37.925, 2.55013)
+shape = SubResource("RectangleShape2D_spovd")
+
+[node name="CollisionShape2D20" type="CollisionShape2D" parent="wall3"]
+position = Vector2(3537, 4150)
+scale = Vector2(20.325, 2.55013)
+shape = SubResource("RectangleShape2D_spovd")
+
+[node name="CollisionShape2D21" type="CollisionShape2D" parent="wall3"]
+position = Vector2(3801, 4237)
+scale = Vector2(20.325, 4.05144)
 shape = SubResource("RectangleShape2D_spovd")
 
 [node name="CollisionShape2D11" type="CollisionShape2D" parent="wall3"]
@@ -259,6 +270,11 @@ shape = SubResource("RectangleShape2D_spovd")
 [node name="CollisionShape2D5" type="CollisionShape2D" parent="wall3"]
 position = Vector2(2292, 3608)
 scale = Vector2(28.04, -9.465)
+shape = SubResource("RectangleShape2D_spovd")
+
+[node name="CollisionShape2D19" type="CollisionShape2D" parent="wall3"]
+position = Vector2(2286, 3859)
+scale = Vector2(50.88, -9.465)
 shape = SubResource("RectangleShape2D_spovd")
 
 [node name="CollisionShape2D10" type="CollisionShape2D" parent="wall3"]
@@ -305,9 +321,9 @@ scale = Vector2(40.9483, 4.94429)
 shape = SubResource("RectangleShape2D_spovd")
 
 [node name="CollisionShape2D11" type="CollisionShape2D" parent="wall4"]
-position = Vector2(391, 3936)
+position = Vector2(1077, 4272)
 rotation = -0.0169372
-scale = Vector2(56.8048, 3.84931)
+scale = Vector2(55.2556, 9.71467)
 shape = SubResource("RectangleShape2D_spovd")
 
 [node name="CollisionShape2D9" type="CollisionShape2D" parent="wall4"]
@@ -323,8 +339,8 @@ scale = Vector2(40.9483, 4.94429)
 shape = SubResource("RectangleShape2D_spovd")
 
 [node name="CollisionShape2D10" type="CollisionShape2D" parent="wall4"]
-position = Vector2(-1320, 4090)
-rotation = 0.0231704
+position = Vector2(-1318, 4024)
+rotation = 0.005183
 scale = Vector2(116.45, 5.65575)
 shape = SubResource("RectangleShape2D_spovd")
 
@@ -411,6 +427,15 @@ position = Vector2(1000, 950)
 [node name="ChainPuzzleController" parent="Puzzles/R3_CrystalChainPuzzle" instance=ExtResource("12_aor0m")]
 required_crystals = 8
 puzzle_id = "test_room/r3_crystal_chain"
+
+[node name="ColorRect" type="ColorRect" parent="Puzzles/R3_CrystalChainPuzzle/ChainPuzzleController"]
+z_index = -5
+offset_left = -2887.0
+offset_top = -3031.0
+offset_right = -2847.0
+offset_bottom = -2991.0
+scale = Vector2(402.055, 213.461)
+color = Color(0.0562916, 0.0562916, 0.0562916, 1)
 
 [node name="Crystal1" parent="Puzzles/R3_CrystalChainPuzzle" instance=ExtResource("13_ktvvd")]
 position = Vector2(-1017, 877)
@@ -593,7 +618,7 @@ position = Vector2(5421, 3752)
 position = Vector2(6125, 3744)
 
 [node name="Untote11" parent="enemys/Boden" instance=ExtResource("25_jrtjq")]
-position = Vector2(3198, 2665)
+position = Vector2(2977, 2534)
 
 [node name="Untote12" parent="enemys/Boden" instance=ExtResource("25_jrtjq")]
 position = Vector2(2661, 2693)
@@ -611,10 +636,10 @@ position = Vector2(5284, -1329)
 position = Vector2(6031, -535)
 
 [node name="Cthulu4" parent="enemys/Boden" instance=ExtResource("27_3tmbj")]
-position = Vector2(4340, 3633)
+position = Vector2(2954, 3473)
 
 [node name="Cthulu5" parent="enemys/Boden" instance=ExtResource("27_3tmbj")]
-position = Vector2(1995, 3397)
+position = Vector2(605, 3192)
 
 [node name="Cthulu6" parent="enemys/Boden" instance=ExtResource("27_3tmbj")]
 position = Vector2(403, 2659)
@@ -684,12 +709,6 @@ rotation = 0.509296
 scale = Vector2(1.42315, 1.42315)
 platform_width = 555.0
 
-[node name="PassThroughPlatform6" parent="." instance=ExtResource("6_wvoon")]
-position = Vector2(4436, 3093)
-rotation = 0.475314
-scale = Vector2(1.42315, 1.42315)
-platform_width = 555.0
-
 [node name="PassThroughPlatform12" parent="." instance=ExtResource("6_wvoon")]
 position = Vector2(1339, 792)
 rotation = 0.658274
@@ -716,13 +735,19 @@ platform_width = 888.0
 
 [node name="PassThroughPlatform10" parent="." instance=ExtResource("6_wvoon")]
 position = Vector2(2286, 3562.99)
-rotation = -0.410442
+rotation = -0.480405
 scale = Vector2(1.42315, 1.42315)
 platform_width = 555.0
 
 [node name="PassThroughPlatform11" parent="." instance=ExtResource("6_wvoon")]
-position = Vector2(3869, 2792)
-rotation = 0.411621
+position = Vector2(4130, 2825)
+rotation = 0.560368
+scale = Vector2(1.42315, 1.42315)
+platform_width = 555.0
+
+[node name="PassThroughPlatform13" parent="." instance=ExtResource("6_wvoon")]
+position = Vector2(2472, 2755)
+rotation = -0.000609457
 scale = Vector2(1.42315, 1.42315)
 platform_width = 555.0
 
@@ -755,6 +780,12 @@ platform_width = 555.0
 [node name="ClimbableArea" parent="Treppen" instance=ExtResource("30_j8g0h")]
 position = Vector2(3947, 2786)
 rotation = -1.06124
+area_height = 1200.0
+
+[node name="ClimbableArea2" parent="Treppen" instance=ExtResource("30_j8g0h")]
+position = Vector2(160, -546)
+rotation = -0.906018
+area_height = 400.0
 
 [node name="Wegweiser" type="Node2D" parent="."]
 

@@ -16,7 +16,7 @@
 [ext_resource type="PackedScene" path="res://puzzles/scenes/controllers/chain_puzzle_controller.tscn" id="14_d741k"]
 [ext_resource type="PackedScene" path="res://puzzles/scenes/components/puzzle_crystal.tscn" id="15_ul0io"]
 [ext_resource type="PackedScene" uid="uid://c5nx05ybb3oul" path="res://puzzles/scenes/controllers/puzzle_block.tscn" id="18_0lmfs"]
-[ext_resource type="PackedScene" path="res://enemies/placeholder/fire_worm.tscn" id="18_2oco1"]
+[ext_resource type="PackedScene" uid="uid://c1muun1q15jb1" path="res://enemies/placeholder/fire_worm.tscn" id="18_2oco1"]
 [ext_resource type="PackedScene" uid="uid://c7m4lvjkpao0i" path="res://enemies/placeholder/monster_creature.tscn" id="19_c8xrr"]
 [ext_resource type="PackedScene" path="res://traps/scenes/falling_rock.tscn" id="19_lj6kx"]
 [ext_resource type="PackedScene" uid="uid://bp88htlho4s8e" path="res://enemies/world_1_ruins/corpse_trap.tscn" id="20_uhlgo"]
@@ -113,8 +113,8 @@ scale = Vector2(0.185227, 0.865135)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="CollisionShape2D19" type="CollisionShape2D" parent="Ground"]
-position = Vector2(2238, 4003)
-scale = Vector2(0.366459, 1.06341)
+position = Vector2(2270, 4003)
+scale = Vector2(0.446459, 1.06341)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="CollisionShape2D31" type="CollisionShape2D" parent="Ground"]
@@ -193,8 +193,8 @@ scale = Vector2(0.566248, 5.16865)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="CollisionShape2D6" type="CollisionShape2D" parent="Ground"]
-position = Vector2(6792, 1464)
-scale = Vector2(0.362682, 2.32792)
+position = Vector2(6668, 1551)
+scale = Vector2(0.267091, 2.82835)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="CollisionShape2D35" type="CollisionShape2D" parent="Ground"]
@@ -203,8 +203,8 @@ scale = Vector2(0.362682, 2.32792)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="CollisionShape2D7" type="CollisionShape2D" parent="Ground"]
-position = Vector2(7941, 683)
-scale = Vector2(1.10116, 1.53976)
+position = Vector2(8021, 680)
+scale = Vector2(0.973564, 1.53976)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="CollisionShape2D9" type="CollisionShape2D" parent="Ground"]
@@ -348,7 +348,14 @@ position = Vector2(5435, 5149)
 position = Vector2(5757, 5116)
 
 [node name="CorpseTrap" parent="Enemies/Boden" instance=ExtResource("20_uhlgo")]
-position = Vector2(2990, 5157)
+position = Vector2(9978, 4748)
+scale = Vector2(2.03736, 2.03736)
+
+[node name="CorpseTrap2" parent="Enemies/Boden" instance=ExtResource("20_uhlgo")]
+position = Vector2(3157, 5162)
+spawn_chance = 1.0
+min_spawns = 3
+max_spawns = 12
 
 [node name="GuardianStatue" parent="Enemies/Boden" instance=ExtResource("21_a02lo")]
 position = Vector2(8790, 1763)
@@ -400,7 +407,7 @@ target_scene = "res://worlds/world_1_ruins/section_2_villages/room_05_inn.tscn"
 spawn_position = Vector2(150, 640)
 
 [node name="DoorToRoom03" parent="Doors" instance=ExtResource("5_door")]
-position = Vector2(8369, 1571)
+position = Vector2(8127, 1721)
 target_scene = "res://worlds/world_1_ruins/section_1_entrance/room_03_villageEntrance.tscn"
 spawn_position = Vector2(150, 780)
 
@@ -459,6 +466,12 @@ platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
 
 [node name="Tier7" parent="PassThroughPlatforms" instance=ExtResource("9_830uw")]
 position = Vector2(-1000.92, -973.544)
+rotation = 0.0310916
+platform_width = 444.0
+platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
+
+[node name="Tier21" parent="PassThroughPlatforms" instance=ExtResource("9_830uw")]
+position = Vector2(-965.74, -1233.15)
 rotation = 0.0310916
 platform_width = 444.0
 platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
@@ -523,6 +536,12 @@ rotation = 0.0310916
 platform_width = 222.0
 platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
 
+[node name="Tier22" parent="PassThroughPlatforms" instance=ExtResource("9_830uw")]
+position = Vector2(-3585.52, -2161.51)
+rotation = 0.0310916
+platform_width = 222.0
+platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
+
 [node name="Tier13" parent="PassThroughPlatforms" instance=ExtResource("9_830uw")]
 position = Vector2(-3026.92, -1497.01)
 rotation = 0.0310916
@@ -536,7 +555,7 @@ platform_width = 888.0
 platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
 
 [node name="ClimbableArea" parent="." instance=ExtResource("10_1q160")]
-position = Vector2(8240, 1588)
+position = Vector2(8121, 1698)
 rotation = 0.779846
 area_width = 222.0
 area_height = 1200.0
@@ -544,6 +563,25 @@ area_height = 1200.0
 [node name="ClimbableArea3" parent="." instance=ExtResource("10_1q160")]
 position = Vector2(7178, 2397)
 rotation = 0.0201902
+area_width = 222.0
+area_height = 1800.0
+
+[node name="ClimbableArea7" parent="." instance=ExtResource("10_1q160")]
+position = Vector2(1992, 669)
+rotation = 0.567579
+area_width = 222.0
+area_height = 333.0
+
+[node name="ClimbableArea8" parent="." instance=ExtResource("10_1q160")]
+position = Vector2(3807, 1349)
+rotation = -0.00520062
+area_width = 222.0
+area_height = 555.0
+
+[node name="ClimbableArea6" parent="." instance=ExtResource("10_1q160")]
+position = Vector2(6570, 890)
+rotation = -0.538025
+climb_speed = 400.0
 area_width = 222.0
 area_height = 1800.0
 
@@ -574,13 +612,14 @@ position = Vector2(200, 950)
 puzzle_id = "test_room/r1_sequence"
 
 [node name="Switch1" parent="Puzzles/R1_SequencePuzzle" instance=ExtResource("11_c8xrr")]
+position = Vector2(225, -2189)
 
 [node name="Switch2" parent="Puzzles/R1_SequencePuzzle" instance=ExtResource("11_c8xrr")]
-position = Vector2(80, 0)
+position = Vector2(2007, -1517)
 switch_id = 2
 
 [node name="Switch3" parent="Puzzles/R1_SequencePuzzle" instance=ExtResource("11_c8xrr")]
-position = Vector2(160, 0)
+position = Vector2(4030, -2376)
 switch_id = 3
 
 [node name="R2_PressurePlatePuzzle" type="Node2D" parent="Puzzles"]
@@ -590,9 +629,10 @@ position = Vector2(600, 950)
 puzzle_id = "test_room/r2_pressure_plates"
 
 [node name="Plate1" parent="Puzzles/R2_PressurePlatePuzzle" instance=ExtResource("13_a02lo")]
+position = Vector2(4965, 2237)
 
 [node name="Plate2" parent="Puzzles/R2_PressurePlatePuzzle" instance=ExtResource("13_a02lo")]
-position = Vector2(150, 0)
+position = Vector2(112, 1387)
 
 [node name="R3_CrystalChainPuzzle" type="Node2D" parent="Puzzles"]
 position = Vector2(1000, 950)
@@ -601,57 +641,71 @@ position = Vector2(1000, 950)
 puzzle_id = "test_room/r3_crystal_chain"
 
 [node name="Crystal1" parent="Puzzles/R3_CrystalChainPuzzle" instance=ExtResource("15_ul0io")]
-can_reset = true
+position = Vector2(4189, 1663)
 
 [node name="Crystal2" parent="Puzzles/R3_CrystalChainPuzzle" instance=ExtResource("15_ul0io")]
-position = Vector2(80, 0)
+position = Vector2(7388, 1834)
 crystal_id = 2
-can_reset = true
 
 [node name="Crystal3" parent="Puzzles/R3_CrystalChainPuzzle" instance=ExtResource("15_ul0io")]
-position = Vector2(160, 0)
+position = Vector2(1968, 1189)
 crystal_id = 3
-can_reset = true
 
 [node name="Crystal4" parent="Puzzles/R3_CrystalChainPuzzle" instance=ExtResource("15_ul0io")]
-position = Vector2(240, 0)
+position = Vector2(6664, 721)
 crystal_id = 4
-can_reset = true
 
 [node name="PuzzleBlocks" type="Node2D" parent="."]
 position = Vector2(1587, 1898)
 
 [node name="Block1_Sequence" parent="PuzzleBlocks" instance=ExtResource("18_0lmfs")]
-position = Vector2(100, 100)
+position = Vector2(6453, 16)
+rotation = 1.56183
+scale = Vector2(5.87385, 7.94938)
 puzzle_controller = NodePath("../../Puzzles/R1_SequencePuzzle/SequencePuzzleController")
 
 [node name="Block2_PressurePlate" parent="PuzzleBlocks" instance=ExtResource("18_0lmfs")]
-position = Vector2(200, 100)
+position = Vector2(7473, -702)
+scale = Vector2(3.84953, 2.6664)
 puzzle_controller = NodePath("../../Puzzles/R2_PressurePlatePuzzle/DualPlatePuzzleController")
 
 [node name="Block3_CrystalChain" parent="PuzzleBlocks" instance=ExtResource("18_0lmfs")]
-position = Vector2(300, 100)
+position = Vector2(6031, -296)
+scale = Vector2(3.4397, 7.1317)
 puzzle_controller = NodePath("../../Puzzles/R3_CrystalChainPuzzle/ChainPuzzleController")
 
 [node name="Traps" type="Node2D" parent="."]
 position = Vector2(2527, 4205)
 
 [node name="FallingRock1" parent="Traps" instance=ExtResource("19_lj6kx")]
-position = Vector2(700, 200)
+position = Vector2(2263, 346)
+
+[node name="FallingRock3" parent="Traps" instance=ExtResource("19_lj6kx")]
+position = Vector2(6842, -975)
+
+[node name="FallingRock5" parent="Traps" instance=ExtResource("19_lj6kx")]
+position = Vector2(5809, -818)
 
 [node name="FallingRock2" parent="Traps" instance=ExtResource("19_lj6kx")]
-position = Vector2(1100, 250)
+position = Vector2(1840, 337)
+
+[node name="FallingRock4" parent="Traps" instance=ExtResource("19_lj6kx")]
+position = Vector2(7463, -998)
 
 [node name="Block1_Sequence" parent="." instance=ExtResource("18_0lmfs")]
-position = Vector2(2627, 4305)
+position = Vector2(6337, 863)
+scale = Vector2(9.67796, 18.3987)
 puzzle_controller = NodePath("../Puzzles/R1_SequencePuzzle/SequencePuzzleController")
 
 [node name="Block2_PressurePlate" parent="." instance=ExtResource("18_0lmfs")]
-position = Vector2(2727, 4305)
+position = Vector2(7198, 3325)
+rotation = 1.15143
+scale = Vector2(7.47186, 10.3066)
 puzzle_controller = NodePath("../Puzzles/R2_PressurePlatePuzzle/DualPlatePuzzleController")
 
 [node name="Block3_CrystalChain" parent="." instance=ExtResource("18_0lmfs")]
-position = Vector2(2827, 4305)
+position = Vector2(8782, 3087)
+scale = Vector2(5.47214, 3.57742)
 puzzle_controller = NodePath("../Puzzles/R3_CrystalChainPuzzle/ChainPuzzleController")
 
 [node name="Merchant" parent="." instance=ExtResource("22_c8xrr")]
@@ -685,7 +739,7 @@ position = Vector2(6816, 4120)
 position = Vector2(8136, 2976)
 
 [node name="Wegweise1" parent="Wegweiser" instance=ExtResource("24_a02lo")]
-position = Vector2(1607, 4110)
+position = Vector2(1545, 4108)
 
 [node name="Wegweise2" parent="Wegweiser" instance=ExtResource("24_a02lo")]
 position = Vector2(5014, 4281)

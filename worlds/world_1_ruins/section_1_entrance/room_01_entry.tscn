@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://b8mx4n7raprst"]
+[gd_scene load_steps=35 format=3 uid="uid://b8mx4n7raprst"]
 
 [ext_resource type="Script" uid="uid://86josincpmca" path="res://worlds/world_1_ruins/section_1_entrance/room_01_entry.gd" id="1_room01"]
 [ext_resource type="Texture2D" uid="uid://8dckngarxpti" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_PreDorf/world1predorfbackground.png" id="2_dda7m"]
@@ -8,7 +8,9 @@
 [ext_resource type="PackedScene" uid="uid://bx7k2qn8nav4p" path="res://enemies/world_1_ruins/geist.tscn" id="4_f7d8o"]
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="5_deathbox"]
 [ext_resource type="PackedScene" uid="uid://bk7a8n73qcfla" path="res://environment/pickups/pickup_base.tscn" id="9_cqwq7"]
+[ext_resource type="Texture2D" uid="uid://bsetarjvw4pvx" path="res://Assets/AIAssets/AIStuff/Item.png" id="9_o1io8"]
 [ext_resource type="Texture2D" uid="uid://dbecpug8upc2v" path="res://Assets/Placeholder/Background/Environments/ships-graveyard/PNG/layers/boat-front.png" id="10_8m3rk"]
+[ext_resource type="Texture2D" uid="uid://d2u7oykxauuid" path="res://Assets/AIAssets/AIStuff/Relikt.png" id="10_rakdd"]
 [ext_resource type="PackedScene" path="res://puzzles/scenes/components/puzzle_crystal.tscn" id="11_crystal"]
 [ext_resource type="PackedScene" uid="uid://dkc8y7x0ij6nw" path="res://enemies/untote.tscn" id="11_m0wvv"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="12_dda7m"]
@@ -79,7 +81,11 @@ position = Vector2(3509, 521)
 scale = Vector2(3.64626, 3.94435)
 
 [node name="Wegweise8" parent="Wegweiser" instance=ExtResource("22_c4up5")]
-position = Vector2(6580, 713)
+position = Vector2(6134, 719)
+scale = Vector2(1.23279, 1.33357)
+
+[node name="Wegweise14" parent="Wegweiser" instance=ExtResource("22_c4up5")]
+position = Vector2(6030, 83)
 scale = Vector2(1.23279, 1.33357)
 
 [node name="Wegweise10" parent="Wegweiser" instance=ExtResource("22_c4up5")]
@@ -99,11 +105,17 @@ position = Vector2(11021, 115)
 scale = Vector2(0.730765, 0.790507)
 
 [node name="Wegweise13" parent="Wegweiser" instance=ExtResource("22_c4up5")]
-position = Vector2(13905, 511)
-scale = Vector2(1.52044, 1.64474)
+position = Vector2(13836, 483)
+scale = Vector2(1.89133, 2.04595)
 
 [node name="Wegweise2" parent="Wegweiser" instance=ExtResource("2_kmiih")]
 position = Vector2(16297, 2412)
+
+[node name="Wegweise15" parent="Wegweiser" instance=ExtResource("2_kmiih")]
+position = Vector2(13257, 1460)
+
+[node name="Wegweise16" parent="Wegweiser" instance=ExtResource("2_kmiih")]
+position = Vector2(13284, 2288)
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(0, 640)
@@ -201,18 +213,6 @@ shape = SubResource("RectangleShape2D_ground")
 position = Vector2(10066, -389)
 rotation = 0.00196817
 scale = Vector2(0.189543, 0.281319)
-shape = SubResource("RectangleShape2D_ground")
-
-[node name="CollisionShape2D28" type="CollisionShape2D" parent="Ground"]
-position = Vector2(9469, 262)
-rotation = -0.0181398
-scale = Vector2(0.228069, 0.281319)
-shape = SubResource("RectangleShape2D_ground")
-
-[node name="CollisionShape2D43" type="CollisionShape2D" parent="Ground"]
-position = Vector2(10727, 268)
-rotation = -0.0181398
-scale = Vector2(0.228069, 0.281319)
 shape = SubResource("RectangleShape2D_ground")
 
 [node name="CollisionShape2D44" type="CollisionShape2D" parent="Ground"]
@@ -500,7 +500,8 @@ facing_direction = -1
 [node name="Doors" type="Node2D" parent="."]
 
 [node name="DoorToTestRoom" parent="Doors" instance=ExtResource("3_door")]
-position = Vector2(1856, -2041)
+position = Vector2(50, -2843)
+scale = Vector2(0.596601, 0.596601)
 spawn_position = Vector2(1600, 900)
 
 [node name="DoorToRoom02" parent="Doors" instance=ExtResource("3_door")]
@@ -514,19 +515,26 @@ spawn_position = Vector2(200, 640)
 position = Vector2(1083, -433)
 
 [node name="Pickup_fragment_beharrlichkeit" parent="Pickups" instance=ExtResource("9_cqwq7")]
-position = Vector2(-583, -1619)
+position = Vector2(-512, -1615)
 item_id = "fragment_beharrlichkeit"
+custom_sprite = ExtResource("9_o1io8")
 
 [node name="PickupTitanenblut" parent="Pickups" instance=ExtResource("9_cqwq7")]
 position = Vector2(3382, -102)
 item_id = "titanenblut_stein"
 pickup_id = "room_01_entry/titanenblut_1"
+custom_sprite = ExtResource("9_o1io8")
 
 [node name="PickupUrtraene" parent="Pickups" instance=ExtResource("9_cqwq7")]
-position = Vector2(71, 1025)
+position = Vector2(48, 2665)
 item_id = "urtraene"
 pickup_id = "room_01_entry/urtraene_1"
-custom_sprite = ExtResource("18_tp35i")
+custom_sprite = ExtResource("10_rakdd")
+
+[node name="Pickup_quanten_nucleus" parent="Pickups" instance=ExtResource("9_cqwq7")]
+position = Vector2(16123, 3256)
+item_id = "quanten_nucleus"
+custom_sprite = ExtResource("10_rakdd")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 position = Vector2(1545, 481)
@@ -545,6 +553,20 @@ texture = ExtResource("10_8m3rk")
 [node name="Sprite2D2" type="Sprite2D" parent="StaticBody2D"]
 z_index = -1
 position = Vector2(543.64, -1179.03)
+rotation = -1.29252
+scale = Vector2(1.9916, 2.4697)
+texture = ExtResource("10_8m3rk")
+flip_h = true
+
+[node name="Block2" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(663.166, -1024.03)
+rotation = -1.29252
+scale = Vector2(1.05952, 1.08045)
+shape = SubResource("RectangleShape2D_8m3rk")
+
+[node name="Sprite2D3" type="Sprite2D" parent="StaticBody2D"]
+z_index = -1
+position = Vector2(681.64, -1041.03)
 rotation = -1.29252
 scale = Vector2(1.9916, 2.4697)
 texture = ExtResource("10_8m3rk")
@@ -628,6 +650,16 @@ platform_width = 888.0
 position = Vector2(7367.6, 1337.27)
 platform_width = 888.0
 
+[node name="Tier19" parent="PassThroughPlatforms" instance=ExtResource("12_dda7m")]
+position = Vector2(6791.42, 1283.04)
+rotation = 0.141658
+platform_width = 888.0
+
+[node name="Tier20" parent="PassThroughPlatforms" instance=ExtResource("12_dda7m")]
+position = Vector2(5374.94, 1240.09)
+rotation = 0.010417
+platform_width = 888.0
+
 [node name="Tier11" parent="PassThroughPlatforms" instance=ExtResource("12_dda7m")]
 position = Vector2(8547.69, 2985.42)
 platform_width = 888.0
@@ -690,27 +722,27 @@ required_crystals = 3
 puzzle_id = "Puzzles/CrystalPuzzle/Crystal1"
 
 [node name="Crystal1" parent="Puzzles/CrystalPuzzle" instance=ExtResource("11_crystal")]
-position = Vector2(894, 483)
+position = Vector2(8076.99, -1981.89)
 can_reset = true
 
 [node name="Crystal2" parent="Puzzles/CrystalPuzzle" instance=ExtResource("11_crystal")]
-position = Vector2(1593, 487)
+position = Vector2(8286.99, -1980.89)
 crystal_id = 2
 can_reset = true
 
 [node name="Crystal3" parent="Puzzles/CrystalPuzzle" instance=ExtResource("11_crystal")]
-position = Vector2(2247, 471)
+position = Vector2(8544.99, -1976.88)
 crystal_id = 3
 can_reset = true
 
 [node name="Block2_Kristalle" parent="Puzzles/CrystalPuzzle" instance=ExtResource("17_twqj3")]
-position = Vector2(347, -379)
-scale = Vector2(4.24407, -21.0886)
+position = Vector2(9653.99, -2040.87)
+scale = Vector2(-10.7146, 29.3431)
 puzzle_controller = NodePath("../ChainPuzzleController")
 
 [node name="Block2_DruckPlatte2" parent="Puzzles/CrystalPuzzle" instance=ExtResource("17_twqj3")]
-position = Vector2(-2938.01, -390.02)
-scale = Vector2(4.24407, -21.0886)
+position = Vector2(-3048.01, -462.022)
+scale = Vector2(9.55989, 11.3587)
 puzzle_controller = NodePath("../../PlatePuzzles/DPC2")
 
 [node name="PlatePuzzles" type="Node2D" parent="Puzzles"]
@@ -726,9 +758,9 @@ position = Vector2(1005, 356)
 rotation = -1.19545e-05
 
 [node name="Block2_PressurePlate" parent="Puzzles/PlatePuzzles" instance=ExtResource("17_twqj3")]
-position = Vector2(1610, 511)
+position = Vector2(16627, 2326.89)
 rotation = 3.14159
-scale = Vector2(2.9369, 7.88432)
+scale = Vector2(5.46771, -9.19386)
 puzzle_controller = NodePath("../DPC1")
 
 [node name="PressurePlate3" parent="Puzzles/PlatePuzzles" instance=ExtResource("15_2ith3")]
@@ -744,6 +776,16 @@ position = Vector2(2533.99, 2905.98)
 scale = Vector2(1.26469, 1.26469)
 texture = ExtResource("18_tp35i")
 
+[node name="Roadblock2" type="Sprite2D" parent="Puzzles/PlatePuzzles"]
+position = Vector2(17984, 2645.88)
+scale = Vector2(1.26469, 1.26469)
+texture = ExtResource("18_tp35i")
+
+[node name="Roadblock3" type="Sprite2D" parent="Puzzles/PlatePuzzles"]
+position = Vector2(15888, 3079.89)
+scale = Vector2(1.26469, 1.26469)
+texture = ExtResource("18_tp35i")
+
 [node name="Dialogs" type="Node2D" parent="."]
 
 [node name="DiaPreDorf1" parent="Dialogs" instance=ExtResource("12_ry1fm")]
@@ -754,7 +796,7 @@ interaction_size = Vector2(222, 120)
 glow_energy = 0.9
 
 [node name="DiaTutorail" parent="Dialogs" instance=ExtResource("12_ry1fm")]
-position = Vector2(421, 527)
+position = Vector2(566, 587)
 scale = Vector2(2.41924, 2.20987)
 dialog_singleplayer = ExtResource("19_twqj3")
 dialog_coop = ExtResource("19_twqj3")
@@ -796,7 +838,7 @@ area_width = 222.0
 area_height = 666.0
 
 [node name="ClimbableArea7" parent="." instance=ExtResource("20_180fs")]
-position = Vector2(13667, 811)
+position = Vector2(13584, 818)
 rotation = -0.587648
 area_width = 222.0
 area_height = 666.0
@@ -839,7 +881,17 @@ scale = Vector2(2.59096, 2.59096)
 item_id = "heilkraeuter"
 
 [node name="Door" parent="." instance=ExtResource("3_door")]
-position = Vector2(814, 613)
-scale = Vector2(0.314998, 0.314998)
+position = Vector2(936, 574)
+rotation = 0.0553202
+scale = Vector2(0.689073, 0.77134)
 target_scene = "res://worlds/world_1_ruins/section_4_tempel/TutorialRoom01.tscn"
 spawn_position = Vector2(0, 0)
+
+[node name="ColorRect" type="ColorRect" parent="."]
+z_index = -6
+offset_left = -10173.0
+offset_top = -10719.0
+offset_right = -10133.0
+offset_bottom = -10679.0
+scale = Vector2(966.369, 520.834)
+color = Color(0.0562916, 0.0562916, 0.0562916, 1)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://7ihc7pexmcfv"]
+[gd_scene load_steps=19 format=3 uid="uid://7ihc7pexmcfv"]
 
 [ext_resource type="Script" uid="uid://86josincpmca" path="res://worlds/world_1_ruins/section_1_entrance/room_01_entry.gd" id="1_r7ri1"]
 [ext_resource type="Texture2D" uid="uid://bj3q3horof56u" path="res://Assets/AIAssets/tempel03.jpg" id="2_r7ri1"]
@@ -12,7 +12,8 @@
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="10_ynbqa"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="11_m1d6d"]
 [ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="12_dialog"]
-[ext_resource type="Resource" path="res://data/dialogs/tutorial_movement.tres" id="13_tut_mv"]
+[ext_resource type="Texture2D" uid="uid://bsetarjvw4pvx" path="res://Assets/AIAssets/AIStuff/Item.png" id="12_m1d6d"]
+[ext_resource type="Resource" uid="uid://cooh7vv1qf8fm" path="res://data/dialogs/tutorial_movement.tres" id="13_tut_mv"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(4617, 80)
@@ -27,7 +28,17 @@ size = Vector2(4718.5, 192.497)
 size = Vector2(400, 40)
 
 [node name="Room01Entry" type="Node2D"]
+position = Vector2(3, -506)
 script = ExtResource("1_r7ri1")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+z_index = -3
+offset_left = -4893.0
+offset_top = -2231.0
+offset_right = -4853.0
+offset_bottom = -2191.0
+scale = Vector2(345.517, 134.981)
+color = Color(0.0562916, 0.0562916, 0.0562916, 1)
 
 [node name="Wegweise1" parent="." instance=ExtResource("3_boql1")]
 position = Vector2(141, 443)
@@ -106,7 +117,8 @@ facing_direction = -1
 [node name="Doors" type="Node2D" parent="."]
 
 [node name="DoorToRoom02" parent="Doors" instance=ExtResource("7_lc7am")]
-position = Vector2(3022, 709)
+position = Vector2(2945, 656)
+scale = Vector2(0.652965, 0.652965)
 target_scene = "res://worlds/world_1_ruins/section_4_tempel/TutorialRoom02.tscn"
 spawn_position = Vector2(0, 0)
 
@@ -137,6 +149,19 @@ offset_top = -17.0
 offset_right = 194.0
 offset_bottom = 23.0
 color = Color(0.35, 0.35, 0.4, 1)
+metadata/_edit_use_anchors_ = true
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="ClimbableArea/Platform1_Left"]
+position = Vector2(1301, -230)
+shape = SubResource("RectangleShape2D_qruq8")
+
+[node name="Visual" type="ColorRect" parent="ClimbableArea/Platform1_Left/CollisionShape2D3"]
+offset_left = -206.0
+offset_top = -17.0
+offset_right = 194.0
+offset_bottom = 23.0
+color = Color(0.35, 0.35, 0.4, 1)
+metadata/_edit_use_anchors_ = true
 
 [node name="PassThroughPlatform" parent="ClimbableArea" instance=ExtResource("11_m1d6d")]
 position = Vector2(-36, 8)
@@ -145,13 +170,18 @@ position = Vector2(-36, 8)
 position = Vector2(361, -99)
 
 [node name="Pickup_titanenblut_stein" parent="ClimbableArea" instance=ExtResource("2_vebk3")]
-position = Vector2(949, -221)
+position = Vector2(1424, -206)
 item_id = "titanenblut_stein"
+custom_sprite = ExtResource("12_m1d6d")
+
+[node name="ClimbableArea2" parent="." instance=ExtResource("10_ynbqa")]
+position = Vector2(2638, 277)
+area_height = 333.0
 
 [node name="Dialogs" type="Node2D" parent="."]
 
 [node name="TutorialMovement" parent="Dialogs" instance=ExtResource("12_dialog")]
-position = Vector2(350, 580)
+position = Vector2(649, 708)
 dialog_singleplayer = ExtResource("13_tut_mv")
 one_shot = false
 interaction_size = Vector2(222, 120)

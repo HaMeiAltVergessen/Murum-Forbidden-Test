@@ -19,10 +19,11 @@ size = Vector2(1691, 200)
 
 [node name="ColorRect" type="ColorRect" parent="."]
 z_index = -4
-offset_left = -1539.0
-offset_top = -630.0
-offset_right = 3477.0
-offset_bottom = 1502.0
+offset_left = -2771.0
+offset_top = -2008.0
+offset_right = 2245.0
+offset_bottom = 124.0
+scale = Vector2(1.80984, 2.85677)
 color = Color(0, 0, 0, 1)
 
 [node name="BackLayer3" type="Sprite2D" parent="."]

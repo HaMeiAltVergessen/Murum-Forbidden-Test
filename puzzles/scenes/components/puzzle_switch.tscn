@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://blta5m8ixhcu8"]
+[gd_scene load_steps=4 format=3 uid="uid://blta5m8ixhcu8"]
 
 [ext_resource type="Script" uid="uid://d4efu15jjih3w" path="res://puzzles/base/puzzle_switch.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://6wtslttymvs3" path="res://Assets/AIAssets/AIStuff/SequenceStone.png" id="2_tx3ar"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_switch"]
 size = Vector2(48, 48)
@@ -14,12 +15,18 @@ can_deactivate = true
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 
-[node name="ColorRect" type="ColorRect" parent="Sprite2D"]
-offset_left = -24.0
-offset_top = -24.0
-offset_right = 24.0
-offset_bottom = 24.0
-color = Color(0.3, 0.3, 0.3, 1)
+[node name="ColorRect" type="Sprite2D" parent="Sprite2D"]
+position = Vector2(2, 0)
+scale = Vector2(0.3695, 0.369501)
+texture = ExtResource("2_tx3ar")
+
+[node name="ColorRect2" type="ColorRect" parent="Sprite2D"]
+offset_left = -9.0
+offset_top = -15.0
+offset_right = 31.0
+offset_bottom = 25.0
+scale = Vector2(0.458331, 0.726434)
+color = Color(0, 0, 0, 1)
 
 [node name="IDLabel" type="Label" parent="Sprite2D"]
 offset_left = -24.0

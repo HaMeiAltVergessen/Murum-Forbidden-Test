@@ -15,7 +15,7 @@ next_entries = Array[ExtResource("2_entry")]([])
 script = ExtResource("3_choice")
 choice_text = "Nein, was muss ich wissen?"
 response_speaker = "Umbra"
-response_text = "Du kannst die Steuerung unter Options einstellen. Dein Stabwurf und dein Dash helfen dir auch außerhalb vom Kampf."
+response_text = "Du kannst die Tür benutzen, um deine Erinnerungen aufzufrischen."
 next_entries = Array[ExtResource("2_entry")]([])
 
 [sub_resource type="Resource" id="Resource_entry1"]

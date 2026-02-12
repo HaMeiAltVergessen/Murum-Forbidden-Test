@@ -28,13 +28,14 @@ position = Vector2(791, 277)
 scale = Vector2(1.89063, 1.68269)
 texture = ExtResource("12_mcmpb")
 
-[node name="ColorRect" type="ColorRect" parent="."]
-z_index = -4
-offset_left = -924.0
-offset_top = -657.0
-offset_right = 4092.0
-offset_bottom = 1475.0
-color = Color(0, 0, 0, 1)
+[node name="ColorRect2" type="ColorRect" parent="."]
+z_index = -3
+offset_left = -5817.0
+offset_top = -2888.0
+offset_right = -5777.0
+offset_bottom = -2848.0
+scale = Vector2(345.517, 134.981)
+color = Color(0.0562916, 0.0562916, 0.0562916, 1)
 
 [node name="BackLayer3" type="Sprite2D" parent="."]
 z_index = -2

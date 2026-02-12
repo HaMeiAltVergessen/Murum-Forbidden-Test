@@ -1,17 +1,18 @@
-[gd_scene load_steps=3 format=3 uid="uid://timed_door_component"]
+[gd_scene load_steps=4 format=3 uid="uid://beqj6dhsvcv31"]
 
-[ext_resource type="Script" path="res://puzzles/timed_door.gd" id="1"]
+[ext_resource type="Script" uid="uid://b0iscjtjus63s" path="res://puzzles/timed_door.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://dbps18lexvsec" path="res://Assets/AIAssets/AIStuff/PuzzleDoorYellow.png" id="2_uugar"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
 size = Vector2(32, 128)
 
 [node name="TimedDoor" type="StaticBody2D"]
-collision_layer = 1
 collision_mask = 0
 script = ExtResource("1")
-default_open_duration = 3.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.188443, 0.188443)
+texture = ExtResource("2_uugar")
 
 [node name="DoorVisual" type="ColorRect" parent="Sprite2D"]
 offset_left = -16.0

@@ -50,6 +50,8 @@ script = ExtResource("3_health")
 
 [node name="ManaComponent" type="Node" parent="."]
 script = ExtResource("4_mana")
+regeneration_rate = 10.0
+regen_delay_after_use = 1.0
 
 [node name="CombatSystem" type="Node2D" parent="."]
 script = ExtResource("5_combat")

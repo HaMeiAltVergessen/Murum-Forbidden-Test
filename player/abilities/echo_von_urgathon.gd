@@ -14,8 +14,8 @@ const MANA_RESTORE: int = 9
 
 # Testing mode: Zeit-basiert statt Hit-basiert
 const TESTING_MODE: bool = true  # Auf false setzen für Hit-basierte Mechanik
-const TESTING_INTERVAL: float = 1.0  # Jede Sekunde
-const TESTING_MANA_FRACTION: float = 0.125  # 1/8 des maximalen Manas
+const TESTING_INTERVAL: float = 1  # Jede Sekunde
+const TESTING_MANA_FRACTION: float = 0.02  # 1/8 des maximalen Manas
 
 # ============================================================================
 # STATE
@@ -47,8 +47,8 @@ signal mana_restored(amount: int, trigger: String)  # trigger: "hits" oder "time
 func _ready() -> void:
 	if TESTING_MODE:
 		print("[EchoVonUrgathon] Initialized in TESTING MODE (every %.1fs → 1/8 max mana)" % TESTING_INTERVAL)
-	else:
-		print("[EchoVonUrgathon] Initialized (every %d hits → %d mana)" % [HITS_REQUIRED, MANA_RESTORE])
+#	else:
+#		print("[EchoVonUrgathon] Initialized (every %d hits → %d mana)" % [HITS_REQUIRED, MANA_RESTORE])
 
 	print("[EchoVonUrgathon] Unlocked: %s" % is_unlocked)
 
@@ -112,9 +112,9 @@ func _restore_mana(trigger: String) -> void:
 	if trigger == "timer":
 		# Testing Mode: 1/8 des maximalen Manas
 		mana_amount = int(mana_component.max_mana * TESTING_MANA_FRACTION)
-	else:
+#	else:
 		# Hit-basiert: Fester Betrag
-		mana_amount = MANA_RESTORE
+#		mana_amount = MANA_RESTORE
 
 	# Mana wiederherstellen
 	mana_component.restore_mana(mana_amount)

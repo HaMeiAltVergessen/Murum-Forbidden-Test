@@ -1,66 +1,59 @@
-[gd_resource type="Resource" script_class="DialogData" load_steps=11 format=3 uid="uid://tutorial_movement_sp"]
+[gd_resource type="Resource" script_class="DialogData" load_steps=11 format=3 uid="uid://cooh7vv1qf8fm"]
 
-[ext_resource type="Script" path="res://resources/dialog/dialog_data.gd" id="1_data"]
-[ext_resource type="Script" path="res://resources/dialog/dialog_entry.gd" id="2_entry"]
-[ext_resource type="Script" path="res://resources/dialog/dialog_choice.gd" id="3_choice"]
+[ext_resource type="Script" uid="uid://ckftluhf1nt4b" path="res://resources/dialog/dialog_data.gd" id="1_data"]
+[ext_resource type="Script" uid="uid://dkdprkyi73yrh" path="res://resources/dialog/dialog_entry.gd" id="2_entry"]
+[ext_resource type="Script" uid="uid://bv8wy1h236ne5" path="res://resources/dialog/dialog_choice.gd" id="2_gbnbi"]
 
 [sub_resource type="Resource" id="Resource_entry1"]
 script = ExtResource("2_entry")
 speaker_name = "Umbra"
-speaker_sprite = null
 text = "Erinnerst du dich noch, wie man sich bewegt?"
 text_speed = 28.0
-choices = []
+choices = Array[ExtResource("2_gbnbi")]([])
 
 [sub_resource type="Resource" id="Resource_entry2"]
 script = ExtResource("2_entry")
 speaker_name = "Murum"
-speaker_sprite = null
 text = "..."
 text_speed = 18.0
-choices = []
+choices = Array[ExtResource("2_gbnbi")]([])
 
 [sub_resource type="Resource" id="Resource_entry3"]
 script = ExtResource("2_entry")
 speaker_name = "Umbra"
-speaker_sprite = null
-text = "Pfeiltasten oder WASD. Links, rechts. Simpel."
+text = "WASD. Links, rechts. Simpel."
 text_speed = 28.0
-choices = []
+choices = Array[ExtResource("2_gbnbi")]([])
 
 [sub_resource type="Resource" id="Resource_entry4"]
 script = ExtResource("2_entry")
 speaker_name = "Umbra"
-speaker_sprite = null
 text = "Leertaste zum Springen. An manchen Stellen kannst du klettern."
 text_speed = 28.0
-choices = []
+choices = Array[ExtResource("2_gbnbi")]([])
 
 [sub_resource type="Resource" id="Resource_entry5"]
 script = ExtResource("2_entry")
 speaker_name = "Murum"
-speaker_sprite = null
 text = "Und der Dash?"
 text_speed = 22.0
-choices = []
+choices = Array[ExtResource("2_gbnbi")]([])
 
 [sub_resource type="Resource" id="Resource_entry6"]
 script = ExtResource("2_entry")
 speaker_name = "Umbra"
-speaker_sprite = null
-text = "Shift. Schnell und kurz. Nutze ihn, um Lücken zu überbrücken."
+text = "Shift. Schnell und weit. Nutze ihn, um Lücken zu überbrücken."
 text_speed = 28.0
-choices = []
+choices = Array[ExtResource("2_gbnbi")]([])
 
 [sub_resource type="Resource" id="Resource_entry7"]
 script = ExtResource("2_entry")
 speaker_name = "Murum"
-speaker_sprite = null
 text = "Ich weiß, wie man sich bewegt."
 text_speed = 24.0
-choices = []
+choices = Array[ExtResource("2_gbnbi")]([])
 
 [resource]
 script = ExtResource("1_data")
 dialog_id = "tutorial_movement"
-entries = [SubResource("Resource_entry1"), SubResource("Resource_entry2"), SubResource("Resource_entry3"), SubResource("Resource_entry4"), SubResource("Resource_entry5"), SubResource("Resource_entry6"), SubResource("Resource_entry7")]
+entries = Array[ExtResource("2_entry")]([SubResource("Resource_entry1"), SubResource("Resource_entry2"), SubResource("Resource_entry3"), SubResource("Resource_entry4"), SubResource("Resource_entry5"), SubResource("Resource_entry6"), SubResource("Resource_entry7")])

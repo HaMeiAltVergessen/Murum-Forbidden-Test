@@ -1,66 +1,59 @@
-[gd_resource type="Resource" script_class="DialogData" load_steps=11 format=3 uid="uid://tutorial_combat_sp"]
+[gd_resource type="Resource" script_class="DialogData" load_steps=11 format=3 uid="uid://bdgsx8pu84pcw"]
 
-[ext_resource type="Script" path="res://resources/dialog/dialog_data.gd" id="1_data"]
-[ext_resource type="Script" path="res://resources/dialog/dialog_entry.gd" id="2_entry"]
-[ext_resource type="Script" path="res://resources/dialog/dialog_choice.gd" id="3_choice"]
+[ext_resource type="Script" uid="uid://ckftluhf1nt4b" path="res://resources/dialog/dialog_data.gd" id="1_data"]
+[ext_resource type="Script" uid="uid://dkdprkyi73yrh" path="res://resources/dialog/dialog_entry.gd" id="2_entry"]
+[ext_resource type="Script" uid="uid://bv8wy1h236ne5" path="res://resources/dialog/dialog_choice.gd" id="2_vsco7"]
 
 [sub_resource type="Resource" id="Resource_entry1"]
 script = ExtResource("2_entry")
 speaker_name = "Umbra"
-speaker_sprite = null
 text = "Da vorne warten Feinde."
 text_speed = 24.0
-choices = []
+choices = Array[ExtResource("2_vsco7")]([])
 
 [sub_resource type="Resource" id="Resource_entry2"]
 script = ExtResource("2_entry")
 speaker_name = "Murum"
-speaker_sprite = null
 text = "Ich sehe sie."
 text_speed = 20.0
-choices = []
+choices = Array[ExtResource("2_vsco7")]([])
 
 [sub_resource type="Resource" id="Resource_entry3"]
 script = ExtResource("2_entry")
 speaker_name = "Umbra"
-speaker_sprite = null
-text = "Linke Maustaste zum Angreifen. Rechte Maustaste für den Stabwurf."
+text = "Linke Maustaste zum Angreifen. Rechte Maustaste zum Blocken."
 text_speed = 28.0
-choices = []
+choices = Array[ExtResource("2_vsco7")]([])
 
 [sub_resource type="Resource" id="Resource_entry4"]
 script = ExtResource("2_entry")
 speaker_name = "Umbra"
-speaker_sprite = null
-text = "Dash mit Shift, um Angriffen auszuweichen."
+text = "Dodge, um Angriffen auszuweichen."
 text_speed = 28.0
-choices = []
+choices = Array[ExtResource("2_vsco7")]([])
 
 [sub_resource type="Resource" id="Resource_entry5"]
 script = ExtResource("2_entry")
 speaker_name = "Murum"
-speaker_sprite = null
 text = "Was noch?"
 text_speed = 20.0
-choices = []
+choices = Array[ExtResource("2_vsco7")]([])
 
 [sub_resource type="Resource" id="Resource_entry6"]
 script = ExtResource("2_entry")
 speaker_name = "Umbra"
-speaker_sprite = null
-text = "Timing. Warte auf Lücken und schlage dann zu."
+text = "Lass dich nicht treffen."
 text_speed = 26.0
-choices = []
+choices = Array[ExtResource("2_vsco7")]([])
 
 [sub_resource type="Resource" id="Resource_entry7"]
 script = ExtResource("2_entry")
 speaker_name = "Murum"
-speaker_sprite = null
 text = "Genug geredet."
 text_speed = 20.0
-choices = []
+choices = Array[ExtResource("2_vsco7")]([])
 
 [resource]
 script = ExtResource("1_data")
 dialog_id = "tutorial_combat"
-entries = [SubResource("Resource_entry1"), SubResource("Resource_entry2"), SubResource("Resource_entry3"), SubResource("Resource_entry4"), SubResource("Resource_entry5"), SubResource("Resource_entry6"), SubResource("Resource_entry7")]
+entries = Array[ExtResource("2_entry")]([SubResource("Resource_entry1"), SubResource("Resource_entry2"), SubResource("Resource_entry3"), SubResource("Resource_entry4"), SubResource("Resource_entry5"), SubResource("Resource_entry6"), SubResource("Resource_entry7")])

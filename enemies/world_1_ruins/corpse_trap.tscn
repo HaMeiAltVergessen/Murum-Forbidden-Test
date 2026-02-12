@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dwgdrpe73w4va" path="res://enemies/world_1_ruins/corpse_trap.gd" id="1_trap"]
 [ext_resource type="Script" uid="uid://be8au7dl6rc4k" path="res://components/hurtbox_component.gd" id="2_hurtbox"]
-[ext_resource type="Texture2D" uid="uid://54feqtfvt1dc" path="res://Assets/Placeholder/Legacy Collection/Assets/Misc/Rocks-Textures/PNG/tiles/all-rock-tiles_04.png" id="2_xjfrt"]
+[ext_resource type="Texture2D" uid="uid://bea5l4wh70o1k" path="res://Assets/Placeholder/Legacy Collection/Assets/Misc/Explosion/sprites/explosion-animation6.png" id="2_xjfrt"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
 size = Vector2(48, 16)
@@ -17,7 +17,8 @@ script = ExtResource("1_trap")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(0.6, 0.5, 0.4, 0.9)
-position = Vector2(-1, -3)
+position = Vector2(2, -6)
+scale = Vector2(0.589286, 0.589286)
 texture = ExtResource("2_xjfrt")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

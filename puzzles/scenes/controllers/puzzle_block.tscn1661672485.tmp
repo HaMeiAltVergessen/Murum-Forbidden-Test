@@ -12,10 +12,10 @@ block_size = null
 puzzle_controller = null
 
 [node name="ColorRect" type="ColorRect" parent="."]
-offset_left = -21.0
-offset_top = -3.0
-offset_right = 19.0
-offset_bottom = 37.0
+offset_left = -18.0
+offset_top = -5.0
+offset_right = 22.0
+offset_bottom = 35.0
 
 [node name="Sprite" type="Sprite2D" parent="."]
 scale = Vector2(0.152431, 0.152431)
