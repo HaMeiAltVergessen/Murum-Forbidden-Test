@@ -4,6 +4,7 @@ extends Area2D
 @export var item_id: String = ""  ## Item type (e.g., "titanenblut_stein")
 @export var pickup_id: String = ""  ## Unique pickup ID (e.g., "room_01_entry/titanenblut_1")
 @export var auto_categorize: bool = true
+@export var custom_sprite: Texture2D  ## Optional: override the pickup sprite per instance
 
 var player_in_range: bool = false
 var is_picked_up: bool = false
@@ -154,6 +155,10 @@ func set_item(new_item_id: String) -> void:
 
 func _update_visual() -> void:
 	"""Updates the pickup visual based on item data"""
+	if sprite and custom_sprite:
+		sprite.texture = custom_sprite
+		return
+
 	var item_data = InventoryManager.get_item_data(item_id)
 
 	if sprite:
