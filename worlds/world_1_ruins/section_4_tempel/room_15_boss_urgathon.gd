@@ -35,6 +35,8 @@ var player_death_count: int = 0  # Track deaths in solo boss fight
 var arena_bounds: Rect2 = Rect2()
 var last_valid_player_pos: Vector2 = Vector2.ZERO
 const BOUNDS_CHECK_MARGIN: float = 50.0  # Extra margin outside bounds before reset
+var _reset_cooldown: float = 0.0
+const RESET_COOLDOWN_TIME: float = 0.5  # Prevent reset spam / infinite loops
 
 # ============================================================================
 # INITIALIZATION
@@ -80,11 +82,16 @@ func _setup_arena() -> void:
 	print("[Room15_BossUrgathon] Arena setup complete")
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	"""Check player position during boss fight - prevent teleport-to-void bug"""
 
 	# Only check during active fight
 	if not fight_started or fight_ended:
+		return
+
+	# Cooldown after a reset to prevent infinite loop
+	if _reset_cooldown > 0:
+		_reset_cooldown -= delta
 		return
 
 	# Check P1 position
@@ -117,23 +124,33 @@ func _physics_process(_delta: float) -> void:
 func _reset_player_to_arena(target_player: CharacterBody2D) -> void:
 	"""Reset player to safe arena position"""
 
-	var reset_pos = Vector2.ZERO
+	var reset_pos: Vector2
 
-	# Prefer spawn point
-	if player_spawn:
-		reset_pos = player_spawn.global_position
-	# Fallback to last valid position
-	elif last_valid_player_pos != Vector2.ZERO:
+	# Priority 1: Last valid position (guaranteed inside bounds since it's only stored when inside)
+	if last_valid_player_pos != Vector2.ZERO:
 		reset_pos = last_valid_player_pos
-	# Fallback to arena center
-	else:
+	# Priority 2: Arena center (mathematically guaranteed inside bounds)
+	elif arena_bounds.size != Vector2.ZERO:
 		reset_pos = arena_bounds.get_center()
+	# Priority 3: Spawn point as last resort
+	elif player_spawn:
+		reset_pos = player_spawn.global_position
+	else:
+		reset_pos = Vector2.ZERO
+
+	# CRITICAL: Clamp position to be safely inside bounds (10px inset to avoid edge triggering)
+	if arena_bounds.size != Vector2.ZERO:
+		reset_pos.x = clamp(reset_pos.x, arena_bounds.position.x + 10, arena_bounds.end.x - 10)
+		reset_pos.y = clamp(reset_pos.y, arena_bounds.position.y + 10, arena_bounds.end.y - 10)
 
 	print("[Room15_BossUrgathon] Resetting player to: ", reset_pos)
 
-	# Reset position
+	# Reset position and velocity
 	target_player.global_position = reset_pos
 	target_player.velocity = Vector2.ZERO
+
+	# Start cooldown to prevent reset spam
+	_reset_cooldown = RESET_COOLDOWN_TIME
 
 	# Brief invulnerability to prevent instant death from boss
 	if target_player.has_node("HurtboxComponent"):
@@ -729,12 +746,16 @@ func _hide_dialog() -> void:
 func get_arena_bounds() -> Rect2:
 	"""Returns the bounds of the arena for boss positioning"""
 
-	# Circular arena with ~70m diameter (600x600 pixels)
-	var center = global_position
-	if boss_spawn:
+	# Center on midpoint between player and boss spawn (= actual arena center)
+	# This ensures both spawns are safely inside the bounds
+	var center = Vector2.ZERO
+	if player_spawn and boss_spawn:
+		center = (player_spawn.global_position + boss_spawn.global_position) / 2.0
+	elif boss_spawn:
 		center = boss_spawn.global_position
 
+	# 700x700 arena to match physical walls (at x=±630)
 	return Rect2(
-		center - Vector2(300, 300),
-		Vector2(600, 600)
+		center - Vector2(350, 350),
+		Vector2(700, 700)
 	)
