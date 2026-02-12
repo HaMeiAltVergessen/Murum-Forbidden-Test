@@ -23,10 +23,10 @@
 [ext_resource type="PackedScene" uid="uid://bxjm0m07w77dm" path="res://enemies/world_1_ruins/guardian_statue.tscn" id="21_a02lo"]
 [ext_resource type="PackedScene" uid="uid://b1w31ir4mmx8m" path="res://environment/npcs/world1_merchant.tscn" id="22_c8xrr"]
 [ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="23_uhlgo"]
-[ext_resource type="Resource" path="res://data/dialogs/dia_pre_tempel1.tres" id="24_dia_pt1"]
-[ext_resource type="Resource" path="res://data/dialogs/merchant_world1_loc1.tres" id="25_merch1"]
 [ext_resource type="PackedScene" uid="uid://dfrjdwjipd0ex" path="res://environment/Wegweise1.tscn" id="24_a02lo"]
+[ext_resource type="Resource" uid="uid://boo6s7052uxy0" path="res://data/dialogs/dia_pre_tempel1.tres" id="24_dia_pt1"]
 [ext_resource type="PackedScene" uid="uid://fsarw2nqycb6" path="res://environment/WegweiseUP.tscn" id="24_ul0io"]
+[ext_resource type="Resource" uid="uid://qqwgyskx7ysu" path="res://data/dialogs/merchant_world1_loc1.tres" id="25_merch1"]
 [ext_resource type="PackedScene" uid="uid://o0fbrvsc2jxd" path="res://environment/Wegweise2.tscn" id="26_4jwuu"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]

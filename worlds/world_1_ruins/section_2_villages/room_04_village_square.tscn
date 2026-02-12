@@ -9,7 +9,7 @@
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="5_deathbox"]
 [ext_resource type="PackedScene" uid="uid://da6c5l414ki8w" path="res://environment/pickups/gold_coin.tscn" id="6_goldcoin"]
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="9_q1kna"]
-[ext_resource type="Resource" path="res://data/dialogs/merchant_world1_loc2.tres" id="11_merch2"]
+[ext_resource type="Resource" uid="uid://dvn6bl53ndj5b" path="res://data/dialogs/merchant_world1_loc2.tres" id="11_merch2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1890, 80)

@@ -29,7 +29,7 @@
 [ext_resource type="PackedScene" path="res://enemies/placeholder/dark_fantasy.tscn" id="26_alafv"]
 [ext_resource type="PackedScene" uid="uid://dmlqfkn08pb4u" path="res://enemies/placeholder/cthulu.tscn" id="27_3tmbj"]
 [ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="28_xlmm0"]
-[ext_resource type="Resource" path="res://data/dialogs/dia_tempel1.tres" id="29_dia_t1"]
+[ext_resource type="Resource" uid="uid://yj2gyhjfxm3m" path="res://data/dialogs/dia_tempel1.tres" id="29_dia_t1"]
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="30_j8g0h"]
 [ext_resource type="PackedScene" uid="uid://dfrjdwjipd0ex" path="res://environment/Wegweise1.tscn" id="31_jrtjq"]
 [ext_resource type="PackedScene" uid="uid://du2kjq0xuewvi" path="res://environment/WegweiseDOWN.tscn" id="32_3tmbj"]

@@ -1,221 +1,211 @@
-[gd_resource type="Resource" script_class="DialogData" load_steps=31 format=3 uid="uid://merchant_w1_loc1_sp"]
+[gd_resource type="Resource" script_class="DialogData" load_steps=31 format=3 uid="uid://qqwgyskx7ysu"]
 
-[ext_resource type="Script" path="res://resources/dialog/dialog_data.gd" id="1_data"]
-[ext_resource type="Script" path="res://resources/dialog/dialog_entry.gd" id="2_entry"]
-[ext_resource type="Script" path="res://resources/dialog/dialog_choice.gd" id="3_choice"]
+[ext_resource type="Script" uid="uid://ckftluhf1nt4b" path="res://resources/dialog/dialog_data.gd" id="1_data"]
+[ext_resource type="Script" uid="uid://dkdprkyi73yrh" path="res://resources/dialog/dialog_entry.gd" id="2_entry"]
+[ext_resource type="Script" uid="uid://bv8wy1h236ne5" path="res://resources/dialog/dialog_choice.gd" id="3_choice"]
 
 [sub_resource type="Resource" id="Resource_entry1"]
 script = ExtResource("2_entry")
 speaker_name = "Lindro"
-speaker_sprite = null
-text = "Seltsamer Ort für einen wie dich.\nDas Dorf ist leer. Nur arme Seelen dort drin.\nIch habe genug davon gesehen."
+text = "Seltsamer Ort für einen wie dich.
+Das Dorf ist leer. Nur arme Seelen dort drin.
+Ich habe genug davon gesehen."
 text_speed = 26.0
-choices = []
+choices = Array[ExtResource("3_choice")]([])
 
 [sub_resource type="Resource" id="Resource_entry2"]
 script = ExtResource("2_entry")
 speaker_name = "Murum"
-speaker_sprite = null
 text = "Warum bist du hier?"
 text_speed = 22.0
-choices = []
+choices = Array[ExtResource("3_choice")]([])
 
 [sub_resource type="Resource" id="Resource_entry3"]
 script = ExtResource("2_entry")
 speaker_name = "Lindro"
-speaker_sprite = null
-text = "Ich bleibe nicht.\nIch beobachte."
+text = "Ich bleibe nicht.
+Ich beobachte."
 text_speed = 22.0
-choices = []
+choices = Array[ExtResource("3_choice")]([])
 
 [sub_resource type="Resource" id="Resource_a1"]
 script = ExtResource("2_entry")
 speaker_name = "Murum"
-speaker_sprite = null
 text = "Du wirkst anders, entspannter als die anderen."
 text_speed = 26.0
-choices = []
+choices = Array[ExtResource("3_choice")]([])
 
 [sub_resource type="Resource" id="Resource_a2"]
 script = ExtResource("2_entry")
 speaker_name = "Lindro"
-speaker_sprite = null
-text = "Bedrohung ist relativ.\nDu zum Beispiel – bist du eine?"
+text = "Bedrohung ist relativ.
+Du zum Beispiel – bist du eine?"
 text_speed = 26.0
-choices = []
+choices = Array[ExtResource("3_choice")]([])
 
 [sub_resource type="Resource" id="Resource_a3"]
 script = ExtResource("2_entry")
 speaker_name = "Murum"
-speaker_sprite = null
-text = "….\nJa."
+text = "….
+Ja."
 text_speed = 18.0
-choices = []
+choices = Array[ExtResource("3_choice")]([])
 
 [sub_resource type="Resource" id="Resource_a4"]
 script = ExtResource("2_entry")
 speaker_name = "Lindro"
-speaker_sprite = null
 text = "Gut. Ehrliche Antworten mag ich."
 text_speed = 24.0
-choices = []
-
-[sub_resource type="Resource" id="Resource_b1"]
-script = ExtResource("2_entry")
-speaker_name = "Murum"
-speaker_sprite = null
-text = "Warum?"
-text_speed = 18.0
-choices = []
-
-[sub_resource type="Resource" id="Resource_b2"]
-script = ExtResource("2_entry")
-speaker_name = "Lindro"
-speaker_sprite = null
-text = "Stillstand.\nNicht Tod. Das ist etwas anderes."
-text_speed = 24.0
-choices = []
-
-[sub_resource type="Resource" id="Resource_b3"]
-script = ExtResource("2_entry")
-speaker_name = "Murum"
-speaker_sprite = null
-text = "Du unterscheidest das."
-text_speed = 22.0
-choices = []
-
-[sub_resource type="Resource" id="Resource_b4"]
-script = ExtResource("2_entry")
-speaker_name = "Lindro"
-speaker_sprite = null
-text = "Ich habe Welten gesehen, die starben.\nHier stirbt nichts. Das ist schlimmer."
-text_speed = 26.0
-choices = []
-
-[sub_resource type="Resource" id="Resource_c1"]
-script = ExtResource("2_entry")
-speaker_name = "Murum"
-speaker_sprite = null
-text = "Sind wir schon zwei."
-text_speed = 22.0
-choices = []
-
-[sub_resource type="Resource" id="Resource_c2"]
-script = ExtResource("2_entry")
-speaker_name = "Lindro"
-speaker_sprite = null
-text = "Kann sein.\nDu wirkst wie jemand, der zurückkehrt."
-text_speed = 24.0
-choices = []
-
-[sub_resource type="Resource" id="Resource_c3"]
-script = ExtResource("2_entry")
-speaker_name = "Murum"
-speaker_sprite = null
-text = "Ich kehre nie zurück."
-text_speed = 22.0
-choices = []
-
-[sub_resource type="Resource" id="Resource_c4"]
-script = ExtResource("2_entry")
-speaker_name = "Lindro"
-speaker_sprite = null
-text = "Natürlich."
-text_speed = 20.0
-choices = []
-
-[sub_resource type="Resource" id="Resource_d1"]
-script = ExtResource("2_entry")
-speaker_name = "Murum"
-speaker_sprite = null
-text = "Worte verzerren."
-text_speed = 20.0
-choices = []
-
-[sub_resource type="Resource" id="Resource_d2"]
-script = ExtResource("2_entry")
-speaker_name = "Lindro"
-speaker_sprite = null
-text = "Information auch."
-text_speed = 20.0
-choices = []
-
-[sub_resource type="Resource" id="Resource_e1"]
-script = ExtResource("2_entry")
-speaker_name = "Murum"
-speaker_sprite = null
-text = "Der Raum resoniert."
-text_speed = 22.0
-choices = []
-
-[sub_resource type="Resource" id="Resource_e2"]
-script = ExtResource("2_entry")
-speaker_name = "Lindro"
-speaker_sprite = null
-text = "Und Täter?"
-text_speed = 20.0
-choices = []
-
-[sub_resource type="Resource" id="Resource_e3"]
-script = ExtResource("2_entry")
-speaker_name = "Murum"
-speaker_sprite = null
-text = "Was soll mit ihnen sein? Die Meisten werden Opfer ihrer Taten."
-text_speed = 26.0
-choices = []
-
-[sub_resource type="Resource" id="Resource_e4"]
-script = ExtResource("2_entry")
-speaker_name = "Lindro"
-speaker_sprite = null
-text = "Werden sie das?"
-text_speed = 20.0
-choices = []
+choices = Array[ExtResource("3_choice")]([])
 
 [sub_resource type="Resource" id="Resource_choice_a"]
 script = ExtResource("3_choice")
 choice_text = "Wer bist du?"
 response_speaker = "Lindro"
-response_text = "Lindro.\nSöldner, manchmal Kundschafter.\nMan zahlt fürs Überleben, immer."
-next_entries = [SubResource("Resource_a1"), SubResource("Resource_a2"), SubResource("Resource_a3"), SubResource("Resource_a4")]
+response_text = "Lindro.
+Söldner, manchmal Kundschafter.
+Man zahlt fürs Überleben, immer."
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_a1"), SubResource("Resource_a2"), SubResource("Resource_a3"), SubResource("Resource_a4")])
+
+[sub_resource type="Resource" id="Resource_b1"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Warum?"
+text_speed = 18.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_b2"]
+script = ExtResource("2_entry")
+speaker_name = "Lindro"
+text = "Stillstand.
+Nicht Tod. Das ist etwas anderes."
+text_speed = 24.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_b3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Du unterscheidest das."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_b4"]
+script = ExtResource("2_entry")
+speaker_name = "Lindro"
+text = "Ich habe Welten gesehen, die starben.
+Hier stirbt nichts. Das ist schlimmer."
+text_speed = 26.0
+choices = Array[ExtResource("3_choice")]([])
 
 [sub_resource type="Resource" id="Resource_choice_b"]
 script = ExtResource("3_choice")
 choice_text = "Was weißt du über dieses Dorf?"
 response_speaker = "Lindro"
 response_text = "Genug, um nicht hineinzugehen."
-next_entries = [SubResource("Resource_b1"), SubResource("Resource_b2"), SubResource("Resource_b3"), SubResource("Resource_b4")]
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_b1"), SubResource("Resource_b2"), SubResource("Resource_b3"), SubResource("Resource_b4")])
+
+[sub_resource type="Resource" id="Resource_c1"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Sind wir schon zwei."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_c2"]
+script = ExtResource("2_entry")
+speaker_name = "Lindro"
+text = "Kann sein.
+Du wirkst wie jemand, der zurückkehrt."
+text_speed = 24.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_c3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Ich kehre nie zurück."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_c4"]
+script = ExtResource("2_entry")
+speaker_name = "Lindro"
+text = "Natürlich."
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
 
 [sub_resource type="Resource" id="Resource_choice_c"]
 script = ExtResource("3_choice")
 choice_text = "Warum sprichst du mit mir?"
 response_speaker = "Lindro"
 response_text = "Du passt nicht hierher."
-next_entries = [SubResource("Resource_c1"), SubResource("Resource_c2"), SubResource("Resource_c3"), SubResource("Resource_c4")]
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_c1"), SubResource("Resource_c2"), SubResource("Resource_c3"), SubResource("Resource_c4")])
+
+[sub_resource type="Resource" id="Resource_d1"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Worte verzerren."
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_d2"]
+script = ExtResource("2_entry")
+speaker_name = "Lindro"
+text = "Information auch."
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
 
 [sub_resource type="Resource" id="Resource_choice_d"]
 script = ExtResource("3_choice")
 choice_text = "Zeig deine Waren."
 response_speaker = "Lindro"
-response_text = "Direkt.\nAuch gut."
-next_entries = [SubResource("Resource_d1"), SubResource("Resource_d2")]
+response_text = "Direkt.
+Auch gut."
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_d1"), SubResource("Resource_d2")])
+
+[sub_resource type="Resource" id="Resource_e1"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Der Raum resoniert."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_e2"]
+script = ExtResource("2_entry")
+speaker_name = "Lindro"
+text = "Und Täter?"
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_e3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Was soll mit ihnen sein? Die Meisten werden Opfer ihrer Taten."
+text_speed = 26.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_e4"]
+script = ExtResource("2_entry")
+speaker_name = "Lindro"
+text = "Werden sie das?"
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
 
 [sub_resource type="Resource" id="Resource_choice_e"]
 script = ExtResource("3_choice")
 choice_text = "..."
 response_speaker = "Lindro"
-response_text = "Sag mir etwas.\nGlaubst du, Orte erinnern sich?"
-next_entries = [SubResource("Resource_e1"), SubResource("Resource_e2"), SubResource("Resource_e3"), SubResource("Resource_e4")]
+response_text = "Sag mir etwas.
+Glaubst du, Orte erinnern sich?"
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_e1"), SubResource("Resource_e2"), SubResource("Resource_e3"), SubResource("Resource_e4")])
 
 [sub_resource type="Resource" id="Resource_entry_choices"]
 script = ExtResource("2_entry")
 speaker_name = "Murum"
-speaker_sprite = null
 text = ""
 text_speed = 22.0
-choices = [SubResource("Resource_choice_a"), SubResource("Resource_choice_b"), SubResource("Resource_choice_c"), SubResource("Resource_choice_d"), SubResource("Resource_choice_e")]
+choices = Array[ExtResource("3_choice")]([SubResource("Resource_choice_a"), SubResource("Resource_choice_b"), SubResource("Resource_choice_c"), SubResource("Resource_choice_d"), SubResource("Resource_choice_e")])
 
 [resource]
 script = ExtResource("1_data")
 dialog_id = "merchant_world1_loc1"
-entries = [SubResource("Resource_entry1"), SubResource("Resource_entry2"), SubResource("Resource_entry3"), SubResource("Resource_entry_choices")]
+entries = Array[ExtResource("2_entry")]([SubResource("Resource_entry1"), SubResource("Resource_entry2"), SubResource("Resource_entry3"), SubResource("Resource_entry_choices")])

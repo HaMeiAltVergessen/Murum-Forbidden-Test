@@ -23,8 +23,8 @@
 [ext_resource type="PackedScene" uid="uid://c5nx05ybb3oul" path="res://puzzles/scenes/controllers/puzzle_block.tscn" id="17_twqj3"]
 [ext_resource type="Texture2D" uid="uid://b0dby8hns4kka" path="res://Assets/AIAssets/AIStuff/roadblock.png" id="18_tp35i"]
 [ext_resource type="Resource" uid="uid://bn2fffk25a6jd" path="res://data/dialogs/TutorialDialog.tres" id="19_twqj3"]
-[ext_resource type="Resource" path="res://data/dialogs/dia_pre_dorf1.tres" id="20_dia_pd1"]
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="20_180fs"]
+[ext_resource type="Resource" uid="uid://bgpe2r1eo6oi" path="res://data/dialogs/dia_pre_dorf1.tres" id="20_dia_pd1"]
 [ext_resource type="PackedScene" uid="uid://dfrjdwjipd0ex" path="res://environment/Wegweise1.tscn" id="22_c4up5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
@@ -523,9 +523,10 @@ item_id = "titanenblut_stein"
 pickup_id = "room_01_entry/titanenblut_1"
 
 [node name="PickupUrtraene" parent="Pickups" instance=ExtResource("9_cqwq7")]
-position = Vector2(-623, 2623)
+position = Vector2(71, 1025)
 item_id = "urtraene"
 pickup_id = "room_01_entry/urtraene_1"
+custom_sprite = ExtResource("18_tp35i")
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 position = Vector2(1545, 481)
