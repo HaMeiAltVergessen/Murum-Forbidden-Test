@@ -11,7 +11,7 @@ const THROW_COST: int = 15
 const THROW_SPEED: float = 850.0
 const MAX_RANGE: float = 600.0
 const RETURN_SPEED: float = 900.0
-const DAMAGE: int = 50  # 2.5x damage for 2-shot kills
+const DAMAGE: int = 10  # 2.5x damage for 2-shot kills
 const COOLDOWN_AFTER_CATCH: float = 0.2
 
 const STAFF_PROJECTILE_SCENE = preload("res://player/projectiles/staff_projectile.tscn")

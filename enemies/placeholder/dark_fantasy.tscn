@@ -1,10 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://dark_fantasy_001"]
+[gd_scene load_steps=10 format=3 uid="uid://b5grq3napa7sq"]
 
-[ext_resource type="Script" path="res://enemies/placeholder/dark_fantasy.gd" id="1"]
-[ext_resource type="Script" path="res://enemies/placeholder/dark_fantasy_ai.gd" id="2"]
-[ext_resource type="Script" path="res://components/hurtbox_component.gd" id="3"]
-[ext_resource type="Script" path="res://components/hitbox_component.gd" id="4"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Gegner/DarkFantasyEnemies_FREE/DarkFantasyEnemies_FREE/Bat/Bat with VFX/Bat-IdleFly.png" id="5"]
+[ext_resource type="Script" uid="uid://cycpxlc7nrms2" path="res://enemies/placeholder/dark_fantasy.gd" id="1"]
+[ext_resource type="Script" uid="uid://dxbu5xxjgye0i" path="res://enemies/placeholder/dark_fantasy_ai.gd" id="2"]
+[ext_resource type="Script" uid="uid://be8au7dl6rc4k" path="res://components/hurtbox_component.gd" id="3"]
+[ext_resource type="Script" uid="uid://ccjbelb33h57n" path="res://components/hitbox_component.gd" id="4"]
+[ext_resource type="Texture2D" uid="uid://5mesl6q2ein3" path="res://Assets/Placeholder/Gegner/DarkFantasyEnemies_FREE/DarkFantasyEnemies_FREE/Bat/Bat with VFX/Bat-IdleFly.png" id="5"]
 
 [sub_resource type="CapsuleShape2D" id="1"]
 radius = 32.0
@@ -19,17 +19,15 @@ size = Vector2(80, 96)
 [sub_resource type="CircleShape2D" id="4"]
 radius = 400.0
 
-[node name="DarkFantasy" type="CharacterBody2D" groups=["enemies", "dark_fantasy"]]
+[node name="DarkFantasy" type="CharacterBody2D" groups=["dark_fantasy", "enemies"]]
 collision_layer = 8
 collision_mask = 7
 script = ExtResource("1")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(2, 2)
 texture = ExtResource("5")
 hframes = 7
-vframes = 1
-frame = 0
-scale = Vector2(2.0, 2.0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("1")

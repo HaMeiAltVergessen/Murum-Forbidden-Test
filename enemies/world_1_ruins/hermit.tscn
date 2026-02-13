@@ -1,11 +1,11 @@
-[gd_scene load_steps=11 format=3 uid="uid://hermit_001"]
+[gd_scene load_steps=11 format=3 uid="uid://bk600ydlm83p7"]
 
-[ext_resource type="Script" path="res://enemies/world_1_ruins/hermit.gd" id="1_hermit"]
-[ext_resource type="Script" path="res://enemies/world_1_ruins/hermit_ai.gd" id="2_ai"]
-[ext_resource type="Script" path="res://components/hurtbox_component.gd" id="3_hurtbox"]
-[ext_resource type="Script" path="res://components/hitbox_component.gd" id="4_hitbox"]
-[ext_resource type="Script" path="res://player/health_component.gd" id="5_health"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Monster Pack Files/Sprites/Witch/witch1.png" id="6_witch"]
+[ext_resource type="Script" uid="uid://dtxfs57u6sf4w" path="res://enemies/world_1_ruins/hermit.gd" id="1_hermit"]
+[ext_resource type="Script" uid="uid://ddmxb4l5juohs" path="res://enemies/world_1_ruins/hermit_ai.gd" id="2_ai"]
+[ext_resource type="Script" uid="uid://be8au7dl6rc4k" path="res://components/hurtbox_component.gd" id="3_hurtbox"]
+[ext_resource type="Script" uid="uid://ccjbelb33h57n" path="res://components/hitbox_component.gd" id="4_hitbox"]
+[ext_resource type="Script" uid="uid://c2qc384qkctay" path="res://player/health_component.gd" id="5_health"]
+[ext_resource type="Texture2D" uid="uid://ctytpt5jn15uq" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Monster Pack Files/Sprites/Witch/witch1.png" id="6_witch"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
 radius = 28.0
@@ -27,7 +27,7 @@ script = ExtResource("1_hermit")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(0.9, 0.85, 1, 1)
-scale = Vector2(3.0, 3.0)
+scale = Vector2(3, 3)
 texture = ExtResource("6_witch")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -35,7 +35,7 @@ shape = SubResource("CapsuleShape2D_body")
 
 [node name="HealthComponent" type="Node" parent="."]
 script = ExtResource("5_health")
-max_health = 600
+max_health = 800
 invulnerability_duration = 0.2
 
 [node name="HurtboxComponent" type="Area2D" parent="."]
@@ -71,6 +71,7 @@ script = ExtResource("2_ai")
 
 [node name="HealthBarContainer" type="Control" parent="."]
 visible = false
+layout_mode = 3
 anchors_preset = 0
 offset_left = -40.0
 offset_top = -70.0

@@ -9,7 +9,7 @@ class_name MonsterCreature
 # CONSTANTS
 # ============================================================================
 
-const MAX_HP: int = 40
+const MAX_HP: int = 80
 const MOVE_SPEED: float = 85.0
 const DAMAGE: int = 15
 const MIN_COINS: int = 2

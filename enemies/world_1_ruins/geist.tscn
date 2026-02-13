@@ -1,10 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://bx7k2qn8m9v4p"]
+[gd_scene load_steps=10 format=3 uid="uid://bx7k2qn8nav4p"]
 
-[ext_resource type="Script" path="res://enemies/world_1_ruins/geist.gd" id="1_geist"]
-[ext_resource type="Script" path="res://enemies/world_1_ruins/geist_ai.gd" id="2_geist_ai"]
-[ext_resource type="Script" path="res://components/hurtbox_component.gd" id="3_hurtbox"]
-[ext_resource type="Script" path="res://components/hitbox_component.gd" id="4_hitbox"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Packs/Gothicvania Cemetery/Characters/Enemies/ghost/Sprites/ghost-1.png" id="5_ghost"]
+[ext_resource type="Script" uid="uid://naac30ogckew" path="res://enemies/world_1_ruins/geist.gd" id="1_geist"]
+[ext_resource type="Script" uid="uid://b057amgrlx3sd" path="res://enemies/world_1_ruins/geist_ai.gd" id="2_geist_ai"]
+[ext_resource type="Script" uid="uid://be8au7dl6rc4k" path="res://components/hurtbox_component.gd" id="3_hurtbox"]
+[ext_resource type="Script" uid="uid://ccjbelb33h57n" path="res://components/hitbox_component.gd" id="4_hitbox"]
+[ext_resource type="Texture2D" uid="uid://dvn5aa5e8psxi" path="res://Assets/Placeholder/Legacy Collection/Assets/Packs/Gothicvania Cemetery/Characters/Enemies/ghost/Sprites/ghost-1.png" id="5_ghost"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_geist_body"]
 radius = 32.0
@@ -26,7 +26,7 @@ script = ExtResource("1_geist")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(0.7, 0.9, 1, 0.85)
-scale = Vector2(3.0, 3.0)
+scale = Vector2(3, 3)
 texture = ExtResource("5_ghost")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

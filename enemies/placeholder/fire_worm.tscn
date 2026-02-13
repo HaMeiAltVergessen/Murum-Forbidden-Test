@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://c2sa121egpawt" path="res://Assets/Placeholder/Gegner/Fire Worm/Fire Worm/Sprites/Worm/Walk.png" id="2_sprite"]
 
 [node name="FireWorm" instance=ExtResource("1_base")]
-max_health = 35
+max_health = 200
 move_speed = 60.0
 attack_damage = 18
 attack_range = 70.0
