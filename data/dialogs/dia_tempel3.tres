@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="DialogData" load_steps=13 format=3 uid="uid://dia_tempel3_sp"]
+[gd_resource type="Resource" script_class="DialogData" load_steps=12 format=3 uid="uid://da8cfw1bhqhgh"]
 
 [ext_resource type="Script" uid="uid://ckftluhf1nt4b" path="res://resources/dialog/dialog_data.gd" id="1_data"]
 [ext_resource type="Script" uid="uid://dkdprkyi73yrh" path="res://resources/dialog/dialog_entry.gd" id="2_entry"]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://b8mx4n7raprst"]
+[gd_scene load_steps=37 format=3 uid="uid://b8mx4n7raprst"]
 
 [ext_resource type="Script" uid="uid://86josincpmca" path="res://worlds/world_1_ruins/section_1_entrance/room_01_entry.gd" id="1_room01"]
 [ext_resource type="Texture2D" uid="uid://8dckngarxpti" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_PreDorf/world1predorfbackground.png" id="2_dda7m"]
@@ -16,7 +16,6 @@
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="12_dda7m"]
 [ext_resource type="PackedScene" uid="uid://bxjm0m07w77dm" path="res://enemies/world_1_ruins/guardian_statue.tscn" id="12_guardian"]
 [ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="12_ry1fm"]
-[ext_resource type="Resource" uid="uid://b3kr0d2ybipxu" path="res://data/dialogs/world01room01.tres" id="13_7ghlt"]
 [ext_resource type="PackedScene" uid="uid://bp88htlho4s8e" path="res://enemies/world_1_ruins/corpse_trap.tscn" id="13_corpse"]
 [ext_resource type="Resource" uid="uid://dwxmyv6rhud6u" path="res://data/dialogs/world01room01_coop.tres" id="14_1mjwj"]
 [ext_resource type="PackedScene" uid="uid://3qux34opa7wk" path="res://puzzles/scenes/components/pressure_plate.tscn" id="15_2ith3"]
@@ -27,10 +26,10 @@
 [ext_resource type="Resource" uid="uid://bn2fffk25a6jd" path="res://data/dialogs/TutorialDialog.tres" id="19_twqj3"]
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="20_180fs"]
 [ext_resource type="Resource" uid="uid://bgpe2r1eo6oi" path="res://data/dialogs/dia_pre_dorf1.tres" id="20_dia_pd1"]
-[ext_resource type="Resource" uid="uid://dia_pre_dorf2_sp" path="res://data/dialogs/dia_pre_dorf2.tres" id="30_dia_pd2"]
-[ext_resource type="Resource" uid="uid://dia_pre_dorf3_sp" path="res://data/dialogs/dia_pre_dorf3.tres" id="31_dia_pd3"]
-[ext_resource type="Resource" uid="uid://dia_pre_dorf4_sp" path="res://data/dialogs/dia_pre_dorf4.tres" id="32_dia_pd4"]
 [ext_resource type="PackedScene" uid="uid://dfrjdwjipd0ex" path="res://environment/Wegweise1.tscn" id="22_c4up5"]
+[ext_resource type="Resource" uid="uid://cr21br1nh315a" path="res://data/dialogs/dia_pre_dorf2.tres" id="30_dia_pd2"]
+[ext_resource type="Resource" uid="uid://csjuwehw7ed8d" path="res://data/dialogs/dia_pre_dorf3.tres" id="31_dia_pd3"]
+[ext_resource type="Resource" uid="uid://bck3gbqnld808" path="res://data/dialogs/dia_pre_dorf4.tres" id="32_dia_pd4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(3077.99, 313.435)
@@ -52,6 +51,15 @@ size = Vector2(114, 250)
 
 [node name="Room01Entry" type="Node2D"]
 script = ExtResource("1_room01")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+z_index = -6
+offset_left = -10173.0
+offset_top = -10719.0
+offset_right = -10133.0
+offset_bottom = -10679.0
+scale = Vector2(966.369, 520.834)
+color = Color(0.0562916, 0.0562916, 0.0562916, 1)
 
 [node name="World1Predorfbackground" type="Sprite2D" parent="."]
 z_index = -4
@@ -883,18 +891,14 @@ position = Vector2(10053, 596.001)
 scale = Vector2(2.59096, 2.59096)
 item_id = "heilkraeuter"
 
+[node name="Pickup_heilkraeuter2" parent="Items" instance=ExtResource("9_cqwq7")]
+position = Vector2(5972, -1707)
+scale = Vector2(2.59096, 2.59096)
+item_id = "heilkraeuter"
+
 [node name="Door" parent="." instance=ExtResource("3_door")]
 position = Vector2(936, 574)
 rotation = 0.0553202
 scale = Vector2(0.689073, 0.77134)
 target_scene = "res://worlds/world_1_ruins/section_4_tempel/TutorialRoom01.tscn"
 spawn_position = Vector2(0, 0)
-
-[node name="ColorRect" type="ColorRect" parent="."]
-z_index = -6
-offset_left = -10173.0
-offset_top = -10719.0
-offset_right = -10133.0
-offset_bottom = -10679.0
-scale = Vector2(966.369, 520.834)
-color = Color(0.0562916, 0.0562916, 0.0562916, 1)

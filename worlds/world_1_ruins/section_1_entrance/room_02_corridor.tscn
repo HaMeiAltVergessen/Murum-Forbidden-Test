@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://csm4wax2ntpqr"]
+[gd_scene load_steps=36 format=3 uid="uid://csm4wax2ntpqr"]
 
 [ext_resource type="Script" uid="uid://dhherqlrd2s44" path="res://worlds/world_1_ruins/section_1_entrance/room_02_corridor.gd" id="1_room02"]
 [ext_resource type="Texture2D" uid="uid://bcf1bvmbq8p8g" path="res://Assets/AIPlaceholder/world1preTempel.png" id="2_ptyf6"]
@@ -25,12 +25,13 @@
 [ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="23_uhlgo"]
 [ext_resource type="PackedScene" uid="uid://dfrjdwjipd0ex" path="res://environment/Wegweise1.tscn" id="24_a02lo"]
 [ext_resource type="Resource" uid="uid://boo6s7052uxy0" path="res://data/dialogs/dia_pre_tempel1.tres" id="24_dia_pt1"]
-[ext_resource type="Resource" uid="uid://dia_pre_tempel2_sp" path="res://data/dialogs/dia_pre_tempel2.tres" id="30_dia_pt2"]
-[ext_resource type="Resource" uid="uid://dia_pre_tempel3_sp" path="res://data/dialogs/dia_pre_tempel3.tres" id="31_dia_pt3"]
-[ext_resource type="Resource" uid="uid://dia_pre_tempel4_sp" path="res://data/dialogs/dia_pre_tempel4.tres" id="32_dia_pt4"]
 [ext_resource type="PackedScene" uid="uid://fsarw2nqycb6" path="res://environment/WegweiseUP.tscn" id="24_ul0io"]
 [ext_resource type="Resource" uid="uid://qqwgyskx7ysu" path="res://data/dialogs/merchant_world1_loc1.tres" id="25_merch1"]
 [ext_resource type="PackedScene" uid="uid://o0fbrvsc2jxd" path="res://environment/Wegweise2.tscn" id="26_4jwuu"]
+[ext_resource type="Resource" uid="uid://bya466l7wibk5" path="res://data/dialogs/dia_pre_tempel2.tres" id="30_dia_pt2"]
+[ext_resource type="Resource" uid="uid://kk6ff73jmn61" path="res://data/dialogs/dia_pre_tempel3.tres" id="31_dia_pt3"]
+[ext_resource type="Resource" uid="uid://c4u5gl73fabp2" path="res://data/dialogs/dia_pre_tempel4.tres" id="32_dia_pt4"]
+[ext_resource type="PackedScene" uid="uid://bk7a8n73qcfla" path="res://environment/pickups/pickup_base.tscn" id="32_l7d5r"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1891, 80)
@@ -719,19 +720,19 @@ dialog_resource = ExtResource("25_merch1")
 [node name="Dialoge" type="Node2D" parent="."]
 
 [node name="DiaPreTempel1" parent="Dialoge" instance=ExtResource("23_uhlgo")]
-position = Vector2(4304, 4360)
+position = Vector2(1822, 481)
 dialog_singleplayer = ExtResource("24_dia_pt1")
 interaction_size = Vector2(222, 120)
 glow_energy = 0.9
 
 [node name="DiaPreTempel2" parent="Dialoge" instance=ExtResource("23_uhlgo")]
-position = Vector2(4518, 4358)
+position = Vector2(9478, 2780)
 dialog_singleplayer = ExtResource("30_dia_pt2")
 interaction_size = Vector2(222, 120)
 glow_energy = 0.9
 
 [node name="DiaPreTempel3" parent="Dialoge" instance=ExtResource("23_uhlgo")]
-position = Vector2(4739, 4354)
+position = Vector2(9249, 894)
 dialog_singleplayer = ExtResource("31_dia_pt3")
 interaction_size = Vector2(222, 120)
 glow_energy = 0.9
@@ -788,3 +789,23 @@ position = Vector2(10145, 2738)
 
 [node name="Wegweise13" parent="Wegweiser" instance=ExtResource("26_4jwuu")]
 position = Vector2(10172, 843)
+
+[node name="Pickup_heilkraeuter2" parent="Wegweiser" instance=ExtResource("32_l7d5r")]
+position = Vector2(4719, 2719)
+scale = Vector2(2.59096, 2.59096)
+item_id = "heilkraeuter"
+
+[node name="Pickup_heilkraeuter3" parent="Wegweiser" instance=ExtResource("32_l7d5r")]
+position = Vector2(3791, 725)
+scale = Vector2(2.59096, 2.59096)
+item_id = "heilkraeuter"
+
+[node name="Pickup_heilkraeuter4" parent="Wegweiser" instance=ExtResource("32_l7d5r")]
+position = Vector2(1740, 2801)
+scale = Vector2(2.59096, 2.59096)
+item_id = "heilkraeuter"
+
+[node name="Pickup_heilkraeuter5" parent="Wegweiser" instance=ExtResource("32_l7d5r")]
+position = Vector2(10157, 1743)
+scale = Vector2(2.59096, 2.59096)
+item_id = "heilkraeuter"
