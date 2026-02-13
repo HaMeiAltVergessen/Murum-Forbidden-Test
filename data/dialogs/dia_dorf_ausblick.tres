@@ -1,0 +1,460 @@
+[gd_resource type="Resource" script_class="DialogData" load_steps=72 format=3 uid="uid://dia_dorf_ausblick_sp"]
+
+[ext_resource type="Script" uid="uid://ckftluhf1nt4b" path="res://resources/dialog/dialog_data.gd" id="1_data"]
+[ext_resource type="Script" uid="uid://dkdprkyi73yrh" path="res://resources/dialog/dialog_entry.gd" id="2_entry"]
+[ext_resource type="Script" uid="uid://bv8wy1h236ne5" path="res://resources/dialog/dialog_choice.gd" id="3_choice"]
+
+[sub_resource type="Resource" id="Resource_intro1"]
+script = ExtResource("2_entry")
+speaker_name = ""
+text = "Der Blick öffnet sich auf die Ruinen. Der Wind trägt Asche.
+Eine Gestalt – Murum, wie er war – steht reglos am Rand."
+text_speed = 28.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_intro2"]
+script = ExtResource("2_entry")
+speaker_name = "Geist-Murum"
+text = "Hier hat es aufgehört, still zu sein."
+text_speed = 24.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_intro3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Hier wurde es notwendig."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_intro4"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+text = "Er nennt es immer so."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_a1"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Zögern verlängert Leid."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_a2"]
+script = ExtResource("2_entry")
+speaker_name = "Geist-Murum"
+text = "Du hast etwas in sie gelegt."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_a3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Ich habe etwas aus ihr entfernt."
+text_speed = 24.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_a4"]
+script = ExtResource("2_entry")
+speaker_name = "Geist-Murum"
+text = "Und sie zerbrach trotzdem."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_a5"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Ja."
+text_speed = 18.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_a6"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+text = "Zerstörung ist kein Versprechen."
+text_speed = 24.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_choice_a"]
+script = ExtResource("3_choice")
+choice_text = "Was ist hier geschehen?"
+response_speaker = "Geist-Murum"
+response_text = "Die Welt hat gezögert.
+Und ich habe entschieden."
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_a1"), SubResource("Resource_a2"), SubResource("Resource_a3"), SubResource("Resource_a4"), SubResource("Resource_a5"), SubResource("Resource_a6")])
+
+[sub_resource type="Resource" id="Resource_b1"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Etwas, das niemand sehen darf."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_b2"]
+script = ExtResource("2_entry")
+speaker_name = "Geist-Murum"
+text = "Ein Auge."
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_b3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Ein Urteil."
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_b4"]
+script = ExtResource("2_entry")
+speaker_name = "Geist-Murum"
+text = "Warum hier?"
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_b5"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Weil niemand sucht, wo alles tot ist."
+text_speed = 24.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_b6"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+text = "Außer Schuld."
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_choice_b"]
+script = ExtResource("3_choice")
+choice_text = "Was hast du hier versteckt?"
+response_speaker = "Geist-Murum"
+response_text = "Etwas, das gesehen werden will."
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_b1"), SubResource("Resource_b2"), SubResource("Resource_b3"), SubResource("Resource_b4"), SubResource("Resource_b5"), SubResource("Resource_b6")])
+
+[sub_resource type="Resource" id="Resource_c1"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Zwinge mich nicht."
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_c2"]
+script = ExtResource("2_entry")
+speaker_name = "Geist-Murum"
+text = "Es nicht Alyria, sondern?"
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_c3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Myrkur."
+text_speed = 18.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_c4"]
+script = ExtResource("2_entry")
+speaker_name = "Geist-Murum"
+text = "Das was hinter der Pforte lag?"
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_c5"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Das was in Urgathon war. Es darf niemals das Auge von Xy erhalten."
+text_speed = 26.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_c6"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+text = "Und braucht ihn dafür."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_choice_c"]
+script = ExtResource("3_choice")
+choice_text = "Vor wem?"
+response_speaker = "Geist-Murum"
+response_text = "Worte bergen Macht, Erinnerungen blutender Wunden."
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_c1"), SubResource("Resource_c2"), SubResource("Resource_c3"), SubResource("Resource_c4"), SubResource("Resource_c5"), SubResource("Resource_c6")])
+
+[sub_resource type="Resource" id="Resource_d1"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Nicht einmal Staub."
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_d2"]
+script = ExtResource("2_entry")
+speaker_name = "Geist-Murum"
+text = "Es würde alle Welten verschlingen. Wenn da nicht das Feuer wäre."
+text_speed = 26.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_d3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "..."
+text_speed = 50.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_d4"]
+script = ExtResource("2_entry")
+speaker_name = "Geist-Murum"
+text = "Und danach?"
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_d5"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Danach endet alles."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_d6"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+text = "Auch das, was hätte wachsen können."
+text_speed = 24.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_choice_d"]
+script = ExtResource("3_choice")
+choice_text = "Warum darf Myrkur es nicht bekommen?"
+response_speaker = "Geist-Murum"
+response_text = "Weil dann nichts mehr bleibt."
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_d1"), SubResource("Resource_d2"), SubResource("Resource_d3"), SubResource("Resource_d4"), SubResource("Resource_d5"), SubResource("Resource_d6")])
+
+[sub_resource type="Resource" id="Resource_e1"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Nein."
+text_speed = 18.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_e2"]
+script = ExtResource("2_entry")
+speaker_name = "Geist-Murum"
+text = "Du hast Welten erschaffen und vernichtet."
+text_speed = 24.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_e3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Und bin versiegelt worden."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_e4"]
+script = ExtResource("2_entry")
+speaker_name = "Geist-Murum"
+text = "Also hast du es behalten."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_e5"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Ich habe es versiegelt."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_e6"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+text = "Wie alles."
+text_speed = 18.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_choice_e"]
+script = ExtResource("3_choice")
+choice_text = "Warum hast du es nicht zerstört?"
+response_speaker = "Geist-Murum"
+response_text = "Du hättest es gekonnt."
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_e1"), SubResource("Resource_e2"), SubResource("Resource_e3"), SubResource("Resource_e4"), SubResource("Resource_e5"), SubResource("Resource_e6")])
+
+[sub_resource type="Resource" id="Resource_f1"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Hier begann das Schlachten."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_f2"]
+script = ExtResource("2_entry")
+speaker_name = "Geist-Murum"
+text = "Hier hast du den ersten Voch Numta getötet. Surus? Das war sein Name oder?"
+text_speed = 26.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_f3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Namen verlieren an Bedeutung."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_f4"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+text = "Nett Murum."
+text_speed = 18.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_choice_f"]
+script = ExtResource("3_choice")
+choice_text = "Warum kehrst du immer hierher zurück?"
+response_speaker = "Geist-Murum"
+response_text = "Weil du glaubst, hier liegt dein Zweck."
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_f1"), SubResource("Resource_f2"), SubResource("Resource_f3"), SubResource("Resource_f4")])
+
+[sub_resource type="Resource" id="Resource_g1"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Ja."
+text_speed = 18.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_g2"]
+script = ExtResource("2_entry")
+speaker_name = "Geist-Murum"
+text = "Und wenn danach etwas kommt?"
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_g3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Dann ohne mich."
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_g4"]
+script = ExtResource("2_entry")
+speaker_name = "Geist-Murum"
+text = "Du bist sicher?"
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_g5"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Ich bin vollständig."
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_g6"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+text = "Vollständig leer."
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_choice_g"]
+script = ExtResource("3_choice")
+choice_text = "Willst du, dass es endet?"
+response_speaker = "Geist-Murum"
+response_text = "Antworte."
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_g1"), SubResource("Resource_g2"), SubResource("Resource_g3"), SubResource("Resource_g4"), SubResource("Resource_g5"), SubResource("Resource_g6")])
+
+[sub_resource type="Resource" id="Resource_h1"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Dann war es korrekt."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_h2"]
+script = ExtResource("2_entry")
+speaker_name = "Geist-Murum"
+text = "Warum?"
+text_speed = 18.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_h3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Weil Zerstörung ehrlich ist."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_h4"]
+script = ExtResource("2_entry")
+speaker_name = "Geist-Murum"
+text = "Und Schöpfung?"
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_h5"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Eine Hoffnung, die ich nicht trage."
+text_speed = 24.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_h6"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+text = "Aber jemand anderes vielleicht."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_choice_h"]
+script = ExtResource("3_choice")
+choice_text = "Was, wenn du dich irrst?"
+response_speaker = "Geist-Murum"
+response_text = "Dann hast du alles umsonst zerstört."
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_h1"), SubResource("Resource_h2"), SubResource("Resource_h3"), SubResource("Resource_h4"), SubResource("Resource_h5"), SubResource("Resource_h6")])
+
+[sub_resource type="Resource" id="Resource_i1"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Ja."
+text_speed = 18.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_i2"]
+script = ExtResource("2_entry")
+speaker_name = "Geist-Murum"
+text = "Und dann?"
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_i3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Dann finde ich Alyria."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_i4"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+text = "Oder…."
+text_speed = 18.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_choice_i"]
+script = ExtResource("3_choice")
+choice_text = "Gehen"
+response_speaker = "Geist-Murum"
+response_text = "Du wirst das Auge finden."
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_i1"), SubResource("Resource_i2"), SubResource("Resource_i3"), SubResource("Resource_i4")])
+
+[sub_resource type="Resource" id="Resource_entry_choices"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = ""
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([SubResource("Resource_choice_a"), SubResource("Resource_choice_b"), SubResource("Resource_choice_c"), SubResource("Resource_choice_d"), SubResource("Resource_choice_e"), SubResource("Resource_choice_f"), SubResource("Resource_choice_g"), SubResource("Resource_choice_h"), SubResource("Resource_choice_i")])
+
+[resource]
+script = ExtResource("1_data")
+dialog_id = "dia_dorf_ausblick"
+entries = Array[ExtResource("2_entry")]([SubResource("Resource_intro1"), SubResource("Resource_intro2"), SubResource("Resource_intro3"), SubResource("Resource_intro4"), SubResource("Resource_entry_choices")])

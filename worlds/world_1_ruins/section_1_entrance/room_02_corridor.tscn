@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://csm4wax2ntpqr"]
+[gd_scene load_steps=35 format=3 uid="uid://csm4wax2ntpqr"]
 
 [ext_resource type="Script" uid="uid://dhherqlrd2s44" path="res://worlds/world_1_ruins/section_1_entrance/room_02_corridor.gd" id="1_room02"]
 [ext_resource type="Texture2D" uid="uid://bcf1bvmbq8p8g" path="res://Assets/AIPlaceholder/world1preTempel.png" id="2_ptyf6"]
@@ -25,6 +25,9 @@
 [ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="23_uhlgo"]
 [ext_resource type="PackedScene" uid="uid://dfrjdwjipd0ex" path="res://environment/Wegweise1.tscn" id="24_a02lo"]
 [ext_resource type="Resource" uid="uid://boo6s7052uxy0" path="res://data/dialogs/dia_pre_tempel1.tres" id="24_dia_pt1"]
+[ext_resource type="Resource" uid="uid://dia_pre_tempel2_sp" path="res://data/dialogs/dia_pre_tempel2.tres" id="30_dia_pt2"]
+[ext_resource type="Resource" uid="uid://dia_pre_tempel3_sp" path="res://data/dialogs/dia_pre_tempel3.tres" id="31_dia_pt3"]
+[ext_resource type="Resource" uid="uid://dia_pre_tempel4_sp" path="res://data/dialogs/dia_pre_tempel4.tres" id="32_dia_pt4"]
 [ext_resource type="PackedScene" uid="uid://fsarw2nqycb6" path="res://environment/WegweiseUP.tscn" id="24_ul0io"]
 [ext_resource type="Resource" uid="uid://qqwgyskx7ysu" path="res://data/dialogs/merchant_world1_loc1.tres" id="25_merch1"]
 [ext_resource type="PackedScene" uid="uid://o0fbrvsc2jxd" path="res://environment/Wegweise2.tscn" id="26_4jwuu"]
@@ -723,12 +726,21 @@ glow_energy = 0.9
 
 [node name="DiaPreTempel2" parent="Dialoge" instance=ExtResource("23_uhlgo")]
 position = Vector2(4518, 4358)
+dialog_singleplayer = ExtResource("30_dia_pt2")
+interaction_size = Vector2(222, 120)
+glow_energy = 0.9
 
 [node name="DiaPreTempel3" parent="Dialoge" instance=ExtResource("23_uhlgo")]
 position = Vector2(4739, 4354)
+dialog_singleplayer = ExtResource("31_dia_pt3")
+interaction_size = Vector2(222, 120)
+glow_energy = 0.9
 
 [node name="DiaPreTempel4" parent="Dialoge" instance=ExtResource("23_uhlgo")]
 position = Vector2(4066, 4358)
+dialog_singleplayer = ExtResource("32_dia_pt4")
+interaction_size = Vector2(222, 120)
+glow_energy = 0.9
 
 [node name="Wegweiser" type="Node2D" parent="."]
 

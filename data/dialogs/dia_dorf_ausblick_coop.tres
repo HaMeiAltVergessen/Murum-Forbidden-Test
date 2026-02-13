@@ -1,0 +1,52 @@
+[gd_resource type="Resource" script_class="DialogData" load_steps=10 format=3 uid="uid://dia_dorf_ausblick_co"]
+
+[ext_resource type="Script" uid="uid://ckftluhf1nt4b" path="res://resources/dialog/dialog_data.gd" id="1_data"]
+[ext_resource type="Script" uid="uid://dkdprkyi73yrh" path="res://resources/dialog/dialog_entry.gd" id="2_entry"]
+[ext_resource type="Script" uid="uid://bv8wy1h236ne5" path="res://resources/dialog/dialog_choice.gd" id="3_choice"]
+
+[sub_resource type="Resource" id="Resource_entry1"]
+script = ExtResource("2_entry")
+speaker_name = "Lythrun"
+text = "Du hast es versteckt, um die Welt zu schützen."
+text_speed = 26.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_entry2"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Nein."
+text_speed = 18.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_entry3"]
+script = ExtResource("2_entry")
+speaker_name = "Lythrun"
+text = "Warum dann?"
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_entry4"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Damit sie ohne mich überleben kann."
+text_speed = 24.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_entry5"]
+script = ExtResource("2_entry")
+speaker_name = "Lythrun"
+text = "Und wenn sie dich braucht?"
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_entry6"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Dann ist sie bereits verloren."
+text_speed = 24.0
+choices = Array[ExtResource("3_choice")]([])
+
+[resource]
+script = ExtResource("1_data")
+dialog_id = "dia_dorf_ausblick_coop"
+entries = Array[ExtResource("2_entry")]([SubResource("Resource_entry1"), SubResource("Resource_entry2"), SubResource("Resource_entry3"), SubResource("Resource_entry4"), SubResource("Resource_entry5"), SubResource("Resource_entry6")])

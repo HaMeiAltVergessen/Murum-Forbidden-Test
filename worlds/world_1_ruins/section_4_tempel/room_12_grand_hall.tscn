@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3 uid="uid://olootelhiqjq"]
+[gd_scene load_steps=44 format=3 uid="uid://olootelhiqjq"]
 
 [ext_resource type="Script" uid="uid://86josincpmca" path="res://worlds/world_1_ruins/section_1_entrance/room_01_entry.gd" id="1_u8d88"]
 [ext_resource type="Texture2D" uid="uid://dg2j7sphue6ht" path="res://Assets/AIAssets/tempel01.jpg" id="2_e218r"]
@@ -30,6 +30,10 @@
 [ext_resource type="PackedScene" uid="uid://dmlqfkn08pb4u" path="res://enemies/placeholder/cthulu.tscn" id="27_3tmbj"]
 [ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="28_xlmm0"]
 [ext_resource type="Resource" uid="uid://yj2gyhjfxm3m" path="res://data/dialogs/dia_tempel1.tres" id="29_dia_t1"]
+[ext_resource type="Resource" uid="uid://dia_tempel2_sp" path="res://data/dialogs/dia_tempel2.tres" id="40_dia_t2"]
+[ext_resource type="Resource" uid="uid://dia_tempel3_sp" path="res://data/dialogs/dia_tempel3.tres" id="41_dia_t3"]
+[ext_resource type="Resource" uid="uid://dia_tempel4_sp" path="res://data/dialogs/dia_tempel4.tres" id="42_dia_t4"]
+[ext_resource type="Resource" uid="uid://dia_tempel5_sp" path="res://data/dialogs/dia_tempel5.tres" id="43_dia_t5"]
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="30_j8g0h"]
 [ext_resource type="PackedScene" uid="uid://dfrjdwjipd0ex" path="res://environment/Wegweise1.tscn" id="31_jrtjq"]
 [ext_resource type="PackedScene" uid="uid://du2kjq0xuewvi" path="res://environment/WegweiseDOWN.tscn" id="32_3tmbj"]
@@ -686,15 +690,27 @@ glow_energy = 0.9
 
 [node name="DiaTempel2" parent="Dialogs" instance=ExtResource("28_xlmm0")]
 position = Vector2(399, 752)
+dialog_singleplayer = ExtResource("40_dia_t2")
+interaction_size = Vector2(222, 120)
+glow_energy = 0.9
 
 [node name="DiaTempel3" parent="Dialogs" instance=ExtResource("28_xlmm0")]
 position = Vector2(1000, 761)
+dialog_singleplayer = ExtResource("41_dia_t3")
+interaction_size = Vector2(222, 120)
+glow_energy = 0.9
 
 [node name="DiaTempel4" parent="Dialogs" instance=ExtResource("28_xlmm0")]
 position = Vector2(802, 667)
+dialog_singleplayer = ExtResource("42_dia_t4")
+interaction_size = Vector2(222, 120)
+glow_energy = 0.9
 
 [node name="DiaTempel5" parent="Dialogs" instance=ExtResource("28_xlmm0")]
 position = Vector2(536, 747)
+dialog_singleplayer = ExtResource("43_dia_t5")
+interaction_size = Vector2(222, 120)
+glow_energy = 0.9
 
 [node name="Tier2" parent="." instance=ExtResource("6_wvoon")]
 position = Vector2(6183, 3800)

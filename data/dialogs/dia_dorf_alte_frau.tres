@@ -1,0 +1,305 @@
+[gd_resource type="Resource" script_class="DialogData" load_steps=44 format=3 uid="uid://dia_dorf_alte_frau_sp"]
+
+[ext_resource type="Script" uid="uid://ckftluhf1nt4b" path="res://resources/dialog/dialog_data.gd" id="1_data"]
+[ext_resource type="Script" uid="uid://dkdprkyi73yrh" path="res://resources/dialog/dialog_entry.gd" id="2_entry"]
+[ext_resource type="Script" uid="uid://bv8wy1h236ne5" path="res://resources/dialog/dialog_choice.gd" id="3_choice"]
+
+[sub_resource type="Resource" id="Resource_entry1"]
+script = ExtResource("2_entry")
+speaker_name = "Alte Frau"
+text = "Du siehst noch immer aus wie damals."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_entry2"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Zeit frisst nur mein Geist, nicht den Leib."
+text_speed = 24.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_entry3"]
+script = ExtResource("2_entry")
+speaker_name = "Alte Frau"
+text = "Mich nagt sie wie ein alten Knochen."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_entry4"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+text = "Würde ich auch."
+text_speed = 18.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_a1"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Erinnerung ist kein Fundament."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_a2"]
+script = ExtResource("2_entry")
+speaker_name = "Alte Frau"
+text = "Doch. Für mich war sie alles.
+Du bist gegangen, Murum. Ohne Abschied."
+text_speed = 26.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_a3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Ich habe mich verabschiedet.
+Ihr habt mich nicht verstanden. "
+text_speed = 24.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_a4"]
+script = ExtResource("2_entry")
+speaker_name = "Alte Frau"
+text = "Du hast mich allein gelassen."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_a5"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Ich habe dich am Leben gelassen."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_a6"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+text = "Du nennt das Großzügigkeit."
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_b1"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Ich weiß. Das wäre nicht möglich."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_b2"]
+script = ExtResource("2_entry")
+speaker_name = "Alte Frau"
+text = "Dabei haben wir es doch versucht!
+Du wolltest es."
+text_speed = 24.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_b3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Mein Wille ist-, spielt keine Rolle mehr.
+Ich bringe das Ende. Wo sind deine Kinder, wo ist dein Mann?"
+text_speed = 26.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_b4"]
+script = ExtResource("2_entry")
+speaker_name = "Alte Frau"
+text = "Er hat mich geliebt.
+Und die Kinder auch.
+Sie sind tot."
+text_speed = 24.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_b5"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Dann sind sie dem Zyklus entkommen."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_b6"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+text = "Du sagt das, als wäre es Trost."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_c1"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Vergebung setzt Schuld voraus."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_c2"]
+script = ExtResource("2_entry")
+speaker_name = "Alte Frau"
+text = "Und du bist unschuldig?"
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_c3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Ich bin verantwortlich.
+Das ist etwas anderes."
+text_speed = 24.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_c4"]
+script = ExtResource("2_entry")
+speaker_name = "Alte Frau"
+text = "Ich habe dich gehasst."
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_c5"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Verständlich..."
+text_speed = 18.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_c6"]
+script = ExtResource("2_entry")
+speaker_name = "Alte Frau"
+text = "Jetzt… jetzt fühle ich einfach nichts mehr."
+text_speed = 24.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_c7"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Dann bist du näher an einer Wahrheit als zuvor."
+text_speed = 24.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_c8"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+text = "Leere erkennt Leere."
+text_speed = 18.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_d1"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Du warst ein Versuch."
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_d2"]
+script = ExtResource("2_entry")
+speaker_name = "Alte Frau"
+text = "Ein was?"
+text_speed = 18.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_d3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Ein letzter Versuch zu heilen, zu bleiben.
+Zu prüfen, ob ich noch Leben erschaffen kann."
+text_speed = 26.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_d4"]
+script = ExtResource("2_entry")
+speaker_name = "Alte Frau"
+text = "Du bist ein Monster Murum. Wenn ich nur könnte würde ich dich töten!"
+text_speed = 26.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_d5"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Verständlich."
+text_speed = 18.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_d6"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+text = "Wie kalt und herzlos? Schmerzen im Herzen?"
+text_speed = 24.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_e1"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Das tue ich immer."
+text_speed = 20.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_e2"]
+script = ExtResource("2_entry")
+speaker_name = "Alte Frau"
+text = "Und dann?"
+text_speed = 18.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_e3"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = "Dann wirst du dich erneut erinnern."
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_e4"]
+script = ExtResource("2_entry")
+speaker_name = "Umbra"
+text = "Und du an nichts."
+text_speed = 18.0
+choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_choice_a"]
+script = ExtResource("3_choice")
+choice_text = "Warum bleibst du hier?"
+response_speaker = "Alte Frau"
+response_text = "Weil jemand bleiben musste.
+Jemand, der sich erinnert, inmitten dieser Leere."
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_a1"), SubResource("Resource_a2"), SubResource("Resource_a3"), SubResource("Resource_a4"), SubResource("Resource_a5"), SubResource("Resource_a6")])
+
+[sub_resource type="Resource" id="Resource_choice_b"]
+script = ExtResource("3_choice")
+choice_text = "Du hattest Kinder?"
+response_speaker = "Alte Frau"
+response_text = "(atmet schwer)
+Ja.
+Nicht deine."
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_b1"), SubResource("Resource_b2"), SubResource("Resource_b3"), SubResource("Resource_b4"), SubResource("Resource_b5"), SubResource("Resource_b6")])
+
+[sub_resource type="Resource" id="Resource_choice_c"]
+script = ExtResource("3_choice")
+choice_text = "Kannst du mir verziehen?"
+response_speaker = "Alte Frau"
+response_text = "Wofür?
+Dafür, dass du nichts hinterlassen hast?
+Oder dafür, dass alles, was ich hatte, mir genommen wurde?"
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_c1"), SubResource("Resource_c2"), SubResource("Resource_c3"), SubResource("Resource_c4"), SubResource("Resource_c5"), SubResource("Resource_c6"), SubResource("Resource_c7"), SubResource("Resource_c8")])
+
+[sub_resource type="Resource" id="Resource_choice_d"]
+script = ExtResource("3_choice")
+choice_text = "Was willst du wissen?"
+response_speaker = "Alte Frau"
+response_text = "Sag es mir.
+Nur einmal.
+Was war ich für dich?"
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_d1"), SubResource("Resource_d2"), SubResource("Resource_d3"), SubResource("Resource_d4"), SubResource("Resource_d5"), SubResource("Resource_d6")])
+
+[sub_resource type="Resource" id="Resource_choice_e"]
+script = ExtResource("3_choice")
+choice_text = "Gehen"
+response_speaker = "Alte Frau"
+response_text = "Du wirst wiederkommen."
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_e1"), SubResource("Resource_e2"), SubResource("Resource_e3"), SubResource("Resource_e4")])
+
+[sub_resource type="Resource" id="Resource_entry_choices"]
+script = ExtResource("2_entry")
+speaker_name = "Murum"
+text = ""
+text_speed = 22.0
+choices = Array[ExtResource("3_choice")]([SubResource("Resource_choice_a"), SubResource("Resource_choice_b"), SubResource("Resource_choice_c"), SubResource("Resource_choice_d"), SubResource("Resource_choice_e")])
+
+[resource]
+script = ExtResource("1_data")
+dialog_id = "dia_dorf_alte_frau"
+entries = Array[ExtResource("2_entry")]([SubResource("Resource_entry1"), SubResource("Resource_entry2"), SubResource("Resource_entry3"), SubResource("Resource_entry4"), SubResource("Resource_entry_choices")])

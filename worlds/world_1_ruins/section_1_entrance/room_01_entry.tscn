@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://b8mx4n7raprst"]
+[gd_scene load_steps=38 format=3 uid="uid://b8mx4n7raprst"]
 
 [ext_resource type="Script" uid="uid://86josincpmca" path="res://worlds/world_1_ruins/section_1_entrance/room_01_entry.gd" id="1_room01"]
 [ext_resource type="Texture2D" uid="uid://8dckngarxpti" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_PreDorf/world1predorfbackground.png" id="2_dda7m"]
@@ -27,6 +27,9 @@
 [ext_resource type="Resource" uid="uid://bn2fffk25a6jd" path="res://data/dialogs/TutorialDialog.tres" id="19_twqj3"]
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="20_180fs"]
 [ext_resource type="Resource" uid="uid://bgpe2r1eo6oi" path="res://data/dialogs/dia_pre_dorf1.tres" id="20_dia_pd1"]
+[ext_resource type="Resource" uid="uid://dia_pre_dorf2_sp" path="res://data/dialogs/dia_pre_dorf2.tres" id="30_dia_pd2"]
+[ext_resource type="Resource" uid="uid://dia_pre_dorf3_sp" path="res://data/dialogs/dia_pre_dorf3.tres" id="31_dia_pd3"]
+[ext_resource type="Resource" uid="uid://dia_pre_dorf4_sp" path="res://data/dialogs/dia_pre_dorf4.tres" id="32_dia_pd4"]
 [ext_resource type="PackedScene" uid="uid://dfrjdwjipd0ex" path="res://environment/Wegweise1.tscn" id="22_c4up5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
@@ -806,21 +809,21 @@ glow_energy = 0.9
 
 [node name="DiaPreDorf2" parent="Dialogs" instance=ExtResource("12_ry1fm")]
 position = Vector2(3603, -2388)
-dialog_singleplayer = ExtResource("13_7ghlt")
+dialog_singleplayer = ExtResource("30_dia_pd2")
 dialog_coop = ExtResource("14_1mjwj")
 interaction_size = Vector2(222, 120)
 glow_energy = 0.9
 
 [node name="DiaPreDorf3" parent="Dialogs" instance=ExtResource("12_ry1fm")]
 position = Vector2(10067, 152)
-dialog_singleplayer = ExtResource("13_7ghlt")
+dialog_singleplayer = ExtResource("31_dia_pd3")
 dialog_coop = ExtResource("14_1mjwj")
 interaction_size = Vector2(222, 120)
 glow_energy = 0.9
 
 [node name="DiaPreDorf4" parent="Dialogs" instance=ExtResource("12_ry1fm")]
 position = Vector2(16754, 1608)
-dialog_singleplayer = ExtResource("13_7ghlt")
+dialog_singleplayer = ExtResource("32_dia_pd4")
 dialog_coop = ExtResource("14_1mjwj")
 interaction_size = Vector2(222, 120)
 glow_energy = 0.9
