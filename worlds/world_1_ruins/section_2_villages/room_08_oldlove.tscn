@@ -1,9 +1,12 @@
-[gd_scene load_steps=8 format=3 uid="uid://m1p16acnkv2n"]
+[gd_scene load_steps=11 format=3 uid="uid://m1p16acnkv2n"]
 
 [ext_resource type="Texture2D" uid="uid://b5ylomvu8bkb" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_Dorf/Create_a_single_high-resolutio_GPT_Image_15_09321.jpg" id="1_52l2k"]
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="2_ixc8g"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="3_wwhnw"]
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="4_p875g"]
+[ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="5_diatg"]
+[ext_resource type="Resource" uid="uid://dia_dorf_alte_frau_sp" path="res://data/dialogs/dia_dorf_alte_frau.tres" id="6_altfr"]
+[ext_resource type="Resource" uid="uid://dia_dorf_alte_frau_co" path="res://data/dialogs/dia_dorf_alte_frau_coop.tres" id="7_altfr"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1550, 80)
@@ -98,3 +101,13 @@ target_scene = "res://worlds/world_1_ruins/section_2_villages/room_05_inn.tscn"
 spawn_position = Vector2(50, 0)
 
 [node name="Environment" type="Node2D" parent="."]
+
+[node name="Dialogs" type="Node2D" parent="."]
+
+[node name="DialogTrigger" parent="Dialogs" instance=ExtResource("5_diatg")]
+position = Vector2(634, 467)
+dialog_singleplayer = ExtResource("6_altfr")
+dialog_coop = ExtResource("7_altfr")
+one_shot = true
+interaction_size = Vector2(222, 120)
+glow_energy = 0.9
