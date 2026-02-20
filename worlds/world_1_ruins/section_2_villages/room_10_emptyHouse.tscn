@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://bca6k63g4i87m"]
+[gd_scene load_steps=12 format=3 uid="uid://bca6k63g4i87m"]
 
 [ext_resource type="Texture2D" uid="uid://cuimle8ymyug4" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_Dorf/Create_a_single_high-resolutio_GPT_Image_15_99523.jpg" id="1_2gyx4"]
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="2_ku8ro"]
@@ -6,6 +6,8 @@
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="4_w04yt"]
 [ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="5_87nw0"]
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="6_ku8ro"]
+[ext_resource type="Resource" uid="uid://dia_dorf_alter_mann_sp" path="res://data/dialogs/dia_dorf_alter_mann.tres" id="7_altmn"]
+[ext_resource type="Resource" uid="uid://dia_dorf_altermann_co" path="res://data/dialogs/dia_dorf_alter_mann_coop.tres" id="8_altmn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1550, 80)
@@ -101,8 +103,15 @@ spawn_position = Vector2(50, 0)
 
 [node name="Environment" type="Node2D" parent="."]
 
-[node name="DialogTrigger" parent="." instance=ExtResource("5_87nw0")]
+[node name="Dialogs" type="Node2D" parent="."]
+
+[node name="DialogTrigger" parent="Dialogs" instance=ExtResource("5_87nw0")]
 position = Vector2(693, 599)
+dialog_singleplayer = ExtResource("7_altmn")
+dialog_coop = ExtResource("8_altmn")
+one_shot = true
+interaction_size = Vector2(222, 120)
+glow_energy = 0.9
 
 [node name="ClimbableArea" parent="." instance=ExtResource("6_ku8ro")]
 position = Vector2(856, 113)
