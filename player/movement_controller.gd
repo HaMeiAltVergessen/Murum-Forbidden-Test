@@ -27,6 +27,15 @@ class_name MovementController
 @export var edge_climb_max_height: float = 120.0  # Maximum height difference for edge climb
 @export var edge_climb_min_height: float = -40.0  # Minimum height difference (can be below player when falling)
 
+# ============ WALL SLIDE / WALL JUMP CONFIGURATION ============
+@export var wall_slide_gravity_scale: float = 0.15   # 15% of normal gravity while sliding
+@export var wall_slide_max_speed: float = 80.0        # Max downward speed (px/s) while sliding
+@export var wall_slide_detection_distance: float = 36.0  # Side raycast reach
+@export var wall_jump_horizontal_velocity: float = 450.0  # Horizontal impulse away from wall
+@export var wall_jump_vertical_velocity: float = -1400.0  # Vertical impulse (slightly weaker than normal jump)
+@export var wall_jump_cooldown: float = 0.4           # Seconds before re-attaching to wall is allowed
+@export var wall_coyote_time: float = 0.1             # Grace window after leaving wall
+
 # ============ DASH CONFIGURATION ============
 @export var dash_distance: float = 1350.0  # Doubled from 675.0 (originally 375.0)
 @export var dash_duration: float = 0.2
@@ -57,6 +66,13 @@ var is_hovering: bool = false  # When true, gravity is disabled
 # ============ CLIMBING STATE ============
 var is_climbing: bool = false
 var current_climbable: Node = null  # Referenz zur ClimbableArea in der sich der Spieler befindet
+
+# ============ WALL SLIDE STATE ============
+var is_wall_sliding: bool = false
+var wall_slide_direction: int = 0        # +1 = wall on right, -1 = wall on left
+var wall_jump_cooldown_timer: float = 0.0
+var wall_coyote_timer: float = 0.0
+var last_wall_direction: int = 0         # Remembered for wall coyote time
 
 
 func _ready() -> void:
@@ -176,6 +192,8 @@ func _physics_process(delta: float) -> void:
 
 	_process_climb_enter()
 
+	# Wall detection must run before gravity so is_wall_sliding is set before _process_gravity reads it
+	_process_wall_detection(delta)
 	_process_gravity(delta)
 	_process_coyote_time(delta)
 	_process_jump_buffer(delta)
@@ -184,7 +202,7 @@ func _physics_process(delta: float) -> void:
 	_process_jump()
 	_process_dash_input()
 
-	# Update dash cooldown
+	# Update cooldowns
 	if dash_cooldown_timer > 0:
 		dash_cooldown_timer -= delta
 
@@ -325,6 +343,11 @@ func _process_gravity(delta: float) -> void:
 	if is_climbing:
 		return
 
+	# Wall slide: use reduced gravity instead of full gravity
+	if is_wall_sliding:
+		_process_wall_slide(delta)
+		return
+
 	if not player.is_on_floor():
 		player.velocity.y += gravity * delta
 
@@ -335,6 +358,10 @@ func _process_jump() -> void:
 	# Reset jump when on floor
 	if player.is_on_floor():
 		jumps_used = 0
+		# Safety: clear wall slide state on landing
+		if is_wall_sliding:
+			is_wall_sliding = false
+			wall_slide_direction = 0
 
 	# Can't jump while crouching
 	if is_crouching:
@@ -345,7 +372,12 @@ func _process_jump() -> void:
 	var jump_pressed = _is_action_just_pressed(jump_action)
 
 	if jump_pressed:
-		# PRIORITY 1: Try edge climb FIRST
+		# PRIORITY 0: Wall jump (while wall sliding OR within wall coyote window)
+		if is_wall_sliding or wall_coyote_timer > 0:
+			_perform_wall_jump()
+			return
+
+		# PRIORITY 1: Try edge climb
 		if _attempt_edge_climb():
 			print("[Movement] Edge climb successful")
 			return
@@ -355,6 +387,10 @@ func _process_jump() -> void:
 			jump_buffer_timer = jump_buffer_time
 			if player.is_on_floor() or coyote_timer > 0:
 				_perform_jump()
+
+	# Jump buffer: fire wall jump the frame we first make wall contact with a buffered input
+	if jump_buffer_timer > 0 and is_wall_sliding:
+		_perform_wall_jump()
 
 
 func _perform_jump() -> void:
@@ -552,6 +588,120 @@ func _perform_edge_climb(target_position: Vector2) -> void:
 	# AudioManager.play_sfx("edge_climb")  # Uncomment when audio added
 
 
+# ============ WALL SLIDE SYSTEM ============
+
+func _check_wall(direction: Vector2) -> bool:
+	"""Returns true if there is a wall in the given direction (left or right).
+	Casts two horizontal rays (upper and lower body) for reliable detection."""
+	var space_state: PhysicsDirectSpaceState2D = player.get_world_2d().direct_space_state
+	var half_h: float = normal_collision_height / 4.0
+	for offset_y in [-half_h, half_h]:
+		var origin: Vector2 = player.global_position + Vector2(0.0, offset_y)
+		var query: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(
+			origin,
+			origin + direction * wall_slide_detection_distance
+		)
+		query.collision_mask = 1  # World layer only
+		query.exclude = [player]
+		if not space_state.intersect_ray(query).is_empty():
+			return true
+	return false
+
+
+func _process_wall_detection(delta: float) -> void:
+	"""Detects wall contact and manages entry/exit of the wall slide state.
+	Also ticks wall_jump_cooldown_timer and wall_coyote_timer."""
+	wall_jump_cooldown_timer = max(0.0, wall_jump_cooldown_timer - delta)
+	if wall_coyote_timer > 0.0:
+		wall_coyote_timer -= delta
+
+	# --- EXIT wall slide ---
+	if is_wall_sliding:
+		var should_exit: bool = (
+			player.is_on_floor()
+			or is_dashing
+			or is_climbing
+			or is_hovering
+			or wall_jump_cooldown_timer > 0.0
+		)
+		if not should_exit:
+			# Exit if wall is no longer there
+			var wall_dir_vec: Vector2 = Vector2(float(wall_slide_direction), 0.0)
+			if not _check_wall(wall_dir_vec):
+				should_exit = true
+		if should_exit:
+			# Start wall coyote grace window so player can still wall jump briefly
+			if wall_coyote_timer <= 0.0:
+				last_wall_direction = wall_slide_direction
+				wall_coyote_timer = wall_coyote_time
+			is_wall_sliding = false
+			wall_slide_direction = 0
+		return  # Don't try to enter while already in (or just exited) wall slide
+
+	# --- ENTER wall slide ---
+	# Block entry during any other special state or cooldown
+	if (player.is_on_floor()
+			or is_dashing
+			or is_climbing
+			or is_hovering
+			or wall_jump_cooldown_timer > 0.0):
+		return
+
+	# Only enter when not in a strong upward burst (allow during neutral / falling)
+	if player.velocity.y < -200.0:
+		return
+
+	# Check left and right walls
+	if _check_wall(Vector2.LEFT):
+		is_wall_sliding = true
+		wall_slide_direction = -1
+		last_wall_direction = -1
+		# Honour buffered jump input
+		if jump_buffer_timer > 0.0:
+			_perform_wall_jump()
+	elif _check_wall(Vector2.RIGHT):
+		is_wall_sliding = true
+		wall_slide_direction = 1
+		last_wall_direction = 1
+		# Honour buffered jump input
+		if jump_buffer_timer > 0.0:
+			_perform_wall_jump()
+
+
+func _process_wall_slide(delta: float) -> void:
+	"""Applies reduced Ori-style gravity and clamps downward speed while sliding."""
+	if not is_wall_sliding:
+		return
+	# Reduced gravity instead of full gravity (already skipped in _process_gravity)
+	player.velocity.y += gravity * wall_slide_gravity_scale * delta
+	# Clamp max downward speed
+	player.velocity.y = min(player.velocity.y, wall_slide_max_speed)
+	# Prevent horizontal drift into / away from the wall
+	player.velocity.x = 0.0
+	# Keep wall coyote refreshed while actually touching wall
+	wall_coyote_timer = wall_coyote_time
+	last_wall_direction = wall_slide_direction
+
+
+func _perform_wall_jump() -> void:
+	"""Launches the player away from the wall with a horizontal + vertical impulse."""
+	# Determine which direction was the wall (coyote covers both active and just-left)
+	var active_dir: int = wall_slide_direction if wall_slide_direction != 0 else last_wall_direction
+	var jump_dir: int = -active_dir  # Away from the wall
+	player.velocity.x = float(jump_dir) * wall_jump_horizontal_velocity
+	player.velocity.y = wall_jump_vertical_velocity
+	is_wall_sliding = false
+	wall_slide_direction = 0
+	wall_coyote_timer = 0.0
+	wall_jump_cooldown_timer = wall_jump_cooldown
+	coyote_timer = 0.0
+	jump_buffer_timer = 0.0
+	jumps_used = 1  # Prevents a free double-jump right after wall jump
+	if jump_sfx:
+		jump_sfx.play()
+	print("[WallJump] Jumped away from wall direction %d, velocity: %s" % [active_dir, player.velocity])
+
+
 # ============ CLIMBING SYSTEM ============
 func _process_climb_enter() -> void:
 	"""Prueft ob der Spieler mit dem Klettern beginnen soll."""
@@ -661,7 +811,9 @@ func _attempt_dash() -> void:
 	if input_direction.length() == 0:
 		input_direction = Vector2.RIGHT if facing_right else Vector2.LEFT
 
-	# Start dash
+	# Start dash - also cancel any active wall slide
+	is_wall_sliding = false
+	wall_slide_direction = 0
 	dash_direction = input_direction.normalized()
 	is_dashing = true
 	dash_timer = dash_duration
