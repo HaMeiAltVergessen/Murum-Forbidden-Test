@@ -47,6 +47,12 @@ func _update_animation_state() -> void:
 		new_animation = "special_1"
 	elif movement_controller and movement_controller.is_climbing:
 		new_animation = "climb"
+	elif movement_controller and movement_controller.is_wall_sliding:
+		# Graceful fallback: use "fall" if "wall_slide" animation doesn't exist yet
+		if animated_sprite.sprite_frames and animated_sprite.sprite_frames.has_animation("wall_slide"):
+			new_animation = "wall_slide"
+		else:
+			new_animation = "fall"
 	elif not player.is_on_floor():
 		if player.velocity.y < -100:
 			new_animation = "jump"
