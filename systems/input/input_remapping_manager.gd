@@ -149,6 +149,10 @@ func _define_remappable_actions() -> void:
 	)
 
 	# Combat category
+	remappable_actions["p1_block"] = ActionData.new(
+		"Block", "Blocken",
+		Category.COMBAT, 1
+	)
 	remappable_actions["p1_staff_throw"] = ActionData.new(
 		"Staff Attack", "Stabwurf",
 		Category.COMBAT, 1
