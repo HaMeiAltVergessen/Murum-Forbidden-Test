@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://bx3m7q4n8vpst"]
 
 [ext_resource type="Script" path="res://player/projectiles/staff_projectile.gd" id="1_staff_projectile"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Misc/Warped shooting fx/Bolt/Sprites/bolt1.png" id="2_bolt"]
+[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/MurumStab.png" id="2_bolt"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_staff"]
 size = Vector2(60, 12)

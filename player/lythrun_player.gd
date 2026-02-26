@@ -1244,11 +1244,9 @@ func create_placeholder_scythe() -> void:
 	collision.shape = shape
 	scythe.add_child(collision)
 
-	# Add visual with rotating animation - BRIGHTER and LARGER
+	# Add visual with rotating animation - use lythrunSense asset
 	var visual = Sprite2D.new()
-	visual.texture = PlaceholderTexture2D.new()
-	if visual.texture is PlaceholderTexture2D:
-		visual.texture.size = Vector2(60, 60)  # Increased from 40x40
+	visual.texture = load("res://Assets/AIPlaceholder/lythrunSense.png")
 	visual.modulate = Color(0.8, 0.4, 1.0)  # Brighter purple (matches shadow_scythe.gd)
 	scythe.add_child(visual)
 
