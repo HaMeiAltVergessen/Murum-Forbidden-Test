@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="DialogData" load_steps=50 format=3 uid="uid://dia_dorf_alter_mann_sp"]
+[gd_resource type="Resource" script_class="DialogData" load_steps=50 format=3 uid="uid://n6gbk2gkdcpq"]
 
 [ext_resource type="Script" uid="uid://ckftluhf1nt4b" path="res://resources/dialog/dialog_data.gd" id="1_data"]
 [ext_resource type="Script" uid="uid://dkdprkyi73yrh" path="res://resources/dialog/dialog_entry.gd" id="2_entry"]
@@ -77,6 +77,14 @@ text = "Oh führe sie nicht Versuchung…."
 text_speed = 24.0
 choices = Array[ExtResource("3_choice")]([])
 
+[sub_resource type="Resource" id="Resource_choice1"]
+script = ExtResource("3_choice")
+choice_text = "Du warst mein Schüler."
+response_speaker = "Alter Mann"
+response_text = "Einer von vielen.
+Doch ich bin der Einzige, der noch spricht."
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_c1_e1"), SubResource("Resource_c1_e2"), SubResource("Resource_c1_e3"), SubResource("Resource_c1_e4"), SubResource("Resource_c1_e5"), SubResource("Resource_c1_e6")])
+
 [sub_resource type="Resource" id="Resource_c2_e1"]
 script = ExtResource("2_entry")
 speaker_name = "Murum"
@@ -128,6 +136,14 @@ text = "Der einzige Akt von Macht hier."
 text_speed = 24.0
 choices = Array[ExtResource("3_choice")]([])
 
+[sub_resource type="Resource" id="Resource_choice2"]
+script = ExtResource("3_choice")
+choice_text = "Warum lebst du noch?"
+response_speaker = "Alter Mann"
+response_text = "Weil ich nie hindurchgegangen bin.
+Zur Pforte."
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_c2_e1"), SubResource("Resource_c2_e2"), SubResource("Resource_c2_e3"), SubResource("Resource_c2_e4"), SubResource("Resource_c2_e5"), SubResource("Resource_c2_e6"), SubResource("Resource_c2_e7")])
+
 [sub_resource type="Resource" id="Resource_c3_e1"]
 script = ExtResource("2_entry")
 speaker_name = "Murum"
@@ -171,6 +187,14 @@ speaker_name = "Umbra"
 text = "Niemand ist je bereit."
 text_speed = 24.0
 choices = Array[ExtResource("3_choice")]([])
+
+[sub_resource type="Resource" id="Resource_choice3"]
+script = ExtResource("3_choice")
+choice_text = "Was ist aus den anderen geworden?"
+response_speaker = "Alter Mann"
+response_text = "Sie dachten, Erkenntnis würde sie vervollständigen.
+Aber sie hat sie entleert."
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_c3_e1"), SubResource("Resource_c3_e2"), SubResource("Resource_c3_e3"), SubResource("Resource_c3_e4"), SubResource("Resource_c3_e5"), SubResource("Resource_c3_e6")])
 
 [sub_resource type="Resource" id="Resource_c4_e1"]
 script = ExtResource("2_entry")
@@ -216,6 +240,13 @@ text = "Deshalb braucht er sie."
 text_speed = 24.0
 choices = Array[ExtResource("3_choice")]([])
 
+[sub_resource type="Resource" id="Resource_choice4"]
+script = ExtResource("3_choice")
+choice_text = "Warum hast du Nein gesagt?"
+response_speaker = "Alter Mann"
+response_text = "Weil ich gesehen habe, was du bist."
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_c4_e1"), SubResource("Resource_c4_e2"), SubResource("Resource_c4_e3"), SubResource("Resource_c4_e4"), SubResource("Resource_c4_e5"), SubResource("Resource_c4_e6")])
+
 [sub_resource type="Resource" id="Resource_c5_e1"]
 script = ExtResource("2_entry")
 speaker_name = "Murum"
@@ -260,6 +291,13 @@ text = "Feuer auf Asche."
 text_speed = 24.0
 choices = Array[ExtResource("3_choice")]([])
 
+[sub_resource type="Resource" id="Resource_choice5"]
+script = ExtResource("3_choice")
+choice_text = "Warum folgten sie trotzdem?"
+response_speaker = "Alter Mann"
+response_text = "Weil du versprochen hast, dass nach dir etwas kommt."
+next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_c5_e1"), SubResource("Resource_c5_e2"), SubResource("Resource_c5_e3"), SubResource("Resource_c5_e4"), SubResource("Resource_c5_e5"), SubResource("Resource_c5_e6")])
+
 [sub_resource type="Resource" id="Resource_c6_e1"]
 script = ExtResource("2_entry")
 speaker_name = "Murum"
@@ -287,44 +325,6 @@ speaker_name = "Umbra"
 text = "Wenn überhaupt."
 text_speed = 24.0
 choices = Array[ExtResource("3_choice")]([])
-
-[sub_resource type="Resource" id="Resource_choice1"]
-script = ExtResource("3_choice")
-choice_text = "Du warst mein Schüler."
-response_speaker = "Alter Mann"
-response_text = "Einer von vielen.
-Doch ich bin der Einzige, der noch spricht."
-next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_c1_e1"), SubResource("Resource_c1_e2"), SubResource("Resource_c1_e3"), SubResource("Resource_c1_e4"), SubResource("Resource_c1_e5"), SubResource("Resource_c1_e6")])
-
-[sub_resource type="Resource" id="Resource_choice2"]
-script = ExtResource("3_choice")
-choice_text = "Warum lebst du noch?"
-response_speaker = "Alter Mann"
-response_text = "Weil ich nie hindurchgegangen bin.
-Zur Pforte."
-next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_c2_e1"), SubResource("Resource_c2_e2"), SubResource("Resource_c2_e3"), SubResource("Resource_c2_e4"), SubResource("Resource_c2_e5"), SubResource("Resource_c2_e6"), SubResource("Resource_c2_e7")])
-
-[sub_resource type="Resource" id="Resource_choice3"]
-script = ExtResource("3_choice")
-choice_text = "Was ist aus den anderen geworden?"
-response_speaker = "Alter Mann"
-response_text = "Sie dachten, Erkenntnis würde sie vervollständigen.
-Aber sie hat sie entleert."
-next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_c3_e1"), SubResource("Resource_c3_e2"), SubResource("Resource_c3_e3"), SubResource("Resource_c3_e4"), SubResource("Resource_c3_e5"), SubResource("Resource_c3_e6")])
-
-[sub_resource type="Resource" id="Resource_choice4"]
-script = ExtResource("3_choice")
-choice_text = "Warum hast du Nein gesagt?"
-response_speaker = "Alter Mann"
-response_text = "Weil ich gesehen habe, was du bist."
-next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_c4_e1"), SubResource("Resource_c4_e2"), SubResource("Resource_c4_e3"), SubResource("Resource_c4_e4"), SubResource("Resource_c4_e5"), SubResource("Resource_c4_e6")])
-
-[sub_resource type="Resource" id="Resource_choice5"]
-script = ExtResource("3_choice")
-choice_text = "Warum folgten sie trotzdem?"
-response_speaker = "Alter Mann"
-response_text = "Weil du versprochen hast, dass nach dir etwas kommt."
-next_entries = Array[ExtResource("2_entry")]([SubResource("Resource_c5_e1"), SubResource("Resource_c5_e2"), SubResource("Resource_c5_e3"), SubResource("Resource_c5_e4"), SubResource("Resource_c5_e5"), SubResource("Resource_c5_e6")])
 
 [sub_resource type="Resource" id="Resource_choice6"]
 script = ExtResource("3_choice")

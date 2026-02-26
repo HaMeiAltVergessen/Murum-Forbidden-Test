@@ -6,8 +6,8 @@
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="4_w04yt"]
 [ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="5_87nw0"]
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="6_ku8ro"]
-[ext_resource type="Resource" uid="uid://dia_dorf_alter_mann_sp" path="res://data/dialogs/dia_dorf_alter_mann.tres" id="7_altmn"]
-[ext_resource type="Resource" uid="uid://dia_dorf_altermann_co" path="res://data/dialogs/dia_dorf_alter_mann_coop.tres" id="8_altmn"]
+[ext_resource type="Resource" uid="uid://n6gbk2gkdcpq" path="res://data/dialogs/dia_dorf_alter_mann.tres" id="7_altmn"]
+[ext_resource type="Resource" uid="uid://cvmpk0qk2d1e3" path="res://data/dialogs/dia_dorf_alter_mann_coop.tres" id="8_altmn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1550, 80)
@@ -109,7 +109,6 @@ spawn_position = Vector2(50, 0)
 position = Vector2(693, 599)
 dialog_singleplayer = ExtResource("7_altmn")
 dialog_coop = ExtResource("8_altmn")
-one_shot = true
 interaction_size = Vector2(222, 120)
 glow_energy = 0.9
 
