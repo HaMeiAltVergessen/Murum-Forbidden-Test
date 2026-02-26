@@ -32,6 +32,7 @@ var active_staff: Node2D = null
 # ============================================================================
 
 @onready var player: CharacterBody2D = owner
+@onready var staff_sprite: Sprite2D = owner.get_node_or_null("StaffSprite") if owner else null
 
 # ============================================================================
 # SIGNALS
@@ -105,6 +106,9 @@ func _throw_staff() -> void:
 	if AudioManager:
 		AudioManager.play_sfx_at_position("player/staff_throw", player.global_position, 0.1)
 
+	if staff_sprite:
+		staff_sprite.visible = false
+
 	staff_thrown.emit()
 	_disable_melee_attack()
 
@@ -157,6 +161,9 @@ func _on_staff_caught() -> void:
 
 	if AudioManager:
 		AudioManager.play_sfx_at_position("player/staff_catch", player.global_position, 0.12)
+
+	if staff_sprite:
+		staff_sprite.visible = true
 
 	staff_caught.emit()
 	_enable_melee_attack()

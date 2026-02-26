@@ -1,6 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://c1v2x3y4z5a6b7c8"]
 
 [ext_resource type="Script" path="res://projectiles/shadow_scythe.gd" id="1_shadow_scythe"]
+[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/lythrunSense.png" id="2_sense"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_scythe"]
 radius = 20.0
@@ -16,9 +17,6 @@ scale_min = 0.5
 scale_max = 1.5
 color = Color(0.3, 0, 0.6, 0.5)
 
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_scythe"]
-size = Vector2(20, 20)
-
 [node name="ShadowScythe" type="Area2D"]
 collision_layer = 0
 collision_mask = 4
@@ -30,7 +28,7 @@ shape = SubResource("CircleShape2D_scythe")
 [node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(0.4, 0, 0.7, 1)
 scale = Vector2(2, 2)
-texture = SubResource("PlaceholderTexture2D_scythe")
+texture = ExtResource("2_sense")
 
 [node name="ShadowTrail" type="GPUParticles2D" parent="."]
 emitting = true

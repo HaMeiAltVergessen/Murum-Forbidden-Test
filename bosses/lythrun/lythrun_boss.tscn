@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://lythrun_boss_001"]
+[gd_scene load_steps=9 format=3 uid="uid://lythrun_boss_001"]
 
 [ext_resource type="PackedScene" uid="uid://boss_base_001" path="res://bosses/boss_base.tscn" id="1"]
 [ext_resource type="Script" path="res://bosses/lythrun/lythrun_boss.gd" id="2"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/death/Sprites/No-lamp-walk/death-walk1.png" id="4"]
 [ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/death/Sprites/No-lamp-walk/death-walk2.png" id="5"]
 [ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/death/Sprites/No-lamp-walk/death-walk3.png" id="6"]
+[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/lythrunSense.png" id="7_sense"]
 
 [sub_resource type="SpriteFrames" id="lythrun_sprite_frames"]
 animations = [{
@@ -49,5 +50,9 @@ sprite_frames = SubResource("lythrun_sprite_frames")
 animation = &"idle"
 autoplay = "idle"
 
-[node name="AdaptiveAI" type="Node" parent="." index="6"]
+[node name="SenseSprite" type="Sprite2D" parent="." index="1"]
+position = Vector2(30, -10)
+texture = ExtResource("7_sense")
+
+[node name="AdaptiveAI" type="Node" parent="." index="7"]
 script = ExtResource("3")
