@@ -1,10 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://cdwfn6plhyyrx"]
+[gd_scene load_steps=10 format=3 uid="uid://cdwfn6plhyyrx"]
 
 [ext_resource type="Script" uid="uid://dweuvlc4nxds6" path="res://player/lythrun_player.gd" id="1_lythrun"]
 [ext_resource type="Script" uid="uid://dbvdyoaibtj2o" path="res://player/movement_controller.gd" id="2_movement"]
 [ext_resource type="Script" uid="uid://c2qc384qkctay" path="res://player/health_component.gd" id="3_health"]
 [ext_resource type="Script" uid="uid://s82vgt75o4ve" path="res://player/mana_component.gd" id="4_mana"]
 [ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="7_hurtbox"]
+[ext_resource type="Texture2D" uid="uid://n81uslyacfp8" path="res://Assets/AIPlaceholder/lythrunSense.png" id="8_6snfc"]
 [ext_resource type="Script" uid="uid://1ybv2u56wptt" path="res://player/player_camera.gd" id="8_camera"]
 [ext_resource type="Texture2D" uid="uid://jg4v3jkvbw1b" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Wizard/wizard-sheet.png" id="9_wizard"]
 
@@ -57,3 +58,8 @@ offset = Vector2(0, -150)
 enabled = false
 position_smoothing_enabled = true
 script = ExtResource("8_camera")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(32, -15)
+scale = Vector2(1.59375, 1.59375)
+texture = ExtResource("8_6snfc")
