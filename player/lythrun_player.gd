@@ -548,8 +548,11 @@ func _process(delta: float) -> void:
 	if combo_timer > 0:
 		combo_timer -= delta
 		if combo_timer <= 0:
+			var old_count = combo_count
 			combo_count = 0
 			combo_stacks = 0
+			if old_count > 0:
+				EventBus.p2_combo_broken.emit(old_count)
 
 	# Void Orb charging
 	if is_charging_orb:
@@ -872,6 +875,8 @@ func void_strike() -> void:
 			# Light 1
 			print("[Void Strike] Combo 1/3")
 			spawn_attack_hitbox(base_damage * 0.8)
+			# Next hit (combo_count 1) leads to finisher at 2 → signal ready
+			EventBus.p2_combo_finisher_ready.emit()
 		1:
 			# Light 2
 			print("[Void Strike] Combo 2/3")
@@ -880,6 +885,7 @@ func void_strike() -> void:
 			# Heavy with shockwave
 			print("[Void Strike] Combo 3/3 - SHOCKWAVE!")
 			spawn_attack_hitbox(base_damage * 1.2)
+			EventBus.p2_combo_finisher_executed.emit(combo_count)
 
 			# Shockwave after delay
 			await get_tree().create_timer(0.2).timeout

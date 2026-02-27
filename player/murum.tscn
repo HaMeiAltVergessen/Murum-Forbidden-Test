@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://b1k5wfkqxc8yx"]
+[gd_scene load_steps=22 format=3 uid="uid://b1k5wfkqxc8yx"]
 
 [ext_resource type="Script" uid="uid://8fj2ugwsb24e" path="res://player/murum.gd" id="1_murum"]
 [ext_resource type="Script" uid="uid://dbvdyoaibtj2o" path="res://player/movement_controller.gd" id="2_movement"]
@@ -19,6 +19,7 @@
 [ext_resource type="Script" uid="uid://cnnaiidqk1poo" path="res://player/combat_system/luftgott_system.gd" id="16_luftgott"]
 [ext_resource type="Script" uid="uid://dn12rlk07wbkl" path="res://player/murum_animator.gd" id="17_animator"]
 [ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/MurumStab.png" id="18_stab"]
+[ext_resource type="Script" path="res://player/combat_system/weapon_glow_system.gd" id="19_glow"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 radius = 16.0
@@ -69,6 +70,11 @@ collision_mask = 128
 [node name="StaffSprite" type="Sprite2D" parent="."]
 position = Vector2(30, -5)
 texture = ExtResource("18_stab")
+
+[node name="WeaponGlow" type="Node" parent="."]
+script = ExtResource("19_glow")
+weapon_sprite_path = NodePath("../StaffSprite")
+is_player_2 = false
 
 [node name="StaffController" type="Node" parent="."]
 script = ExtResource("10_staff")
