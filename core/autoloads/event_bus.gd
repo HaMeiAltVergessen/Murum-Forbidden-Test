@@ -56,6 +56,11 @@ signal combo_finisher_ready()
 ## Emitted when a combo finisher is executed
 signal combo_finisher_executed(combo_count: int)
 
+## P2 combo signals
+signal p2_combo_finisher_ready()
+signal p2_combo_finisher_executed(combo_count: int)
+signal p2_combo_broken(final_count: int)
+
 ## Emitted when leap ender becomes available (after 3rd hit)
 signal leap_ender_available()
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cdwfn6plhyyrx"]
+[gd_scene load_steps=11 format=3 uid="uid://cdwfn6plhyyrx"]
 
 [ext_resource type="Script" uid="uid://dweuvlc4nxds6" path="res://player/lythrun_player.gd" id="1_lythrun"]
 [ext_resource type="Script" uid="uid://dbvdyoaibtj2o" path="res://player/movement_controller.gd" id="2_movement"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" uid="uid://1ybv2u56wptt" path="res://player/player_camera.gd" id="8_camera"]
 [ext_resource type="Texture2D" uid="uid://jg4v3jkvbw1b" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Wizard/wizard-sheet.png" id="9_wizard"]
 [ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/lythrunSense.png" id="10_sense"]
+[ext_resource type="Script" path="res://player/combat_system/weapon_glow_system.gd" id="11_glow"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 radius = 16.0
@@ -57,6 +58,13 @@ collision_mask = 128
 [node name="SenseSprite" type="Sprite2D" parent="."]
 position = Vector2(30, -5)
 texture = ExtResource("10_sense")
+
+[node name="WeaponGlow" type="Node" parent="."]
+script = ExtResource("11_glow")
+weapon_sprite_path = NodePath("../SenseSprite")
+combo_ready_color = Color(1.2, 0.5, 1.5, 1)
+finisher_ready_color = Color(1.5, 0.3, 2.0, 1)
+is_player_2 = true
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 offset = Vector2(0, -150)
