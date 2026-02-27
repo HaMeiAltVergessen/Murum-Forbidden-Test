@@ -10,6 +10,7 @@ class_name Lythrun
 @onready var mana_component: ManaComponent = $ManaComponent if has_node("ManaComponent") else null
 @onready var hurtbox: HurtboxComponent = $HurtboxComponent if has_node("HurtboxComponent") else null
 @onready var sprite: Sprite2D = $Sprite2D
+@onready var sense_sprite: Sprite2D = $SenseSprite if has_node("SenseSprite") else null
 @onready var player_camera: PlayerCamera = $PlayerCamera if has_node("PlayerCamera") else null
 
 # ============ SHADOW VFX ============
@@ -1229,6 +1230,9 @@ func shadow_scythe() -> void:
 	scythe_throw_time = Time.get_ticks_msec() / 1000.0  # Record throw time
 	scythe_instance.tree_exiting.connect(_on_scythe_destroyed)
 
+	if sense_sprite:
+		sense_sprite.visible = false
+
 	print("[Shadow Scythe] Thrown!")
 
 func create_placeholder_scythe() -> void:
@@ -1319,6 +1323,9 @@ func create_placeholder_scythe() -> void:
 	scythe_throw_time = Time.get_ticks_msec() / 1000.0  # Record throw time
 	scythe_instance.tree_exiting.connect(_on_scythe_destroyed)
 
+	if sense_sprite:
+		sense_sprite.visible = false
+
 	# Move scythe
 	_move_placeholder_scythe(scythe, velocity)
 
@@ -1373,11 +1380,15 @@ func _on_scythe_destroyed() -> void:
 	"""Handle scythe destruction"""
 	scythe_instance = null
 	scythe_thrown = false  # CRITICAL: Reset flag when scythe is destroyed
+	if sense_sprite:
+		sense_sprite.visible = true
 
 func on_scythe_returned() -> void:
 	"""Called when scythe returns to player"""
 	print("[Shadow Scythe] Returned!")
 	scythe_thrown = false
+	if sense_sprite:
+		sense_sprite.visible = true
 
 # ============ VOID PARRY (COMMIT 019.5 - Hold-based like P1's ParryBlockSystem) ============
 
