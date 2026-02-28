@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://cdwfn6plhyyrx"]
+[gd_scene load_steps=17 format=3 uid="uid://cdwfn6plhyyrx"]
 
 [ext_resource type="Script" uid="uid://dweuvlc4nxds6" path="res://player/lythrun_player.gd" id="1_lythrun"]
 [ext_resource type="Script" uid="uid://dbvdyoaibtj2o" path="res://player/movement_controller.gd" id="2_movement"]
@@ -9,6 +9,13 @@
 [ext_resource type="Texture2D" uid="uid://jg4v3jkvbw1b" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Wizard/wizard-sheet.png" id="9_wizard"]
 [ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/lythrunSense.png" id="10_sense"]
 [ext_resource type="Script" path="res://player/combat_system/weapon_glow_system.gd" id="11_glow"]
+[ext_resource type="Script" path="res://player/lythrun_combat_system.gd" id="12_combat"]
+[ext_resource type="PackedScene" uid="uid://dmqxgb7cyujwa" path="res://components/hitbox_component.tscn" id="13_hitbox"]
+[ext_resource type="Script" path="res://player/combat_system/void_parry_system.gd" id="14_parry"]
+[ext_resource type="Script" path="res://player/combat_system/shadow_scythe_system.gd" id="15_scythe"]
+[ext_resource type="Script" path="res://player/combat_system/shadow_dash_system.gd" id="16_dash"]
+[ext_resource type="Script" path="res://player/combat_system/void_rift_system.gd" id="17_rift"]
+[ext_resource type="Script" path="res://player/combat_system/void_orbs_system.gd" id="18_orbs"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 radius = 16.0
@@ -64,6 +71,29 @@ weapon_sprite_path = NodePath("../SenseSprite")
 combo_ready_color = Color(1.2, 0.5, 1.5, 1)
 finisher_ready_color = Color(1.5, 0.3, 2.0, 1)
 is_player_2 = true
+
+[node name="LythrunCombatSystem" type="Node2D" parent="."]
+script = ExtResource("12_combat")
+
+[node name="HitboxComponent" parent="LythrunCombatSystem" instance=ExtResource("13_hitbox")]
+position = Vector2(50, 0)
+collision_layer = 32
+collision_mask = 1032
+
+[node name="VoidParrySystem" type="Node" parent="."]
+script = ExtResource("14_parry")
+
+[node name="ShadowScytheSystem" type="Node" parent="."]
+script = ExtResource("15_scythe")
+
+[node name="ShadowDashSystem" type="Node" parent="."]
+script = ExtResource("16_dash")
+
+[node name="VoidRiftSystem" type="Node" parent="."]
+script = ExtResource("17_rift")
+
+[node name="VoidOrbsSystem" type="Node" parent="."]
+script = ExtResource("18_orbs")
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 offset = Vector2(0, -150)

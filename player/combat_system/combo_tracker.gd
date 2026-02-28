@@ -6,6 +6,7 @@ class_name ComboTracker
 # ============ CONFIGURATION ============
 @export var enabled: bool = true
 @export var max_combo_display: int = 999  # Maximum combo to display
+var is_player_2: bool = false  # When true, emits P2-specific EventBus signals
 
 # ============ FINISHER CONFIGURATION ============
 const FINISHER_HIT_INDEX: int = 4  # Every 4th hit
@@ -99,13 +100,16 @@ func _on_combo_increased(new_count: int, multiplier: float) -> void:
 	# Check if next hit will be finisher
 	if (new_count + 1) % FINISHER_HIT_INDEX == 0:
 		combo_finisher_ready.emit()
-		EventBus.combo_finisher_ready.emit()
-		print("[ComboTracker] Next hit is FINISHER!")
-
-		# COMMIT 019: Machtbruch available (can hold attack to charge burst)
-		machtbruch_available.emit()
-		EventBus.machtbruch_available.emit()
-		print("[ComboTracker] Machtbruch AVAILABLE (hold attack to charge)")
+		if is_player_2:
+			EventBus.p2_combo_finisher_ready.emit()
+			print("[ComboTracker P2] Next hit is FINISHER!")
+		else:
+			EventBus.combo_finisher_ready.emit()
+			print("[ComboTracker] Next hit is FINISHER!")
+			# COMMIT 019: Machtbruch available (P1 only)
+			machtbruch_available.emit()
+			EventBus.machtbruch_available.emit()
+			print("[ComboTracker] Machtbruch AVAILABLE (hold attack to charge)")
 
 	# Check if this hit WAS a finisher (4th hit landed) - enable leap ender window
 	if new_count % FINISHER_HIT_INDEX == 0:
