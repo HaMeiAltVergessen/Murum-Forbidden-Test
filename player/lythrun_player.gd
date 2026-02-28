@@ -65,7 +65,7 @@ const SHOCKWAVE_BASE_DAMAGE: float = 0.4  # COMMIT 024: Reduced from 0.5 (40% in
 const SHOCKWAVE_RADIUS: float = 150.0
 const ATTACK_RECOVERY: float = 0.5
 const INPUT_BUFFER_TIME: float = 0.15  # COMMIT 024: Input buffer for combos (150ms)
-var combo_count: int = 0
+var combo_count: int = 2
 var combo_timer: float = 0.0
 var combo_stacks: int = 0
 var buffered_action: String = ""
@@ -551,8 +551,7 @@ func _process(delta: float) -> void:
 			var old_count = combo_count
 			combo_count = 0
 			combo_stacks = 0
-			if old_count > 0:
-				EventBus.p2_combo_broken.emit(old_count)
+			EventBus.p2_combo_broken.emit(old_count)
 
 	# Void Orb charging
 	if is_charging_orb:
