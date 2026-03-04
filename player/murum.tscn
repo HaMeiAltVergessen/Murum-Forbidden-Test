@@ -18,8 +18,8 @@
 [ext_resource type="Script" uid="uid://b2dxi0i5oqthf" path="res://player/abilities/echo_von_urgathon.gd" id="16_echo"]
 [ext_resource type="Script" uid="uid://cnnaiidqk1poo" path="res://player/combat_system/luftgott_system.gd" id="16_luftgott"]
 [ext_resource type="Script" uid="uid://dn12rlk07wbkl" path="res://player/murum_animator.gd" id="17_animator"]
-[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/MurumStab.png" id="18_stab"]
-[ext_resource type="Script" path="res://player/combat_system/weapon_glow_system.gd" id="19_glow"]
+[ext_resource type="Texture2D" uid="uid://dkhbprdklj1ko" path="res://Assets/AIPlaceholder/MurumStab.png" id="18_stab"]
+[ext_resource type="Script" uid="uid://d34wolsy72ys3" path="res://player/combat_system/weapon_glow_system.gd" id="19_glow"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 radius = 16.0
@@ -74,7 +74,6 @@ texture = ExtResource("18_stab")
 [node name="WeaponGlow" type="Node" parent="."]
 script = ExtResource("19_glow")
 weapon_sprite_path = NodePath("../StaffSprite")
-is_player_2 = false
 
 [node name="StaffController" type="Node" parent="."]
 script = ExtResource("10_staff")

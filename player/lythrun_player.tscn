@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://cdwfn6plhyyrx"]
+[gd_scene load_steps=18 format=3 uid="uid://cdwfn6plhyyrx"]
 
 [ext_resource type="Script" uid="uid://dweuvlc4nxds6" path="res://player/lythrun_player.gd" id="1_lythrun"]
 [ext_resource type="Script" uid="uid://dbvdyoaibtj2o" path="res://player/movement_controller.gd" id="2_movement"]
@@ -8,15 +8,14 @@
 [ext_resource type="Texture2D" uid="uid://n81uslyacfp8" path="res://Assets/AIPlaceholder/lythrunSense.png" id="8_6snfc"]
 [ext_resource type="Script" uid="uid://1ybv2u56wptt" path="res://player/player_camera.gd" id="8_camera"]
 [ext_resource type="Texture2D" uid="uid://jg4v3jkvbw1b" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Wizard/wizard-sheet.png" id="9_wizard"]
-[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/lythrunSense.png" id="10_sense"]
-[ext_resource type="Script" path="res://player/combat_system/weapon_glow_system.gd" id="11_glow"]
-[ext_resource type="Script" path="res://player/lythrun_combat_system.gd" id="12_combat"]
+[ext_resource type="Script" uid="uid://d34wolsy72ys3" path="res://player/combat_system/weapon_glow_system.gd" id="11_glow"]
+[ext_resource type="Script" uid="uid://blly7s1yg5phm" path="res://player/lythrun_combat_system.gd" id="12_combat"]
 [ext_resource type="PackedScene" uid="uid://dmqxgb7cyujwa" path="res://components/hitbox_component.tscn" id="13_hitbox"]
-[ext_resource type="Script" path="res://player/combat_system/void_parry_system.gd" id="14_parry"]
-[ext_resource type="Script" path="res://player/combat_system/shadow_scythe_system.gd" id="15_scythe"]
-[ext_resource type="Script" path="res://player/combat_system/shadow_dash_system.gd" id="16_dash"]
-[ext_resource type="Script" path="res://player/combat_system/void_rift_system.gd" id="17_rift"]
-[ext_resource type="Script" path="res://player/combat_system/void_orbs_system.gd" id="18_orbs"]
+[ext_resource type="Script" uid="uid://ngqqhdmgeptl" path="res://player/combat_system/void_parry_system.gd" id="14_parry"]
+[ext_resource type="Script" uid="uid://bv5r7kutu1g8l" path="res://player/combat_system/shadow_scythe_system.gd" id="15_scythe"]
+[ext_resource type="Script" uid="uid://cn1ebje0mjk74" path="res://player/combat_system/shadow_dash_system.gd" id="16_dash"]
+[ext_resource type="Script" uid="uid://d0k7hfxuc3ex6" path="res://player/combat_system/void_rift_system.gd" id="17_rift"]
+[ext_resource type="Script" uid="uid://cxpeq3bihs4u7" path="res://player/combat_system/void_orbs_system.gd" id="18_orbs"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
 radius = 16.0
@@ -64,13 +63,13 @@ collision_mask = 128
 
 [node name="SenseSprite" type="Sprite2D" parent="."]
 position = Vector2(30, -5)
-texture = ExtResource("10_sense")
+texture = ExtResource("8_6snfc")
 
 [node name="WeaponGlow" type="Node" parent="."]
 script = ExtResource("11_glow")
 weapon_sprite_path = NodePath("../SenseSprite")
 combo_ready_color = Color(1.2, 0.5, 1.5, 1)
-finisher_ready_color = Color(1.5, 0.3, 2.0, 1)
+finisher_ready_color = Color(1.5, 0.3, 2, 1)
 is_player_2 = true
 
 [node name="LythrunCombatSystem" type="Node2D" parent="."]
