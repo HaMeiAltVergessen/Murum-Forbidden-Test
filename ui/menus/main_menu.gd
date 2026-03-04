@@ -63,8 +63,8 @@ func _ready():
 	continue_button.visible = save_exists
 	print("[MainMenu] Save file exists: %s, Continue button visible: %s" % [save_exists, save_exists])
 
-	# Challenge Run button - visible only after first game completion
-	challenge_button.visible = GameManager.get_flag("final_boss_defeated")
+	# Challenge Run button - always visible
+	challenge_button.visible = true
 
 	# Signals verbinden mit Debug-Prints
 	continue_button.pressed.connect(_on_continue_pressed)
