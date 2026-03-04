@@ -1,0 +1,105 @@
+{
+	"version": "1.0",
+	"achievements": [
+		{
+			"id": "beat_world_1",
+			"name": "Ruinen bezwungen",
+			"description": "Welt 1 abgeschlossen",
+			"category": "story",
+			"icon": "res://Assets/ui/achievements/beat_world_1.png",
+			"condition_type": "boss_defeated",
+			"condition_value": "world1_boss"
+		},
+		{
+			"id": "beat_final_boss",
+			"name": "Der Letzte Kampf",
+			"description": "Den Endboss besiegt",
+			"category": "story",
+			"icon": "res://Assets/ui/achievements/beat_final_boss.png",
+			"condition_type": "boss_defeated",
+			"condition_value": "final_boss"
+		},
+		{
+			"id": "beat_lythrun",
+			"name": "Lythrun besiegt",
+			"description": "Lythrun, den Vergessenen, im Kampf bezwungen",
+			"category": "story",
+			"icon": "res://Assets/ui/achievements/beat_lythrun.png",
+			"condition_type": "boss_defeated",
+			"condition_value": "lythrun"
+		},
+		{
+			"id": "parry_100",
+			"name": "Meister der Parade",
+			"description": "100 perfekte Paraden ausgefuehrt",
+			"category": "combat",
+			"icon": "res://Assets/ui/achievements/parry_100.png",
+			"condition_type": "stat_threshold",
+			"condition_stat": "perfect_parries",
+			"condition_value": 100
+		},
+		{
+			"id": "kill_1000",
+			"name": "Vernichter",
+			"description": "1000 Gegner besiegt",
+			"category": "combat",
+			"icon": "res://Assets/ui/achievements/kill_1000.png",
+			"condition_type": "stat_threshold",
+			"condition_stat": "enemies_killed",
+			"condition_value": 1000
+		},
+		{
+			"id": "combo_50",
+			"name": "Combo-Meister",
+			"description": "Eine 50er-Combo erreicht",
+			"category": "combat",
+			"icon": "res://Assets/ui/achievements/combo_50.png",
+			"condition_type": "stat_threshold",
+			"condition_stat": "max_combo",
+			"condition_value": 50
+		},
+		{
+			"id": "all_secrets",
+			"name": "Entdecker",
+			"description": "Alle Geheimnisse gefunden",
+			"category": "exploration",
+			"icon": "res://Assets/ui/achievements/all_secrets.png",
+			"condition_type": "all_secrets"
+		},
+		{
+			"id": "all_relics",
+			"name": "Sammler",
+			"description": "Alle Relikte gesammelt",
+			"category": "exploration",
+			"icon": "res://Assets/ui/achievements/all_relics.png",
+			"condition_type": "all_relics"
+		},
+		{
+			"id": "no_death_run",
+			"name": "Unbesiegbar",
+			"description": "Das Spiel ohne Tod abgeschlossen",
+			"category": "challenge",
+			"icon": "res://Assets/ui/achievements/no_death_run.png",
+			"condition_type": "no_death_run"
+		},
+		{
+			"id": "speedrun_2h",
+			"name": "Blitzlaeufer",
+			"description": "Das Spiel in unter 2 Stunden abgeschlossen",
+			"category": "challenge",
+			"icon": "res://Assets/ui/achievements/speedrun_2h.png",
+			"condition_type": "speedrun",
+			"condition_value": 7200
+		},
+		{
+			"id": "urgathon_master",
+			"name": "Urgathon-Meister",
+			"description": "Urgathon 50 Mal eingesetzt",
+			"category": "challenge",
+			"icon": "res://Assets/ui/achievements/urgathon_master.png",
+			"condition_type": "stat_threshold",
+			"condition_stat": "urgathon_uses",
+			"condition_value": 50
+		}
+	]
+}

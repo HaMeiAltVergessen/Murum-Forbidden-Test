@@ -247,7 +247,10 @@ func _gather_save_data(slot_index: int) -> Dictionary:
 		"progression": _gather_progression_data(),
 		"path_choices": _gather_path_choices(),
 		"statistics": _gather_statistics(),
-		"abilities": _gather_abilities_data()
+		"abilities": _gather_abilities_data(),
+		"statistics_full": _gather_statistics_full(),
+		"achievements": _gather_achievements_data(),
+		"challenge_run": _gather_challenge_run_data()
 	}
 
 	print("[SaveManager] Save data gathered successfully")
@@ -394,6 +397,24 @@ func _gather_abilities_data() -> Dictionary:
 		"equipped": [null, null, null, null]
 	}
 
+func _gather_statistics_full() -> Dictionary:
+	"""Gathers full statistics from StatisticsManager"""
+	if StatisticsManager:
+		return StatisticsManager.get_save_data()
+	return {}
+
+func _gather_achievements_data() -> Dictionary:
+	"""Gathers achievement unlock state from AchievementManager"""
+	if AchievementManager:
+		return AchievementManager.get_save_data()
+	return {"unlocked": [], "unlock_dates": {}}
+
+func _gather_challenge_run_data() -> Dictionary:
+	"""Gathers challenge run state from ChallengeRunManager"""
+	if ChallengeRunManager:
+		return ChallengeRunManager.get_save_data()
+	return {"active_modifiers": {}, "is_active": false, "highest_heat_completed": 0}
+
 # ============================================================================
 # LOAD GAME
 # ============================================================================
@@ -480,6 +501,21 @@ func _apply_save_data(save_data: Dictionary) -> void:
 		GameManager.deaths = statistics.get("total_deaths", 0)
 		GameManager.enemies_killed = statistics.get("enemies_killed", 0)
 		print("[SaveManager] Statistics restored: %d deaths, %d kills" % [GameManager.deaths, GameManager.enemies_killed])
+
+	# Restore full statistics to StatisticsManager
+	var statistics_full = save_data.get("statistics_full", {})
+	if StatisticsManager:
+		StatisticsManager.load_from_save(statistics_full)
+
+	# Restore achievements
+	var achievements_data = save_data.get("achievements", {})
+	if AchievementManager:
+		AchievementManager.load_from_save(achievements_data)
+
+	# Restore challenge run state
+	var challenge_data = save_data.get("challenge_run", {})
+	if ChallengeRunManager:
+		ChallengeRunManager.load_from_save(challenge_data)
 
 	# Get saved room data
 	var player_data = save_data.get("player", {})

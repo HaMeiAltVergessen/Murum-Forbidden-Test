@@ -4,6 +4,9 @@ class_name MainMenu
 # Node References
 @onready var continue_button: Button = %ContinueButton
 @onready var new_game_button: Button = %NewGameButton
+@onready var challenge_button: Button = %ChallengeButton
+@onready var statistics_button: Button = %StatisticsButton
+@onready var achievements_button: Button = %AchievementsButton
 @onready var options_button: Button = %OptionsButton
 @onready var quit_button: Button = %QuitButton
 @onready var music_player: AudioStreamPlayer = $MusicPlayer
@@ -12,7 +15,13 @@ class_name MainMenu
 
 # Options Menu
 const OPTIONS_MENU_SCENE = preload("res://ui/menus/options_submenu.tscn")
+const STATISTICS_SCENE = preload("res://ui/menus/statistics_screen.tscn")
+const ACHIEVEMENTS_SCENE = preload("res://ui/menus/achievements_screen.tscn")
+const CHALLENGE_RUN_MENU_SCENE = preload("res://ui/menus/challenge_run_menu.tscn")
 var options_menu_instance: Control = null
+var statistics_instance: Control = null
+var achievements_instance: Control = null
+var challenge_menu_instance: Control = null
 
 # Constants
 const TEST_ROOM_PATH = "res://levels/test_room.tscn"
@@ -54,12 +63,19 @@ func _ready():
 	continue_button.visible = save_exists
 	print("[MainMenu] Save file exists: %s, Continue button visible: %s" % [save_exists, save_exists])
 
+	# Challenge Run button - visible only after first game completion
+	challenge_button.visible = GameManager.get_flag("final_boss_defeated")
+
 	# Signals verbinden mit Debug-Prints
 	continue_button.pressed.connect(_on_continue_pressed)
 	continue_button.mouse_entered.connect(func(): print("[MainMenu DEBUG] Mouse entered: Continue Button"))
 
 	new_game_button.pressed.connect(_on_new_game_pressed)
 	new_game_button.mouse_entered.connect(func(): print("[MainMenu DEBUG] Mouse entered: New Game Button"))
+
+	challenge_button.pressed.connect(_on_challenge_pressed)
+	statistics_button.pressed.connect(_on_statistics_pressed)
+	achievements_button.pressed.connect(_on_achievements_pressed)
 
 	options_button.pressed.connect(_on_options_pressed)
 	options_button.mouse_entered.connect(func(): print("[MainMenu DEBUG] Mouse entered: Options Button"))
@@ -91,7 +107,7 @@ func _setup_focus_neighbors():
 	"""Setzt Focus-Nachbarn für Keyboard/Controller Navigation mit Wrap-around"""
 	# Erstelle Liste der aktiven Buttons (nicht disabled)
 	var active_buttons: Array[Button] = []
-	for btn in [continue_button, new_game_button, options_button, quit_button]:
+	for btn in [continue_button, new_game_button, challenge_button, statistics_button, achievements_button, options_button, quit_button]:
 		if btn.visible and not btn.disabled:
 			active_buttons.append(btn)
 
@@ -294,3 +310,122 @@ func _on_options_back_pressed():
 func _on_quit_pressed():
 	print("[MainMenu] ========== QUIT BUTTON PRESSED ==========")
 	get_tree().quit()
+
+
+# ============================================================================
+# STATISTICS, ACHIEVEMENTS & CHALLENGE RUN
+# ============================================================================
+
+func _on_statistics_pressed():
+	"""Shows statistics screen"""
+	print("[MainMenu] ========== STATISTICS BUTTON PRESSED ==========")
+
+	if main_menu_container:
+		main_menu_container.visible = false
+
+	if statistics_instance:
+		statistics_instance.queue_free()
+
+	statistics_instance = STATISTICS_SCENE.instantiate()
+	add_child(statistics_instance)
+	statistics_instance.back_pressed.connect(_on_statistics_back_pressed)
+
+	if statistics_instance.has_method("update_statistics"):
+		statistics_instance.update_statistics()
+
+
+func _on_statistics_back_pressed():
+	"""Returns from statistics to main menu"""
+	print("[MainMenu] ========== RETURNING FROM STATISTICS ==========")
+
+	if statistics_instance:
+		statistics_instance.queue_free()
+		statistics_instance = null
+
+	if main_menu_container:
+		main_menu_container.visible = true
+
+	_restore_focus()
+
+
+func _on_achievements_pressed():
+	"""Shows achievements screen"""
+	print("[MainMenu] ========== ACHIEVEMENTS BUTTON PRESSED ==========")
+
+	if main_menu_container:
+		main_menu_container.visible = false
+
+	if achievements_instance:
+		achievements_instance.queue_free()
+
+	achievements_instance = ACHIEVEMENTS_SCENE.instantiate()
+	add_child(achievements_instance)
+	achievements_instance.back_pressed.connect(_on_achievements_back_pressed)
+
+	if achievements_instance.has_method("populate_achievements"):
+		achievements_instance.populate_achievements()
+
+
+func _on_achievements_back_pressed():
+	"""Returns from achievements to main menu"""
+	print("[MainMenu] ========== RETURNING FROM ACHIEVEMENTS ==========")
+
+	if achievements_instance:
+		achievements_instance.queue_free()
+		achievements_instance = null
+
+	if main_menu_container:
+		main_menu_container.visible = true
+
+	_restore_focus()
+
+
+func _on_challenge_pressed():
+	"""Shows challenge run modifier menu"""
+	print("[MainMenu] ========== CHALLENGE BUTTON PRESSED ==========")
+
+	if main_menu_container:
+		main_menu_container.visible = false
+
+	if challenge_menu_instance:
+		challenge_menu_instance.queue_free()
+
+	challenge_menu_instance = CHALLENGE_RUN_MENU_SCENE.instantiate()
+	add_child(challenge_menu_instance)
+	challenge_menu_instance.back_pressed.connect(_on_challenge_back_pressed)
+	challenge_menu_instance.challenge_started.connect(_on_challenge_started)
+
+
+func _on_challenge_back_pressed():
+	"""Returns from challenge menu to main menu"""
+	print("[MainMenu] ========== RETURNING FROM CHALLENGE MENU ==========")
+
+	if challenge_menu_instance:
+		challenge_menu_instance.queue_free()
+		challenge_menu_instance = null
+
+	if main_menu_container:
+		main_menu_container.visible = true
+
+	_restore_focus()
+
+
+func _on_challenge_started():
+	"""Called when challenge run starts from challenge menu"""
+	print("[MainMenu] ========== CHALLENGE RUN STARTING ==========")
+
+	if challenge_menu_instance:
+		challenge_menu_instance.queue_free()
+		challenge_menu_instance = null
+
+	# Start new game with challenge modifiers active
+	_start_new_game()
+
+
+func _restore_focus():
+	"""Restores focus to appropriate button"""
+	var save_exists = SaveManager.has_save_file()
+	if save_exists and continue_button.visible:
+		continue_button.grab_focus()
+	else:
+		new_game_button.grab_focus()

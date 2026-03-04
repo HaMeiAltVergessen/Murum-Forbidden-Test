@@ -11,6 +11,7 @@ var gold_display: CanvasLayer = null
 var join_prompt: CanvasLayer = null
 var p2_tutorial: CanvasLayer = null
 var death_screen: CanvasLayer = null
+var challenge_timer_hud: CanvasLayer = null
 
 # ============ STATE ============
 var huds_loaded: bool = false
@@ -107,6 +108,22 @@ func load_huds() -> void:
 	else:
 		print("[HUDManager] WARNING: Death Screen scene not found")
 
+	# Challenge Timer HUD (hidden by default, shown during challenge runs)
+	var challenge_timer_scene = load("res://ui/hud/challenge_timer_hud.tscn")
+	if challenge_timer_scene:
+		challenge_timer_hud = challenge_timer_scene.instantiate()
+		add_child(challenge_timer_hud)
+		challenge_timer_hud.visible = false
+		print("[HUDManager] Challenge Timer HUD loaded (persistent, hidden)")
+	else:
+		print("[HUDManager] WARNING: Challenge Timer HUD scene not found")
+
+	# Connect challenge run signals for timer visibility
+	if EventBus:
+		EventBus.challenge_run_started.connect(_on_challenge_run_started)
+		EventBus.challenge_run_completed.connect(_on_challenge_run_completed)
+		EventBus.challenge_run_failed.connect(_on_challenge_run_failed)
+
 	huds_loaded = true
 
 # ============ PLAYER REFERENCES ============
@@ -191,3 +208,21 @@ func hide_join_prompt() -> void:
 	"""Hide join prompt"""
 	if join_prompt and join_prompt.has_method("hide_prompt"):
 		join_prompt.hide_prompt()
+
+# ============ CHALLENGE RUN HUD ============
+
+func _on_challenge_run_started(_modifiers: Dictionary) -> void:
+	"""Shows challenge timer HUD when a challenge run starts"""
+	if challenge_timer_hud and ChallengeRunManager and ChallengeRunManager.get_time_limit() > 0:
+		challenge_timer_hud.visible = true
+		print("[HUDManager] Challenge Timer shown")
+
+func _on_challenge_run_completed(_modifiers: Dictionary) -> void:
+	"""Hides challenge timer HUD when run completes"""
+	if challenge_timer_hud:
+		challenge_timer_hud.visible = false
+
+func _on_challenge_run_failed(_reason: String) -> void:
+	"""Handles challenge run failure"""
+	# Timer HUD handles its own failure display
+	pass

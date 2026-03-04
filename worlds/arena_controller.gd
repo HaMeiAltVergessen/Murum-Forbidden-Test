@@ -316,7 +316,13 @@ func _configure_waves() -> void:
 				push_warning("[ArenaController:%s] Skipping null enemy entry" % arena_id)
 				continue
 
-			for i in entry.count:
+			# Challenge Run: Apply enemy count multiplier
+			var adjusted_count = entry.count
+			if ChallengeRunManager and ChallengeRunManager.is_challenge_run_active:
+				adjusted_count = int(entry.count * ChallengeRunManager.get_enemy_count_multiplier())
+				adjusted_count = maxi(adjusted_count, 1)  # At least 1 enemy
+
+			for i in adjusted_count:
 				var pos = positions[randi() % positions.size()]
 				wave.add_enemy(entry.scene, pos)
 

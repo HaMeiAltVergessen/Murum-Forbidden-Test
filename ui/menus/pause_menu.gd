@@ -48,15 +48,19 @@ signal pause_menu_closed()
 
 const OPTIONS_MENU_SCENE = preload("res://ui/menus/options_submenu.tscn")
 const FEEDBACK_SCREEN_SCENE = preload("res://ui/menus/feedback_screen.tscn")
+const STATISTICS_SCENE = preload("res://ui/menus/statistics_screen.tscn")
+const ACHIEVEMENTS_SCENE = preload("res://ui/menus/achievements_screen.tscn")
 var options_menu_instance: Control = null
 var feedback_screen_instance: Control = null
+var statistics_instance: Control = null
+var achievements_instance: Control = null
 
 # ============================================================================
 # STATE
 # ============================================================================
 
 var is_paused: bool = false
-var current_view: String = "main"  # "main", "character", "options"
+var current_view: String = "main"  # "main", "character", "options", "statistics", "achievements"
 
 # ============================================================================
 # INITIALIZATION
@@ -95,6 +99,15 @@ func _connect_signals() -> void:
 	save_checkpoint_button.pressed.connect(_on_save_checkpoint_pressed)
 	character_button.pressed.connect(_on_character_pressed)
 	options_button.pressed.connect(_on_options_pressed)
+
+	# Statistics & Achievements buttons
+	var statistics_btn = get_node_or_null("%StatisticsButton")
+	if statistics_btn:
+		statistics_btn.pressed.connect(show_statistics)
+	var achievements_btn = get_node_or_null("%AchievementsButton")
+	if achievements_btn:
+		achievements_btn.pressed.connect(show_achievements)
+
 	feedback_button.pressed.connect(_on_feedback_pressed)
 	quit_button.pressed.connect(_on_quit_pressed)
 
@@ -123,6 +136,10 @@ func _input(event: InputEvent) -> void:
 				_on_character_back_pressed()
 			elif current_view == "options":
 				_on_options_back_pressed()
+			elif current_view == "statistics":
+				_on_statistics_back_pressed()
+			elif current_view == "achievements":
+				_on_achievements_back_pressed()
 			else:
 				# Resume game
 				_on_resume_pressed()
@@ -556,4 +573,80 @@ func _on_options_back_pressed() -> void:
 
 	# Focus options button
 	options_button.grab_focus()
+
+# ============================================================================
+# STATISTICS & ACHIEVEMENTS
+# ============================================================================
+
+func show_statistics() -> void:
+	"""Shows statistics screen"""
+	print("[PauseMenu] Statistics pressed")
+
+	if AudioManager:
+		AudioManager.play_sfx("ui/menu_accept")
+
+	current_view = "statistics"
+	main_panel.visible = false
+
+	# Create statistics instance if needed
+	if statistics_instance:
+		statistics_instance.queue_free()
+
+	statistics_instance = STATISTICS_SCENE.instantiate()
+	add_child(statistics_instance)
+	statistics_instance.back_pressed.connect(_on_statistics_back_pressed)
+
+	if statistics_instance.has_method("update_statistics"):
+		statistics_instance.update_statistics()
+
+func _on_statistics_back_pressed() -> void:
+	"""Returns from statistics to main menu"""
+	print("[PauseMenu] Statistics back pressed")
+
+	if AudioManager:
+		AudioManager.play_sfx("ui/menu_back")
+
+	current_view = "main"
+
+	if statistics_instance:
+		statistics_instance.queue_free()
+		statistics_instance = null
+
+	main_panel.visible = true
+
+func show_achievements() -> void:
+	"""Shows achievements screen"""
+	print("[PauseMenu] Achievements pressed")
+
+	if AudioManager:
+		AudioManager.play_sfx("ui/menu_accept")
+
+	current_view = "achievements"
+	main_panel.visible = false
+
+	# Create achievements instance if needed
+	if achievements_instance:
+		achievements_instance.queue_free()
+
+	achievements_instance = ACHIEVEMENTS_SCENE.instantiate()
+	add_child(achievements_instance)
+	achievements_instance.back_pressed.connect(_on_achievements_back_pressed)
+
+	if achievements_instance.has_method("populate_achievements"):
+		achievements_instance.populate_achievements()
+
+func _on_achievements_back_pressed() -> void:
+	"""Returns from achievements to main menu"""
+	print("[PauseMenu] Achievements back pressed")
+
+	if AudioManager:
+		AudioManager.play_sfx("ui/menu_back")
+
+	current_view = "main"
+
+	if achievements_instance:
+		achievements_instance.queue_free()
+		achievements_instance = null
+
+	main_panel.visible = true
 

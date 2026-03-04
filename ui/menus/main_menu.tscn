@@ -98,6 +98,40 @@ theme_override_colors/font_pressed_color = Color(0.8, 0.8, 0.8, 1)
 theme_override_font_sizes/font_size = 28
 text = "Neues Spiel"
 
+[node name="ChallengeButton" type="Button" parent="CenterContainer/MenuContainer/ButtonsContainer"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
+theme_override_colors/font_disabled_color = Color(0.266667, 0.266667, 0.266667, 1)
+theme_override_colors/font_hover_color = Color(1, 0.6, 0.2, 1)
+theme_override_colors/font_color = Color(0.9, 0.55, 0.2, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.4, 0.1, 1)
+theme_override_font_sizes/font_size = 28
+text = "Challenge Run"
+
+[node name="StatisticsButton" type="Button" parent="CenterContainer/MenuContainer/ButtonsContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
+theme_override_colors/font_disabled_color = Color(0.266667, 0.266667, 0.266667, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.533333, 0.533333, 0.533333, 1)
+theme_override_colors/font_pressed_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 28
+text = "Statistiken"
+
+[node name="AchievementsButton" type="Button" parent="CenterContainer/MenuContainer/ButtonsContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
+theme_override_colors/font_disabled_color = Color(0.266667, 0.266667, 0.266667, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.533333, 0.533333, 0.533333, 1)
+theme_override_colors/font_pressed_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 28
+text = "Achievements"
+
 [node name="OptionsButton" type="Button" parent="CenterContainer/MenuContainer/ButtonsContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 50)
