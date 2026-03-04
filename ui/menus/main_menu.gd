@@ -21,7 +21,7 @@ const CHALLENGE_RUN_MENU_SCENE = preload("res://ui/menus/challenge_run_menu.tscn
 var options_menu_instance: Control = null
 var statistics_instance: Control = null
 var achievements_instance: Control = null
-var challenge_menu_instance: Control = null
+var challenge_menu_instance: Node = null
 
 # Constants
 const TEST_ROOM_PATH = "res://levels/test_room.tscn"
