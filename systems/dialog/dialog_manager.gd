@@ -118,7 +118,22 @@ func play_dialog(dialog_id: String) -> void:
 		push_warning("DialogManager: Dialog already active, ignoring play_dialog call")
 		return
 
-	var path := DIALOG_PATH + dialog_id + ".tres"
+	# Challenge Run: Check for dialog variant with modifier suffix
+	var variant_suffix := ""
+	if ChallengeRunManager and ChallengeRunManager.is_challenge_run_active:
+		variant_suffix = ChallengeRunManager.get_dialog_variant_suffix()
+
+	var path: String
+	if not variant_suffix.is_empty():
+		var variant_path := DIALOG_PATH + dialog_id + variant_suffix + ".tres"
+		if ResourceLoader.exists(variant_path):
+			path = variant_path
+			print("[DialogManager] Using challenge variant: %s" % variant_path)
+		else:
+			path = DIALOG_PATH + dialog_id + ".tres"
+	else:
+		path = DIALOG_PATH + dialog_id + ".tres"
+
 	if not ResourceLoader.exists(path):
 		push_error("DialogManager: Dialog not found: " + path)
 		return

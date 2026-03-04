@@ -45,6 +45,12 @@ func _ready() -> void:
 		health_component.max_health = max_health
 		health_component.current_health = max_health
 
+		# Challenge Run: Apply HP multiplier
+		if ChallengeRunManager and ChallengeRunManager.is_challenge_run_active:
+			var hp_multiplier = ChallengeRunManager.get_enemy_hp_multiplier()
+			health_component.max_health = int(health_component.max_health * hp_multiplier)
+			health_component.current_health = health_component.max_health
+
 	# Connect signals
 	_connect_signals()
 

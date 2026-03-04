@@ -368,6 +368,36 @@ signal air_reset_hit(count: int, damage: int)
 ## Emitted when air reset ends
 signal air_reset_ended(total_hits: int)
 
+# ============ ACHIEVEMENT SIGNALS ============
+## Emitted when an achievement is unlocked
+signal achievement_unlocked(achievement_id: String, achievement_data: Dictionary)
+
+# ============ STATISTICS SIGNALS ============
+## Emitted when damage is dealt to an enemy
+signal damage_dealt(amount: int, target: Node)
+
+## Emitted when player takes damage (for statistics tracking)
+signal damage_taken(amount: int, source: Node)
+
+## Emitted when Urgathon ability is activated
+signal urgathon_activated()
+
+## Emitted when a secret is found
+signal secret_found(secret_id: String)
+
+# ============ CHALLENGE RUN SIGNALS ============
+## Emitted when a challenge run starts
+signal challenge_run_started(modifiers: Dictionary)
+
+## Emitted when a challenge run is completed successfully
+signal challenge_run_completed(modifiers: Dictionary)
+
+## Emitted when a challenge run fails (e.g., time limit exceeded)
+signal challenge_run_failed(reason: String)
+
+## Emitted when challenge timer updates (for Zeitlimit)
+signal challenge_time_updated(remaining: float)
+
 # ============ INVENTORY SIGNALS ============
 ## Emitted when a relic is equipped (stats should be applied)
 signal relic_equipped(relic_id: String, stats: Dictionary)
