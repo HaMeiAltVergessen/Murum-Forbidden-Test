@@ -28,7 +28,7 @@ signal fight_started
 @export var phase_1_pattern: Array[String] = []
 @export var phase_2_pattern: Array[String] = []
 @export var phase_3_pattern: Array[String] = []
-## Myrkurs Fluch: Extra phase pattern (activated by Challenge Run modifier)
+## Myrkurs Siegel: Extra phase pattern (activated by Delirium modifier)
 @export var phase_4_myrkur_pattern: Array[String] = []
 
 # ============ REWARDS ============
@@ -234,7 +234,7 @@ func _on_phase_changed(old_phase: int, new_phase: int) -> void:
 			3:
 				attack_manager.set_pattern(phase_3_pattern)
 			4:
-				# Myrkurs Fluch extra phase
+				# Myrkurs Siegel extra phase
 				if not phase_4_myrkur_pattern.is_empty():
 					attack_manager.set_pattern(phase_4_myrkur_pattern)
 
@@ -267,7 +267,7 @@ func _on_defeated() -> void:
 	if is_defeated:
 		return
 
-	# Myrkurs Fluch: Check if extra phase should trigger before true defeat
+	# Myrkurs Siegel: Check if extra phase should trigger before true defeat
 	if _should_trigger_myrkur_phase():
 		_start_myrkur_phase()
 		return
@@ -301,7 +301,7 @@ func _on_defeated() -> void:
 
 
 func _should_trigger_myrkur_phase() -> bool:
-	"""Checks if Myrkurs Fluch extra phase should activate"""
+	"""Checks if Myrkurs Siegel extra phase should activate"""
 	if not ChallengeRunManager or not ChallengeRunManager.is_challenge_run_active:
 		return false
 	if not ChallengeRunManager.has_extra_boss_phases():
@@ -313,9 +313,9 @@ func _should_trigger_myrkur_phase() -> bool:
 
 
 func _start_myrkur_phase() -> void:
-	"""Initiates Myrkurs Fluch extra phase"""
-	print("[BaseBoss] Myrkurs Fluch: Entering extra phase!")
-	EventBus.show_notification.emit("Myrkurs Fluch erwacht!", 3.0)
+	"""Initiates Myrkurs Siegel extra phase"""
+	print("[BaseBoss] Myrkurs Siegel: Entering extra phase!")
+	EventBus.show_notification.emit("Myrkurs Siegel erwacht!", 3.0)
 
 	# Heal boss to 25% for the extra phase
 	if health_component:
@@ -350,9 +350,9 @@ func _check_challenge_endings() -> void:
 		EventBus.show_notification.emit("Wahre Herausforderung gemeistert!", 5.0)
 		GameManager.set_flag("true_challenge_ending", true)
 	elif ChallengeRunManager.should_trigger_myrkur_ending():
-		# Myrkurs Fluch ending
-		print("[BaseBoss] MYRKUR CURSE ENDING triggered!")
-		EventBus.show_notification.emit("Myrkurs Fluch ist gebrochen!", 5.0)
+		# Myrkurs Siegel ending
+		print("[BaseBoss] MYRKUR SEAL ENDING triggered!")
+		EventBus.show_notification.emit("Myrkurs Siegel ist gebrochen!", 5.0)
 		GameManager.set_flag("myrkur_ending", true)
 
 

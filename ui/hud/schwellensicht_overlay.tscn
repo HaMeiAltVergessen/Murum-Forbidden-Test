@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://cschwellensicht_overlay_001"]
+
+[ext_resource type="Script" path="res://ui/hud/schwellensicht_overlay.gd" id="1_script"]
+
+[node name="SchwellensichtOverlay" type="CanvasLayer"]
+layer = 90
+script = ExtResource("1_script")

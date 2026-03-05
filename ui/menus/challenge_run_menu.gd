@@ -1,5 +1,5 @@
 extends CanvasLayer
-## Challenge Run Menu - Pre-run modifier selection (Hades-inspired)
+## Ebenen des Deliriums - Murums Albtraum Modifier-Auswahl
 ## Shown from main menu before starting a challenge run
 
 # ============================================================================
@@ -16,8 +16,8 @@ signal back_pressed()
 @onready var modifier_container: VBoxContainer = %ModifierContainer
 @onready var start_button: Button = %StartChallengeButton
 @onready var back_button: Button = %ChallengeBackButton
-@onready var heat_label: Label = %HeatLabel
-@onready var highest_heat_label: Label = %HighestHeatLabel
+@onready var delirium_label: Label = %HeatLabel
+@onready var deepest_label: Label = %HighestHeatLabel
 
 # ============================================================================
 # STATE
@@ -26,6 +26,7 @@ signal back_pressed()
 ## Slider references for reading values
 var _modifier_sliders: Dictionary = {}
 var _toggle_buttons: Dictionary = {}
+var _schwellensicht_label: Label = null
 
 # ============================================================================
 # INITIALIZATION
@@ -36,8 +37,8 @@ func _ready() -> void:
 	start_button.pressed.connect(_on_start_pressed)
 	back_button.pressed.connect(_on_back_pressed)
 	_build_modifier_ui()
-	_update_heat_display()
-	print("[ChallengeRunMenu] Initialized")
+	_update_delirium_display()
+	print("[DeliriumMenu] Ebenen des Deliriums initialisiert")
 
 func _build_modifier_ui() -> void:
 	"""Builds modifier selection UI dynamically"""
@@ -47,11 +48,19 @@ func _build_modifier_ui() -> void:
 
 	# Title
 	var title = Label.new()
-	title.text = "Challenge-Modifikatoren"
-	title.add_theme_font_size_override("font_size", 24)
-	title.add_theme_color_override("font_color", Color(0.9, 0.75, 0.3, 1.0))
+	title.text = "Ebenen des Deliriums"
+	title.add_theme_font_size_override("font_size", 28)
+	title.add_theme_color_override("font_color", Color(0.6, 0.3, 0.9, 1.0))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	modifier_container.add_child(title)
+
+	# Subtitle
+	var subtitle = Label.new()
+	subtitle.text = "Murums Qualen"
+	subtitle.add_theme_font_size_override("font_size", 16)
+	subtitle.add_theme_color_override("font_color", Color(0.5, 0.3, 0.7, 0.7))
+	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	modifier_container.add_child(subtitle)
 
 	var sep = HSeparator.new()
 	modifier_container.add_child(sep)
@@ -72,6 +81,18 @@ func _build_modifier_ui() -> void:
 		var row = _create_toggle_modifier_row(modifier_id, mod_data)
 		modifier_container.add_child(row)
 
+	# Schwellensicht indicator
+	var sep3 = HSeparator.new()
+	modifier_container.add_child(sep3)
+
+	_schwellensicht_label = Label.new()
+	_schwellensicht_label.text = "Schwellensicht aktiv"
+	_schwellensicht_label.add_theme_font_size_override("font_size", 18)
+	_schwellensicht_label.add_theme_color_override("font_color", Color(0.7, 0.3, 1.0, 1.0))
+	_schwellensicht_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_schwellensicht_label.visible = false
+	modifier_container.add_child(_schwellensicht_label)
+
 func _create_tiered_modifier_row(modifier_id: String, mod_data: Dictionary) -> HBoxContainer:
 	"""Creates a row for a tiered modifier with label + slider + value"""
 	var hbox = HBoxContainer.new()
@@ -87,7 +108,7 @@ func _create_tiered_modifier_row(modifier_id: String, mod_data: Dictionary) -> H
 	# Description label
 	var desc_label = Label.new()
 	desc_label.text = mod_data["description"]
-	desc_label.custom_minimum_size = Vector2(300, 0)
+	desc_label.custom_minimum_size = Vector2(350, 0)
 	desc_label.add_theme_font_size_override("font_size", 13)
 	desc_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6, 1.0))
 	hbox.add_child(desc_label)
@@ -104,7 +125,7 @@ func _create_tiered_modifier_row(modifier_id: String, mod_data: Dictionary) -> H
 
 	# Value label
 	var value_label = Label.new()
-	value_label.text = "Stufe %d" % int(slider.value)
+	value_label.text = "Qual %d" % int(slider.value)
 	value_label.custom_minimum_size = Vector2(80, 0)
 	value_label.add_theme_font_size_override("font_size", 14)
 	hbox.add_child(value_label)
@@ -112,8 +133,8 @@ func _create_tiered_modifier_row(modifier_id: String, mod_data: Dictionary) -> H
 	# Connect slider
 	slider.value_changed.connect(func(new_value: float):
 		ChallengeRunManager.set_modifier_level(modifier_id, int(new_value))
-		value_label.text = "Stufe %d" % int(new_value)
-		_update_heat_display()
+		value_label.text = "Qual %d" % int(new_value)
+		_update_delirium_display()
 	)
 
 	_modifier_sliders[modifier_id] = slider
@@ -124,18 +145,18 @@ func _create_toggle_modifier_row(modifier_id: String, mod_data: Dictionary) -> H
 	var hbox = HBoxContainer.new()
 	hbox.add_theme_constant_override("separation", 16)
 
-	# Name label
+	# Name label - dark purple for Myrkurs Siegel
 	var name_label = Label.new()
 	name_label.text = mod_data["name"]
 	name_label.custom_minimum_size = Vector2(250, 0)
 	name_label.add_theme_font_size_override("font_size", 16)
-	name_label.add_theme_color_override("font_color", Color(0.8, 0.2, 0.2, 1.0))
+	name_label.add_theme_color_override("font_color", Color(0.5, 0.1, 0.6, 1.0))
 	hbox.add_child(name_label)
 
 	# Description
 	var desc_label = Label.new()
 	desc_label.text = mod_data["description"]
-	desc_label.custom_minimum_size = Vector2(300, 0)
+	desc_label.custom_minimum_size = Vector2(350, 0)
 	desc_label.add_theme_font_size_override("font_size", 13)
 	desc_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6, 1.0))
 	hbox.add_child(desc_label)
@@ -149,31 +170,36 @@ func _create_toggle_modifier_row(modifier_id: String, mod_data: Dictionary) -> H
 	# Connect
 	check.toggled.connect(func(pressed: bool):
 		ChallengeRunManager.set_modifier_level(modifier_id, 1 if pressed else 0)
-		_update_heat_display()
+		_update_delirium_display()
 	)
 
 	_toggle_buttons[modifier_id] = check
 	return hbox
 
 # ============================================================================
-# HEAT DISPLAY
+# DELIRIUM DISPLAY
 # ============================================================================
 
-func _update_heat_display() -> void:
-	"""Updates the heat total label"""
-	var current = ChallengeRunManager.get_total_heat()
-	var maximum = ChallengeRunManager.get_max_heat()
-	heat_label.text = "Heat: %d / %d" % [current, maximum]
+func _update_delirium_display() -> void:
+	"""Updates the delirium depth label"""
+	var current = ChallengeRunManager.get_delirium_depth()
+	var maximum = ChallengeRunManager.get_max_delirium()
+	delirium_label.text = "Delirium: %d / %d" % [current, maximum]
 
 	if ChallengeRunManager.are_all_modifiers_maxed():
-		heat_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.1, 1.0))
+		delirium_label.add_theme_color_override("font_color", Color(0.7, 0.1, 1.0, 1.0))
 	elif current > 0:
-		heat_label.add_theme_color_override("font_color", Color(0.9, 0.75, 0.3, 1.0))
+		delirium_label.add_theme_color_override("font_color", Color(0.6, 0.3, 0.9, 1.0))
 	else:
-		heat_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7, 1.0))
+		delirium_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7, 1.0))
 
 	if ChallengeRunManager:
-		highest_heat_label.text = "Hoechster Heat: %d" % ChallengeRunManager.highest_heat_completed
+		deepest_label.text = "Tiefster Abstieg: %d" % ChallengeRunManager.deepest_delirium_reached
+
+	# Schwellensicht indicator
+	if _schwellensicht_label:
+		var threshold = maximum * 0.5
+		_schwellensicht_label.visible = current >= threshold
 
 # ============================================================================
 # EVENT HANDLERS
@@ -183,7 +209,7 @@ func _on_start_pressed() -> void:
 	"""Starts the challenge run"""
 	ChallengeRunManager.start_challenge_run()
 	challenge_started.emit()
-	print("[ChallengeRunMenu] Challenge run started with heat %d" % ChallengeRunManager.get_total_heat())
+	print("[DeliriumMenu] Abstieg beginnt! Delirium: %d" % ChallengeRunManager.get_delirium_depth())
 
 func _on_back_pressed() -> void:
 	"""Returns to main menu"""
