@@ -12,6 +12,7 @@ var join_prompt: CanvasLayer = null
 var p2_tutorial: CanvasLayer = null
 var death_screen: CanvasLayer = null
 var challenge_timer_hud: CanvasLayer = null
+var schwellensicht_overlay: CanvasLayer = null
 
 # ============ STATE ============
 var huds_loaded: bool = false
@@ -117,6 +118,15 @@ func load_huds() -> void:
 		print("[HUDManager] Challenge Timer HUD loaded (persistent, hidden)")
 	else:
 		print("[HUDManager] WARNING: Challenge Timer HUD scene not found")
+
+	# Schwellensicht Overlay (cosmic horror screen tint, hidden by default)
+	var schwellensicht_scene = load("res://ui/hud/schwellensicht_overlay.tscn")
+	if schwellensicht_scene:
+		schwellensicht_overlay = schwellensicht_scene.instantiate()
+		add_child(schwellensicht_overlay)
+		print("[HUDManager] Schwellensicht Overlay loaded (persistent)")
+	else:
+		print("[HUDManager] WARNING: Schwellensicht Overlay scene not found")
 
 	# Connect challenge run signals for timer visibility
 	if EventBus:

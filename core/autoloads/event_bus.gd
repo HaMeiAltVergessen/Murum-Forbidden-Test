@@ -395,8 +395,11 @@ signal challenge_run_completed(modifiers: Dictionary)
 ## Emitted when a challenge run fails (e.g., time limit exceeded)
 signal challenge_run_failed(reason: String)
 
-## Emitted when challenge timer updates (for Zeitlimit)
+## Emitted when challenge timer updates (for Schwindendes Bewusstsein)
 signal challenge_time_updated(remaining: float)
+
+## Emitted when Schwellensicht (cosmic horror threshold) changes
+signal schwellensicht_changed(active: bool)
 
 # ============ INVENTORY SIGNALS ============
 ## Emitted when a relic is equipped (stats should be applied)

@@ -30,6 +30,9 @@ var stun_duration: float = 0.0
 var is_juggled: bool = false
 var juggle_gravity_scale: float = 0.6  # Reduced gravity while juggled
 
+# ============ SCHWELLENSICHT ============
+var _cosmic_overlay: ColorRect = null
+
 # ============ STUN SIGNALS ============
 signal stunned(duration: float)
 signal stun_ended
@@ -56,6 +59,9 @@ func _ready() -> void:
 
 	# Configure detection area
 	_setup_detection_area()
+
+	# Schwellensicht overlay
+	_setup_schwellensicht_overlay()
 
 	print("[BaseEnemy] ", name, " initialized")
 
@@ -412,3 +418,33 @@ func _remove_juggle_visual() -> void:
 	if sprite:
 		var tween = create_tween()
 		tween.tween_property(sprite, "modulate:a", 1.0, 0.1)
+
+
+# ============ SCHWELLENSICHT OVERLAY ============
+func _setup_schwellensicht_overlay() -> void:
+	"""Creates cosmic horror overlay (placeholder ColorRect) for Schwellensicht"""
+	_cosmic_overlay = ColorRect.new()
+	_cosmic_overlay.color = Color(0.3, 0.0, 0.5, 0.4)  # Kosmisches Lila
+	_cosmic_overlay.size = Vector2(64, 64)
+	_cosmic_overlay.position = Vector2(-32, -48)
+	_cosmic_overlay.visible = false
+	_cosmic_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_cosmic_overlay)
+
+	if EventBus:
+		EventBus.schwellensicht_changed.connect(_on_schwellensicht_changed)
+
+	# Check initial state
+	if ChallengeRunManager and ChallengeRunManager.is_schwellensicht_active:
+		_on_schwellensicht_changed(true)
+
+func _on_schwellensicht_changed(active: bool) -> void:
+	"""Toggles cosmic horror overlay on enemies"""
+	if _cosmic_overlay:
+		_cosmic_overlay.visible = active
+	# Sprite-Tint for cosmic horror
+	if sprite:
+		if active:
+			sprite.modulate = Color(0.7, 0.5, 1.0, 1.0)  # Lila-Tönung
+		else:
+			sprite.modulate = Color.WHITE

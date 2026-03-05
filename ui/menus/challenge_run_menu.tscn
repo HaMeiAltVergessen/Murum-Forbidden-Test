@@ -13,7 +13,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.05, 0.03, 0.08, 0.95)
+color = Color(0.05, 0.02, 0.1, 0.95)
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 anchors_preset = 15
@@ -45,13 +45,13 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 22
-text = "Heat: 0 / 9"
+text = "Delirium: 0 / 15"
 
 [node name="HighestHeatLabel" type="Label" parent="MarginContainer/VBoxContainer/BottomBar"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "Hoechster Heat: 0"
+text = "Tiefster Abstieg: 0"
 horizontal_alignment = 2
 
 [node name="ButtonBar" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
@@ -63,10 +63,10 @@ theme_override_constants/separation = 30
 unique_name_in_owner = true
 layout_mode = 2
 custom_minimum_size = Vector2(250, 55)
-text = "Zurueck"
+text = "Erwachen"
 
 [node name="StartChallengeButton" type="Button" parent="MarginContainer/VBoxContainer/ButtonBar"]
 unique_name_in_owner = true
 layout_mode = 2
 custom_minimum_size = Vector2(250, 55)
-text = "Challenge starten"
+text = "In den Albtraum"
