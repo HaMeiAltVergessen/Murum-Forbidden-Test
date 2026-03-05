@@ -1,88 +1,215 @@
 extends Node
-## ChallengeRunManager - "Ebenen des Deliriums" / Murums Albtraum
-## Hades-inspiriertes System mit "Murums Qualen" als Modifikatoren
-## Ab 50%+ Delirium aktiviert sich die "Schwellensicht" (kosmischer Horror)
+## ChallengeRunManager - Siegel-Run System
+## 33 Siegel-Modifier als Knotenpunkte eines mystischen Siegels
+## Spieler vervollständigen ein Siegel statt eine Difficulty-Liste
+## HINWEIS: Dieser Commit enthält nur UI + Datenstruktur, keine Gameplay-Mechaniken
 
 # ============================================================================
 # SIGNALS
 # ============================================================================
 
-signal modifier_changed(modifier_id: String, new_level: int)
+signal modifier_changed(modifier_id: String, is_active: bool)
 signal challenge_run_started(active_modifiers: Dictionary)
 signal challenge_run_completed(active_modifiers: Dictionary)
 signal schwellensicht_changed(active: bool)
 
 # ============================================================================
-# MURUMS QUALEN - MODIFIER DEFINITIONS
+# SIEGEL-MODIFIER DEFINITIONS (33 Knotenpunkte)
 # ============================================================================
 
-## Tiered modifiers - each upgradeable 2x (levels 0/1/2)
-const TIERED_MODIFIERS := {
+## All 33 seal modifiers - currently data-only, gameplay effects follow later
+## Structure: { id: { name, description, is_active } }
+## Later additions: effect_type, effect_value, trigger_conditions
+const SIEGEL_MODIFIERS := {
+	# --- Kern-Qualen (1-8) ---
 	"zaeher_alptraum": {
 		"name": "Zäher Alptraum",
-		"description": "Die Kreaturen des Traums sind widerstandsfähiger",
-		"max_level": 2,
-		"values": [1.0, 1.5, 2.0],
-		"dialog_suffix": ["", "_za1", "_za2"]
+		"description": "Gegner besitzen mehr Lebenspunkte. Kämpfe dauern länger. Gegner werden schwerer zu besiegen.",
+		"category": "kern"
 	},
 	"endlose_schatten": {
 		"name": "Endlose Schatten",
-		"description": "Mehr Schattenwesen manifestieren sich",
-		"max_level": 2,
-		"values": [1.0, 1.3, 1.6],
-		"dialog_suffix": ["", "_es1", "_es2"]
+		"description": "Mehr Gegner erscheinen in Räumen. Kampfdichte steigt deutlich.",
+		"category": "kern"
 	},
-	"schmerzensecho": {
-		"name": "Schmerzensecho",
-		"description": "Schmerz hallt durch die Traumschichten",
-		"max_level": 2,
-		"values": [1.0, 1.5, 2.0],
-		"dialog_suffix": ["", "_se1", "_se2"]
+	"schmerz": {
+		"name": "Schmerz",
+		"description": "Gegner verursachen erhöhten Schaden. Fehler werden stärker bestraft.",
+		"category": "kern"
 	},
 	"schwindendes_bewusstsein": {
 		"name": "Schwindendes Bewusstsein",
-		"description": "Murums Bewusstsein droht zu verblassen",
-		"max_level": 2,
-		"values": [0, 3600, 1800],
-		"dialog_suffix": ["", "_sb1", "_sb2"]
+		"description": "Der Run besitzt ein Zeitlimit. Spieler muss effizient spielen.",
+		"category": "kern"
 	},
 	"zerbrechlicher_geist": {
 		"name": "Zerbrechlicher Geist",
-		"description": "Murums Lebenskraft ist geschwächt",
-		"max_level": 2,
-		"values": [1.0, 0.75, 0.5],
-		"dialog_suffix": ["", "_zg1", "_zg2"]
+		"description": "Murum besitzt weniger Lebenspunkte. Überleben wird schwieriger.",
+		"category": "kern"
 	},
 	"traumfaeule": {
 		"name": "Traumfäule",
-		"description": "Heilung verrottet in den Traumschichten",
-		"max_level": 2,
-		"values": [1.0, 0.5, 0.25],
-		"dialog_suffix": ["", "_tf1", "_tf2"]
+		"description": "Heilung wirkt schwächer. Ressourcenmanagement wird wichtiger.",
+		"category": "kern"
 	},
 	"verblassende_kraft": {
 		"name": "Verblassende Kraft",
-		"description": "Murums Angriffe verlieren an Wucht",
-		"max_level": 2,
-		"values": [1.0, 0.75, 0.5],
-		"dialog_suffix": ["", "_vk1", "_vk2"]
+		"description": "Murum verursacht weniger Schaden. Kämpfe werden länger und gefährlicher.",
+		"category": "kern"
+	},
+	"myrkurs_fluch": {
+		"name": "Myrkurs Fluch",
+		"description": "Bosse besitzen zusätzliche Albtraumphase. Bosskämpfe werden erweitert.",
+		"category": "kern"
+	},
+	# --- Albtraum-Qualen (9-14) ---
+	"fluesternde_schattenhorden": {
+		"name": "Flüsternde Schattenhorden",
+		"description": "Spieler kann plötzlich in dunkle Arenen teleportiert werden. Berserker-Horden erscheinen kurzzeitig.",
+		"category": "albtraum"
+	},
+	"zerfall_der_erinnerung": {
+		"name": "Zerfall der Erinnerung",
+		"description": "Minimap funktioniert nur eingeschränkt. Orientierung wird schwieriger.",
+		"category": "albtraum"
+	},
+	"risse_der_vergangenheit": {
+		"name": "Risse der Vergangenheit",
+		"description": "Besiegte Gegner hinterlassen instabile Risse. Diese können kurz darauf explodieren.",
+		"category": "albtraum"
+	},
+	"risse_im_traum": {
+		"name": "Risse im Traum",
+		"description": "Instabile Portale erscheinen. Gegner strömen daraus hervor.",
+		"category": "albtraum"
+	},
+	"fallende_sterne": {
+		"name": "Fallende Sterne",
+		"description": "Kosmische Splitter schlagen gelegentlich in Räumen ein. Diese verursachen Explosionen.",
+		"category": "albtraum"
+	},
+	"der_wahre_traum": {
+		"name": "Der wahre Traum",
+		"description": "Einige Räume verwandeln sich in Albtraumversionen. Atmosphäre und Gegner verändern sich.",
+		"category": "albtraum"
+	},
+	# --- Körper-Qualen (15-21) ---
+	"verzweiflung_und_raserei": {
+		"name": "Verzweiflung & Raserei",
+		"description": "Murums Angriffe sind extrem stark. Verteidigung sinkt drastisch.",
+		"category": "koerper"
+	},
+	"schwere_last": {
+		"name": "Schwere Last",
+		"description": "Bewegungsgeschwindigkeit reduziert. Ausweichbewegungen langsamer.",
+		"category": "koerper"
+	},
+	"schlafwanderer": {
+		"name": "Schlafwanderer",
+		"description": "Murum bewegt sich gelegentlich automatisch weiter. Kontrolle über Bewegung wird erschwert.",
+		"category": "koerper"
+	},
+	"gespaltene_persoenlichkeit": {
+		"name": "Gespaltene Persönlichkeit",
+		"description": "Angriffsrichtung kann sich spiegeln. Steuerung wird unberechenbarer.",
+		"category": "koerper"
+	},
+	"hunger_der_finsternis": {
+		"name": "Hunger der Finsternis",
+		"description": "Wenn Murum nicht kämpft, verliert er langsam Leben. Spieler muss aggressiv bleiben.",
+		"category": "koerper"
+	},
+	"verlorenes_licht": {
+		"name": "Verlorenes Licht",
+		"description": "Heilung funktioniert nur noch beim Respawn. Zwischenkämpfe werden gefährlicher.",
+		"category": "koerper"
+	},
+	"fluch_der_umkehr": {
+		"name": "Fluch der Umkehr",
+		"description": "Heilquellen verursachen Schaden. Spieler muss Heilung vermeiden.",
+		"category": "koerper"
+	},
+	# --- Relikte & Fähigkeiten (22) ---
+	"zerbrochen_zerstoert_zerfallen": {
+		"name": "Zerbrochen, zerstört, zerfallen",
+		"description": "Relikte und Fähigkeiten wirken schwächer. Builds verlieren Effektivität.",
+		"category": "koerper"
+	},
+	# --- Myrkur-Qualen (23-25) ---
+	"myrkurs_blick": {
+		"name": "Myrkurs Blick",
+		"description": "Räume können in Dunkelheit gehüllt werden. Gegner erscheinen in Wellen.",
+		"category": "myrkur"
+	},
+	"myrkurs_schleier": {
+		"name": "Myrkurs Schleier",
+		"description": "Murums Sichtweite wird reduziert. Umgebung wird schwerer erkennbar.",
+		"category": "myrkur"
+	},
+	"myrkurs_gelaechter": {
+		"name": "Myrkurs Gelächter",
+		"description": "Schaden kann Zeit im Timer reduzieren. Zeitdruck steigt.",
+		"category": "myrkur"
+	},
+	# --- Voch Numta-Qualen (26-28) ---
+	"urteil_der_voch_numta": {
+		"name": "Urteil der Voch Numta",
+		"description": "Schaden kann göttliche Bestrafungen auslösen. Spieler muss präziser kämpfen.",
+		"category": "voch_numta"
+	},
+	"zerbrochene_statue": {
+		"name": "Zerbrochene Statue",
+		"description": "Beschädigte Voch-Numta-Statuen verstärken Gegner. Gegner erhalten Buffs in ihrer Nähe.",
+		"category": "voch_numta"
+	},
+	"erbe_der_voch_numta": {
+		"name": "Erbe der Voch Numta",
+		"description": "Fragmente können erscheinen. Sie können Murum oder Gegner stärken.",
+		"category": "voch_numta"
+	},
+	# --- Urgathon-Qualen (29-33) ---
+	"versiegelt_in_stille": {
+		"name": "Versiegelt in Stille",
+		"description": "Spezialfähigkeiten sind versiegelt. Murum kann nur grundlegende Aktionen nutzen.",
+		"category": "urgathon"
+	},
+	"stimme_aus_urgathon": {
+		"name": "Stimme aus Urgathon",
+		"description": "Kosmische Stimmen können Murum betäuben. Spieler muss rechtzeitig reagieren.",
+		"category": "urgathon"
+	},
+	"puls_von_urgathon": {
+		"name": "Puls von Urgathon",
+		"description": "Periodische Druckwellen bewegen Einheiten. Positionierung wird schwieriger.",
+		"category": "urgathon"
+	},
+	"echo_des_zorns": {
+		"name": "Echo des Zorns",
+		"description": "Angriffe erzeugen verzögerte Explosionen. Kämpfe werden chaotischer.",
+		"category": "urgathon"
+	},
+	"die_vergessenen": {
+		"name": "Die Vergessenen",
+		"description": "Besiegte Gegner können erneut aufstehen. Kämpfe dauern länger.",
+		"category": "urgathon"
 	}
 }
 
-## Toggle modifier (on/off)
-const TOGGLE_MODIFIERS := {
-	"myrkurs_siegel": {
-		"name": "Myrkurs Siegel",
-		"description": "Das Siegel der kosmischen Finsternis erwacht",
-		"dialog_suffix": "_myrkur"
-	}
+## Category display info for the seal visualization
+const CATEGORY_INFO := {
+	"kern": {"name": "Kern-Qualen", "color": Color(0.9, 0.75, 0.3, 1.0)},
+	"albtraum": {"name": "Albtraum-Qualen", "color": Color(0.6, 0.3, 0.9, 1.0)},
+	"koerper": {"name": "Körper-Qualen", "color": Color(0.8, 0.2, 0.2, 1.0)},
+	"myrkur": {"name": "Myrkur-Qualen", "color": Color(0.2, 0.0, 0.4, 1.0)},
+	"voch_numta": {"name": "Voch Numta-Qualen", "color": Color(0.9, 0.85, 0.5, 1.0)},
+	"urgathon": {"name": "Urgathon-Qualen", "color": Color(0.3, 0.8, 0.6, 1.0)}
 }
 
 # ============================================================================
 # STATE
 # ============================================================================
 
-## Current modifier levels: modifier_id -> level (0 = off)
+## Current modifier states: modifier_id -> bool (active/inactive)
 var active_modifiers: Dictionary = {}
 ## Whether a challenge run is currently active
 var is_challenge_run_active: bool = false
@@ -90,7 +217,7 @@ var is_challenge_run_active: bool = false
 var challenge_timer: float = 0.0
 ## Time limit in seconds (0 = no limit)
 var challenge_time_limit: float = 0.0
-## Deepest delirium level completed
+## Deepest delirium level completed (most seals active)
 var deepest_delirium_reached: int = 0
 ## Whether Schwellensicht is currently active
 var is_schwellensicht_active: bool = false
@@ -101,7 +228,7 @@ var is_schwellensicht_active: bool = false
 
 func _ready() -> void:
 	_reset_modifiers()
-	print("[ChallengeRunManager] Ebenen des Deliriums initialisiert")
+	print("[ChallengeRunManager] Siegel-Run System initialisiert (%d Siegel)" % SIEGEL_MODIFIERS.size())
 
 func _process(delta: float) -> void:
 	if not is_challenge_run_active:
@@ -109,21 +236,17 @@ func _process(delta: float) -> void:
 	if challenge_time_limit <= 0:
 		return
 
-	# Update timer
 	challenge_timer += delta
 	var remaining = challenge_time_limit - challenge_timer
 	EventBus.challenge_time_updated.emit(remaining)
 
 	if remaining <= 0:
-		# Time's up - challenge failed
 		_on_time_expired()
 
 func _reset_modifiers() -> void:
-	"""Resets all modifiers to default (off)"""
+	"""Resets all modifiers to inactive"""
 	active_modifiers.clear()
-	for modifier_id in TIERED_MODIFIERS:
-		active_modifiers[modifier_id] = 0
-	for modifier_id in TOGGLE_MODIFIERS:
+	for modifier_id in SIEGEL_MODIFIERS:
 		active_modifiers[modifier_id] = 0
 
 # ============================================================================
@@ -131,100 +254,106 @@ func _reset_modifiers() -> void:
 # ============================================================================
 
 func set_modifier_level(modifier_id: String, level: int) -> void:
-	"""Sets the level of a modifier"""
-	if modifier_id in TIERED_MODIFIERS:
-		var max_lvl = TIERED_MODIFIERS[modifier_id]["max_level"]
-		level = clampi(level, 0, max_lvl)
-	elif modifier_id in TOGGLE_MODIFIERS:
-		level = clampi(level, 0, 1)
-	else:
-		push_warning("[ChallengeRunManager] Unbekannte Qual: %s" % modifier_id)
+	"""Sets a modifier active (1) or inactive (0)"""
+	if modifier_id not in SIEGEL_MODIFIERS:
+		push_warning("[ChallengeRunManager] Unbekanntes Siegel: %s" % modifier_id)
 		return
 
+	level = clampi(level, 0, 1)
 	active_modifiers[modifier_id] = level
-	modifier_changed.emit(modifier_id, level)
+	modifier_changed.emit(modifier_id, level > 0)
 	_check_schwellensicht()
-	print("[ChallengeRunManager] Qual %s auf Stufe %d gesetzt" % [modifier_id, level])
+
+func toggle_modifier(modifier_id: String) -> void:
+	"""Toggles a modifier on/off"""
+	if modifier_id not in SIEGEL_MODIFIERS:
+		push_warning("[ChallengeRunManager] Unbekanntes Siegel: %s" % modifier_id)
+		return
+
+	var current = active_modifiers.get(modifier_id, 0)
+	set_modifier_level(modifier_id, 0 if current > 0 else 1)
 
 func get_modifier_level(modifier_id: String) -> int:
-	"""Returns current level of a modifier"""
+	"""Returns current level of a modifier (0 or 1)"""
 	return active_modifiers.get(modifier_id, 0)
 
 func is_modifier_active(modifier_id: String) -> bool:
-	"""Returns whether a modifier is active (level > 0)"""
+	"""Returns whether a modifier is active"""
 	return active_modifiers.get(modifier_id, 0) > 0
 
+func get_active_count() -> int:
+	"""Returns number of active modifiers"""
+	var count = 0
+	for modifier_id in active_modifiers:
+		if active_modifiers[modifier_id] > 0:
+			count += 1
+	return count
+
 # ============================================================================
-# GAMEPLAY MULTIPLIERS
+# GAMEPLAY MULTIPLIERS (Placeholder - effects follow in later commits)
 # ============================================================================
 
 func get_enemy_hp_multiplier() -> float:
 	"""Returns HP multiplier for enemies (Zäher Alptraum)"""
-	var level = active_modifiers.get("zaeher_alptraum", 0)
-	return TIERED_MODIFIERS["zaeher_alptraum"]["values"][level]
+	if is_modifier_active("zaeher_alptraum"):
+		return 1.5
+	return 1.0
 
 func get_enemy_count_multiplier() -> float:
 	"""Returns spawn count multiplier (Endlose Schatten)"""
-	var level = active_modifiers.get("endlose_schatten", 0)
-	return TIERED_MODIFIERS["endlose_schatten"]["values"][level]
+	if is_modifier_active("endlose_schatten"):
+		return 1.5
+	return 1.0
 
 func get_damage_to_player_multiplier() -> float:
-	"""Returns damage multiplier applied to player (Schmerzensecho)"""
-	var level = active_modifiers.get("schmerzensecho", 0)
-	return TIERED_MODIFIERS["schmerzensecho"]["values"][level]
+	"""Returns damage multiplier applied to player (Schmerz)"""
+	if is_modifier_active("schmerz"):
+		return 1.5
+	return 1.0
 
 func get_time_limit() -> float:
 	"""Returns time limit in seconds (0 = no limit) (Schwindendes Bewusstsein)"""
-	var level = active_modifiers.get("schwindendes_bewusstsein", 0)
-	return TIERED_MODIFIERS["schwindendes_bewusstsein"]["values"][level]
+	if is_modifier_active("schwindendes_bewusstsein"):
+		return 1800  # 30 minutes
+	return 0.0
 
 func get_player_max_hp_multiplier() -> float:
 	"""Returns max HP multiplier for player (Zerbrechlicher Geist)"""
-	var level = active_modifiers.get("zerbrechlicher_geist", 0)
-	return TIERED_MODIFIERS["zerbrechlicher_geist"]["values"][level]
+	if is_modifier_active("zerbrechlicher_geist"):
+		return 0.5
+	return 1.0
 
 func get_healing_multiplier() -> float:
 	"""Returns healing multiplier (Traumfäule)"""
-	var level = active_modifiers.get("traumfaeule", 0)
-	return TIERED_MODIFIERS["traumfaeule"]["values"][level]
+	if is_modifier_active("traumfaeule"):
+		return 0.25
+	return 1.0
 
 func get_player_damage_multiplier() -> float:
 	"""Returns player damage multiplier (Verblassende Kraft)"""
-	var level = active_modifiers.get("verblassende_kraft", 0)
-	return TIERED_MODIFIERS["verblassende_kraft"]["values"][level]
+	if is_modifier_active("verblassende_kraft"):
+		return 0.5
+	return 1.0
 
 func has_extra_boss_phases() -> bool:
-	"""Returns whether Myrkurs Siegel is active (extra boss phases)"""
-	return active_modifiers.get("myrkurs_siegel", 0) > 0
+	"""Returns whether Myrkurs Fluch is active (extra boss phases)"""
+	return is_modifier_active("myrkurs_fluch")
 
 # ============================================================================
 # DELIRIUM CALCULATION
 # ============================================================================
 
 func get_delirium_depth() -> int:
-	"""Returns total delirium depth (sum of all modifier levels)"""
-	var total = 0
-	for modifier_id in active_modifiers:
-		total += active_modifiers[modifier_id]
-	return total
+	"""Returns total active seal count"""
+	return get_active_count()
 
 func get_max_delirium() -> int:
-	"""Returns maximum possible delirium depth"""
-	var total = 0
-	for modifier_id in TIERED_MODIFIERS:
-		total += TIERED_MODIFIERS[modifier_id]["max_level"]
-	total += TOGGLE_MODIFIERS.size()  # Each toggle adds 1
-	return total
+	"""Returns total number of seals (33)"""
+	return SIEGEL_MODIFIERS.size()
 
 func are_all_modifiers_maxed() -> bool:
-	"""Returns whether all modifiers are at maximum level"""
-	for modifier_id in TIERED_MODIFIERS:
-		if active_modifiers.get(modifier_id, 0) < TIERED_MODIFIERS[modifier_id]["max_level"]:
-			return false
-	for modifier_id in TOGGLE_MODIFIERS:
-		if active_modifiers.get(modifier_id, 0) < 1:
-			return false
-	return true
+	"""Returns whether all seals are active"""
+	return get_active_count() == SIEGEL_MODIFIERS.size()
 
 # Legacy compatibility
 func get_total_heat() -> int:
@@ -238,7 +367,7 @@ func get_max_heat() -> int:
 # ============================================================================
 
 func _check_schwellensicht() -> void:
-	"""Checks if Schwellensicht threshold is reached (50%+ delirium)"""
+	"""Checks if Schwellensicht threshold is reached (50%+ seals active)"""
 	var threshold = get_max_delirium() * 0.5
 	var new_state = get_delirium_depth() >= threshold
 	if new_state != is_schwellensicht_active:
@@ -246,7 +375,7 @@ func _check_schwellensicht() -> void:
 		schwellensicht_changed.emit(new_state)
 		if EventBus:
 			EventBus.schwellensicht_changed.emit(new_state)
-		print("[ChallengeRunManager] Schwellensicht: %s (Delirium: %d/%d)" % [
+		print("[ChallengeRunManager] Schwellensicht: %s (Siegel: %d/%d)" % [
 			"AKTIV" if new_state else "inaktiv",
 			get_delirium_depth(),
 			get_max_delirium()
@@ -261,15 +390,13 @@ func get_dialog_variant_suffix() -> String:
 	if not is_challenge_run_active:
 		return ""
 
-	# Myrkurs Siegel takes priority for dialog variants
+	# Myrkurs Fluch takes priority for dialog variants
 	if has_extra_boss_phases():
-		return TOGGLE_MODIFIERS["myrkurs_siegel"]["dialog_suffix"]
+		return "_myrkur"
 
-	# Otherwise check tiered modifiers (highest active one)
-	for modifier_id in TIERED_MODIFIERS:
-		var level = active_modifiers.get(modifier_id, 0)
-		if level > 0:
-			return TIERED_MODIFIERS[modifier_id]["dialog_suffix"][level]
+	# General challenge suffix if any seal is active
+	if get_active_count() > 0:
+		return "_siegel"
 
 	return ""
 
@@ -278,34 +405,33 @@ func get_dialog_variant_suffix() -> String:
 # ============================================================================
 
 func start_challenge_run() -> void:
-	"""Starts a challenge run with current modifier settings"""
+	"""Starts a challenge run with current seal configuration"""
 	is_challenge_run_active = true
 	challenge_timer = 0.0
 	challenge_time_limit = get_time_limit()
 
-	# Activate Schwellensicht if threshold met
 	_check_schwellensicht()
 
-	print("[ChallengeRunManager] Abstieg in den Albtraum! Delirium: %d/%d" % [get_delirium_depth(), get_max_delirium()])
+	print("[ChallengeRunManager] Siegel-Run gestartet! Aktive Siegel: %d/%d" % [get_active_count(), get_max_delirium()])
 	for modifier_id in active_modifiers:
 		if active_modifiers[modifier_id] > 0:
-			print("[ChallengeRunManager]   Qual: %s - Stufe %d" % [modifier_id, active_modifiers[modifier_id]])
+			var mod_name = SIEGEL_MODIFIERS[modifier_id]["name"]
+			print("[ChallengeRunManager]   Siegel: %s" % mod_name)
 
 	challenge_run_started.emit(active_modifiers.duplicate())
 	EventBus.challenge_run_started.emit(active_modifiers.duplicate())
 
 func complete_challenge_run() -> void:
 	"""Called when the final boss is defeated during a challenge run"""
-	var depth = get_delirium_depth()
+	var depth = get_active_count()
 	if depth > deepest_delirium_reached:
 		deepest_delirium_reached = depth
 
-	print("[ChallengeRunManager] Albtraum überwunden! Delirium: %d" % depth)
+	print("[ChallengeRunManager] Siegel-Run abgeschlossen! Aktive Siegel: %d" % depth)
 
 	challenge_run_completed.emit(active_modifiers.duplicate())
 	EventBus.challenge_run_completed.emit(active_modifiers.duplicate())
 
-	# Deactivate Schwellensicht
 	if is_schwellensicht_active:
 		is_schwellensicht_active = false
 		schwellensicht_changed.emit(false)
@@ -316,10 +442,9 @@ func complete_challenge_run() -> void:
 
 func _on_time_expired() -> void:
 	"""Called when the Schwindendes Bewusstsein timer expires"""
-	print("[ChallengeRunManager] Bewusstsein verblasst! Albtraum gescheitert.")
+	print("[ChallengeRunManager] Bewusstsein verblasst! Siegel-Run gescheitert.")
 	is_challenge_run_active = false
 
-	# Deactivate Schwellensicht
 	if is_schwellensicht_active:
 		is_schwellensicht_active = false
 		schwellensicht_changed.emit(false)
@@ -333,25 +458,24 @@ func end_challenge_run() -> void:
 	is_challenge_run_active = false
 	challenge_timer = 0.0
 
-	# Deactivate Schwellensicht
 	if is_schwellensicht_active:
 		is_schwellensicht_active = false
 		schwellensicht_changed.emit(false)
 		if EventBus:
 			EventBus.schwellensicht_changed.emit(false)
 
-	print("[ChallengeRunManager] Albtraum beendet")
+	print("[ChallengeRunManager] Siegel-Run beendet")
 
 # ============================================================================
 # ENDING CONDITIONS
 # ============================================================================
 
 func should_trigger_true_ending() -> bool:
-	"""Returns true if all modifiers maxed and final boss defeated"""
+	"""Returns true if all seals active and final boss defeated"""
 	return is_challenge_run_active and are_all_modifiers_maxed()
 
 func should_trigger_myrkur_ending() -> bool:
-	"""Returns true if Myrkurs Siegel is active (but not all maxed)"""
+	"""Returns true if Myrkurs Fluch is active (but not all maxed)"""
 	return is_challenge_run_active and has_extra_boss_phases() and not are_all_modifiers_maxed()
 
 # ============================================================================
@@ -371,7 +495,8 @@ func load_from_save(data: Dictionary) -> void:
 	"""Restores state from save data"""
 	var saved_modifiers = data.get("active_modifiers", {})
 	for modifier_id in saved_modifiers:
-		active_modifiers[modifier_id] = saved_modifiers[modifier_id]
+		if modifier_id in SIEGEL_MODIFIERS:
+			active_modifiers[modifier_id] = saved_modifiers[modifier_id]
 
 	is_challenge_run_active = data.get("is_active", false)
 	challenge_timer = data.get("challenge_timer", 0.0)
@@ -381,4 +506,6 @@ func load_from_save(data: Dictionary) -> void:
 		challenge_time_limit = get_time_limit()
 		_check_schwellensicht()
 
-	print("[ChallengeRunManager] Zustand geladen. Aktiv: %s, Delirium: %d" % [is_challenge_run_active, get_delirium_depth()])
+	print("[ChallengeRunManager] Zustand geladen. Aktiv: %s, Siegel: %d/%d" % [
+		is_challenge_run_active, get_active_count(), get_max_delirium()
+	])
