@@ -195,15 +195,27 @@ const SIEGEL_MODIFIERS := {
 	}
 }
 
-## Category display info for the seal visualization
+## Category display info + depth weights for the Tiefe-System
 const CATEGORY_INFO := {
-	"kern": {"name": "Kern-Qualen", "color": Color(0.9, 0.75, 0.3, 1.0)},
-	"albtraum": {"name": "Albtraum-Qualen", "color": Color(0.6, 0.3, 0.9, 1.0)},
-	"koerper": {"name": "Körper-Qualen", "color": Color(0.8, 0.2, 0.2, 1.0)},
-	"myrkur": {"name": "Myrkur-Qualen", "color": Color(0.2, 0.0, 0.4, 1.0)},
-	"voch_numta": {"name": "Voch Numta-Qualen", "color": Color(0.9, 0.85, 0.5, 1.0)},
-	"urgathon": {"name": "Urgathon-Qualen", "color": Color(0.3, 0.8, 0.6, 1.0)}
+	"kern": {"name": "Kern-Qualen", "color": Color(0.9, 0.75, 0.3, 1.0), "tiefe": 1},
+	"albtraum": {"name": "Albtraum-Qualen", "color": Color(0.6, 0.3, 0.9, 1.0), "tiefe": 3},
+	"koerper": {"name": "Körper-Qualen", "color": Color(0.8, 0.2, 0.2, 1.0), "tiefe": 1},
+	"myrkur": {"name": "Myrkur-Qualen", "color": Color(0.2, 0.0, 0.4, 1.0), "tiefe": 3},
+	"voch_numta": {"name": "Voch Numta-Qualen", "color": Color(0.9, 0.85, 0.5, 1.0), "tiefe": 2},
+	"urgathon": {"name": "Urgathon-Qualen", "color": Color(0.3, 0.8, 0.6, 1.0), "tiefe": 2}
 }
+
+## Tiefenstufen - depth thresholds that unlock new content
+## Each threshold can unlock: new dialogs, alternative boss phases, nightmare rooms
+const TIEFENSTUFEN := [
+	{"tiefe": 0, "name": "Der ruhige Traum"},
+	{"tiefe": 5, "name": "Flüstern der Erinnerung"},
+	{"tiefe": 10, "name": "Die zerbrochene Vergangenheit"},
+	{"tiefe": 15, "name": "Myrkurs Blick"},
+	{"tiefe": 20, "name": "Der Albtraum erwacht"},
+	{"tiefe": 25, "name": "Urgathons Echo"},
+	{"tiefe": 30, "name": "Die versiegelte Wahrheit"}
+]
 
 # ============================================================================
 # STATE
@@ -363,22 +375,87 @@ func get_max_heat() -> int:
 	return get_max_delirium()
 
 # ============================================================================
+# TIEFE-SYSTEM (Depth Points)
+# ============================================================================
+
+func get_tiefe() -> int:
+	"""Returns total depth points (weighted by category)"""
+	var total = 0
+	for modifier_id in active_modifiers:
+		if active_modifiers[modifier_id] > 0:
+			var category = SIEGEL_MODIFIERS[modifier_id]["category"]
+			var weight = CATEGORY_INFO[category]["tiefe"]
+			total += weight
+	return total
+
+func get_max_tiefe() -> int:
+	"""Returns maximum possible depth points"""
+	var total = 0
+	for modifier_id in SIEGEL_MODIFIERS:
+		var category = SIEGEL_MODIFIERS[modifier_id]["category"]
+		var weight = CATEGORY_INFO[category]["tiefe"]
+		total += weight
+	return total
+
+func get_modifier_tiefe(modifier_id: String) -> int:
+	"""Returns the depth points a specific modifier contributes"""
+	if modifier_id not in SIEGEL_MODIFIERS:
+		return 0
+	var category = SIEGEL_MODIFIERS[modifier_id]["category"]
+	return CATEGORY_INFO[category]["tiefe"]
+
+func get_tiefenstufe() -> Dictionary:
+	"""Returns the current Tiefenstufe based on total depth"""
+	var tiefe = get_tiefe()
+	var current_stufe = TIEFENSTUFEN[0]
+	for stufe in TIEFENSTUFEN:
+		if tiefe >= stufe["tiefe"]:
+			current_stufe = stufe
+		else:
+			break
+	return current_stufe
+
+func get_tiefenstufe_name() -> String:
+	"""Returns the name of the current depth level"""
+	return get_tiefenstufe()["name"]
+
+func get_next_tiefenstufe() -> Dictionary:
+	"""Returns the next Tiefenstufe to reach (or empty if at max)"""
+	var tiefe = get_tiefe()
+	for stufe in TIEFENSTUFEN:
+		if tiefe < stufe["tiefe"]:
+			return stufe
+	return {}
+
+func get_tiefenstufe_index() -> int:
+	"""Returns the index of the current Tiefenstufe (0-6)"""
+	var tiefe = get_tiefe()
+	var index = 0
+	for i in TIEFENSTUFEN.size():
+		if tiefe >= TIEFENSTUFEN[i]["tiefe"]:
+			index = i
+		else:
+			break
+	return index
+
+# ============================================================================
 # SCHWELLENSICHT SYSTEM
 # ============================================================================
 
 func _check_schwellensicht() -> void:
-	"""Checks if Schwellensicht threshold is reached (50%+ seals active)"""
-	var threshold = get_max_delirium() * 0.5
-	var new_state = get_delirium_depth() >= threshold
+	"""Checks if Schwellensicht threshold is reached (50%+ Tiefe)"""
+	var threshold = get_max_tiefe() * 0.5
+	var new_state = get_tiefe() >= threshold
 	if new_state != is_schwellensicht_active:
 		is_schwellensicht_active = new_state
 		schwellensicht_changed.emit(new_state)
 		if EventBus:
 			EventBus.schwellensicht_changed.emit(new_state)
-		print("[ChallengeRunManager] Schwellensicht: %s (Siegel: %d/%d)" % [
+		print("[ChallengeRunManager] Schwellensicht: %s (Tiefe: %d/%d, Stufe: %s)" % [
 			"AKTIV" if new_state else "inaktiv",
-			get_delirium_depth(),
-			get_max_delirium()
+			get_tiefe(),
+			get_max_tiefe(),
+			get_tiefenstufe_name()
 		])
 
 # ============================================================================
@@ -412,7 +489,9 @@ func start_challenge_run() -> void:
 
 	_check_schwellensicht()
 
-	print("[ChallengeRunManager] Siegel-Run gestartet! Aktive Siegel: %d/%d" % [get_active_count(), get_max_delirium()])
+	print("[ChallengeRunManager] Siegel-Run gestartet! Siegel: %d/%d | Tiefe: %d | Stufe: %s" % [
+		get_active_count(), get_max_delirium(), get_tiefe(), get_tiefenstufe_name()
+	])
 	for modifier_id in active_modifiers:
 		if active_modifiers[modifier_id] > 0:
 			var mod_name = SIEGEL_MODIFIERS[modifier_id]["name"]
