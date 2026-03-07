@@ -132,6 +132,78 @@ theme_override_font_sizes/font_size = 18
 text = "0"
 horizontal_alignment = 2
 
+[node name="UrgathonTitle" type="Label" parent="MarginContainer/VBoxContainer/StatsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Urgathon eingesetzt:"
+
+[node name="UrgathonLabel" type="Label" parent="MarginContainer/VBoxContainer/StatsGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "0"
+horizontal_alignment = 2
+
+[node name="ResonanceTitle" type="Label" parent="MarginContainer/VBoxContainer/StatsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Resonanz aktiviert:"
+
+[node name="ResonanceLabel" type="Label" parent="MarginContainer/VBoxContainer/StatsGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "0"
+horizontal_alignment = 2
+
+[node name="SecretsTitle" type="Label" parent="MarginContainer/VBoxContainer/StatsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Geheimnisse gefunden:"
+
+[node name="SecretsLabel" type="Label" parent="MarginContainer/VBoxContainer/StatsGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "0"
+horizontal_alignment = 2
+
+[node name="RelicsTitle" type="Label" parent="MarginContainer/VBoxContainer/StatsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Relikte gesammelt:"
+
+[node name="RelicsLabel" type="Label" parent="MarginContainer/VBoxContainer/StatsGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "0"
+horizontal_alignment = 2
+
+[node name="RoomsTitle" type="Label" parent="MarginContainer/VBoxContainer/StatsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Raeume besucht:"
+
+[node name="RoomsLabel" type="Label" parent="MarginContainer/VBoxContainer/StatsGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "0"
+horizontal_alignment = 2
+
+[node name="CoinsTitle" type="Label" parent="MarginContainer/VBoxContainer/StatsGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Muenzen verdient:"
+
+[node name="CoinsLabel" type="Label" parent="MarginContainer/VBoxContainer/StatsGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "0"
+horizontal_alignment = 2
+
 [node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3

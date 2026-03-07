@@ -53,6 +53,10 @@ func _ready() -> void:
 	EventBus.damage_dealt.connect(_on_damage_dealt)
 	EventBus.damage_taken.connect(_on_damage_taken)
 
+	# Track room visits via WorldManager
+	if WorldManager:
+		WorldManager.room_changed.connect(_on_room_changed)
+
 	print("[StatisticsManager] Initialized")
 
 func _process(delta: float) -> void:
@@ -109,9 +113,16 @@ func _on_item_picked_up(_item_id: String, _item_name: String, category: String) 
 func _on_secret_found(_secret_id: String) -> void:
 	secrets_found_count += 1
 
+var _last_coin_amount: int = 0
+
 func _on_coins_changed(new_amount: int) -> void:
-	if new_amount > coins_total_earned:
-		coins_total_earned = new_amount
+	# Track coins earned (only positive changes count as earned)
+	if new_amount > _last_coin_amount:
+		coins_total_earned += new_amount - _last_coin_amount
+	_last_coin_amount = new_amount
+
+func _on_room_changed(_room_id: String) -> void:
+	rooms_visited += 1
 
 func _on_game_started() -> void:
 	# Reset run-specific stats
