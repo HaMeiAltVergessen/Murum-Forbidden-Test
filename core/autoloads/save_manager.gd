@@ -250,7 +250,8 @@ func _gather_save_data(slot_index: int) -> Dictionary:
 		"abilities": _gather_abilities_data(),
 		"statistics_full": _gather_statistics_full(),
 		"achievements": _gather_achievements_data(),
-		"challenge_run": _gather_challenge_run_data()
+		"challenge_run": _gather_challenge_run_data(),
+		"run_manager": _gather_run_manager_data()
 	}
 
 	print("[SaveManager] Save data gathered successfully")
@@ -415,6 +416,12 @@ func _gather_challenge_run_data() -> Dictionary:
 		return ChallengeRunManager.get_save_data()
 	return {"active_modifiers": {}, "is_active": false, "highest_heat_completed": 0}
 
+func _gather_run_manager_data() -> Dictionary:
+	"""Gathers RunManager persistent data (Magicka, max lives)"""
+	if RunManager:
+		return RunManager.get_save_data()
+	return {"magicka": 0, "max_lives": 1}
+
 # ============================================================================
 # LOAD GAME
 # ============================================================================
@@ -516,6 +523,11 @@ func _apply_save_data(save_data: Dictionary) -> void:
 	var challenge_data = save_data.get("challenge_run", {})
 	if ChallengeRunManager:
 		ChallengeRunManager.load_from_save(challenge_data)
+
+	# Restore RunManager persistent data (Magicka, max lives)
+	var run_manager_data = save_data.get("run_manager", {})
+	if RunManager:
+		RunManager.load_from_save(run_manager_data)
 
 	# Get saved room data
 	var player_data = save_data.get("player", {})

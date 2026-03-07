@@ -386,6 +386,19 @@ signal urgathon_activated()
 signal secret_found(secret_id: String)
 
 # ============ CHALLENGE RUN SIGNALS ============
+# ============ RUN SIGNALS ============
+## Emitted when a roguelike run starts
+signal run_started()
+
+## Emitted when a roguelike run ends
+signal run_ended(victory: bool)
+
+## Emitted when Magicka amount changes
+signal magicka_changed(new_amount: int)
+
+## Emitted when run lives change
+signal run_lives_changed(current: int, maximum: int)
+
 ## Emitted when a challenge run starts
 signal challenge_run_started(modifiers: Dictionary)
 
