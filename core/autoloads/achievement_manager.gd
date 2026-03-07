@@ -201,25 +201,22 @@ func check_run_completion_achievements() -> void:
 
 func _check_exploration_achievements() -> void:
 	"""Checks exploration-related achievements"""
-	if not WorldManager:
-		return
-
 	# All Secrets
-	if not is_unlocked("all_secrets"):
+	if not is_unlocked("all_secrets") and WorldManager:
 		var progression = {}
 		if WorldManager.has_method("get_progression_data"):
 			progression = WorldManager.get_progression_data()
 		var secrets = progression.get("secrets_found", [])
-		# TODO: Define total secret count when all worlds are implemented
-		# For now, check if secrets_found is non-empty and matches expected count
-		pass
+		var total_secrets = progression.get("total_secrets", 0)
+		if total_secrets > 0 and secrets.size() >= total_secrets:
+			unlock_achievement("all_secrets")
 
-	# All Relics
-	if not is_unlocked("all_relics"):
-		if InventoryManager:
-			var relics = InventoryManager.inventory.get("relics", [])
-			# TODO: Define total relic count when all relics are implemented
-			pass
+	# All Relics - check owned relics against total available in database
+	if not is_unlocked("all_relics") and InventoryManager:
+		var owned_relics = InventoryManager.inventory.get("relics", [])
+		var total_relics = InventoryManager.item_database.get("relics", {}).size()
+		if total_relics > 0 and owned_relics.size() >= total_relics:
+			unlock_achievement("all_relics")
 
 # ============================================================================
 # EVENT HANDLERS

@@ -55,8 +55,11 @@ var _seal_lines: Control = null
 ## Description panel references
 var _desc_name_label: Label = null
 var _desc_category_label: Label = null
+var _desc_tiefe_label: Label = null
 var _desc_text_label: RichTextLabel = null
 var _seal_count_label: Label = null
+var _tiefe_label: Label = null
+var _tiefenstufe_label: Label = null
 var _schwellensicht_label: Label = null
 var _start_button: Button = null
 var _back_button: Button = null
@@ -160,12 +163,19 @@ func _build_description_panel(parent: Control) -> void:
 	_desc_category_label.add_theme_color_override("font_color", Color(0.5, 0.4, 0.6, 0.8))
 	vbox.add_child(_desc_category_label)
 
+	# Tiefe contribution label (per modifier)
+	_desc_tiefe_label = Label.new()
+	_desc_tiefe_label.text = ""
+	_desc_tiefe_label.add_theme_font_size_override("font_size", 13)
+	_desc_tiefe_label.add_theme_color_override("font_color", Color(0.5, 0.6, 0.8, 0.7))
+	vbox.add_child(_desc_tiefe_label)
+
 	var sep2 = HSeparator.new()
 	vbox.add_child(sep2)
 
 	# Description text
 	_desc_text_label = RichTextLabel.new()
-	_desc_text_label.text = "Aktiviere Knotenpunkte im Siegel, um den Albtraum zu vertiefen.\n\nJeder aktivierte Knoten verstärkt Murums Qual und bringt ihn näher an die Wahrheit seiner Versiegelung.\n\nAb 50%% aktiver Siegel erwacht die Schwellensicht."
+	_desc_text_label.text = "Aktiviere Knotenpunkte im Siegel, um den Albtraum zu vertiefen.\n\nJeder Knoten erzeugt Tiefe-Punkte. Je tiefer der Traum, desto näher ist Murum an der Wahrheit seiner Versiegelung.\n\nMyrkur- und Albtraum-Qualen erzeugen +3 Tiefe.\nUrgathon- und Voch Numta-Qualen erzeugen +2 Tiefe.\nKern- und Körper-Qualen erzeugen +1 Tiefe."
 	_desc_text_label.bbcode_enabled = false
 	_desc_text_label.scroll_active = false
 	_desc_text_label.fit_content = true
@@ -182,15 +192,31 @@ func _build_description_panel(parent: Control) -> void:
 	# Seal count
 	_seal_count_label = Label.new()
 	_seal_count_label.text = "Aktive Siegel: 0 / 33"
-	_seal_count_label.add_theme_font_size_override("font_size", 18)
+	_seal_count_label.add_theme_font_size_override("font_size", 16)
 	_seal_count_label.add_theme_color_override("font_color", Color(0.6, 0.5, 0.7, 1.0))
 	_seal_count_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(_seal_count_label)
 
+	# Tiefe display
+	_tiefe_label = Label.new()
+	_tiefe_label.text = "Tiefe: 0"
+	_tiefe_label.add_theme_font_size_override("font_size", 20)
+	_tiefe_label.add_theme_color_override("font_color", Color(0.5, 0.6, 0.9, 1.0))
+	_tiefe_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(_tiefe_label)
+
+	# Tiefenstufe display
+	_tiefenstufe_label = Label.new()
+	_tiefenstufe_label.text = "Der ruhige Traum"
+	_tiefenstufe_label.add_theme_font_size_override("font_size", 16)
+	_tiefenstufe_label.add_theme_color_override("font_color", Color(0.7, 0.6, 0.85, 0.9))
+	_tiefenstufe_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(_tiefenstufe_label)
+
 	# Schwellensicht indicator
 	_schwellensicht_label = Label.new()
 	_schwellensicht_label.text = "Schwellensicht aktiv"
-	_schwellensicht_label.add_theme_font_size_override("font_size", 16)
+	_schwellensicht_label.add_theme_font_size_override("font_size", 14)
 	_schwellensicht_label.add_theme_color_override("font_color", Color(0.7, 0.3, 1.0, 1.0))
 	_schwellensicht_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_schwellensicht_label.visible = false
@@ -425,11 +451,15 @@ func _update_description(modifier_id: String) -> void:
 	_desc_category_label.text = cat_info.get("name", category)
 	_desc_category_label.add_theme_color_override("font_color", cat_info.get("color", Color.WHITE).lerp(Color.WHITE, 0.3))
 
+	# Show depth point contribution
+	var tiefe_points = ChallengeRunManager.get_modifier_tiefe(modifier_id)
+	_desc_tiefe_label.text = "Tiefe: +%d" % tiefe_points
+
 	var status_text = "[AKTIV]" if is_active else "[INAKTIV]"
 	_desc_text_label.text = "%s\n\n%s" % [mod_data["description"], status_text]
 
 func _update_seal_count() -> void:
-	"""Updates the active seal counter and Schwellensicht indicator"""
+	"""Updates seal counter, Tiefe, Tiefenstufe, and Schwellensicht indicator"""
 	var active = ChallengeRunManager.get_active_count()
 	var total = ChallengeRunManager.get_max_delirium()
 	_seal_count_label.text = "Aktive Siegel: %d / %d" % [active, total]
@@ -441,9 +471,33 @@ func _update_seal_count() -> void:
 	else:
 		_seal_count_label.add_theme_color_override("font_color", Color(0.6, 0.5, 0.7, 1.0))
 
-	# Schwellensicht threshold check
-	var threshold = total * 0.5
-	_schwellensicht_label.visible = active >= threshold
+	# Tiefe display
+	var tiefe = ChallengeRunManager.get_tiefe()
+	var max_tiefe = ChallengeRunManager.get_max_tiefe()
+	_tiefe_label.text = "Tiefe: %d / %d" % [tiefe, max_tiefe]
+
+	# Color based on depth level
+	var stufe_index = ChallengeRunManager.get_tiefenstufe_index()
+	var tiefe_colors = [
+		Color(0.5, 0.6, 0.7, 1.0),    # 0: ruhig - grau
+		Color(0.5, 0.6, 0.9, 1.0),    # 1: flüstern - blau
+		Color(0.6, 0.4, 0.8, 1.0),    # 2: zerbrochen - lila
+		Color(0.4, 0.1, 0.6, 1.0),    # 3: myrkurs blick - dunkel-lila
+		Color(0.8, 0.2, 0.3, 1.0),    # 4: albtraum - rot
+		Color(0.3, 0.8, 0.6, 1.0),    # 5: urgathon - türkis
+		Color(0.9, 0.3, 1.0, 1.0),    # 6: versiegelte wahrheit - magenta
+	]
+	var tiefe_color = tiefe_colors[mini(stufe_index, tiefe_colors.size() - 1)]
+	_tiefe_label.add_theme_color_override("font_color", tiefe_color)
+
+	# Tiefenstufe name
+	var stufe_name = ChallengeRunManager.get_tiefenstufe_name()
+	_tiefenstufe_label.text = stufe_name
+	_tiefenstufe_label.add_theme_color_override("font_color", tiefe_color.lerp(Color.WHITE, 0.2))
+
+	# Schwellensicht threshold check (based on Tiefe now)
+	var threshold = max_tiefe * 0.5
+	_schwellensicht_label.visible = tiefe >= threshold
 
 func _on_start_pressed() -> void:
 	"""Starts the Siegel-Run"""
