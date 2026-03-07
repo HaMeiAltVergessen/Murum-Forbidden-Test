@@ -25,7 +25,8 @@ var challenge_menu_instance: Node = null
 
 # Constants
 const TEST_ROOM_PATH = "res://levels/test_room.tscn"
-const WORLD_1_ENTRY_PATH = "res://worlds/world_1_ruins/section_1_entrance/room_01_entry.tscn"  # UPDATED for section-based structure - COMMIT 018
+const WORLD_1_ENTRY_PATH = "res://worlds/world_1_ruins/section_1_entrance/room_01_entry.tscn"
+const LIMBUS_PATH = "res://worlds/limbus/limbus.tscn"
 const MUSIC_FADE_DURATION = 1.0  # Sekunden
 
 
@@ -210,11 +211,17 @@ func _start_new_game():
 		SaveManager.delete_current_save()
 		print("[MainMenu] Old save deleted for fresh start")
 
-	# Set WorldManager to starting room BEFORE creating save
+	# Set WorldManager to Limbus
 	if WorldManager:
-		WorldManager.current_world = "world_1_ruins"
-		WorldManager.current_room = "room_01_entry"
-		print("[MainMenu] WorldManager preset to room_01_entry")
+		WorldManager.current_world = "limbus"
+		WorldManager.current_room = "limbus"
+		print("[MainMenu] WorldManager preset to limbus")
+
+	# Reset RunManager for fresh start
+	if RunManager:
+		RunManager.magicka = 0
+		RunManager.max_lives = RunManager.BASE_LIVES
+		RunManager.current_state = RunManager.RunState.IDLE
 
 	# Create new save file with correct room data
 	SaveManager.create_new_save()
@@ -238,9 +245,10 @@ func _start_new_game():
 		tween.tween_callback(music_player.stop)
 		print("[MainMenu] Music fading out...")
 
-	# Start new game via GameManager (plays intro cutscene first)
-	print("[MainMenu] Calling GameManager.start_new_game()")
-	GameManager.start_new_game()
+	# Load Limbus hub directly
+	print("[MainMenu] Loading Limbus hub")
+	GameManager.current_state = GameManager.GameState.PLAYING
+	get_tree().change_scene_to_file(LIMBUS_PATH)
 
 
 func _start_game(scene_path: String):

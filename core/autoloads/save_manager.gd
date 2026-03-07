@@ -534,6 +534,13 @@ func _apply_save_data(save_data: Dictionary) -> void:
 	var saved_world = player_data.get("current_world", "world_1_ruins")
 	var saved_room = player_data.get("current_room", "room_01_entry")
 
+	# Handle Limbus hub directly
+	if saved_world == "limbus":
+		print("[SaveManager] Loading Limbus hub")
+		get_tree().change_scene_to_file("res://worlds/limbus/limbus.tscn")
+		print("[SaveManager] Stored player data for application after scene load")
+		return
+
 	# Build full path for section-based structure (COMMIT 019d FIX)
 	# If saved_room doesn't contain "/", it's a legacy simple room name
 	# Construct full path: worlds/{world}/{section}/{room}
