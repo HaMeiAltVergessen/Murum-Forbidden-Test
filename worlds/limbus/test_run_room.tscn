@@ -1,0 +1,150 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://worlds/limbus/test_run_room.gd" id="1_room"]
+[ext_resource type="Script" path="res://environment/spawn_point.gd" id="2_spawn"]
+[ext_resource type="Script" path="res://worlds/limbus/run_death_zone.gd" id="3_deathzone"]
+[ext_resource type="Script" path="res://environment/pickups/magicka_pickup.gd" id="4_magicka"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
+size = Vector2(1920, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall"]
+size = Vector2(40, 800)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_deathzone"]
+size = Vector2(1920, 100)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_magicka"]
+radius = 40.0
+
+[node name="TestRunRoom" type="Node2D"]
+script = ExtResource("1_room")
+
+[node name="Background" type="ColorRect" parent="."]
+z_index = -10
+offset_left = -200.0
+offset_top = -1200.0
+offset_right = 2120.0
+offset_bottom = 1000.0
+color = Color(0.05, 0.04, 0.07, 1)
+
+[node name="Ground" type="StaticBody2D" parent="."]
+position = Vector2(960, 720)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="GroundVisual" type="ColorRect" parent="Ground"]
+offset_left = -960.0
+offset_top = -20.0
+offset_right = 960.0
+offset_bottom = 20.0
+color = Color(0.15, 0.12, 0.18, 1)
+
+[node name="Platform" type="StaticBody2D" parent="."]
+position = Vector2(960, 550)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform"]
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="PlatformVisual" type="ColorRect" parent="Platform"]
+offset_left = -300.0
+offset_top = -15.0
+offset_right = 300.0
+offset_bottom = 15.0
+color = Color(0.2, 0.16, 0.25, 1)
+
+[node name="WallLeft" type="StaticBody2D" parent="."]
+position = Vector2(-20, 300)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="WallRight" type="StaticBody2D" parent="."]
+position = Vector2(1940, 300)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="Default" type="Marker2D" parent="SpawnPoints"]
+position = Vector2(300, 680)
+gizmo_extents = 16.0
+script = ExtResource("2_spawn")
+spawn_id = "default"
+
+[node name="DeathZone" type="Area2D" parent="."]
+position = Vector2(960, 850)
+script = ExtResource("3_deathzone")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathZone"]
+shape = SubResource("RectangleShape2D_deathzone")
+
+[node name="DeathZoneVisual" type="ColorRect" parent="DeathZone"]
+z_index = -1
+offset_left = -960.0
+offset_top = -50.0
+offset_right = 960.0
+offset_bottom = 50.0
+color = Color(0.8, 0.1, 0.1, 0.6)
+
+[node name="DeathZoneLabel" type="Label" parent="DeathZone"]
+offset_left = -120.0
+offset_top = -20.0
+offset_right = 120.0
+offset_bottom = 20.0
+text = "TOD"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MagickaPickup" type="Area2D" parent="."]
+position = Vector2(960, 490)
+script = ExtResource("4_magicka")
+amount = 1
+pickup_id = "test_run_room/magicka_01"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MagickaPickup"]
+shape = SubResource("CircleShape2D_magicka")
+
+[node name="Visual" type="ColorRect" parent="MagickaPickup"]
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+color = Color(0.3, 0.9, 0.9, 1)
+
+[node name="GlowRect" type="ColorRect" parent="MagickaPickup"]
+offset_left = -30.0
+offset_top = -30.0
+offset_right = 30.0
+offset_bottom = 30.0
+color = Color(0.1, 0.5, 0.6, 0.4)
+
+[node name="PromptLabel" type="Label" parent="MagickaPickup"]
+visible = false
+offset_left = -80.0
+offset_top = -55.0
+offset_right = 80.0
+offset_bottom = -30.0
+text = "E - Magicka"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MagickaLabel" type="Label" parent="MagickaPickup"]
+offset_left = -40.0
+offset_top = -20.0
+offset_right = 40.0
+offset_bottom = 20.0
+text = "M"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RoomLabel" type="Label" parent="."]
+offset_left = 700.0
+offset_top = 50.0
+offset_right = 1200.0
+offset_bottom = 90.0
+text = "[TESTRAUM] Deathbox = Rot | Magicka = Cyan"
+horizontal_alignment = 1
+vertical_alignment = 1
