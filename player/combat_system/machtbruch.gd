@@ -326,6 +326,10 @@ func _execute_explosion(tier: BurstTier) -> void:
 			radius = STRONG_RADIUS
 			trauma = STRONG_CAMERA_TRAUMA
 
+	# Apply Urgathons Erbe ability damage bonus
+	if UpgradeManager and UpgradeManager.get_ability_damage_multiplier() > 1.0:
+		damage = int(damage * UpgradeManager.get_ability_damage_multiplier())
+
 	# Play SFX
 	AudioManager.play_sfx("ability_machtbruch", 0.15)
 

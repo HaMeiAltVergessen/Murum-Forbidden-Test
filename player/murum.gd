@@ -96,6 +96,9 @@ func _connect_signals() -> void:
 		EventBus.relic_equipped.connect(_on_relic_equipped)
 		EventBus.relic_unequipped.connect(_on_relic_unequipped)
 
+		# Blut der Schlacht: heal on enemy kill
+		EventBus.enemy_died.connect(_on_enemy_died_kill_heal)
+
 
 func _register_with_game_manager() -> void:
 	"""Registers this player with the GameManager"""
@@ -227,6 +230,31 @@ func _on_relic_unequipped(_relic_id: String, stats: Dictionary) -> void:
 
 	print("[Murum] Relic unequipped - Damage bonus: ", relic_damage_bonus,
 		  " Attack speed: ", relic_attack_speed_bonus)
+
+
+# ============ BLUT DER SCHLACHT (Kill Heal) ============
+func _on_enemy_died_kill_heal(_enemy: Node, _position: Vector2) -> void:
+	"""Heals mana/HP on enemy kill (Blut der Schlacht upgrade)"""
+	if not UpgradeManager:
+		return
+
+	var heal_data = UpgradeManager.get_kill_heal_data()
+	if heal_data.is_empty():
+		return
+
+	var mana_amount: int = 5
+	var hp_amount: int = 3
+	if heal_data.get("kill_heal_bonus", false):
+		mana_amount = 10
+		hp_amount = 6
+
+	if heal_data.get("kill_heal_mana", false) and mana_component:
+		mana_component.restore_mana(mana_amount)
+		print("[Murum] Blut der Schlacht: +%d Mana" % mana_amount)
+
+	if heal_data.get("kill_heal_hp", false) and health_component:
+		health_component.heal(hp_amount)
+		print("[Murum] Blut der Schlacht: +%d HP" % hp_amount)
 
 
 # ============ VISUAL FEEDBACK ============

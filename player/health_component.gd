@@ -24,6 +24,13 @@ signal invulnerability_ended()
 
 
 func _ready() -> void:
+	# Apply Erwachende Essenz HP bonus (player only)
+	if owner is Murum and UpgradeManager:
+		var hp_mult = UpgradeManager.get_hp_multiplier()
+		if hp_mult > 1.0:
+			max_health = int(max_health * hp_mult)
+			print("[HealthComponent] Erwachende Essenz: max_health = %d (x%.2f)" % [max_health, hp_mult])
+
 	current_health = max_health
 
 	# Create invulnerability timer
@@ -55,6 +62,13 @@ func take_damage(damage: int) -> bool:
 	if block_active:
 		final_damage = int(damage * (1.0 - block_reduction))
 		print("[HealthComponent] Blocked! Reduced damage: %d → %d (%.0f%% reduction)" % [damage, final_damage, block_reduction * 100])
+
+	# Apply Erinnerung der Voch Numta damage reduction (player only)
+	if owner is Murum and UpgradeManager:
+		var dr = UpgradeManager.get_damage_reduction()
+		if dr > 0.0:
+			final_damage = int(final_damage * (1.0 - dr))
+			print("[HealthComponent] Voch Numta: damage reduced to %d (%.0f%% DR)" % [final_damage, dr * 100])
 
 	current_health = max(0, current_health - final_damage)
 
@@ -140,10 +154,15 @@ func _on_attack_blocked(enemy: Node, reduction: float) -> void:
 
 func _on_perfect_parry(enemy: Node) -> void:
 	"""Called when perfect parry is executed - grants brief invulnerability"""
-	# Perfect parry grants brief invulnerability to prevent damage
 	is_invulnerable = true
-	print("[HealthComponent] Perfect parry invulnerability activated!")
 
-	# Clear after very brief window
-	await get_tree().create_timer(0.1).timeout
+	# Erinnerung der Voch Numta level 2: extended perfect block immunity
+	var immunity_duration: float = 0.1
+	if owner is Murum and UpgradeManager and UpgradeManager.has_perfect_block_immunity():
+		immunity_duration = 0.5
+		print("[HealthComponent] Voch Numta: extended perfect block immunity (0.5s)")
+	else:
+		print("[HealthComponent] Perfect parry invulnerability activated!")
+
+	await get_tree().create_timer(immunity_duration).timeout
 	is_invulnerable = false

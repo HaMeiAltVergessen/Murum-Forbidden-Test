@@ -542,6 +542,11 @@ func _on_impact() -> void:
 
 	# Calculate stats based on charge level
 	var damage = charge_level * BASE_DAMAGE_PER_LEVEL
+
+	# Apply Urgathons Erbe ability damage bonus
+	if UpgradeManager and UpgradeManager.get_ability_damage_multiplier() > 1.0:
+		damage = int(damage * UpgradeManager.get_ability_damage_multiplier())
+
 	var knockback = charge_level * BASE_KNOCKBACK_PER_LEVEL
 	var radius = charge_level * BASE_RADIUS_PER_LEVEL
 	var trauma = charge_level * CAMERA_TRAUMA_PER_LEVEL

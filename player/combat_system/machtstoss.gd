@@ -355,6 +355,10 @@ func _execute_knockback_wave(stage_params: Dictionary) -> void:
 	var knockback_range = stage_params.range
 	var damage = stage_params.damage
 
+	# Apply Urgathons Erbe ability damage bonus
+	if UpgradeManager and UpgradeManager.get_ability_damage_multiplier() > 1.0:
+		damage = int(damage * UpgradeManager.get_ability_damage_multiplier())
+
 	print("[Machtstoß] Stage %d wave (%.0fpx range, %d damage, facing: %s)" % [
 		current_stage,
 		knockback_range,

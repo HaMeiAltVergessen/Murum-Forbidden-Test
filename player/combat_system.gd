@@ -126,9 +126,15 @@ func _perform_attack() -> void:
 	combo_timer = combo_window
 	attack_timer = attack_durations[current_combo - 1]
 
-	# Update hitbox damage
+	# Update hitbox damage (apply Geschärfter Wille bonus)
+	var base_damage: int = attack_damages[current_combo - 1]
+	var final_attack_damage: int = base_damage
+	if player is Murum and UpgradeManager:
+		var dmg_mult = UpgradeManager.get_damage_multiplier()
+		if dmg_mult > 1.0:
+			final_attack_damage = int(base_damage * dmg_mult)
 	if hitbox.has_method("set_damage"):
-		hitbox.set_damage(attack_damages[current_combo - 1])
+		hitbox.set_damage(final_attack_damage)
 
 	# Activate hitbox
 	_activate_hitbox()
@@ -152,7 +158,13 @@ func _perform_attack() -> void:
 	# Animate staff
 	_animate_staff_attack(current_combo)
 
-	print("[CombatSystem] Attack ", current_combo, " - Damage: ", attack_damages[current_combo - 1])
+	print("[CombatSystem] Attack ", current_combo, " - Damage: ", final_attack_damage)
+
+	# Echo der Macht: chance for an echo hit after attack
+	if player is Murum and UpgradeManager:
+		var echo_chance = UpgradeManager.get_echo_chance()
+		if echo_chance > 0.0 and randf() < echo_chance:
+			_trigger_echo_hit(final_attack_damage)
 
 
 func _update_attack_timer(delta: float) -> void:
@@ -474,6 +486,34 @@ func _update_staff_tip_color(attack_num: int) -> void:
 	# Animate color change
 	var tween = create_tween()
 	tween.tween_property(staff_top, "color", tip_color, 0.1)
+
+
+# ============ ECHO DER MACHT ============
+func _trigger_echo_hit(base_damage: int) -> void:
+	"""Triggers an echo hit after a short delay (Echo der Macht upgrade)"""
+	var echo_damage: int = int(base_damage * 0.5)
+	if UpgradeManager.has_echo_strong():
+		echo_damage = base_damage
+	print("[CombatSystem] Echo der Macht! Extra hit for %d damage" % echo_damage)
+
+	# Brief delay then reactivate hitbox
+	await get_tree().create_timer(0.1).timeout
+	if not is_instance_valid(hitbox):
+		return
+
+	if hitbox.has_method("set_damage"):
+		hitbox.set_damage(echo_damage)
+	_activate_hitbox()
+
+	# AoE echo: increase hitbox range briefly
+	if UpgradeManager.has_echo_aoe():
+		hitbox.scale *= 1.5
+
+	await get_tree().create_timer(0.1).timeout
+	if is_instance_valid(hitbox):
+		if UpgradeManager.has_echo_aoe():
+			hitbox.scale /= 1.5
+		_deactivate_hitbox()
 
 
 # ============ GETTERS ============

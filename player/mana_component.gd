@@ -84,7 +84,13 @@ func _regenerate_mana(delta: float) -> void:
 	if current_mana >= max_mana:
 		return
 
-	var regen_amount: float = regeneration_rate * delta
+	var effective_regen: float = regeneration_rate
+
+	# Apply Urgathons Erbe mana regen bonus (player only)
+	if owner is Murum and UpgradeManager:
+		effective_regen *= UpgradeManager.get_mana_regen_multiplier()
+
+	var regen_amount: float = effective_regen * delta
 	current_mana = min(max_mana, current_mana + int(regen_amount))
 	mana_changed.emit(current_mana, max_mana)
 
