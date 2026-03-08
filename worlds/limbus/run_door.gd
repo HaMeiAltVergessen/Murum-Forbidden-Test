@@ -48,7 +48,15 @@ func _start_run() -> void:
 	if RunManager.is_run_active():
 		return
 
-	print("[RunDoor] Starting run!")
+	# Activate challenge run if seals are configured
+	var active_seals = ChallengeRunManager.get_active_count()
+	if active_seals > 0:
+		ChallengeRunManager.start_challenge_run()
+		print("[RunDoor] Starting run with %d active seals (Tiefe: %d)" % [
+			active_seals, ChallengeRunManager.get_tiefe()
+		])
+	else:
+		print("[RunDoor] Starting run without seals")
 
 	# Start the run
 	RunManager.start_run()

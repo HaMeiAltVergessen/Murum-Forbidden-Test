@@ -408,6 +408,9 @@ func _on_challenge_back_pressed():
 	"""Returns from challenge menu to main menu"""
 	print("[MainMenu] ========== RETURNING FROM CHALLENGE MENU ==========")
 
+	# Reset seals when leaving from main menu context
+	ChallengeRunManager._reset_modifiers()
+
 	if challenge_menu_instance:
 		challenge_menu_instance.queue_free()
 		challenge_menu_instance = null

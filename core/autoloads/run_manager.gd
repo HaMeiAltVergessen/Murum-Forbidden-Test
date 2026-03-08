@@ -64,6 +64,13 @@ func end_run(victory: bool) -> void:
 		victory, run_rooms_completed, run_enemies_killed
 	])
 
+	# End challenge run if active
+	if ChallengeRunManager and ChallengeRunManager.is_challenge_run_active:
+		if victory:
+			ChallengeRunManager.complete_challenge_run()
+		else:
+			ChallengeRunManager.end_challenge_run()
+
 	# Return to Limbus
 	_return_to_limbus()
 

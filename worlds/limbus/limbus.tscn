@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://worlds/limbus/limbus.gd" id="1_limbus"]
 [ext_resource type="Script" path="res://worlds/limbus/run_door.gd" id="2_rundoor"]
 [ext_resource type="Script" path="res://environment/spawn_point.gd" id="3_spawn"]
+[ext_resource type="Script" path="res://worlds/limbus/siegel_altar.gd" id="4_altar"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1920, 40)
@@ -15,6 +16,9 @@ size = Vector2(40, 800)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_right"]
 size = Vector2(40, 800)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_altar"]
+size = Vector2(120, 160)
 
 [node name="Limbus" type="Node2D"]
 script = ExtResource("1_limbus")
@@ -59,6 +63,42 @@ position = Vector2(400, 660)
 gizmo_extents = 16.0
 script = ExtResource("3_spawn")
 spawn_id = "default"
+
+[node name="SiegelAltar" type="Area2D" parent="."]
+position = Vector2(960, 580)
+collision_mask = 2
+script = ExtResource("4_altar")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SiegelAltar"]
+position = Vector2(0, -40)
+shape = SubResource("RectangleShape2D_altar")
+debug_color = Color(0.5, 0.2, 0.8, 0.3)
+
+[node name="AltarVisual" type="ColorRect" parent="SiegelAltar"]
+offset_left = -40.0
+offset_top = -120.0
+offset_right = 40.0
+offset_bottom = 10.0
+color = Color(0.3, 0.1, 0.5, 0.9)
+
+[node name="AltarLabel" type="Label" parent="SiegelAltar"]
+offset_left = -60.0
+offset_top = -150.0
+offset_right = 60.0
+offset_bottom = -125.0
+text = "Siegel"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PromptLabel" type="Label" parent="SiegelAltar"]
+visible = false
+offset_left = -100.0
+offset_top = 20.0
+offset_right = 100.0
+offset_bottom = 45.0
+text = "E - Siegel einstellen"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="RunDoor" type="Area2D" parent="."]
 position = Vector2(1500, 580)

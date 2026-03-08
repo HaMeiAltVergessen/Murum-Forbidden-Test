@@ -506,6 +506,5 @@ func _on_start_pressed() -> void:
 	print("[SiegelMenu] Siegel-Run gestartet! Aktive Siegel: %d" % ChallengeRunManager.get_active_count())
 
 func _on_back_pressed() -> void:
-	"""Returns to main menu"""
-	ChallengeRunManager._reset_modifiers()
+	"""Returns to parent (main menu or Limbus altar)"""
 	back_pressed.emit()
