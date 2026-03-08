@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://cchallenge_menu_001"]
+[gd_scene load_steps=2 format=3 uid="uid://cid1rmho48451"]
 
-[ext_resource type="Script" path="res://ui/menus/challenge_run_menu.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://bcyvs8uohwwkg" path="res://ui/menus/challenge_run_menu.gd" id="1_script"]
 
 [node name="ChallengeRunMenu" type="CanvasLayer"]
-layer = 10
 process_mode = 3
+layer = 10
 script = ExtResource("1_script")

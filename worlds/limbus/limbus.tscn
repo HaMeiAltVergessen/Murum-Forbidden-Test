@@ -1,16 +1,13 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=12 format=3 uid="uid://bah2edmcousko"]
 
-[ext_resource type="Script" path="res://worlds/limbus/limbus.gd" id="1_limbus"]
-[ext_resource type="Script" path="res://worlds/limbus/run_door.gd" id="2_rundoor"]
-[ext_resource type="Script" path="res://environment/spawn_point.gd" id="3_spawn"]
-[ext_resource type="Script" path="res://worlds/limbus/siegel_altar.gd" id="4_altar"]
-[ext_resource type="Script" path="res://worlds/limbus/limbus_merchant.gd" id="5_merchant"]
+[ext_resource type="Script" uid="uid://bihmtgwqw80w2" path="res://worlds/limbus/limbus.gd" id="1_limbus"]
+[ext_resource type="Script" uid="uid://cyw8mcann7l1b" path="res://worlds/limbus/run_door.gd" id="2_rundoor"]
+[ext_resource type="Script" uid="uid://bjksvnjjv0vh8" path="res://environment/spawn_point.gd" id="3_spawn"]
+[ext_resource type="Script" uid="uid://pkbhpy61h44r" path="res://worlds/limbus/siegel_altar.gd" id="4_altar"]
+[ext_resource type="Script" uid="uid://ccnf5ogjvrl2h" path="res://worlds/limbus/limbus_merchant.gd" id="5_merchant"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1920, 40)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_interaction"]
-size = Vector2(150, 200)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_left"]
 size = Vector2(40, 800)
@@ -18,11 +15,14 @@ size = Vector2(40, 800)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_right"]
 size = Vector2(40, 800)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_merchant"]
+size = Vector2(120, 160)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_altar"]
 size = Vector2(120, 160)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_merchant"]
-size = Vector2(120, 160)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_interaction"]
+size = Vector2(150, 200)
 
 [node name="Limbus" type="Node2D"]
 script = ExtResource("1_limbus")
@@ -66,10 +66,9 @@ shape = SubResource("RectangleShape2D_wall_right")
 position = Vector2(200, 660)
 gizmo_extents = 16.0
 script = ExtResource("3_spawn")
-spawn_id = "default"
 
 [node name="Merchant" type="Area2D" parent="."]
-position = Vector2(600, 580)
+position = Vector2(537, 661)
 collision_mask = 2
 script = ExtResource("5_merchant")
 
@@ -105,7 +104,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="SiegelAltar" type="Area2D" parent="."]
-position = Vector2(960, 580)
+position = Vector2(963, 658)
 collision_mask = 2
 script = ExtResource("4_altar")
 
@@ -141,7 +140,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="RunDoor" type="Area2D" parent="."]
-position = Vector2(1500, 580)
+position = Vector2(1504, 646)
 collision_mask = 2
 script = ExtResource("2_rundoor")
 

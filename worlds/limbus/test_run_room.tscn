@@ -1,9 +1,9 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3 uid="uid://dbkrncv56bf1p"]
 
-[ext_resource type="Script" path="res://worlds/limbus/test_run_room.gd" id="1_room"]
-[ext_resource type="Script" path="res://environment/spawn_point.gd" id="2_spawn"]
-[ext_resource type="Script" path="res://worlds/limbus/run_death_zone.gd" id="3_deathzone"]
-[ext_resource type="Script" path="res://environment/pickups/magicka_pickup.gd" id="4_magicka"]
+[ext_resource type="Script" uid="uid://cv86o7mwkmtpo" path="res://worlds/limbus/test_run_room.gd" id="1_room"]
+[ext_resource type="Script" uid="uid://bjksvnjjv0vh8" path="res://environment/spawn_point.gd" id="2_spawn"]
+[ext_resource type="Script" uid="uid://crb4hgbdarrc0" path="res://worlds/limbus/run_death_zone.gd" id="3_deathzone"]
+[ext_resource type="Script" uid="uid://ptu70s0aqgtu" path="res://environment/pickups/magicka_pickup.gd" id="4_magicka"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1920, 40)
@@ -72,10 +72,9 @@ shape = SubResource("RectangleShape2D_wall")
 position = Vector2(300, 680)
 gizmo_extents = 16.0
 script = ExtResource("2_spawn")
-spawn_id = "default"
 
 [node name="DeathZone" type="Area2D" parent="."]
-position = Vector2(960, 850)
+position = Vector2(939, 233)
 script = ExtResource("3_deathzone")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DeathZone"]
@@ -101,7 +100,6 @@ vertical_alignment = 1
 [node name="MagickaPickup" type="Area2D" parent="."]
 position = Vector2(960, 490)
 script = ExtResource("4_magicka")
-amount = 1
 pickup_id = "test_run_room/magicka_01"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MagickaPickup"]

@@ -14,7 +14,7 @@ signal back_pressed()
 # CONSTANTS
 # ============================================================================
 
-const SEAL_CENTER := Vector2(1250, 400)
+const SEAL_CENTER := Vector2(450, 400)
 const SEAL_OUTER_RADIUS := 320.0
 const SEAL_MIDDLE_RADIUS := 220.0
 const SEAL_INNER_RADIUS := 130.0
