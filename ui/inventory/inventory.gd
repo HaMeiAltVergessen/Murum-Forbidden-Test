@@ -40,6 +40,9 @@ const TAB_GRID_COLUMNS = {
 # Detail panel
 @onready var detail_panel: PanelContainer = $InventoryPanel/MainContainer/ContentContainer/DetailPanel
 
+# Magicka display
+@onready var magicka_label: Label = $InventoryPanel/MainContainer/ContentContainer/GridPanel/MarginContainer/MagickaDisplay
+
 # Confirmation popup
 @onready var confirmation_popup: PopupPanel = $ConfirmationPopup
 @onready var popup_label: Label = $ConfirmationPopup/MarginContainer/VBoxContainer/QuestionLabel
@@ -87,6 +90,10 @@ func _ready() -> void:
 		print("[Inventory] Connected to P1 and P2 inventory signals")
 	else:
 		push_error("[Inventory] InventoryManager not available at _ready()")
+
+	# Connect Magicka signal
+	if RunManager:
+		RunManager.magicka_changed.connect(_on_magicka_changed)
 
 	print("[Inventory] Initialized (Autoload)")
 
@@ -300,6 +307,9 @@ func open_inventory(player: int = 1) -> void:
 	print("  Relics: ", InventoryManager.get_items_by_category("relics"))
 	print("  Key Items: ", InventoryManager.get_items_by_category("key_items"))
 
+	# Update Magicka display
+	_update_magicka_display()
+
 	# Refresh all tabs BEFORE switching (to populate data)
 	_refresh_all_tabs()
 
@@ -490,3 +500,12 @@ func _on_confirm_no() -> void:
 	"""Handles 'No' in confirmation popup"""
 	confirmation_popup.hide()
 	pending_use_item = {}
+
+
+func _update_magicka_display() -> void:
+	if magicka_label and RunManager:
+		magicka_label.text = "Magicka: %d" % RunManager.get_magicka()
+
+
+func _on_magicka_changed(_new_amount: int) -> void:
+	_update_magicka_display()
