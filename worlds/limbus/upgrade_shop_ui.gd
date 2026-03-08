@@ -11,9 +11,14 @@ const COLOR_MAGICKA := Color(0.3, 0.9, 0.9, 1.0)
 const COLOR_MAXED := Color(0.4, 0.8, 0.3, 1.0)
 const COLOR_LOCKED := Color(0.5, 0.4, 0.4, 0.6)
 const COLOR_LORE := Color(0.6, 0.5, 0.7, 0.7)
+const COLOR_LIVES := Color(1.0, 0.4, 0.4, 1.0)
+
+# ============ LIVES SHOP ============
+const EXTRA_LIFE_COST: int = 2
 
 # ============ STATE ============
 var _upgrade_entries: Dictionary = {}
+var _lives_entry: Dictionary = {}
 var _magicka_label: Label = null
 var _detail_panel: Dictionary = {}
 
@@ -82,6 +87,9 @@ func _build_ui() -> void:
 	var upgrade_ids = UpgradeManager.UPGRADES.keys()
 	for upgrade_id in upgrade_ids:
 		_build_upgrade_entry(list, upgrade_id)
+
+	# Extra Lives entry
+	_build_lives_entry(list)
 
 	# Detail panel (right side)
 	_build_detail_panel(main)
@@ -155,6 +163,54 @@ func _build_upgrade_entry(parent: Control, upgrade_id: String) -> void:
 	}
 
 	_update_entry(upgrade_id)
+
+
+func _build_lives_entry(parent: Control) -> void:
+	var entry = PanelContainer.new()
+	var style = StyleBoxFlat.new()
+	style.bg_color = COLOR_PANEL
+	style.border_color = COLOR_LIVES.lerp(COLOR_BORDER, 0.5)
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(6)
+	style.set_content_margin_all(12)
+	entry.add_theme_stylebox_override("panel", style)
+	parent.add_child(entry)
+
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 16)
+	entry.add_child(hbox)
+
+	var info_vbox = VBoxContainer.new()
+	info_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hbox.add_child(info_vbox)
+
+	var name_label = Label.new()
+	name_label.text = "Zusaetzliches Leben"
+	name_label.add_theme_font_size_override("font_size", 18)
+	name_label.add_theme_color_override("font_color", COLOR_LIVES)
+	info_vbox.add_child(name_label)
+
+	var level_label = Label.new()
+	level_label.add_theme_font_size_override("font_size", 14)
+	info_vbox.add_child(level_label)
+
+	var buy_btn = Button.new()
+	buy_btn.custom_minimum_size = Vector2(160, 40)
+	hbox.add_child(buy_btn)
+	buy_btn.pressed.connect(_on_buy_life_pressed)
+
+	entry.mouse_entered.connect(_show_lives_detail)
+	buy_btn.focus_entered.connect(_show_lives_detail)
+
+	_lives_entry = {
+		"entry": entry,
+		"name_label": name_label,
+		"level_label": level_label,
+		"buy_btn": buy_btn,
+		"style": style
+	}
+
+	_update_lives_entry()
 
 
 func _build_detail_panel(parent: Control) -> void:
@@ -246,9 +302,36 @@ func _update_entry(upgrade_id: String) -> void:
 		entry_data["style"].border_color = COLOR_BORDER
 
 
+func _update_lives_entry() -> void:
+	if _lives_entry.is_empty():
+		return
+
+	var current_max = RunManager.max_lives
+	var is_max = current_max >= RunManager.MAX_LIVES
+
+	_lives_entry["level_label"].text = "Leben: %d / %d" % [current_max, RunManager.MAX_LIVES]
+
+	if is_max:
+		_lives_entry["level_label"].add_theme_color_override("font_color", COLOR_MAXED)
+		_lives_entry["name_label"].add_theme_color_override("font_color", COLOR_MAXED)
+		_lives_entry["buy_btn"].text = "MAX"
+		_lives_entry["buy_btn"].disabled = true
+		_lives_entry["style"].border_color = COLOR_MAXED.lerp(COLOR_BORDER, 0.5)
+	else:
+		_lives_entry["level_label"].add_theme_color_override("font_color", Color(0.6, 0.6, 0.7, 1.0))
+		var can_afford = RunManager.get_magicka() >= EXTRA_LIFE_COST
+		_lives_entry["buy_btn"].text = "%d Magicka" % EXTRA_LIFE_COST
+		_lives_entry["buy_btn"].disabled = not can_afford
+		if can_afford:
+			_lives_entry["buy_btn"].add_theme_color_override("font_color", COLOR_MAGICKA)
+		else:
+			_lives_entry["buy_btn"].add_theme_color_override("font_color", COLOR_LOCKED)
+
+
 func _update_all_entries() -> void:
 	for upgrade_id in _upgrade_entries:
 		_update_entry(upgrade_id)
+	_update_lives_entry()
 
 
 func _update_magicka_display() -> void:
@@ -296,6 +379,38 @@ func _on_buy_pressed(upgrade_id: String) -> void:
 		_update_all_entries()
 		_update_magicka_display()
 		_show_detail(upgrade_id)
+
+
+func _show_lives_detail() -> void:
+	var current_max = RunManager.max_lives
+	_detail_panel["name"].text = "Zusaetzliches Leben"
+	_detail_panel["lore"].text = "Ein weiteres Leben fuer den naechsten Run. Mehr Chancen, den Limbus zu ueberleben."
+
+	var text = ""
+	for i in range(1, RunManager.MAX_LIVES + 1):
+		if i <= current_max:
+			text += "[Aktiv] Leben %d\n\n" % i
+		elif i == current_max + 1:
+			text += "[Naechstes] Leben %d (%d Magicka)\n\n" % [i, EXTRA_LIFE_COST]
+		else:
+			text += "[Leben %d] (%d Magicka)\n\n" % [i, EXTRA_LIFE_COST]
+
+	_detail_panel["effects"].text = text
+
+
+func _on_buy_life_pressed() -> void:
+	if RunManager.max_lives >= RunManager.MAX_LIVES:
+		return
+	if not RunManager.spend_magicka(EXTRA_LIFE_COST):
+		return
+
+	RunManager.set_max_lives(RunManager.max_lives + 1)
+	EventBus.show_notification.emit(
+		"Zusaetzliches Leben freigeschaltet! (%d/%d)" % [RunManager.max_lives, RunManager.MAX_LIVES], 3.0
+	)
+	_update_all_entries()
+	_update_magicka_display()
+	_show_lives_detail()
 
 
 func _on_magicka_changed(_new_amount: int) -> void:
