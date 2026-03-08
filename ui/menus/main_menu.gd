@@ -223,6 +223,10 @@ func _start_new_game():
 		RunManager.max_lives = RunManager.BASE_LIVES
 		RunManager.current_state = RunManager.RunState.IDLE
 
+	# Reset UpgradeManager for fresh start
+	if UpgradeManager:
+		UpgradeManager.reset_all()
+
 	# Create new save file with correct room data
 	SaveManager.create_new_save()
 	print("[MainMenu] New save created")

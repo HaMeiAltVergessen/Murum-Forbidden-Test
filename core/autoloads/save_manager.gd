@@ -251,7 +251,8 @@ func _gather_save_data(slot_index: int) -> Dictionary:
 		"statistics_full": _gather_statistics_full(),
 		"achievements": _gather_achievements_data(),
 		"challenge_run": _gather_challenge_run_data(),
-		"run_manager": _gather_run_manager_data()
+		"run_manager": _gather_run_manager_data(),
+		"upgrades": _gather_upgrade_data()
 	}
 
 	print("[SaveManager] Save data gathered successfully")
@@ -422,6 +423,12 @@ func _gather_run_manager_data() -> Dictionary:
 		return RunManager.get_save_data()
 	return {"magicka": 0, "max_lives": 1}
 
+func _gather_upgrade_data() -> Dictionary:
+	"""Gathers UpgradeManager persistent data"""
+	if UpgradeManager:
+		return UpgradeManager.get_save_data()
+	return {"upgrade_levels": {}}
+
 # ============================================================================
 # LOAD GAME
 # ============================================================================
@@ -528,6 +535,11 @@ func _apply_save_data(save_data: Dictionary) -> void:
 	var run_manager_data = save_data.get("run_manager", {})
 	if RunManager:
 		RunManager.load_from_save(run_manager_data)
+
+	# Restore UpgradeManager data
+	var upgrade_data = save_data.get("upgrades", {})
+	if UpgradeManager:
+		UpgradeManager.load_from_save(upgrade_data)
 
 	# Get saved room data
 	var player_data = save_data.get("player", {})
