@@ -99,6 +99,9 @@ func select_map_node(node_id: int) -> void:
 	node_selected.emit(node)
 	print("[RunManager] Node selected: %d (%s)" % [node.id, node.get_type_name()])
 
+	# Load the room for this node
+	_load_node_room(node)
+
 
 func complete_current_node() -> void:
 	"""Called when the player finishes the current node (cleared room, etc.)"""
@@ -115,10 +118,44 @@ func complete_current_node() -> void:
 		end_run(true)
 		return
 
+	# Preserve player before clearing room
+	if GameManager.player and is_instance_valid(GameManager.player):
+		var player = GameManager.player
+		if player.get_parent():
+			player.get_parent().remove_child(player)
+		get_tree().root.add_child(player)
+
 	# Return to map view
 	current_state = RunState.MAP_VIEW
 	show_run_map.emit()
 	print("[RunManager] Node %d completed. Returning to map." % current_node.id)
+
+
+func _load_node_room(node: RunMapData.MapNode) -> void:
+	"""Creates and loads a RunNodeRoom for the selected node"""
+	# Preserve player across scene transition
+	if GameManager.player and is_instance_valid(GameManager.player):
+		var player = GameManager.player
+		if player.get_parent():
+			player.get_parent().remove_child(player)
+		get_tree().root.add_child(player)
+
+	# Create the room dynamically
+	var room = RunNodeRoom.new()
+	room.name = "RunNodeRoom_%d" % node.id
+	room.node_type = node.type
+	room.world_id = current_world
+	room.node_data = node
+
+	# Replace current scene with the room
+	var current_scene = get_tree().current_scene
+	if current_scene:
+		current_scene.queue_free()
+
+	get_tree().root.add_child(room)
+	get_tree().current_scene = room
+
+	print("[RunManager] Loaded room for node %d (%s)" % [node.id, node.get_type_name()])
 
 
 func end_run(victory: bool) -> void:
