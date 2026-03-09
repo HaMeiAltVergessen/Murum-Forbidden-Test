@@ -1,11 +1,14 @@
 extends Node
 ## RunManager handles roguelike run state, lives, and run currency (Magicka)
 ## Manages the loop: Limbus → Run → Death/Victory → Limbus
+## Also holds the current Run-Map (Hades-style node network)
 
 # ============ RUN STATE ============
 enum RunState {
 	IDLE,       # In Limbus hub, no run active
 	ACTIVE,     # Run is in progress
+	MAP_VIEW,   # Viewing the run map (choosing next node)
+	IN_NODE,    # Inside a node (combat, treasure, event, etc.)
 	ENDED       # Run just ended (transitioning back to Limbus)
 }
 
@@ -25,12 +28,20 @@ var magicka: int = 0
 var run_rooms_completed: int = 0
 var run_enemies_killed: int = 0
 
+# ============ RUN MAP ============
+var current_map: RunMapData.Map = null       # Generated map for current run
+var current_world: RunMapData.WorldId = RunMapData.WorldId.NIEMANDSLAND
+var current_node: RunMapData.MapNode = null  # Currently active node
+
 # ============ SIGNALS ============
 signal run_started()
 signal run_ended(victory: bool)
 signal lives_changed(current: int, maximum: int)
 signal magicka_changed(new_amount: int)
 signal player_run_death()  # Player died during run, loses a life
+signal map_updated()       # Map state changed (node completed, etc.)
+signal node_selected(node: RefCounted)  # Player selected a node on the map
+signal show_run_map()      # Request to show the run map UI
 
 
 func _ready() -> void:
@@ -39,23 +50,69 @@ func _ready() -> void:
 
 
 # ============ RUN LIFECYCLE ============
-func start_run() -> void:
-	if current_state == RunState.ACTIVE:
+func start_run(world_id: RunMapData.WorldId = RunMapData.WorldId.NIEMANDSLAND) -> void:
+	if current_state == RunState.ACTIVE or current_state == RunState.MAP_VIEW or current_state == RunState.IN_NODE:
 		push_warning("[RunManager] Run already active!")
 		return
 
-	current_state = RunState.ACTIVE
+	current_world = world_id
 	current_lives = max_lives
 	run_rooms_completed = 0
 	run_enemies_killed = 0
+	current_node = null
 
+	# Generate the map
+	current_map = RunMapGenerator.generate_map(world_id)
+	RunMapGenerator.print_map(current_map)
+
+	current_state = RunState.MAP_VIEW
 	lives_changed.emit(current_lives, max_lives)
 	run_started.emit()
-	print("[RunManager] Run started with %d lives" % current_lives)
+	show_run_map.emit()
+	print("[RunManager] Run started in '%s' with %d lives" % [
+		_get_world_name(world_id), current_lives
+	])
+
+
+func select_map_node(node_id: int) -> void:
+	"""Player selected a node on the run map"""
+	if current_state != RunState.MAP_VIEW or not current_map:
+		return
+
+	var node: RunMapData.MapNode = current_map.select_node(node_id)
+	if not node:
+		push_warning("[RunManager] Invalid node ID: %d" % node_id)
+		return
+
+	current_node = node
+	current_state = RunState.IN_NODE
+	node_selected.emit(node)
+	print("[RunManager] Node selected: %d (%s)" % [node.id, node.get_type_name()])
+
+
+func complete_current_node() -> void:
+	"""Called when the player finishes the current node (cleared room, etc.)"""
+	if current_state != RunState.IN_NODE or not current_map or not current_node:
+		return
+
+	current_map.complete_current_node()
+	run_rooms_completed += 1
+	map_updated.emit()
+
+	# Check if boss was beaten
+	if current_node.type == RunMapData.NodeType.BOSS:
+		print("[RunManager] Boss defeated! Run victory!")
+		end_run(true)
+		return
+
+	# Return to map view
+	current_state = RunState.MAP_VIEW
+	show_run_map.emit()
+	print("[RunManager] Node %d completed. Returning to map." % current_node.id)
 
 
 func end_run(victory: bool) -> void:
-	if current_state != RunState.ACTIVE:
+	if current_state == RunState.IDLE or current_state == RunState.ENDED:
 		return
 
 	current_state = RunState.ENDED
@@ -77,6 +134,8 @@ func end_run(victory: bool) -> void:
 
 func _return_to_limbus() -> void:
 	current_state = RunState.IDLE
+	current_map = null
+	current_node = null
 
 	# Reset run-volatile data (Gold, Consumables)
 	if GameManager:
@@ -136,19 +195,19 @@ func get_magicka() -> int:
 
 # ============ RUN TRACKING ============
 func on_room_completed() -> void:
-	if current_state == RunState.ACTIVE:
+	if is_run_active():
 		run_rooms_completed += 1
 		print("[RunManager] Room completed. Total: %d" % run_rooms_completed)
 
 
 func on_enemy_killed() -> void:
-	if current_state == RunState.ACTIVE:
+	if is_run_active():
 		run_enemies_killed += 1
 
 
 # ============ DEATH HANDLING ============
 func _on_player_died_in_run() -> void:
-	if current_state != RunState.ACTIVE:
+	if not is_run_active():
 		return
 
 	print("[RunManager] Player died during run")
@@ -169,20 +228,61 @@ func _respawn_in_room() -> void:
 		print("[RunManager] Player respawned (lives remaining: %d)" % current_lives)
 
 
-# ============ SAVE/LOAD (Magicka is persistent) ============
+# ============ SAVE/LOAD (Magicka is persistent, map state for mid-run saves) ============
 func get_save_data() -> Dictionary:
-	return {
+	var data: Dictionary = {
 		"magicka": magicka,
 		"max_lives": max_lives
 	}
+	# Save active run map if in progress
+	if current_map and is_run_active():
+		data["current_map"] = current_map.to_dict()
+		data["current_world"] = current_world
+		data["current_lives"] = current_lives
+		data["run_rooms_completed"] = run_rooms_completed
+		data["run_enemies_killed"] = run_enemies_killed
+		data["run_state"] = current_state
+	return data
 
 
 func load_from_save(data: Dictionary) -> void:
 	magicka = data.get("magicka", 0)
 	max_lives = data.get("max_lives", BASE_LIVES)
 	magicka_changed.emit(magicka)
-	print("[RunManager] Loaded: Magicka=%d, MaxLives=%d" % [magicka, max_lives])
+
+	# Restore active run if saved mid-run
+	if data.has("current_map"):
+		current_map = RunMapData.Map.from_dict(data["current_map"])
+		current_world = data.get("current_world", RunMapData.WorldId.NIEMANDSLAND)
+		current_lives = data.get("current_lives", max_lives)
+		run_rooms_completed = data.get("run_rooms_completed", 0)
+		run_enemies_killed = data.get("run_enemies_killed", 0)
+		current_state = data.get("run_state", RunState.MAP_VIEW)
+		lives_changed.emit(current_lives, max_lives)
+		print("[RunManager] Loaded mid-run save: World=%d, Lives=%d" % [current_world, current_lives])
+	else:
+		print("[RunManager] Loaded: Magicka=%d, MaxLives=%d" % [magicka, max_lives])
 
 
 func is_run_active() -> bool:
-	return current_state == RunState.ACTIVE
+	return current_state == RunState.ACTIVE or current_state == RunState.MAP_VIEW or current_state == RunState.IN_NODE
+
+
+func get_current_map() -> RunMapData.Map:
+	return current_map
+
+
+func get_accessible_nodes() -> Array:
+	"""Returns nodes the player can select next"""
+	if not current_map:
+		return []
+	return current_map.get_accessible_nodes()
+
+
+# ============ HELPERS ============
+func _get_world_name(world_id: RunMapData.WorldId) -> String:
+	match world_id:
+		RunMapData.WorldId.NIEMANDSLAND: return "Das Niemandsland"
+		RunMapData.WorldId.KOLLEKTIV: return "Das Kollektiv"
+		RunMapData.WorldId.ABGRUND: return "Der Abgrund"
+	return "Unbekannt"

@@ -58,18 +58,5 @@ func _start_run() -> void:
 	else:
 		print("[RunDoor] Starting run without seals")
 
-	# Start the run
-	RunManager.start_run()
-
-	# Preserve player across scene transition
-	if GameManager.player and is_instance_valid(GameManager.player):
-		var player = GameManager.player
-		if player.get_parent():
-			player.get_parent().remove_child(player)
-		get_tree().root.add_child(player)
-
-	# Store spawn position
-	GameManager.player_spawn_position = spawn_position
-
-	# Load first run room
-	get_tree().change_scene_to_file(first_room_scene)
+	# Start the run (generates map, switches to MAP_VIEW state)
+	RunManager.start_run(RunMapData.WorldId.NIEMANDSLAND)
