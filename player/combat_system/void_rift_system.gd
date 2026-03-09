@@ -58,8 +58,11 @@ func void_rift() -> void:
 				return
 
 			rift.global_position = player.global_position
+			var rift_damage = VOID_RIFT_DAMAGE
+			if UpgradeManager and UpgradeManager.get_ability_damage_multiplier() > 1.0:
+				rift_damage = rift_damage * UpgradeManager.get_ability_damage_multiplier()
 			if rift.has_method("setup"):
-				rift.setup(VOID_RIFT_MIN_RADIUS, VOID_RIFT_MAX_RADIUS, VOID_RIFT_DURATION, VOID_RIFT_DAMAGE)
+				rift.setup(VOID_RIFT_MIN_RADIUS, VOID_RIFT_MAX_RADIUS, VOID_RIFT_DURATION, rift_damage)
 
 			rift.tree_exiting.connect(func(): void_rift_active = false)
 		else:
@@ -109,16 +112,21 @@ func create_placeholder_rift() -> void:
 		var growth_factor = min(elapsed / VOID_RIFT_DURATION, 1.0)
 		shape.radius = lerp(VOID_RIFT_MIN_RADIUS, VOID_RIFT_MAX_RADIUS, growth_factor)
 
+	# Apply Urgathons Erbe ability damage bonus
+	var final_damage = VOID_RIFT_DAMAGE
+	if UpgradeManager and UpgradeManager.get_ability_damage_multiplier() > 1.0:
+		final_damage = final_damage * UpgradeManager.get_ability_damage_multiplier()
+
 	# Explode
 	var enemies = rift.get_overlapping_bodies()
 	for enemy in enemies:
 		if enemy.has_method("take_damage"):
-			enemy.take_damage(VOID_RIFT_DAMAGE)
+			enemy.take_damage(final_damage)
 			print("[Void Rift] Damage to %s" % enemy.name)
 		elif enemy.has_node("HealthComponent"):
 			var health = enemy.get_node("HealthComponent")
 			if health.has_method("take_damage"):
-				health.take_damage(int(VOID_RIFT_DAMAGE))
+				health.take_damage(int(final_damage))
 				print("[Void Rift] Damage (HealthComponent) to %s" % enemy.name)
 
 	if is_instance_valid(rift):

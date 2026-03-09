@@ -319,16 +319,21 @@ func _execute_perfect_parry() -> void:
 
 	print("[VoidParrySystem] Found %d enemies in radius %.0f" % [enemies_in_range.size(), PERFECT_PARRY_AOE_RADIUS])
 
+	# Apply Urgathons Erbe ability damage bonus
+	var parry_damage = PERFECT_PARRY_DAMAGE
+	if UpgradeManager and UpgradeManager.get_ability_damage_multiplier() > 1.0:
+		parry_damage = parry_damage * UpgradeManager.get_ability_damage_multiplier()
+
 	# Damage and stun all enemies in range
 	for enemy in enemies_in_range:
 		# Damage
 		if enemy.has_method("take_damage"):
-			enemy.take_damage(PERFECT_PARRY_DAMAGE)
+			enemy.take_damage(parry_damage)
 			print("[VoidParrySystem] Perfect parry damage (direct) to %s" % enemy.name)
 		elif enemy.has_node("HealthComponent"):
 			var health = enemy.get_node("HealthComponent")
 			if health.has_method("take_damage"):
-				health.take_damage(int(PERFECT_PARRY_DAMAGE))
+				health.take_damage(int(parry_damage))
 				print("[VoidParrySystem] Perfect parry damage (HealthComponent) to %s" % enemy.name)
 
 		# Stun

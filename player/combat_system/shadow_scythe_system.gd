@@ -84,7 +84,10 @@ func shadow_scythe() -> void:
 	if "direction" in scythe_instance:
 		scythe_instance.direction = Vector2.RIGHT if not player.sprite.flip_h else Vector2.LEFT
 	if "damage" in scythe_instance:
-		scythe_instance.damage = player.base_damage * 3.0
+		var scythe_damage = player.base_damage * 3.0
+		if UpgradeManager and UpgradeManager.get_ability_damage_multiplier() > 1.0:
+			scythe_damage *= UpgradeManager.get_ability_damage_multiplier()
+		scythe_instance.damage = scythe_damage
 	if "owner_player" in scythe_instance:
 		scythe_instance.owner_player = player
 	if "can_pierce" in scythe_instance:
@@ -148,6 +151,8 @@ func create_placeholder_scythe() -> void:
 	var direction = Vector2.RIGHT if not player.sprite.flip_h else Vector2.LEFT
 	var velocity = direction * SCYTHE_SPEED
 	var damage = player.base_damage * 3.0
+	if UpgradeManager and UpgradeManager.get_ability_damage_multiplier() > 1.0:
+		damage *= UpgradeManager.get_ability_damage_multiplier()
 
 	print("[Shadow Scythe Placeholder] Created - Damage: %.1f, Layer: %d, Mask: %d" % [
 		damage,

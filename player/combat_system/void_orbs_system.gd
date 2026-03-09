@@ -78,6 +78,10 @@ func release_orb() -> void:
 
 	# Calculate damage: Base + (seconds charged * damage per second)
 	var orb_damage = VOID_ORB_BASE_DAMAGE + (orb_charge_time * VOID_ORB_DAMAGE_PER_SECOND)
+
+	# Apply Urgathons Erbe ability damage bonus
+	if UpgradeManager and UpgradeManager.get_ability_damage_multiplier() > 1.0:
+		orb_damage *= UpgradeManager.get_ability_damage_multiplier()
 	var charge_factor = orb_charge_time / VOID_ORB_CHARGE_TIME  # For logging
 
 	print("[Void Orb] Released! Charge: %.1fs (%.0f%%) | Damage: %.1f" % [
