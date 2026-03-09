@@ -5,8 +5,8 @@ class_name RunMapData
 
 # ============ NODE TYPES ============
 enum NodeType {
-	COMBAT_PUZZLE,   # K+R: Kampf + Raetsel (Haupttyp)
-	ELITE_PUZZLE,    # E+R: Elite + Raetsel (haerter, Pre-Boss)
+	COMBAT,          # K: Kampf (Haupttyp)
+	ELITE,           # E: Elite-Kampf (haerter, Pre-Boss)
 	TREASURE,        # S: Schatz (Wahl aus 3 Items)
 	REST,            # RAST: Mini-Hub, volle Heilung, NPCs
 	EVENT,           # Er: Ereignis (Text-Event, ab Welt 2)
@@ -41,12 +41,12 @@ class MapNode:
 
 	func get_type_name() -> String:
 		match type:
-			NodeType.COMBAT_PUZZLE: return "K+R"
-			NodeType.ELITE_PUZZLE: return "E+R"
-			NodeType.TREASURE: return "S"
-			NodeType.REST: return "RAST"
-			NodeType.EVENT: return "Er"
-			NodeType.BOSS: return "BOSS"
+			NodeType.COMBAT: return "Kampf"
+			NodeType.ELITE: return "Elite"
+			NodeType.TREASURE: return "Schatz"
+			NodeType.REST: return "Rast"
+			NodeType.EVENT: return "Ereignis"
+			NodeType.BOSS: return "Boss"
 		return "?"
 
 	func to_dict() -> Dictionary:
@@ -66,7 +66,7 @@ class MapNode:
 			data.get("id", 0),
 			data.get("row", 0),
 			data.get("column", 0),
-			data.get("type", NodeType.COMBAT_PUZZLE)
+			data.get("type", NodeType.COMBAT)
 		)
 		node.connections = Array(data.get("connections", []), TYPE_INT, "", null)
 		node.room_scene_path = data.get("room_scene_path", "")

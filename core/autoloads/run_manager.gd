@@ -1,13 +1,13 @@
 extends Node
 ## RunManager handles roguelike run state, lives, and run currency (Magicka)
 ## Manages the loop: Limbus → Run → Death/Victory → Limbus
-## Also holds the current Run-Map (Hades-style node network)
+## Holds the current Run-Map (Hades-style node network)
+## Doors in-room handle node selection (no separate map UI)
 
 # ============ RUN STATE ============
 enum RunState {
 	IDLE,       # In Limbus hub, no run active
-	ACTIVE,     # Run is in progress
-	MAP_VIEW,   # Viewing the run map (choosing next node)
+	MAP_VIEW,   # Between nodes (doors spawned in room, choosing next)
 	IN_NODE,    # Inside a node (combat, treasure, event, etc.)
 	ENDED       # Run just ended (transitioning back to Limbus)
 }
@@ -40,28 +40,17 @@ signal lives_changed(current: int, maximum: int)
 signal magicka_changed(new_amount: int)
 signal player_run_death()  # Player died during run, loses a life
 signal map_updated()       # Map state changed (node completed, etc.)
-signal node_selected(node: RefCounted)  # Player selected a node on the map
-signal show_run_map()      # Request to show the run map UI
+signal node_selected(node: RefCounted)  # Player selected a node
 
-
-var run_map_screen: RunMapScreen = null
 
 func _ready() -> void:
 	print("[RunManager] Initialized")
 	EventBus.player_died.connect(_on_player_died_in_run)
-	# Create the Run-Map UI (persists across scenes as child of autoload)
-	call_deferred("_create_run_map_screen")
-
-
-func _create_run_map_screen() -> void:
-	run_map_screen = RunMapScreen.new()
-	add_child(run_map_screen)
-	print("[RunManager] RunMapScreen created")
 
 
 # ============ RUN LIFECYCLE ============
 func start_run(world_id: RunMapData.WorldId = RunMapData.WorldId.NIEMANDSLAND) -> void:
-	if current_state == RunState.ACTIVE or current_state == RunState.MAP_VIEW or current_state == RunState.IN_NODE:
+	if current_state == RunState.MAP_VIEW or current_state == RunState.IN_NODE:
 		push_warning("[RunManager] Run already active!")
 		return
 
@@ -78,14 +67,63 @@ func start_run(world_id: RunMapData.WorldId = RunMapData.WorldId.NIEMANDSLAND) -
 	current_state = RunState.MAP_VIEW
 	lives_changed.emit(current_lives, max_lives)
 	run_started.emit()
-	show_run_map.emit()
+
 	print("[RunManager] Run started in '%s' with %d lives" % [
 		_get_world_name(world_id), current_lives
 	])
 
+	# Load the first room directly (doors for row 0 choices)
+	_load_first_room()
+
+
+func _load_first_room() -> void:
+	"""Load an entry room that shows doors for the first row of nodes"""
+	# Pick the first accessible node automatically and load it
+	# The first room shows doors to row 0 nodes
+	var accessible = current_map.get_accessible_nodes()
+	if accessible.is_empty():
+		push_error("[RunManager] No accessible nodes in generated map!")
+		return
+
+	# Load a simple entry room that just has doors
+	_load_entry_room_with_doors(accessible)
+
+
+func _load_entry_room_with_doors(next_nodes: Array) -> void:
+	"""Creates a minimal entry room with Hades-style doors for first choice"""
+	# Preserve player
+	if GameManager.player and is_instance_valid(GameManager.player):
+		var player = GameManager.player
+		if player.get_parent():
+			player.get_parent().remove_child(player)
+		get_tree().root.add_child(player)
+
+	# Create entry room (RunNodeRoom configured as REST for visual, but with doors)
+	var room = RunNodeRoom.new()
+	room.name = "RunEntryRoom"
+	room.node_type = RunMapData.NodeType.REST
+	room.world_id = current_world
+	room.node_data = null
+
+	# Replace current scene
+	var current_scene = get_tree().current_scene
+	if current_scene:
+		current_scene.queue_free()
+
+	get_tree().root.add_child(room)
+	get_tree().current_scene = room
+
+	# Spawn doors after room is ready
+	room.ready.connect(func():
+		room._show_completion_ui("Waehle deinen Weg!")
+		room._spawn_exit_doors(next_nodes)
+	, CONNECT_ONE_SHOT)
+
+	print("[RunManager] Entry room loaded with %d doors" % next_nodes.size())
+
 
 func select_map_node(node_id: int) -> void:
-	"""Player selected a node on the run map"""
+	"""Player selected a node (via door interaction in room)"""
 	if current_state != RunState.MAP_VIEW or not current_map:
 		return
 
@@ -101,34 +139,6 @@ func select_map_node(node_id: int) -> void:
 
 	# Load the room for this node
 	_load_node_room(node)
-
-
-func complete_current_node() -> void:
-	"""Called when the player finishes the current node (cleared room, etc.)"""
-	if current_state != RunState.IN_NODE or not current_map or not current_node:
-		return
-
-	current_map.complete_current_node()
-	run_rooms_completed += 1
-	map_updated.emit()
-
-	# Check if boss was beaten
-	if current_node.type == RunMapData.NodeType.BOSS:
-		print("[RunManager] Boss defeated! Run victory!")
-		end_run(true)
-		return
-
-	# Preserve player before clearing room
-	if GameManager.player and is_instance_valid(GameManager.player):
-		var player = GameManager.player
-		if player.get_parent():
-			player.get_parent().remove_child(player)
-		get_tree().root.add_child(player)
-
-	# Return to map view
-	current_state = RunState.MAP_VIEW
-	show_run_map.emit()
-	print("[RunManager] Node %d completed. Returning to map." % current_node.id)
 
 
 func _load_node_room(node: RunMapData.MapNode) -> void:
@@ -281,7 +291,6 @@ func get_save_data() -> Dictionary:
 		"magicka": magicka,
 		"max_lives": max_lives
 	}
-	# Save active run map if in progress
 	if current_map and is_run_active():
 		data["current_map"] = current_map.to_dict()
 		data["current_world"] = current_world
@@ -297,7 +306,6 @@ func load_from_save(data: Dictionary) -> void:
 	max_lives = data.get("max_lives", BASE_LIVES)
 	magicka_changed.emit(magicka)
 
-	# Restore active run if saved mid-run
 	if data.has("current_map"):
 		current_map = RunMapData.Map.from_dict(data["current_map"])
 		current_world = data.get("current_world", RunMapData.WorldId.NIEMANDSLAND)
@@ -312,7 +320,7 @@ func load_from_save(data: Dictionary) -> void:
 
 
 func is_run_active() -> bool:
-	return current_state == RunState.ACTIVE or current_state == RunState.MAP_VIEW or current_state == RunState.IN_NODE
+	return current_state == RunState.MAP_VIEW or current_state == RunState.IN_NODE
 
 
 func get_current_map() -> RunMapData.Map:

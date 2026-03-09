@@ -141,7 +141,7 @@ static func _generate_row_types(row_index: int, num_nodes: int,
 	for i in range(num_nodes):
 		if is_pre_boss_row and i == 0:
 			# First node in pre-boss row is always Elite
-			types.append(RunMapData.NodeType.ELITE_PUZZLE)
+			types.append(RunMapData.NodeType.ELITE)
 		else:
 			types.append(_pick_node_type(row_index, config, rng))
 
@@ -164,17 +164,17 @@ static func _pick_node_type(row_index: int, config: RunMapData.WorldConfig,
 	if row_index >= config.num_rows - 1:
 		# Pre-boss: higher Elite chance
 		if roll < 0.5:
-			return RunMapData.NodeType.COMBAT_PUZZLE
+			return RunMapData.NodeType.COMBAT
 		elif roll < 0.85:
-			return RunMapData.NodeType.ELITE_PUZZLE
+			return RunMapData.NodeType.ELITE
 		else:
 			return RunMapData.NodeType.TREASURE
 	else:
 		# Normal row
 		if roll < 0.6:
-			return RunMapData.NodeType.COMBAT_PUZZLE
+			return RunMapData.NodeType.COMBAT
 		elif roll < 0.8:
-			return RunMapData.NodeType.ELITE_PUZZLE
+			return RunMapData.NodeType.ELITE
 		else:
 			return RunMapData.NodeType.TREASURE
 
@@ -190,7 +190,7 @@ static func _place_events(map: RunMapData.Map, config: RunMapData.WorldConfig,
 	# Collect K+R nodes that can be replaced (not in row 0, not pre-boss, not rest)
 	for node_id in map.nodes:
 		var node: RunMapData.MapNode = map.nodes[node_id]
-		if node.type == RunMapData.NodeType.COMBAT_PUZZLE:
+		if node.type == RunMapData.NodeType.COMBAT:
 			if node.row > 0 and node.row < config.num_rows - 1 and node.row != config.rest_row:
 				eligible_nodes.append(node)
 
@@ -287,8 +287,8 @@ static func _assign_positions(map: RunMapData.Map) -> void:
 
 static func _get_default_reward(type: RunMapData.NodeType) -> String:
 	match type:
-		RunMapData.NodeType.COMBAT_PUZZLE: return "gold"
-		RunMapData.NodeType.ELITE_PUZZLE: return "relic"
+		RunMapData.NodeType.COMBAT: return "gold"
+		RunMapData.NodeType.ELITE: return "relic"
 		RunMapData.NodeType.TREASURE: return "item"
 		RunMapData.NodeType.REST: return "heal"
 		RunMapData.NodeType.EVENT: return "event"
