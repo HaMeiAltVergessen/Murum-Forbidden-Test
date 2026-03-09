@@ -372,23 +372,23 @@ func _setup_boss() -> void:
 # ============ NODE COMPLETION + HADES-STYLE DOORS ============
 func _on_node_cleared() -> void:
 	"""Node is cleared — mark complete and spawn doors for next choices"""
-	if not RunManager or not RunManager.current_map or not RunManager.current_node:
+	if not RunManager or not RunManager.current_map:
 		return
 
-	# Mark current node as completed
-	RunManager.current_map.complete_current_node()
-	RunManager.run_rooms_completed += 1
-	RunManager.map_updated.emit()
+	# If we have a current node, mark it completed
+	if RunManager.current_node:
+		RunManager.current_map.complete_current_node()
+		RunManager.run_rooms_completed += 1
+		RunManager.map_updated.emit()
 
-	# Check if this was the boss
-	if RunManager.current_node.type == RunMapData.NodeType.BOSS:
-		RunManager.end_run(true)
-		return
+		# Check if this was the boss
+		if RunManager.current_node.type == RunMapData.NodeType.BOSS:
+			RunManager.end_run(true)
+			return
 
 	# Get next accessible nodes and spawn doors
 	var next_nodes = RunManager.current_map.get_accessible_nodes()
 	if next_nodes.is_empty():
-		# No more nodes — shouldn't happen, but end run
 		RunManager.end_run(true)
 		return
 

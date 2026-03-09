@@ -78,19 +78,6 @@ func start_run(world_id: RunMapData.WorldId = RunMapData.WorldId.NIEMANDSLAND) -
 
 func _load_first_room() -> void:
 	"""Load an entry room that shows doors for the first row of nodes"""
-	# Pick the first accessible node automatically and load it
-	# The first room shows doors to row 0 nodes
-	var accessible = current_map.get_accessible_nodes()
-	if accessible.is_empty():
-		push_error("[RunManager] No accessible nodes in generated map!")
-		return
-
-	# Load a simple entry room that just has doors
-	_load_entry_room_with_doors(accessible)
-
-
-func _load_entry_room_with_doors(next_nodes: Array) -> void:
-	"""Creates a minimal entry room with Hades-style doors for first choice"""
 	# Preserve player
 	if GameManager.player and is_instance_valid(GameManager.player):
 		var player = GameManager.player
@@ -98,7 +85,7 @@ func _load_entry_room_with_doors(next_nodes: Array) -> void:
 			player.get_parent().remove_child(player)
 		get_tree().root.add_child(player)
 
-	# Create entry room (RunNodeRoom configured as REST for visual, but with doors)
+	# Create entry room — node_data=null means doors spawn immediately via debug path
 	var room = RunNodeRoom.new()
 	room.name = "RunEntryRoom"
 	room.node_type = RunMapData.NodeType.REST
@@ -113,13 +100,7 @@ func _load_entry_room_with_doors(next_nodes: Array) -> void:
 	get_tree().root.add_child(room)
 	get_tree().current_scene = room
 
-	# Spawn doors after room is ready
-	room.ready.connect(func():
-		room._show_completion_ui("Waehle deinen Weg!")
-		room._spawn_exit_doors(next_nodes)
-	, CONNECT_ONE_SHOT)
-
-	print("[RunManager] Entry room loaded with %d doors" % next_nodes.size())
+	print("[RunManager] Entry room loaded")
 
 
 func select_map_node(node_id: int) -> void:
