@@ -473,7 +473,7 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 	area.add_child(col)
 	area.collision_layer = 0
 	area.collision_mask = 0
-	area.set_collision_mask_value(1, true)  # Detect player (Layer 1)
+	area.set_collision_mask_value(2, true)  # Detect player (Layer 2 = Player)
 	area.monitoring = true
 	door_container.add_child(area)
 
