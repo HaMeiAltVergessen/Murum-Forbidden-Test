@@ -301,6 +301,10 @@ func _connect_signals() -> void:
 	if hurtbox:
 		hurtbox.damage_received.connect(_on_damage_received)
 
+	# Blut der Schlacht: heal on enemy kill
+	if is_instance_valid(EventBus):
+		EventBus.enemy_died.connect(_on_enemy_died_kill_heal)
+
 
 func _setup_passive_abilities() -> void:
 	var myrkurs_echo_script = load("res://player/abilities/myrkurs_echo.gd")
@@ -444,6 +448,32 @@ func _spawn_phase_shift_absorb_vfx() -> void:
 	tween.tween_property(flash, "scale", Vector2(2.0, 2.0), 0.3)
 	tween.parallel().tween_property(flash, "modulate:a", 0.0, 0.3)
 	tween.tween_callback(flash.queue_free)
+
+
+# ============ BLUT DER SCHLACHT (Kill Heal) ============
+
+func _on_enemy_died_kill_heal(_enemy: Node, _position: Vector2) -> void:
+	"""Heals mana/HP on enemy kill (Blut der Schlacht upgrade)"""
+	if not UpgradeManager:
+		return
+
+	var heal_data = UpgradeManager.get_kill_heal_data()
+	if heal_data.is_empty():
+		return
+
+	var mana_amount: int = 5
+	var hp_amount: int = 3
+	if heal_data.get("kill_heal_bonus", false):
+		mana_amount = 10
+		hp_amount = 6
+
+	if heal_data.get("kill_heal_mana", false) and mana_component:
+		mana_component.restore_mana(mana_amount)
+		print("[Lythrun] Blut der Schlacht: +%d Mana" % mana_amount)
+
+	if heal_data.get("kill_heal_hp", false) and health_component:
+		health_component.heal(hp_amount)
+		print("[Lythrun] Blut der Schlacht: +%d HP" % hp_amount)
 
 
 # ============ UTILITY ============

@@ -87,7 +87,7 @@ func _regenerate_mana(delta: float) -> void:
 	var effective_regen: float = regeneration_rate
 
 	# Apply Urgathons Erbe mana regen bonus (player only)
-	if owner is Murum and UpgradeManager:
+	if (owner is Murum or owner is Lythrun) and UpgradeManager:
 		effective_regen *= UpgradeManager.get_mana_regen_multiplier()
 
 	var regen_amount: float = effective_regen * delta

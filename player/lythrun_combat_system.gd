@@ -90,6 +90,13 @@ func _perform_attack() -> void:
 
 	# Calculate damage from player's base_damage
 	var damage = int(player.base_damage * attack_multipliers[current_combo - 1])
+
+	# Apply Geschaerfter Wille damage bonus
+	if UpgradeManager:
+		var dmg_mult = UpgradeManager.get_damage_multiplier()
+		if dmg_mult > 1.0:
+			damage = int(damage * dmg_mult)
+
 	if hitbox.has_method("set_damage"):
 		hitbox.set_damage(damage)
 
@@ -115,6 +122,12 @@ func _perform_attack() -> void:
 		EventBus.p2_combo_finisher_ready.emit()
 
 	print("[LythrunCombatSystem] Void Strike %d/3 - Damage: %d" % [current_combo, damage])
+
+	# Echo der Macht: chance for an echo hit after attack
+	if UpgradeManager:
+		var echo_chance = UpgradeManager.get_echo_chance()
+		if echo_chance > 0.0 and randf() < echo_chance:
+			_trigger_echo_hit(damage)
 
 
 func _update_attack_timer(delta: float) -> void:
@@ -165,6 +178,12 @@ func _perform_charged_attack() -> void:
 	player.is_attacking = true
 
 	var charged_damage = int(player.base_damage * CHARGED_MULTIPLIER)
+
+	# Apply Geschaerfter Wille damage bonus
+	if UpgradeManager:
+		var dmg_mult = UpgradeManager.get_damage_multiplier()
+		if dmg_mult > 1.0:
+			charged_damage = int(charged_damage * dmg_mult)
 
 	# Create temporary AoE hitbox for charged attack (larger than melee)
 	var aoe = Area2D.new()
@@ -240,6 +259,12 @@ func _perform_charged_attack() -> void:
 func _spawn_void_shockwave() -> void:
 	var stack_multiplier = 1.0 + (combo_stacks * 0.2)
 	var shockwave_damage = int(player.base_damage * SHOCKWAVE_BASE_MULTIPLIER * stack_multiplier)
+
+	# Apply Geschaerfter Wille damage bonus
+	if UpgradeManager:
+		var dmg_mult = UpgradeManager.get_damage_multiplier()
+		if dmg_mult > 1.0:
+			shockwave_damage = int(shockwave_damage * dmg_mult)
 
 	var shockwave = Area2D.new()
 	var collision = CollisionShape2D.new()
@@ -407,6 +432,33 @@ func _spawn_shockwave_vfx(pos: Vector2) -> void:
 	tween.tween_property(ring, "scale", Vector2(1.5, 1.5), 0.3)
 	tween.parallel().tween_property(ring, "modulate:a", 0.0, 0.3)
 	tween.tween_callback(ring.queue_free)
+
+
+# ============ ECHO DER MACHT ============
+
+func _trigger_echo_hit(base_damage: int) -> void:
+	"""Triggers an echo hit after a short delay (Echo der Macht upgrade)"""
+	var echo_damage: int = int(base_damage * 0.5)
+	if UpgradeManager.has_echo_strong():
+		echo_damage = base_damage
+	print("[LythrunCombatSystem] Echo der Macht! Extra hit for %d damage" % echo_damage)
+
+	await player.get_tree().create_timer(0.1).timeout
+	if not is_instance_valid(hitbox):
+		return
+
+	if hitbox.has_method("set_damage"):
+		hitbox.set_damage(echo_damage)
+	_activate_hitbox()
+
+	if UpgradeManager.has_echo_aoe():
+		hitbox.scale *= 1.5
+
+	await player.get_tree().create_timer(0.1).timeout
+	if is_instance_valid(hitbox):
+		if UpgradeManager.has_echo_aoe():
+			hitbox.scale /= 1.5
+		_deactivate_hitbox()
 
 
 # ============ GETTERS ============

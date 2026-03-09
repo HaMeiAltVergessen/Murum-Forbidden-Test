@@ -304,7 +304,7 @@ func _process_horizontal_movement() -> void:
 	var current_speed: float = move_speed
 
 	# Apply Ungebrochene Bewegung speed bonus (player only)
-	if player is Murum and UpgradeManager:
+	if (player is Murum or player is Lythrun) and UpgradeManager:
 		var speed_mult = UpgradeManager.get_speed_multiplier()
 		if speed_mult > 1.0:
 			current_speed *= speed_mult

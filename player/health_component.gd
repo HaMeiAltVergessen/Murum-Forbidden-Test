@@ -25,7 +25,7 @@ signal invulnerability_ended()
 
 func _ready() -> void:
 	# Apply Erwachende Essenz HP bonus (player only)
-	if owner is Murum and UpgradeManager:
+	if (owner is Murum or owner is Lythrun) and UpgradeManager:
 		var hp_mult = UpgradeManager.get_hp_multiplier()
 		if hp_mult > 1.0:
 			max_health = int(max_health * hp_mult)
@@ -64,7 +64,7 @@ func take_damage(damage: int) -> bool:
 		print("[HealthComponent] Blocked! Reduced damage: %d → %d (%.0f%% reduction)" % [damage, final_damage, block_reduction * 100])
 
 	# Apply Erinnerung der Voch Numta damage reduction (player only)
-	if owner is Murum and UpgradeManager:
+	if (owner is Murum or owner is Lythrun) and UpgradeManager:
 		var dr = UpgradeManager.get_damage_reduction()
 		if dr > 0.0:
 			final_damage = int(final_damage * (1.0 - dr))
@@ -158,7 +158,7 @@ func _on_perfect_parry(enemy: Node) -> void:
 
 	# Erinnerung der Voch Numta level 2: extended perfect block immunity
 	var immunity_duration: float = 0.1
-	if owner is Murum and UpgradeManager and UpgradeManager.has_perfect_block_immunity():
+	if (owner is Murum or owner is Lythrun) and UpgradeManager and UpgradeManager.has_perfect_block_immunity():
 		immunity_duration = 0.5
 		print("[HealthComponent] Voch Numta: extended perfect block immunity (0.5s)")
 	else:

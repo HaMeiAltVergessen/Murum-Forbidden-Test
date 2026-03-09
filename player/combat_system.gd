@@ -129,7 +129,7 @@ func _perform_attack() -> void:
 	# Update hitbox damage (apply Geschärfter Wille bonus)
 	var base_damage: int = attack_damages[current_combo - 1]
 	var final_attack_damage: int = base_damage
-	if player is Murum and UpgradeManager:
+	if (player is Murum or player is Lythrun) and UpgradeManager:
 		var dmg_mult = UpgradeManager.get_damage_multiplier()
 		if dmg_mult > 1.0:
 			final_attack_damage = int(base_damage * dmg_mult)
@@ -161,7 +161,7 @@ func _perform_attack() -> void:
 	print("[CombatSystem] Attack ", current_combo, " - Damage: ", final_attack_damage)
 
 	# Echo der Macht: chance for an echo hit after attack
-	if player is Murum and UpgradeManager:
+	if (player is Murum or player is Lythrun) and UpgradeManager:
 		var echo_chance = UpgradeManager.get_echo_chance()
 		if echo_chance > 0.0 and randf() < echo_chance:
 			_trigger_echo_hit(final_attack_damage)
