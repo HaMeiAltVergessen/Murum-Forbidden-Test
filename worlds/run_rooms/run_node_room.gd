@@ -1,16 +1,10 @@
 extends Node2D
-## Generic room for Run-Map nodes
-## Dynamically configures itself based on node type (combat, treasure, rest, event, boss)
-## After completion, spawns Hades-style doors for next node selection
+## Controller script for Run-Map room nodes
+## Attached to handcrafted .tscn room scenes at runtime
+## Handles: player setup, combat spawning, node-type logic, Hades-style exit doors
 class_name RunNodeRoom
 
-# ============ ROOM CONFIG ============
-const ROOM_WIDTH: float = 1920.0
-const ROOM_HEIGHT: float = 1080.0
-const GROUND_Y: float = 800.0
-const SPAWN_MARGIN: float = 200.0
-
-# Door colors per node type
+# ============ DOOR COLORS ============
 const DOOR_COLORS: Dictionary = {
 	RunMapData.NodeType.COMBAT: Color(0.8, 0.3, 0.2),
 	RunMapData.NodeType.ELITE: Color(0.9, 0.6, 0.1),
@@ -20,15 +14,13 @@ const DOOR_COLORS: Dictionary = {
 	RunMapData.NodeType.BOSS: Color(0.9, 0.1, 0.1),
 }
 
+# ============ ROOM CONFIG (set by RunManager before adding to tree) ============
 var node_type: RunMapData.NodeType = RunMapData.NodeType.COMBAT
 var world_id: RunMapData.WorldId = RunMapData.WorldId.NIEMANDSLAND
 var node_data: RunMapData.MapNode = null
 
-# ============ ROOM NODES ============
-var spawn_point: Marker2D
+# ============ INTERNAL STATE ============
 var arena_controller: ArenaController = null
-var completion_label: Label = null
-var room_built: bool = false
 var doors_spawned: bool = false
 
 
@@ -42,7 +34,6 @@ func _activate() -> void:
 		GameManager.register_room(self)
 		GameManager.current_state = GameManager.GameState.PLAYING
 
-	_build_room()
 	_setup_player()
 
 	match node_type:
@@ -58,73 +49,12 @@ func _activate() -> void:
 			_setup_boss()
 
 
-# ============ ROOM BUILDING ============
-func _build_room() -> void:
-	if room_built:
-		return
-	room_built = true
-
-	# Ground collision
-	var ground = StaticBody2D.new()
-	ground.name = "Ground"
-	var ground_col = CollisionShape2D.new()
-	var ground_shape = RectangleShape2D.new()
-	ground_shape.size = Vector2(ROOM_WIDTH, 40)
-	ground_col.shape = ground_shape
-	ground.add_child(ground_col)
-	ground.position = Vector2(ROOM_WIDTH / 2.0, GROUND_Y + 20)
-	add_child(ground)
-
-	# Walls
-	_add_wall(Vector2(-20, ROOM_HEIGHT / 2.0), Vector2(40, ROOM_HEIGHT))
-	_add_wall(Vector2(ROOM_WIDTH + 20, ROOM_HEIGHT / 2.0), Vector2(40, ROOM_HEIGHT))
-	_add_wall(Vector2(ROOM_WIDTH / 2.0, -20), Vector2(ROOM_WIDTH, 40))
-
-	# Spawn point
-	spawn_point = Marker2D.new()
-	spawn_point.name = "SpawnPoint"
-	spawn_point.position = Vector2(ROOM_WIDTH / 2.0, GROUND_Y - 40)
-	add_child(spawn_point)
-
-	# Visual ground
-	var ground_visual = ColorRect.new()
-	ground_visual.color = _get_ground_color()
-	ground_visual.position = Vector2(0, GROUND_Y)
-	ground_visual.size = Vector2(ROOM_WIDTH, ROOM_HEIGHT - GROUND_Y)
-	add_child(ground_visual)
-
-	# Background
-	var bg = ColorRect.new()
-	bg.color = _get_bg_color()
-	bg.position = Vector2.ZERO
-	bg.size = Vector2(ROOM_WIDTH, GROUND_Y)
-	bg.z_index = -10
-	add_child(bg)
-
-	# Room type label
-	var type_label = Label.new()
-	type_label.text = _get_room_title()
-	type_label.add_theme_font_size_override("font_size", 24)
-	type_label.add_theme_color_override("font_color", Color(0.9, 0.9, 1.0, 0.8))
-	type_label.position = Vector2(40, 20)
-	add_child(type_label)
-
-
-func _add_wall(pos: Vector2, wall_size: Vector2) -> void:
-	var wall = StaticBody2D.new()
-	var col = CollisionShape2D.new()
-	var shape = RectangleShape2D.new()
-	shape.size = wall_size
-	col.shape = shape
-	wall.add_child(col)
-	wall.position = pos
-	add_child(wall)
-
-
 # ============ PLAYER SETUP ============
 func _setup_player() -> void:
+	var spawn_marker: Marker2D = _find_spawn_point()
+
 	if not GameManager.player or not is_instance_valid(GameManager.player):
-		_spawn_new_player()
+		_spawn_new_player(spawn_marker)
 		return
 
 	var player = GameManager.player
@@ -133,56 +63,66 @@ func _setup_player() -> void:
 			player.get_parent().remove_child(player)
 		add_child(player)
 
-	player.global_position = spawn_point.global_position
+	player.global_position = spawn_marker.global_position
 	player.z_index = 100
 	player.z_as_relative = false
 	if player is CharacterBody2D:
 		player.velocity = Vector2.ZERO
 
-	print("[RunNodeRoom] Player repositioned")
+	print("[RunNodeRoom] Player repositioned at %s" % spawn_marker.global_position)
 
 
-func _spawn_new_player() -> void:
+func _spawn_new_player(spawn_marker: Marker2D) -> void:
 	var player_scene = preload("res://player/murum.tscn")
 	var player = player_scene.instantiate()
-	player.global_position = spawn_point.global_position
+	player.global_position = spawn_marker.global_position
 	add_child(player)
 	if GameManager:
 		GameManager.set_player(player)
 	print("[RunNodeRoom] Player spawned")
 
 
+func _find_spawn_point() -> Marker2D:
+	"""Find the player spawn point in the room (SpawnPoints/Default)"""
+	var spawn_points_node = get_node_or_null("SpawnPoints")
+	if spawn_points_node:
+		var default_spawn = spawn_points_node.get_node_or_null("Default")
+		if default_spawn and default_spawn is Marker2D:
+			return default_spawn
+	# Fallback: search for any SpawnPoint in the scene
+	for child in get_children():
+		if child is Marker2D and child.name.contains("Spawn"):
+			return child
+	# Last resort: create a temporary marker
+	var fallback = Marker2D.new()
+	fallback.position = Vector2(960, 760)
+	add_child(fallback)
+	return fallback
+
+
 # ============ COMBAT SETUP ============
 func _setup_combat() -> void:
-	"""Spawn all enemies at once (no waves), kill all to complete"""
+	"""Spawn all enemies at once using ArenaController + room's EnemySpawnPoints"""
 	var wave_config = RunRoomPool.build_single_wave_config(world_id, node_type)
 	if not wave_config:
 		push_warning("[RunNodeRoom] No encounter generated!")
 		_on_combat_completed()
 		return
 
-	# Create spawn points
-	var enemy_spawn_points: Array[Marker2D] = []
-	var spawn_positions = [
-		Vector2(SPAWN_MARGIN, GROUND_Y - 40),
-		Vector2(ROOM_WIDTH / 2.0, GROUND_Y - 40),
-		Vector2(ROOM_WIDTH - SPAWN_MARGIN, GROUND_Y - 40),
-		Vector2(ROOM_WIDTH * 0.3, GROUND_Y - 40),
-		Vector2(ROOM_WIDTH * 0.7, GROUND_Y - 40),
-	]
+	# Collect enemy spawn points from the .tscn
+	var enemy_spawn_markers: Array[Marker2D] = []
+	var spawn_container = get_node_or_null("EnemySpawnPoints")
+	if spawn_container:
+		for child in spawn_container.get_children():
+			if child is Marker2D:
+				enemy_spawn_markers.append(child)
 
-	var spawn_container = Node2D.new()
-	spawn_container.name = "EnemySpawnPoints"
-	add_child(spawn_container)
+	if enemy_spawn_markers.is_empty():
+		push_warning("[RunNodeRoom] No EnemySpawnPoints found in room!")
+		_on_combat_completed()
+		return
 
-	for i in range(spawn_positions.size()):
-		var marker = Marker2D.new()
-		marker.name = "Spawn_%d" % i
-		marker.position = spawn_positions[i]
-		spawn_container.add_child(marker)
-		enemy_spawn_points.append(marker)
-
-	# Create ArenaController with single wave (all enemies at once)
+	# Create ArenaController
 	arena_controller = ArenaController.new()
 	arena_controller.name = "ArenaController"
 	arena_controller.arena_id = "run_node_%d" % (node_data.id if node_data else 0)
@@ -191,10 +131,9 @@ func _setup_combat() -> void:
 	arena_controller.lock_doors_during_waves = false
 	arena_controller.spawn_coins_on_clear = true
 	arena_controller.coins_per_wave = 15
-
 	add_child(arena_controller)
 
-	for marker in enemy_spawn_points:
+	for marker in enemy_spawn_markers:
 		arena_controller.spawn_points.append(arena_controller.get_path_to(marker))
 
 	arena_controller.arena_completed.connect(_on_combat_completed)
@@ -223,7 +162,7 @@ func _setup_treasure() -> void:
 	print("[RunNodeRoom] Treasure room")
 
 	var container = VBoxContainer.new()
-	container.position = Vector2(ROOM_WIDTH / 2.0 - 300, 200)
+	container.position = Vector2(400, 200)
 	container.custom_minimum_size = Vector2(600, 400)
 	container.add_theme_constant_override("separation", 20)
 	add_child(container)
@@ -241,11 +180,7 @@ func _setup_treasure() -> void:
 	container.add_child(button_container)
 
 	var item_names = ["Heilkraut", "Schattenstein", "Mana-Elixier"]
-	var item_descriptions = [
-		"Heilt 30 HP",
-		"+5% Schaden fuer diesen Run",
-		"Stellt 20 Mana wieder her"
-	]
+	var item_descriptions = ["Heilt 30 HP", "+5% Schaden fuer diesen Run", "Stellt 20 Mana wieder her"]
 
 	for i in range(RunRoomPool.TREASURE_ITEM_COUNT):
 		var item_btn = Button.new()
@@ -275,7 +210,7 @@ func _setup_rest() -> void:
 			player.get_node("ManaComponent").reset_mana()
 
 	var container = VBoxContainer.new()
-	container.position = Vector2(ROOM_WIDTH / 2.0 - 250, 200)
+	container.position = Vector2(400, 200)
 	container.custom_minimum_size = Vector2(500, 300)
 	container.add_theme_constant_override("separation", 20)
 	add_child(container)
@@ -295,8 +230,6 @@ func _setup_rest() -> void:
 	container.add_child(heal_label)
 
 	EventBus.show_notification.emit("Volle Heilung!", 3.0)
-
-	# Directly show doors (rest is instant)
 	get_tree().create_timer(1.0).timeout.connect(_on_node_cleared)
 
 
@@ -305,7 +238,7 @@ func _setup_event() -> void:
 	print("[RunNodeRoom] Event room")
 
 	var container = VBoxContainer.new()
-	container.position = Vector2(ROOM_WIDTH / 2.0 - 300, 200)
+	container.position = Vector2(350, 200)
 	container.custom_minimum_size = Vector2(600, 400)
 	container.add_theme_constant_override("separation", 20)
 	add_child(container)
@@ -355,16 +288,16 @@ func _setup_boss() -> void:
 	label.add_theme_font_size_override("font_size", 32)
 	label.add_theme_color_override("font_color", Color(0.9, 0.1, 0.1))
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.position = Vector2(ROOM_WIDTH / 2.0 - 300, 300)
+	label.position = Vector2(800, 300)
 	add_child(label)
 
 	var skip_btn = Button.new()
 	skip_btn.text = "Boss ueberspringen (Placeholder)"
 	skip_btn.custom_minimum_size = Vector2(300, 50)
 	skip_btn.add_theme_font_size_override("font_size", 18)
-	skip_btn.position = Vector2(ROOM_WIDTH / 2.0 - 150, 500)
+	skip_btn.position = Vector2(950, 500)
 	skip_btn.pressed.connect(func():
-		RunManager.complete_current_node()
+		_on_node_cleared()
 	)
 	add_child(skip_btn)
 
@@ -375,18 +308,15 @@ func _on_node_cleared() -> void:
 	if not RunManager or not RunManager.current_map:
 		return
 
-	# If we have a current node, mark it completed
 	if RunManager.current_node:
 		RunManager.current_map.complete_current_node()
 		RunManager.run_rooms_completed += 1
 		RunManager.map_updated.emit()
 
-		# Check if this was the boss
 		if RunManager.current_node.type == RunMapData.NodeType.BOSS:
 			RunManager.end_run(true)
 			return
 
-	# Get next accessible nodes and spawn doors
 	var next_nodes = RunManager.current_map.get_accessible_nodes()
 	if next_nodes.is_empty():
 		RunManager.end_run(true)
@@ -396,22 +326,31 @@ func _on_node_cleared() -> void:
 
 
 func _spawn_exit_doors(next_nodes: Array) -> void:
-	"""Spawn Hades-style doors at the right side of the room"""
+	"""Spawn Hades-style doors at DoorPositions markers in the room"""
 	if doors_spawned:
 		return
 	doors_spawned = true
 
 	_show_completion_ui("Waehle den naechsten Raum!")
 
-	var door_count = next_nodes.size()
-	var door_spacing = 300.0
-	var total_width = (door_count - 1) * door_spacing
-	var start_x = (ROOM_WIDTH - total_width) / 2.0
+	# Get door position markers from the scene
+	var door_positions: Array[Marker2D] = []
+	var door_pos_container = get_node_or_null("DoorPositions")
+	if door_pos_container:
+		for child in door_pos_container.get_children():
+			if child is Marker2D:
+				door_positions.append(child)
 
+	var door_count = next_nodes.size()
 	for i in range(door_count):
 		var node: RunMapData.MapNode = next_nodes[i]
-		var door_x = start_x + i * door_spacing
-		_create_door(node, Vector2(door_x, GROUND_Y - 100), i)
+		var pos: Vector2
+		if i < door_positions.size():
+			pos = door_positions[i].global_position
+		else:
+			# Fallback: spread evenly
+			pos = Vector2(400 + i * 300, 700)
+		_create_door(node, pos, i)
 
 	print("[RunNodeRoom] Spawned %d exit doors" % door_count)
 
@@ -420,21 +359,14 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 	"""Create a single Hades-style door (ColorRect + Label + Area2D trigger)"""
 	var door_container = Node2D.new()
 	door_container.name = "Door_%d" % index
-	door_container.position = pos
+	door_container.global_position = pos
 	add_child(door_container)
 
-	# Door visual (ColorRect as placeholder)
 	var door_width: float = 80.0
 	var door_height: float = 120.0
 	var door_color: Color = DOOR_COLORS.get(node.type, Color.WHITE)
 
-	var door_rect = ColorRect.new()
-	door_rect.color = door_color
-	door_rect.size = Vector2(door_width, door_height)
-	door_rect.position = Vector2(-door_width / 2.0, -door_height)
-	door_container.add_child(door_rect)
-
-	# Door border (slightly darker outline)
+	# Door border
 	var border = ColorRect.new()
 	border.color = door_color * 0.6
 	border.size = Vector2(door_width + 6, door_height + 6)
@@ -442,7 +374,14 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 	border.z_index = -1
 	door_container.add_child(border)
 
-	# Node type label on the door
+	# Door visual
+	var door_rect = ColorRect.new()
+	door_rect.color = door_color
+	door_rect.size = Vector2(door_width, door_height)
+	door_rect.position = Vector2(-door_width / 2.0, -door_height)
+	door_container.add_child(door_rect)
+
+	# Node type label
 	var type_label = Label.new()
 	type_label.text = node.get_type_name()
 	type_label.add_theme_font_size_override("font_size", 16)
@@ -462,7 +401,7 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 	reward_label.position = Vector2(-door_width / 2.0, -door_height - 25)
 	door_container.add_child(reward_label)
 
-	# Interaction area (Area2D)
+	# Interaction area
 	var area = Area2D.new()
 	area.name = "DoorArea"
 	var col = CollisionShape2D.new()
@@ -473,11 +412,11 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 	area.add_child(col)
 	area.collision_layer = 0
 	area.collision_mask = 0
-	area.set_collision_mask_value(2, true)  # Detect player (Layer 2 = Player)
+	area.set_collision_mask_value(2, true)  # Player on Layer 2
 	area.monitoring = true
 	door_container.add_child(area)
 
-	# Prompt label (hidden until player enters)
+	# Prompt label
 	var prompt = Label.new()
 	prompt.name = "PromptLabel"
 	prompt.text = "E - %s" % node.get_type_name()
@@ -502,7 +441,6 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 			door_container.set_meta("player_inside", false)
 	)
 
-	# Store node_id for interaction
 	door_container.set_meta("node_id", node_id)
 	door_container.add_to_group("run_doors")
 
@@ -511,7 +449,6 @@ func _process(_delta: float) -> void:
 	if not doors_spawned:
 		return
 
-	# Check for interact input near doors
 	var interact_pressed = false
 	if InputManager:
 		interact_pressed = InputManager.is_p1_action_just_pressed("interact")
@@ -521,7 +458,6 @@ func _process(_delta: float) -> void:
 	if not interact_pressed:
 		return
 
-	# Find which door the player is at
 	for door in get_tree().get_nodes_in_group("run_doors"):
 		if door.has_meta("player_inside") and door.get_meta("player_inside"):
 			var node_id: int = door.get_meta("node_id")
@@ -531,55 +467,18 @@ func _process(_delta: float) -> void:
 
 func _enter_door(node_id: int) -> void:
 	"""Player entered a door — load the next node"""
-	print("[RunNodeRoom] Entering door → node %d" % node_id)
+	print("[RunNodeRoom] Entering door -> node %d" % node_id)
 	RunManager.current_state = RunManager.RunState.MAP_VIEW
 	RunManager.select_map_node(node_id)
 
 
 # ============ UI HELPERS ============
 func _show_completion_ui(message: String) -> void:
-	if completion_label and is_instance_valid(completion_label):
-		completion_label.queue_free()
-
-	completion_label = Label.new()
-	completion_label.text = message
-	completion_label.add_theme_font_size_override("font_size", 32)
-	completion_label.add_theme_color_override("font_color", Color(0.3, 1.0, 0.4))
-	completion_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	completion_label.position = Vector2(ROOM_WIDTH / 2.0 - 200, 100)
-	completion_label.size = Vector2(400, 50)
-	add_child(completion_label)
-
-
-# ============ VISUAL HELPERS ============
-func _get_ground_color() -> Color:
-	match node_type:
-		RunMapData.NodeType.COMBAT: return Color(0.15, 0.1, 0.1)
-		RunMapData.NodeType.ELITE: return Color(0.2, 0.12, 0.05)
-		RunMapData.NodeType.TREASURE: return Color(0.08, 0.15, 0.1)
-		RunMapData.NodeType.REST: return Color(0.08, 0.12, 0.18)
-		RunMapData.NodeType.EVENT: return Color(0.12, 0.08, 0.15)
-		RunMapData.NodeType.BOSS: return Color(0.2, 0.05, 0.05)
-	return Color(0.1, 0.1, 0.1)
-
-
-func _get_bg_color() -> Color:
-	match node_type:
-		RunMapData.NodeType.COMBAT: return Color(0.08, 0.05, 0.05)
-		RunMapData.NodeType.ELITE: return Color(0.1, 0.06, 0.02)
-		RunMapData.NodeType.TREASURE: return Color(0.04, 0.08, 0.05)
-		RunMapData.NodeType.REST: return Color(0.04, 0.06, 0.1)
-		RunMapData.NodeType.EVENT: return Color(0.06, 0.04, 0.08)
-		RunMapData.NodeType.BOSS: return Color(0.1, 0.02, 0.02)
-	return Color(0.05, 0.05, 0.05)
-
-
-func _get_room_title() -> String:
-	match node_type:
-		RunMapData.NodeType.COMBAT: return "Kampf"
-		RunMapData.NodeType.ELITE: return "Elite-Kampf"
-		RunMapData.NodeType.TREASURE: return "Schatzkammer"
-		RunMapData.NodeType.REST: return "Rastplatz"
-		RunMapData.NodeType.EVENT: return "Ereignis"
-		RunMapData.NodeType.BOSS: return "Boss"
-	return "Raum"
+	var label = Label.new()
+	label.text = message
+	label.add_theme_font_size_override("font_size", 32)
+	label.add_theme_color_override("font_color", Color(0.3, 1.0, 0.4))
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.position = Vector2(400, 100)
+	label.size = Vector2(400, 50)
+	add_child(label)

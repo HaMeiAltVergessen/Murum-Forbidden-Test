@@ -77,30 +77,25 @@ func start_run(world_id: RunMapData.WorldId = RunMapData.WorldId.NIEMANDSLAND) -
 
 
 func _load_first_room() -> void:
-	"""Load an entry room that shows doors for the first row of nodes"""
-	# Preserve player
-	if GameManager.player and is_instance_valid(GameManager.player):
-		var player = GameManager.player
-		if player.get_parent():
-			player.get_parent().remove_child(player)
-		get_tree().root.add_child(player)
+	"""Load the entry room .tscn and attach RunNodeRoom controller"""
+	_preserve_player()
 
-	# Create entry room — node_data=null means doors spawn immediately via debug path
-	var room = RunNodeRoom.new()
+	var scene_path = RunRoomPool.get_entry_room_path(current_world)
+	if scene_path.is_empty():
+		push_error("[RunManager] No entry room for world %d" % current_world)
+		return
+
+	var room = _load_room_scene(scene_path)
+	if not room:
+		return
+
 	room.name = "RunEntryRoom"
 	room.node_type = RunMapData.NodeType.REST
 	room.world_id = current_world
 	room.node_data = null
 
-	# Replace current scene
-	var current_scene = get_tree().current_scene
-	if current_scene:
-		current_scene.queue_free()
-
-	get_tree().root.add_child(room)
-	get_tree().current_scene = room
-
-	print("[RunManager] Entry room loaded")
+	_replace_current_scene(room)
+	print("[RunManager] Entry room loaded: %s" % scene_path)
 
 
 func select_map_node(node_id: int) -> void:
@@ -123,30 +118,60 @@ func select_map_node(node_id: int) -> void:
 
 
 func _load_node_room(node: RunMapData.MapNode) -> void:
-	"""Creates and loads a RunNodeRoom for the selected node"""
-	# Preserve player across scene transition
+	"""Loads a handcrafted .tscn room and attaches RunNodeRoom controller"""
+	_preserve_player()
+
+	var scene_path = RunRoomPool.get_room_scene_path(current_world, node.type)
+	if scene_path.is_empty():
+		push_error("[RunManager] No room scene for node type %d" % node.type)
+		return
+
+	var room = _load_room_scene(scene_path)
+	if not room:
+		return
+
+	room.name = "RunNodeRoom_%d" % node.id
+	room.node_type = node.type
+	room.world_id = current_world
+	room.node_data = node
+
+	_replace_current_scene(room)
+	print("[RunManager] Loaded room for node %d (%s): %s" % [node.id, node.get_type_name(), scene_path])
+
+
+func _preserve_player() -> void:
+	"""Reparent player to root so it survives scene transitions"""
 	if GameManager.player and is_instance_valid(GameManager.player):
 		var player = GameManager.player
 		if player.get_parent():
 			player.get_parent().remove_child(player)
 		get_tree().root.add_child(player)
 
-	# Create the room dynamically
-	var room = RunNodeRoom.new()
-	room.name = "RunNodeRoom_%d" % node.id
-	room.node_type = node.type
-	room.world_id = current_world
-	room.node_data = node
 
-	# Replace current scene with the room
+func _load_room_scene(scene_path: String) -> RunNodeRoom:
+	"""Load a .tscn room scene and attach the RunNodeRoom script"""
+	if not ResourceLoader.exists(scene_path):
+		push_error("[RunManager] Room scene not found: %s" % scene_path)
+		return null
+
+	var packed_scene: PackedScene = load(scene_path)
+	var room_instance: Node2D = packed_scene.instantiate()
+
+	# Attach the RunNodeRoom controller script
+	var script = preload("res://worlds/run_rooms/run_node_room.gd")
+	room_instance.set_script(script)
+
+	return room_instance as RunNodeRoom
+
+
+func _replace_current_scene(room: Node) -> void:
+	"""Replace the current scene with a new room"""
 	var current_scene = get_tree().current_scene
 	if current_scene:
 		current_scene.queue_free()
 
 	get_tree().root.add_child(room)
 	get_tree().current_scene = room
-
-	print("[RunManager] Loaded room for node %d (%s)" % [node.id, node.get_type_name()])
 
 
 func end_run(victory: bool) -> void:

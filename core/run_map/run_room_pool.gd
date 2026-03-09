@@ -45,7 +45,65 @@ const ELITE_REWARDS: Array = ["relic", "relic", "item"]
 const TREASURE_ITEM_COUNT: int = 3  # Player picks 1 of 3
 
 
+# ============ ROOM SCENE POOLS (handcrafted .tscn files per node type) ============
+const ROOM_SCENES_W1: Dictionary = {
+	RunMapData.NodeType.COMBAT: [
+		"res://worlds/run_rooms/niemandsland/combat_room_01.tscn",
+		"res://worlds/run_rooms/niemandsland/combat_room_02.tscn",
+		"res://worlds/run_rooms/niemandsland/combat_room_03.tscn",
+		"res://worlds/run_rooms/niemandsland/combat_room_04.tscn",
+	],
+	RunMapData.NodeType.ELITE: [
+		"res://worlds/run_rooms/niemandsland/elite_room_01.tscn",
+		"res://worlds/run_rooms/niemandsland/elite_room_02.tscn",
+	],
+	RunMapData.NodeType.TREASURE: [
+		"res://worlds/run_rooms/niemandsland/treasure_room_01.tscn",
+	],
+	RunMapData.NodeType.REST: [
+		"res://worlds/run_rooms/niemandsland/rest_room_01.tscn",
+	],
+	RunMapData.NodeType.EVENT: [
+		"res://worlds/run_rooms/niemandsland/event_room_01.tscn",
+	],
+	RunMapData.NodeType.BOSS: [
+		"res://worlds/run_rooms/niemandsland/boss_room_01.tscn",
+	],
+}
+
+const ENTRY_ROOM_SCENES: Dictionary = {
+	RunMapData.WorldId.NIEMANDSLAND: "res://worlds/run_rooms/niemandsland/entry_room.tscn",
+}
+
+
 # ============ STATIC API ============
+
+static func get_room_scene_path(world_id: RunMapData.WorldId, node_type: RunMapData.NodeType,
+		rng: RandomNumberGenerator = null) -> String:
+	"""Returns a random room .tscn path for the given world and node type"""
+	var pool: Dictionary = {}
+	match world_id:
+		RunMapData.WorldId.NIEMANDSLAND:
+			pool = ROOM_SCENES_W1
+		_:
+			pool = ROOM_SCENES_W1
+
+	var scenes: Array = pool.get(node_type, [])
+	if scenes.is_empty():
+		push_warning("[RunRoomPool] No room scenes for type %d in world %d" % [node_type, world_id])
+		return ""
+
+	var index: int = 0
+	if rng:
+		index = rng.randi_range(0, scenes.size() - 1)
+	else:
+		index = randi() % scenes.size()
+	return scenes[index]
+
+
+static func get_entry_room_path(world_id: RunMapData.WorldId) -> String:
+	return ENTRY_ROOM_SCENES.get(world_id, "")
+
 
 static func get_enemy_scenes(world_id: RunMapData.WorldId) -> Dictionary:
 	match world_id:
