@@ -44,9 +44,19 @@ signal node_selected(node: RefCounted)  # Player selected a node on the map
 signal show_run_map()      # Request to show the run map UI
 
 
+var run_map_screen: RunMapScreen = null
+
 func _ready() -> void:
 	print("[RunManager] Initialized")
 	EventBus.player_died.connect(_on_player_died_in_run)
+	# Create the Run-Map UI (persists across scenes as child of autoload)
+	call_deferred("_create_run_map_screen")
+
+
+func _create_run_map_screen() -> void:
+	run_map_screen = RunMapScreen.new()
+	add_child(run_map_screen)
+	print("[RunManager] RunMapScreen created")
 
 
 # ============ RUN LIFECYCLE ============
