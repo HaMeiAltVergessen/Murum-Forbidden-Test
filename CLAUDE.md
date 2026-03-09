@@ -92,7 +92,52 @@ Verwaltet von `ChallengeRunManager`. 6 Kategorien mit gewichteter Tiefe (max 59 
 - Mitte (r=220): Koerper (8 Knoten)
 - Innen (r=130): Myrkur + Voch Numta + Urgathon (11 Knoten)
 
-## Welt-/Raumstruktur
+## Run-Map (Hades-Style Knoten-Netz)
+
+### Grundregeln (alle Welten)
+- Hades-Style Knoten-Netz mit Reihen (NICHT Slay the Spire Spalten)
+- Belohnungs-Vorschau: Icons ueber waehlbaren Knoten
+- Kampf-Knoten enthalten IMMER Raetsel- und/oder Fallen-Elemente (keine reinen Kampfraeume)
+- 1 Rast-Hub pro Welt (Mitte), volle Heilung, NPCs
+
+### Knotentypen
+- **K+R** = Kampf+Raetsel (Haupttyp)
+- **E+R** = Elite+Raetsel (haerter, Pre-Boss)
+- **S** = Schatz (Wahl aus 3 Items)
+- **RAST** = Mini-Hub mit NPCs, volle Heilung
+- **Er** = Ereignis (Text-Event, ab Welt 2)
+- **BOSS** = Fester Abschlussknoten
+
+### Welt 1: Das Niemandsland (Fantasy)
+- Thema: Schuld & Legende, neblige Steppe, Tempel
+- 3 Reihen + Boss, 8-9 Knoten, ~10-15 Min
+- Gegner: Geist, Hermit, Glimmerseed, Ashworm Small
+- Raetsel: Druckplatten, Kristalle, Zeitschalter
+- Fallen: Pfeilfallen, fallende Steine
+- Boss: "Die Schwuere der Vier" (Krieger, Magier, Priester, Schuetzin)
+- Rast: "Zuflucht der Verlorenen"
+
+### Welt 2: Das Kollektiv (Sci-Fi)
+- Thema: Identitaet vs. Kontrolle, Neon-Slums, Orbit
+- 4 Reihen + Boss, 12-13 Knoten, ~15-20 Min
+- Gegner: NOCH NICHT DEFINIERT (Sci-Fi-Einheiten)
+- Raetsel: Sequenz, Dual-Platten (Coop!), Zeittueren
+- Fallen: Energiefelder, schnellere Pfeilfallen, Ketten-Steine
+- Boss: "Das Kollektiv der Einen Stimme" (Raumschiff-Koerper)
+- 1 Ereignis pro Run
+
+### Welt 3: Der Abgrund (Kosmischer Horror)
+- Thema: Selbstkonfrontation, verzerrter Raum
+- 6 Reihen + Boss, 18-20 Knoten, ~25-30 Min
+- Gegner: Alle aus W1+W2 + neue Abgrund-Varianten
+- Raetsel: Alle kombiniert, Chain-Puzzles, Master-Doors
+- Fallen: Alle gleichzeitig, schneller
+- Boss: "Murum (Spiegel)" — identische Spiegelung, Endless-Runner
+- Rast: "Der Letzte Lichtfunke"
+- 2 Ereignisse pro Run
+- Schwellensicht ab Reihe 3
+
+## Welt-/Raumstruktur (bestehende Raeume)
 
 ```
 worlds/world_1_ruins/
@@ -114,6 +159,15 @@ worlds/world_1_ruins/
 **Placeholder**: Ashworm (small/medium/large), Dark Fantasy, Monster Creature
 **Lythrun-Boss**: `bosses/lythrun/lythrun_boss.gd` mit `adaptive_ai.gd` und Phase-Manager
 **Boss-Komponenten**: `bosses/components/` — AttackPatternManager, PhaseManager, VictorySequence, BossCameraController
+
+### Run-Bosse (geplant)
+- **Welt 1**: "Die Schwuere der Vier" — 4 Geister (Krieger, Magier, Priester, Schuetzin)
+- **Welt 2**: "Das Kollektiv der Einen Stimme" — Raumschiff-Koerper
+- **Welt 3**: "Murum (Spiegel)" — Spiegelung des Spielers, Endless-Runner
+
+### Veraltete Boss-Konzepte (NICHT MEHR GUELTIG)
+- ~~Urgathon als Welt-1-Boss~~ → ersetzt durch "Die Schwuere der Vier"
+- ~~Myrkur als Welt-3-Boss~~ → ersetzt durch "Murum (Spiegel)"
 
 ## UI-Screens
 
@@ -150,40 +204,34 @@ worlds/world_1_ruins/
 - **Dialoge**: .tres Ressourcen in `data/dialogs/`
 - **Musik**: .tres Ressourcen in `data/music/`
 
-## Roguelike-Vision (GEPLANT — noch nicht implementiert)
+## Roguelike-Systeme
 
-**Kernkonzept**: Hybrid-Roguelike. Feste handcrafted Raeume, Roguelike-Struktur von Anfang an.
+**Kernkonzept**: Hybrid-Roguelike. Feste handcrafted Raeume, Roguelike-Knoten-Netz-Struktur.
 
-### Hub: Limbus
-- Dunkler Raum, Siegel-Visualisierung oben zum Einstellen, Licht-Tuer zum Starten
-- Von Anfang an der zentrale Startpunkt (kein separater Story-Modus)
-- 3 Save-Slots (bereits in SaveManager implementiert)
-
-### Run-Struktur
-- **Slay the Spire-artige Pfadwahl**: Spieler waehlt zwischen 2-3 naechsten Raeumen
-- **Begrenzte Leben pro Run**: X Leben, alle weg = zurueck zum Limbus
-- **Siegel-Modifikatoren** beeinflussen den gesamten Run (Gegner-HP, Schaden, Spawns, etc.)
-
-### Meta-Progression (wie Hades)
-- Permanente Upgrades zwischen Runs
-- Waehrung aus Runs wird im Hub fuer Upgrades ausgegeben
-- Mehr HP, neue Faehigkeiten, Gameplay-Verbesserungen
+### Bereits implementiert
+- [x] **UpgradeManager** (`core/autoloads/upgrade_manager.gd`) — 8 permanente Upgrades mit Magicka
+- [x] **Limbus-Haendler** — Upgrades kaufen (HP, Schaden, Mana-Regen, Speed, Echo, Ability-Damage, etc.)
+- [x] **Zusaetzliche Leben** beim Haendler fuer 2 Magicka kaufen
+- [x] **Siegel-System** (33 Modifikatoren) — Schwierigkeitsmodifikation
+- [x] **P2-Upgrade-Integration** — Alle Upgrades gelten fuer P1 UND P2 (`is Murum or is Lythrun` Checks)
+- [x] **P2 Ability-Damage-Bonus** — Urgathons Erbe gilt fuer alle 4 P2-Abilities (Void Orbs, Void Parry, Void Rift, Shadow Scythe)
+- [x] **P2 Kill-Heal** (Blut der Schlacht) — Mana/HP bei Kills
+- [x] **P2 Echo der Macht** — Echo-Chance bei Angriffen in LythrunCombatSystem
 
 ### Noch zu implementieren
-- [ ] Limbus-Hub-Szene (dunkler Raum + Siegel + Licht-Tuer)
-- [ ] Save-Slot-Auswahl-UI im Hauptmenue
-- [ ] Run-Map (Slay the Spire Verzweigungsmap)
-- [ ] Run-Routing-System (Raum-Pools, Pfad-Generierung)
-- [ ] Leben-System (X Leben pro Run)
+- [ ] Run-Map-Generator (Knoten-Netz pro Welt)
+- [ ] Run-Map-UI (Knoten-Auswahl, Belohnungs-Vorschau)
+- [ ] Raum-Pools fuer Welt 1 (K+R, E+R, S, RAST Raeume)
+- [ ] Wellen-Configs fuer Kampf-Knoten (ArenaController + WaveSpawner)
 - [ ] Run-Ende-Screen (Belohnungen, Statistiken)
-- [ ] Meta-Progression-System (permanente Upgrades)
-- [ ] Meta-Waehrungs-System (Run-Belohnungen)
-- [ ] Hub-Upgrade-NPCs/Stationen
+- [ ] Limbus-Hub-Szene (dunkler Raum + Siegel + Licht-Tuer)
+- [ ] Welt-2- und Welt-3-Gegner
+- [ ] Alle 3 Run-Bosse
 
 ## Bekannte TODOs
 
 - Gameplay-Effekte der meisten Siegel-Modifikatoren sind data-only (nicht implementiert)
-- Nur World 1 (Ruins) existiert mit Raeumen
+- Nur World 1 (Ruins) existiert mit handcrafted Raeumen
 - Gegner sind teilweise Placeholder
-- Kein Procedural Generation vorhanden
-- Roguelike-Umbau steht bevor (siehe oben)
+- Run-Map und Knoten-Netz noch nicht implementiert
+- Welt 2 (Sci-Fi) und Welt 3 (Kosmischer Horror) Gegner noch nicht definiert
