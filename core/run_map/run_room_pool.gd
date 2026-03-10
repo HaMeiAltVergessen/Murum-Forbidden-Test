@@ -12,6 +12,26 @@ const ENEMY_SCENES_W1: Dictionary = {
 	"corpse_trap": "res://enemies/world_1_ruins/corpse_trap.tscn",
 }
 
+# ============ ENEMY SCENES (Welt 2: Das Kollektiv) ============
+# Placeholder: uses W1 enemies until Sci-Fi enemies are created
+const ENEMY_SCENES_W2: Dictionary = {
+	"geist": "res://enemies/world_1_ruins/geist.tscn",
+	"hermit": "res://enemies/world_1_ruins/hermit.tscn",
+	"glimmerseed": "res://enemies/world_1_ruins/glimmerseed.tscn",
+	"ashworm_small": "res://enemies/placeholder/ashworm_small.tscn",
+	"corpse_trap": "res://enemies/world_1_ruins/corpse_trap.tscn",
+}
+
+# ============ ENEMY SCENES (Welt 3: Der Abgrund) ============
+# Placeholder: uses W1 enemies until Abgrund enemies are created
+const ENEMY_SCENES_W3: Dictionary = {
+	"geist": "res://enemies/world_1_ruins/geist.tscn",
+	"hermit": "res://enemies/world_1_ruins/hermit.tscn",
+	"glimmerseed": "res://enemies/world_1_ruins/glimmerseed.tscn",
+	"ashworm_small": "res://enemies/placeholder/ashworm_small.tscn",
+	"corpse_trap": "res://enemies/world_1_ruins/corpse_trap.tscn",
+}
+
 # ============ ENCOUNTER TEMPLATES ============
 # Each template: single list of {scene_key, count} — all spawn at once, no waves
 
@@ -37,6 +57,36 @@ const ELITE_ENCOUNTERS_W1: Array = [
 	[{"key": "ashworm_small", "count": 4}, {"key": "hermit", "count": 2}],
 	# Template 3: Trap-heavy
 	[{"key": "corpse_trap", "count": 2}, {"key": "hermit", "count": 2}, {"key": "glimmerseed", "count": 2}],
+]
+
+# W2: Kollektiv encounters (harder, 4-5 enemies)
+const COMBAT_ENCOUNTERS_W2: Array = [
+	[{"key": "geist", "count": 3}, {"key": "hermit", "count": 1}],
+	[{"key": "ashworm_small", "count": 3}, {"key": "corpse_trap", "count": 1}],
+	[{"key": "hermit", "count": 2}, {"key": "glimmerseed", "count": 2}],
+	[{"key": "geist", "count": 2}, {"key": "hermit", "count": 1}, {"key": "corpse_trap", "count": 1}],
+	[{"key": "glimmerseed", "count": 2}, {"key": "ashworm_small", "count": 2}, {"key": "geist", "count": 1}],
+]
+
+const ELITE_ENCOUNTERS_W2: Array = [
+	[{"key": "hermit", "count": 3}, {"key": "geist", "count": 2}, {"key": "corpse_trap", "count": 1}],
+	[{"key": "ashworm_small", "count": 4}, {"key": "hermit", "count": 2}, {"key": "glimmerseed", "count": 1}],
+	[{"key": "corpse_trap", "count": 2}, {"key": "hermit", "count": 2}, {"key": "geist", "count": 2}],
+]
+
+# W3: Abgrund encounters (hardest, 5-7 enemies)
+const COMBAT_ENCOUNTERS_W3: Array = [
+	[{"key": "geist", "count": 3}, {"key": "hermit", "count": 2}],
+	[{"key": "ashworm_small", "count": 4}, {"key": "corpse_trap", "count": 1}],
+	[{"key": "hermit", "count": 2}, {"key": "glimmerseed", "count": 2}, {"key": "geist", "count": 1}],
+	[{"key": "corpse_trap", "count": 2}, {"key": "hermit", "count": 2}, {"key": "ashworm_small", "count": 1}],
+	[{"key": "geist", "count": 2}, {"key": "glimmerseed", "count": 2}, {"key": "hermit", "count": 2}],
+]
+
+const ELITE_ENCOUNTERS_W3: Array = [
+	[{"key": "hermit", "count": 3}, {"key": "geist", "count": 3}, {"key": "corpse_trap", "count": 2}],
+	[{"key": "ashworm_small", "count": 5}, {"key": "hermit", "count": 2}, {"key": "glimmerseed", "count": 1}],
+	[{"key": "corpse_trap", "count": 3}, {"key": "hermit", "count": 2}, {"key": "geist", "count": 2}, {"key": "glimmerseed", "count": 1}],
 ]
 
 # ============ REWARD POOLS ============
@@ -71,8 +121,64 @@ const ROOM_SCENES_W1: Dictionary = {
 	],
 }
 
+const ROOM_SCENES_W2: Dictionary = {
+	RunMapData.NodeType.COMBAT: [
+		"res://worlds/run_rooms/kollektiv/combat_room_01.tscn",
+		"res://worlds/run_rooms/kollektiv/combat_room_02.tscn",
+		"res://worlds/run_rooms/kollektiv/combat_room_03.tscn",
+		"res://worlds/run_rooms/kollektiv/combat_room_04.tscn",
+		"res://worlds/run_rooms/kollektiv/combat_room_05.tscn",
+	],
+	RunMapData.NodeType.ELITE: [
+		"res://worlds/run_rooms/kollektiv/elite_room_01.tscn",
+		"res://worlds/run_rooms/kollektiv/elite_room_02.tscn",
+	],
+	RunMapData.NodeType.TREASURE: [
+		"res://worlds/run_rooms/kollektiv/treasure_room_01.tscn",
+	],
+	RunMapData.NodeType.REST: [
+		"res://worlds/run_rooms/kollektiv/rest_room_01.tscn",
+	],
+	RunMapData.NodeType.EVENT: [
+		"res://worlds/run_rooms/kollektiv/event_room_01.tscn",
+	],
+	RunMapData.NodeType.BOSS: [
+		"res://worlds/run_rooms/kollektiv/boss_room_01.tscn",
+	],
+}
+
+const ROOM_SCENES_W3: Dictionary = {
+	RunMapData.NodeType.COMBAT: [
+		"res://worlds/run_rooms/abgrund/combat_room_01.tscn",
+		"res://worlds/run_rooms/abgrund/combat_room_02.tscn",
+		"res://worlds/run_rooms/abgrund/combat_room_03.tscn",
+		"res://worlds/run_rooms/abgrund/combat_room_04.tscn",
+		"res://worlds/run_rooms/abgrund/combat_room_05.tscn",
+		"res://worlds/run_rooms/abgrund/combat_room_06.tscn",
+	],
+	RunMapData.NodeType.ELITE: [
+		"res://worlds/run_rooms/abgrund/elite_room_01.tscn",
+		"res://worlds/run_rooms/abgrund/elite_room_02.tscn",
+	],
+	RunMapData.NodeType.TREASURE: [
+		"res://worlds/run_rooms/abgrund/treasure_room_01.tscn",
+	],
+	RunMapData.NodeType.REST: [
+		"res://worlds/run_rooms/abgrund/rest_room_01.tscn",
+	],
+	RunMapData.NodeType.EVENT: [
+		"res://worlds/run_rooms/abgrund/event_room_01.tscn",
+		"res://worlds/run_rooms/abgrund/event_room_02.tscn",
+	],
+	RunMapData.NodeType.BOSS: [
+		"res://worlds/run_rooms/abgrund/boss_room_01.tscn",
+	],
+}
+
 const ENTRY_ROOM_SCENES: Dictionary = {
 	RunMapData.WorldId.NIEMANDSLAND: "res://worlds/run_rooms/niemandsland/entry_room.tscn",
+	RunMapData.WorldId.KOLLEKTIV: "res://worlds/run_rooms/kollektiv/entry_room.tscn",
+	RunMapData.WorldId.ABGRUND: "res://worlds/run_rooms/abgrund/entry_room.tscn",
 }
 
 
@@ -85,6 +191,10 @@ static func get_room_scene_path(world_id: RunMapData.WorldId, node_type: RunMapD
 	match world_id:
 		RunMapData.WorldId.NIEMANDSLAND:
 			pool = ROOM_SCENES_W1
+		RunMapData.WorldId.KOLLEKTIV:
+			pool = ROOM_SCENES_W2
+		RunMapData.WorldId.ABGRUND:
+			pool = ROOM_SCENES_W3
 		_:
 			pool = ROOM_SCENES_W1
 
@@ -109,6 +219,10 @@ static func get_enemy_scenes(world_id: RunMapData.WorldId) -> Dictionary:
 	match world_id:
 		RunMapData.WorldId.NIEMANDSLAND:
 			return ENEMY_SCENES_W1
+		RunMapData.WorldId.KOLLEKTIV:
+			return ENEMY_SCENES_W2
+		RunMapData.WorldId.ABGRUND:
+			return ENEMY_SCENES_W3
 		_:
 			return ENEMY_SCENES_W1
 
@@ -125,6 +239,22 @@ static func get_encounter_template(world_id: RunMapData.WorldId, node_type: RunM
 					templates = COMBAT_ENCOUNTERS_W1
 				RunMapData.NodeType.ELITE:
 					templates = ELITE_ENCOUNTERS_W1
+				_:
+					return []
+		RunMapData.WorldId.KOLLEKTIV:
+			match node_type:
+				RunMapData.NodeType.COMBAT:
+					templates = COMBAT_ENCOUNTERS_W2
+				RunMapData.NodeType.ELITE:
+					templates = ELITE_ENCOUNTERS_W2
+				_:
+					return []
+		RunMapData.WorldId.ABGRUND:
+			match node_type:
+				RunMapData.NodeType.COMBAT:
+					templates = COMBAT_ENCOUNTERS_W3
+				RunMapData.NodeType.ELITE:
+					templates = ELITE_ENCOUNTERS_W3
 				_:
 					return []
 

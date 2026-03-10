@@ -216,7 +216,7 @@ func _setup_rest() -> void:
 	add_child(container)
 
 	var title = Label.new()
-	title.text = "Zuflucht der Verlorenen"
+	title.text = _get_rest_name()
 	title.add_theme_font_size_override("font_size", 28)
 	title.add_theme_color_override("font_color", Color(0.3, 0.7, 1.0))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -281,10 +281,11 @@ func _setup_event() -> void:
 
 # ============ BOSS SETUP ============
 func _setup_boss() -> void:
-	print("[RunNodeRoom] Boss room — placeholder")
+	var boss_name: String = _get_boss_name()
+	print("[RunNodeRoom] Boss room — %s (placeholder)" % boss_name)
 
 	var label = Label.new()
-	label.text = "BOSS: Die Schwuere der Vier\n(Noch nicht implementiert)"
+	label.text = "BOSS: %s\n(Noch nicht implementiert)" % boss_name
 	label.add_theme_font_size_override("font_size", 32)
 	label.add_theme_color_override("font_color", Color(0.9, 0.1, 0.1))
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -302,6 +303,17 @@ func _setup_boss() -> void:
 	add_child(skip_btn)
 
 
+func _get_boss_name() -> String:
+	match world_id:
+		RunMapData.WorldId.NIEMANDSLAND:
+			return "Die Schwuere der Vier"
+		RunMapData.WorldId.KOLLEKTIV:
+			return "Das Kollektiv der Einen Stimme"
+		RunMapData.WorldId.ABGRUND:
+			return "Murum (Spiegel)"
+	return "Unbekannter Boss"
+
+
 # ============ NODE COMPLETION + HADES-STYLE DOORS ============
 func _on_node_cleared() -> void:
 	"""Node is cleared — mark complete and spawn doors for next choices"""
@@ -314,7 +326,11 @@ func _on_node_cleared() -> void:
 		RunManager.map_updated.emit()
 
 		if RunManager.current_node.type == RunMapData.NodeType.BOSS:
-			RunManager.end_run(true)
+			var next_world := _get_next_world()
+			if next_world >= 0:
+				RunManager.transition_to_next_world(next_world as RunMapData.WorldId)
+			else:
+				RunManager.end_run(true)
 			return
 
 	var next_nodes = RunManager.current_map.get_accessible_nodes()
@@ -470,6 +486,26 @@ func _enter_door(node_id: int) -> void:
 	print("[RunNodeRoom] Entering door -> node %d" % node_id)
 	RunManager.current_state = RunManager.RunState.MAP_VIEW
 	RunManager.select_map_node(node_id)
+
+
+func _get_rest_name() -> String:
+	match world_id:
+		RunMapData.WorldId.NIEMANDSLAND:
+			return "Zuflucht der Verlorenen"
+		RunMapData.WorldId.KOLLEKTIV:
+			return "Regenerationsstation"
+		RunMapData.WorldId.ABGRUND:
+			return "Der Letzte Lichtfunke"
+	return "Raststelle"
+
+
+func _get_next_world() -> int:
+	match world_id:
+		RunMapData.WorldId.NIEMANDSLAND:
+			return RunMapData.WorldId.KOLLEKTIV
+		RunMapData.WorldId.KOLLEKTIV:
+			return RunMapData.WorldId.ABGRUND
+	return -1
 
 
 # ============ UI HELPERS ============

@@ -174,6 +174,26 @@ func _replace_current_scene(room: Node) -> void:
 	get_tree().current_scene = room
 
 
+func transition_to_next_world(next_world_id: RunMapData.WorldId) -> void:
+	"""Transition to the next world after beating a boss (W1->W2, W2->W3)"""
+	print("[RunManager] Transitioning from '%s' to '%s'" % [
+		_get_world_name(current_world), _get_world_name(next_world_id)
+	])
+
+	current_world = next_world_id
+	current_node = null
+
+	# Generate new map for the next world
+	current_map = RunMapGenerator.generate_map(next_world_id)
+	RunMapGenerator.print_map(current_map)
+
+	current_state = RunState.MAP_VIEW
+	map_updated.emit()
+
+	# Load entry room for the new world
+	_load_first_room()
+
+
 func end_run(victory: bool) -> void:
 	if current_state == RunState.IDLE or current_state == RunState.ENDED:
 		return
