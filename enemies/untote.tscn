@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://dajxntum5qj3i" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Mummy/Mummy-sheet.png" id="2_mummy"]
 
 [node name="Untote" instance=ExtResource("1_base")]
-max_health = 200
+max_health = 20
 
 [node name="Sprite2D" parent="." index="0"]
 texture = ExtResource("2_mummy")
