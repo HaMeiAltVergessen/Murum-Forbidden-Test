@@ -211,8 +211,19 @@ func end_run(victory: bool) -> void:
 		else:
 			ChallengeRunManager.end_challenge_run()
 
-	# Return to Limbus
-	_return_to_limbus()
+	# Show run end screen
+	_show_run_end_screen(victory)
+
+
+func _show_run_end_screen(victory: bool) -> void:
+	var screen_scene = load("res://ui/run_end_screen.tscn")
+	if screen_scene:
+		var screen = screen_scene.instantiate()
+		get_tree().root.add_child(screen)
+		screen.show_summary(victory, run_rooms_completed, run_enemies_killed)
+	else:
+		push_warning("[RunManager] run_end_screen.tscn not found, returning to Limbus")
+		_return_to_limbus()
 
 
 func _return_to_limbus() -> void:

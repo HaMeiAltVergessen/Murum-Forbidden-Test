@@ -3,60 +3,60 @@ extends RefCounted
 ## Used by RunNodeRoom to configure combat encounters
 class_name RunRoomPool
 
-# ============ ENEMY SCENES (nur Geist + Hermit zum Testen) ============
+# ============ ENEMY SCENES (Geist + Untote zum Testen) ============
 const ENEMY_SCENES_W1: Dictionary = {
 	"geist": "res://enemies/world_1_ruins/geist.tscn",
-	"hermit": "res://enemies/world_1_ruins/hermit.tscn",
+	"untote": "res://enemies/untote.tscn",
 }
 
 const ENEMY_SCENES_W2: Dictionary = {
 	"geist": "res://enemies/world_1_ruins/geist.tscn",
-	"hermit": "res://enemies/world_1_ruins/hermit.tscn",
+	"untote": "res://enemies/untote.tscn",
 }
 
 const ENEMY_SCENES_W3: Dictionary = {
 	"geist": "res://enemies/world_1_ruins/geist.tscn",
-	"hermit": "res://enemies/world_1_ruins/hermit.tscn",
+	"untote": "res://enemies/untote.tscn",
 }
 
 # ============ ENCOUNTER TEMPLATES ============
 # Each template: single list of {scene_key, count} — all spawn at once, no waves
 
-# K: Kampf (nur Geist + Hermit zum Testen)
+# K: Kampf
 const COMBAT_ENCOUNTERS_W1: Array = [
-	[{"key": "geist", "count": 2}, {"key": "hermit", "count": 1}],
+	[{"key": "geist", "count": 2}, {"key": "untote", "count": 1}],
 	[{"key": "geist", "count": 3}],
-	[{"key": "hermit", "count": 2}, {"key": "geist", "count": 1}],
+	[{"key": "untote", "count": 2}, {"key": "geist", "count": 1}],
 ]
 
 # E: Elite
 const ELITE_ENCOUNTERS_W1: Array = [
-	[{"key": "hermit", "count": 2}, {"key": "geist", "count": 3}],
-	[{"key": "geist", "count": 4}, {"key": "hermit", "count": 2}],
+	[{"key": "untote", "count": 2}, {"key": "geist", "count": 3}],
+	[{"key": "geist", "count": 4}, {"key": "untote", "count": 2}],
 ]
 
 # W2: Kollektiv (etwas haerter)
 const COMBAT_ENCOUNTERS_W2: Array = [
-	[{"key": "geist", "count": 3}, {"key": "hermit", "count": 1}],
-	[{"key": "hermit", "count": 2}, {"key": "geist", "count": 2}],
-	[{"key": "geist", "count": 2}, {"key": "hermit", "count": 2}],
+	[{"key": "geist", "count": 3}, {"key": "untote", "count": 1}],
+	[{"key": "untote", "count": 2}, {"key": "geist", "count": 2}],
+	[{"key": "geist", "count": 2}, {"key": "untote", "count": 2}],
 ]
 
 const ELITE_ENCOUNTERS_W2: Array = [
-	[{"key": "hermit", "count": 3}, {"key": "geist", "count": 3}],
-	[{"key": "geist", "count": 4}, {"key": "hermit", "count": 2}],
+	[{"key": "untote", "count": 3}, {"key": "geist", "count": 3}],
+	[{"key": "geist", "count": 4}, {"key": "untote", "count": 2}],
 ]
 
 # W3: Abgrund (am haertesten)
 const COMBAT_ENCOUNTERS_W3: Array = [
-	[{"key": "geist", "count": 3}, {"key": "hermit", "count": 2}],
-	[{"key": "hermit", "count": 3}, {"key": "geist", "count": 2}],
-	[{"key": "geist", "count": 4}, {"key": "hermit", "count": 1}],
+	[{"key": "geist", "count": 3}, {"key": "untote", "count": 2}],
+	[{"key": "untote", "count": 3}, {"key": "geist", "count": 2}],
+	[{"key": "geist", "count": 4}, {"key": "untote", "count": 1}],
 ]
 
 const ELITE_ENCOUNTERS_W3: Array = [
-	[{"key": "hermit", "count": 3}, {"key": "geist", "count": 3}, {"key": "hermit", "count": 2}],
-	[{"key": "geist", "count": 5}, {"key": "hermit", "count": 3}],
+	[{"key": "untote", "count": 3}, {"key": "geist", "count": 4}],
+	[{"key": "geist", "count": 5}, {"key": "untote", "count": 3}],
 ]
 
 # ============ REWARD POOLS ============
