@@ -161,41 +161,26 @@ func _on_combat_completed() -> void:
 func _setup_treasure() -> void:
 	print("[RunNodeRoom] Treasure room")
 
-	var container = VBoxContainer.new()
-	container.position = Vector2(400, 200)
-	container.custom_minimum_size = Vector2(600, 400)
-	container.add_theme_constant_override("separation", 20)
-	add_child(container)
+	# Heal player as bonus
+	if GameManager.player and is_instance_valid(GameManager.player):
+		var player = GameManager.player
+		if player.has_node("HealthComponent"):
+			player.get_node("HealthComponent").reset_health()
+		if player.has_node("ManaComponent"):
+			player.get_node("ManaComponent").reset_mana()
 
-	var title = Label.new()
-	title.text = "Schatz! Waehle ein Item:"
-	title.add_theme_font_size_override("font_size", 28)
-	title.add_theme_color_override("font_color", Color(1.0, 0.9, 0.3))
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	container.add_child(title)
+	var items = [
+		{"name": "Heilkraut", "desc": "Heilt 30 HP"},
+		{"name": "Schattenstein", "desc": "+5% Schaden fuer diesen Run"},
+		{"name": "Mana-Elixier", "desc": "Stellt 20 Mana wieder her"},
+	]
+	var chosen = items[randi() % items.size()]
 
-	var button_container = HBoxContainer.new()
-	button_container.add_theme_constant_override("separation", 40)
-	button_container.alignment = BoxContainer.ALIGNMENT_CENTER
-	container.add_child(button_container)
+	_show_completion_ui("Schatz: %s gefunden!" % chosen["name"])
+	EventBus.show_notification.emit("Du erhaeltst: %s — %s" % [chosen["name"], chosen["desc"]], 4.0)
+	print("[RunNodeRoom] Treasure auto-collected: %s" % chosen["name"])
 
-	var item_names = ["Heilkraut", "Schattenstein", "Mana-Elixier"]
-	var item_descriptions = ["Heilt 30 HP", "+5% Schaden fuer diesen Run", "Stellt 20 Mana wieder her"]
-
-	for i in range(RunRoomPool.TREASURE_ITEM_COUNT):
-		var item_btn = Button.new()
-		item_btn.custom_minimum_size = Vector2(160, 120)
-		item_btn.text = "%s\n\n%s" % [item_names[i], item_descriptions[i]]
-		item_btn.add_theme_font_size_override("font_size", 14)
-		item_btn.pressed.connect(_on_treasure_selected.bind(i, item_names[i]))
-		button_container.add_child(item_btn)
-
-
-func _on_treasure_selected(index: int, item_name: String) -> void:
-	print("[RunNodeRoom] Treasure selected: %s (index %d)" % [item_name, index])
-	EventBus.show_notification.emit("Du erhaeltst: %s" % item_name, 3.0)
-	_show_completion_ui("Item eingesammelt!")
-	get_tree().create_timer(1.5).timeout.connect(_on_node_cleared)
+	get_tree().create_timer(2.0).timeout.connect(_on_node_cleared)
 
 
 # ============ REST SETUP ============

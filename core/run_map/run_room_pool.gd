@@ -3,90 +3,60 @@ extends RefCounted
 ## Used by RunNodeRoom to configure combat encounters
 class_name RunRoomPool
 
-# ============ ENEMY SCENES (Welt 1: Das Niemandsland) ============
+# ============ ENEMY SCENES (nur Geist + Hermit zum Testen) ============
 const ENEMY_SCENES_W1: Dictionary = {
 	"geist": "res://enemies/world_1_ruins/geist.tscn",
 	"hermit": "res://enemies/world_1_ruins/hermit.tscn",
-	"glimmerseed": "res://enemies/world_1_ruins/glimmerseed.tscn",
-	"ashworm_small": "res://enemies/placeholder/ashworm_small.tscn",
-	"corpse_trap": "res://enemies/world_1_ruins/corpse_trap.tscn",
 }
 
-# ============ ENEMY SCENES (Welt 2: Das Kollektiv) ============
-# Placeholder: uses W1 enemies until Sci-Fi enemies are created
 const ENEMY_SCENES_W2: Dictionary = {
 	"geist": "res://enemies/world_1_ruins/geist.tscn",
 	"hermit": "res://enemies/world_1_ruins/hermit.tscn",
-	"glimmerseed": "res://enemies/world_1_ruins/glimmerseed.tscn",
-	"ashworm_small": "res://enemies/placeholder/ashworm_small.tscn",
-	"corpse_trap": "res://enemies/world_1_ruins/corpse_trap.tscn",
 }
 
-# ============ ENEMY SCENES (Welt 3: Der Abgrund) ============
-# Placeholder: uses W1 enemies until Abgrund enemies are created
 const ENEMY_SCENES_W3: Dictionary = {
 	"geist": "res://enemies/world_1_ruins/geist.tscn",
 	"hermit": "res://enemies/world_1_ruins/hermit.tscn",
-	"glimmerseed": "res://enemies/world_1_ruins/glimmerseed.tscn",
-	"ashworm_small": "res://enemies/placeholder/ashworm_small.tscn",
-	"corpse_trap": "res://enemies/world_1_ruins/corpse_trap.tscn",
 }
 
 # ============ ENCOUNTER TEMPLATES ============
 # Each template: single list of {scene_key, count} — all spawn at once, no waves
 
-# K: Kampf (moderate difficulty, 3-4 enemies)
+# K: Kampf (nur Geist + Hermit zum Testen)
 const COMBAT_ENCOUNTERS_W1: Array = [
-	# Template 1: Mixed basic
 	[{"key": "geist", "count": 2}, {"key": "hermit", "count": 1}],
-	# Template 2: Swarm
-	[{"key": "ashworm_small", "count": 3}, {"key": "geist", "count": 1}],
-	# Template 3: Hermit duo
-	[{"key": "hermit", "count": 2}, {"key": "corpse_trap", "count": 1}],
-	# Template 4: Glimmerseed garden
-	[{"key": "glimmerseed", "count": 3}, {"key": "geist", "count": 1}],
-	# Template 5: Varied
-	[{"key": "geist", "count": 1}, {"key": "hermit", "count": 1}, {"key": "ashworm_small", "count": 2}],
+	[{"key": "geist", "count": 3}],
+	[{"key": "hermit", "count": 2}, {"key": "geist", "count": 1}],
 ]
 
-# E: Elite (harder, 5-7 enemies)
+# E: Elite
 const ELITE_ENCOUNTERS_W1: Array = [
-	# Template 1: Big mixed group
-	[{"key": "hermit", "count": 2}, {"key": "geist", "count": 2}, {"key": "corpse_trap", "count": 1}],
-	# Template 2: Swarm rush
-	[{"key": "ashworm_small", "count": 4}, {"key": "hermit", "count": 2}],
-	# Template 3: Trap-heavy
-	[{"key": "corpse_trap", "count": 2}, {"key": "hermit", "count": 2}, {"key": "glimmerseed", "count": 2}],
+	[{"key": "hermit", "count": 2}, {"key": "geist", "count": 3}],
+	[{"key": "geist", "count": 4}, {"key": "hermit", "count": 2}],
 ]
 
-# W2: Kollektiv encounters (harder, 4-5 enemies)
+# W2: Kollektiv (etwas haerter)
 const COMBAT_ENCOUNTERS_W2: Array = [
 	[{"key": "geist", "count": 3}, {"key": "hermit", "count": 1}],
-	[{"key": "ashworm_small", "count": 3}, {"key": "corpse_trap", "count": 1}],
-	[{"key": "hermit", "count": 2}, {"key": "glimmerseed", "count": 2}],
-	[{"key": "geist", "count": 2}, {"key": "hermit", "count": 1}, {"key": "corpse_trap", "count": 1}],
-	[{"key": "glimmerseed", "count": 2}, {"key": "ashworm_small", "count": 2}, {"key": "geist", "count": 1}],
+	[{"key": "hermit", "count": 2}, {"key": "geist", "count": 2}],
+	[{"key": "geist", "count": 2}, {"key": "hermit", "count": 2}],
 ]
 
 const ELITE_ENCOUNTERS_W2: Array = [
-	[{"key": "hermit", "count": 3}, {"key": "geist", "count": 2}, {"key": "corpse_trap", "count": 1}],
-	[{"key": "ashworm_small", "count": 4}, {"key": "hermit", "count": 2}, {"key": "glimmerseed", "count": 1}],
-	[{"key": "corpse_trap", "count": 2}, {"key": "hermit", "count": 2}, {"key": "geist", "count": 2}],
+	[{"key": "hermit", "count": 3}, {"key": "geist", "count": 3}],
+	[{"key": "geist", "count": 4}, {"key": "hermit", "count": 2}],
 ]
 
-# W3: Abgrund encounters (hardest, 5-7 enemies)
+# W3: Abgrund (am haertesten)
 const COMBAT_ENCOUNTERS_W3: Array = [
 	[{"key": "geist", "count": 3}, {"key": "hermit", "count": 2}],
-	[{"key": "ashworm_small", "count": 4}, {"key": "corpse_trap", "count": 1}],
-	[{"key": "hermit", "count": 2}, {"key": "glimmerseed", "count": 2}, {"key": "geist", "count": 1}],
-	[{"key": "corpse_trap", "count": 2}, {"key": "hermit", "count": 2}, {"key": "ashworm_small", "count": 1}],
-	[{"key": "geist", "count": 2}, {"key": "glimmerseed", "count": 2}, {"key": "hermit", "count": 2}],
+	[{"key": "hermit", "count": 3}, {"key": "geist", "count": 2}],
+	[{"key": "geist", "count": 4}, {"key": "hermit", "count": 1}],
 ]
 
 const ELITE_ENCOUNTERS_W3: Array = [
-	[{"key": "hermit", "count": 3}, {"key": "geist", "count": 3}, {"key": "corpse_trap", "count": 2}],
-	[{"key": "ashworm_small", "count": 5}, {"key": "hermit", "count": 2}, {"key": "glimmerseed", "count": 1}],
-	[{"key": "corpse_trap", "count": 3}, {"key": "hermit", "count": 2}, {"key": "geist", "count": 2}, {"key": "glimmerseed", "count": 1}],
+	[{"key": "hermit", "count": 3}, {"key": "geist", "count": 3}, {"key": "hermit", "count": 2}],
+	[{"key": "geist", "count": 5}, {"key": "hermit", "count": 3}],
 ]
 
 # ============ REWARD POOLS ============
