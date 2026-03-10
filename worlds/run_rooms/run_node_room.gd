@@ -267,25 +267,10 @@ func _setup_event() -> void:
 # ============ BOSS SETUP ============
 func _setup_boss() -> void:
 	var boss_name: String = _get_boss_name()
-	print("[RunNodeRoom] Boss room — %s (placeholder)" % boss_name)
+	print("[RunNodeRoom] Boss room — %s (placeholder, auto-skip)" % boss_name)
 
-	var label = Label.new()
-	label.text = "BOSS: %s\n(Noch nicht implementiert)" % boss_name
-	label.add_theme_font_size_override("font_size", 32)
-	label.add_theme_color_override("font_color", Color(0.9, 0.1, 0.1))
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.position = Vector2(800, 300)
-	add_child(label)
-
-	var skip_btn = Button.new()
-	skip_btn.text = "Boss ueberspringen (Placeholder)"
-	skip_btn.custom_minimum_size = Vector2(300, 50)
-	skip_btn.add_theme_font_size_override("font_size", 18)
-	skip_btn.position = Vector2(950, 500)
-	skip_btn.pressed.connect(func():
-		_on_node_cleared()
-	)
-	add_child(skip_btn)
+	_show_completion_ui("BOSS: %s (uebersprungen)" % boss_name)
+	get_tree().create_timer(2.0).timeout.connect(_on_node_cleared)
 
 
 func _get_boss_name() -> String:
