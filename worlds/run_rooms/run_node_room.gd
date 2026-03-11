@@ -169,9 +169,17 @@ func _on_combat_completed() -> void:
 	# Grant gold
 	var gold: int = RewardManager.get_combat_gold(w)
 	GameManager.add_coins(gold)
+
+	if node_type == RunMapData.NodeType.ELITE:
+		# Elite: gold + boon selection
+		_show_completion_ui("Elite besiegt! +%d Gold" % gold)
+		EventBus.show_notification.emit("+%d Gold" % gold, 2.0)
+		get_tree().create_timer(1.5).timeout.connect(_setup_boon_selection)
+		return
+
 	_show_completion_ui("Alle Gegner besiegt! +%d Gold" % gold)
 
-	# 30% chance: drop 1 consumable
+	# 30% chance: drop 1 consumable (combat only, not elite)
 	var consumable_id: String = RewardManager.get_combat_consumable_drop(w)
 	if consumable_id != "":
 		InventoryManager.add_item(consumable_id)
@@ -305,6 +313,154 @@ func _confirm_treasure_choice() -> void:
 	_show_completion_ui("Schatz: %s erhalten!" % item_name)
 	EventBus.show_notification.emit("Du erhaeltst: %s" % item_name, 3.0)
 	print("[RunNodeRoom] Treasure chosen: %s" % item_id)
+
+	_on_node_cleared()
+
+
+# ============ BOON SELECTION (Elite rooms) ============
+var boon_choice_made: bool = false
+var _player_in_boon: String = ""  # "A", "B", "C" or ""
+var _boon_choices: Array = []     # Array of boon dicts from BoonManager
+
+func _setup_boon_selection() -> void:
+	"""After elite combat: spawn 3 boon choice zones"""
+	_boon_choices = BoonManager.get_boon_choices()
+
+	if _boon_choices.is_empty():
+		print("[RunNodeRoom] No boons available — skipping selection")
+		EventBus.show_notification.emit("Keine Pachron verfuegbar.", 2.0)
+		_on_node_cleared()
+		return
+
+	print("[RunNodeRoom] Boon selection: %d choices" % _boon_choices.size())
+
+	var choices_container = Node2D.new()
+	choices_container.name = "BoonChoices"
+	add_child(choices_container)
+
+	var positions := [Vector2(350, 650), Vector2(700, 650), Vector2(1050, 650)]
+	var keys := ["A", "B", "C"]
+
+	for i in range(_boon_choices.size()):
+		var boon: Dictionary = _boon_choices[i]
+		var key: String = keys[i]
+		var path_id: String = boon.get("path_id", "")
+		var path_color: Color = BoonManager.get_path_color(path_id)
+
+		var zone := Area2D.new()
+		zone.name = "BoonChoice" + key
+		zone.global_position = positions[i]
+		zone.collision_layer = 0
+		zone.collision_mask = 0
+		zone.set_collision_mask_value(2, true)
+		zone.monitoring = true
+
+		var col := CollisionShape2D.new()
+		var shape := RectangleShape2D.new()
+		shape.size = Vector2(160, 140)
+		col.shape = shape
+		zone.add_child(col)
+
+		# Background with path color
+		var rect := ColorRect.new()
+		rect.color = Color(path_color.r, path_color.g, path_color.b, 0.5)
+		rect.size = Vector2(160, 140)
+		rect.position = Vector2(-80, -70)
+		zone.add_child(rect)
+
+		# Path name + tier
+		var path_data: Dictionary = BoonManager.get_path_data(path_id)
+		var path_name: String = path_data.get("name", path_id.capitalize())
+		var tier: int = boon.get("tier", 1)
+
+		var path_label := Label.new()
+		path_label.text = "%s T%d" % [path_name, tier]
+		path_label.add_theme_font_size_override("font_size", 14)
+		path_label.add_theme_color_override("font_color", path_color)
+		path_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		path_label.size = Vector2(160, 20)
+		path_label.position = Vector2(-80, -100)
+		zone.add_child(path_label)
+
+		# Boon name
+		var name_label := Label.new()
+		name_label.text = boon.get("name", "?")
+		name_label.add_theme_font_size_override("font_size", 18)
+		name_label.add_theme_color_override("font_color", Color.WHITE)
+		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		name_label.size = Vector2(160, 25)
+		name_label.position = Vector2(-80, -65)
+		zone.add_child(name_label)
+
+		# Description
+		var desc_label := Label.new()
+		desc_label.text = boon.get("description", "")
+		desc_label.add_theme_font_size_override("font_size", 12)
+		desc_label.add_theme_color_override("font_color", Color(0.85, 0.85, 0.85))
+		desc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		desc_label.size = Vector2(150, 80)
+		desc_label.position = Vector2(-75, -35)
+		zone.add_child(desc_label)
+
+		# Prompt
+		var prompt := Label.new()
+		prompt.name = "PromptLabel"
+		prompt.text = "E - Waehlen"
+		prompt.add_theme_font_size_override("font_size", 14)
+		prompt.add_theme_color_override("font_color", Color.WHITE)
+		prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		prompt.size = Vector2(160, 20)
+		prompt.position = Vector2(-80, 75)
+		zone.add_child(prompt)
+
+		# Connect body signals
+		var captured_key := key
+		zone.body_entered.connect(func(body):
+			if body is Murum or body.name == "Murum":
+				_player_in_boon = captured_key
+		)
+		zone.body_exited.connect(func(body):
+			if body is Murum or body.name == "Murum":
+				if _player_in_boon == captured_key:
+					_player_in_boon = ""
+		)
+
+		choices_container.add_child(zone)
+
+	_show_completion_ui("Waehle einen Pachron!")
+
+
+func _confirm_boon_choice() -> void:
+	"""Called when player presses E inside a boon zone"""
+	if boon_choice_made or _player_in_boon == "":
+		return
+	boon_choice_made = true
+
+	var index: int = ["A", "B", "C"].find(_player_in_boon)
+	if index < 0 or index >= _boon_choices.size():
+		return
+
+	var boon: Dictionary = _boon_choices[index]
+	var path_id: String = boon.get("path_id", "")
+	var tier: int = boon.get("tier", 1)
+	var boon_name: String = boon.get("name", "?")
+
+	var success: bool = BoonManager.add_boon(path_id, tier)
+	if not success:
+		boon_choice_made = false
+		EventBus.show_notification.emit("Pachron konnte nicht erworben werden!", 2.0)
+		return
+
+	# Remove all choice zones
+	var choices_node = get_node_or_null("BoonChoices")
+	if choices_node:
+		choices_node.queue_free()
+
+	var path_color: Color = BoonManager.get_path_color(path_id)
+	_show_completion_ui("Pachron: %s erworben!" % boon_name)
+	EventBus.show_notification.emit("%s T%d: %s" % [path_id.capitalize(), tier, boon_name], 4.0)
+	print("[RunNodeRoom] Boon chosen: %s T%d — %s" % [path_id, tier, boon_name])
 
 	_on_node_cleared()
 
@@ -1020,6 +1176,11 @@ func _process(_delta: float) -> void:
 	# Treasure choice confirmation
 	if node_type == RunMapData.NodeType.TREASURE and not treasure_choice_made:
 		_confirm_treasure_choice()
+		return
+
+	# Boon choice confirmation (Elite rooms)
+	if node_type == RunMapData.NodeType.ELITE and not boon_choice_made and _player_in_boon != "":
+		_confirm_boon_choice()
 		return
 
 	# Event NPC interaction
