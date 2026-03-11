@@ -53,7 +53,7 @@ func _activate() -> void:
 		RunMapData.NodeType.SHOP:
 			_setup_shop()
 		RunMapData.NodeType.ARENA:
-			_setup_arena()
+			pass  # Arena rooms use their own script, loaded directly by RunManager
 
 
 # ============ PLAYER SETUP ============
@@ -359,40 +359,6 @@ func _open_run_shop() -> void:
 	var shop_data: Dictionary = json.data
 	var merchant_name: String = shop_data.get("merchant_name", "Haendler")
 	ShopManager.open_shop(shop_data, merchant_name, "Was darf es sein?")
-
-
-# ============ ARENA SETUP ============
-func _setup_arena() -> void:
-	print("[RunNodeRoom] Arena room — Urgathons Pruefung")
-
-	# Spawn Lythrun boss at BossSpawn marker
-	var boss_spawn = null
-	var spawn_container = get_node_or_null("EnemySpawnPoints")
-	if spawn_container:
-		boss_spawn = spawn_container.get_node_or_null("BossSpawn")
-
-	var boss_scene_path = "res://bosses/lythrun/lythrun_boss.tscn"
-	if ResourceLoader.exists(boss_scene_path) and boss_spawn:
-		var boss_scene = load(boss_scene_path)
-		var boss = boss_scene.instantiate()
-		boss.global_position = boss_spawn.global_position
-		add_child(boss)
-
-		# Connect boss death to completion
-		if boss.has_node("HealthComponent"):
-			boss.get_node("HealthComponent").died.connect(func():
-				print("[RunNodeRoom] Arena boss defeated!")
-				_show_completion_ui("Urgathon besiegt!")
-				get_tree().create_timer(2.0).timeout.connect(_on_node_cleared)
-			)
-
-		_show_completion_ui("Urgathons Pruefung!")
-		print("[RunNodeRoom] Lythrun boss spawned for arena")
-	else:
-		# Fallback: placeholder skip
-		_show_completion_ui("Arena: Urgathons Pruefung (Placeholder)")
-		EventBus.show_notification.emit("PvP oder Lythrun-Kampf — noch Placeholder", 3.0)
-		get_tree().create_timer(2.0).timeout.connect(_on_node_cleared)
 
 
 # ============ BOSS SETUP ============

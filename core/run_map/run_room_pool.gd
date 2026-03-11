@@ -153,7 +153,7 @@ const ROOM_SCENES_W3: Dictionary = {
 		"res://worlds/run_rooms/abgrund/shop_room_01.tscn",
 	],
 	RunMapData.NodeType.ARENA: [
-		"res://worlds/run_rooms/abgrund/arena_room_01.tscn",
+		"res://worlds/world_1_ruins/section_4_tempel/room_15_boss_urgathon.tscn",
 	],
 }
 

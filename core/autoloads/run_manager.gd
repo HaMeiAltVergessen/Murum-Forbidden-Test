@@ -121,6 +121,11 @@ func _load_node_room(node: RunMapData.MapNode) -> void:
 	"""Loads a handcrafted .tscn room and attaches RunNodeRoom controller"""
 	_preserve_player()
 
+	# ARENA rooms use their own script — load directly without RunNodeRoom override
+	if node.type == RunMapData.NodeType.ARENA:
+		_load_arena_room(node)
+		return
+
 	var scene_path = RunRoomPool.get_room_scene_path(current_world, node.type)
 	if scene_path.is_empty():
 		push_error("[RunManager] No room scene for node type %d" % node.type)
@@ -137,6 +142,24 @@ func _load_node_room(node: RunMapData.MapNode) -> void:
 
 	_replace_current_scene(room)
 	print("[RunManager] Loaded room for node %d (%s): %s" % [node.id, node.get_type_name(), scene_path])
+
+
+func _load_arena_room(node: RunMapData.MapNode) -> void:
+	"""Loads the existing Urgathon boss arena with its own script intact"""
+	var scene_path = "res://worlds/world_1_ruins/section_4_tempel/room_15_boss_urgathon.tscn"
+	if not ResourceLoader.exists(scene_path):
+		push_error("[RunManager] Arena scene not found: %s" % scene_path)
+		return
+
+	var packed_scene: PackedScene = load(scene_path)
+	var room: Node2D = packed_scene.instantiate()
+	room.name = "ArenaRoom_%d" % node.id
+
+	_replace_current_scene(room)
+	print("[RunManager] Loaded arena room (Urgathon) for node %d" % node.id)
+
+	# Monitor for boss defeat — then mark node complete and offer next doors
+	_monitor_arena_completion(room, node)
 
 
 func _preserve_player() -> void:
@@ -172,6 +195,130 @@ func _replace_current_scene(room: Node) -> void:
 
 	get_tree().root.add_child(room)
 	get_tree().current_scene = room
+
+
+func _monitor_arena_completion(room: Node2D, node: RunMapData.MapNode) -> void:
+	"""Polls the arena room for fight_ended flag, then handles run-map completion"""
+	# Wait for arena script to be ready
+	await get_tree().create_timer(1.0).timeout
+
+	# Poll fight_ended on the arena room script
+	while is_instance_valid(room) and room.is_inside_tree():
+		if room.get("fight_ended") == true:
+			print("[RunManager] Arena fight ended — completing node")
+			# Mark node as completed in the map
+			if current_map:
+				current_map.complete_current_node()
+				run_rooms_completed += 1
+				map_updated.emit()
+
+			# Get next accessible nodes (should be BOSS)
+			var next_nodes = current_map.get_accessible_nodes()
+			if next_nodes.is_empty():
+				end_run(true)
+				return
+
+			# Spawn exit doors on the arena room
+			_spawn_arena_exit_doors(room, next_nodes)
+			return
+
+		await get_tree().create_timer(0.5).timeout
+
+
+func _spawn_arena_exit_doors(room: Node2D, next_nodes: Array) -> void:
+	"""Spawns simple exit doors on the existing arena room after fight is done"""
+	var door_x_start: float = 400.0
+	var door_spacing: float = 300.0
+
+	for i in range(next_nodes.size()):
+		var node: RunMapData.MapNode = next_nodes[i]
+		var pos := Vector2(door_x_start + i * door_spacing, 300)
+
+		var door = Node2D.new()
+		door.name = "ExitDoor_%d" % i
+		door.global_position = pos
+		room.add_child(door)
+
+		var door_color: Color = Color(0.9, 0.1, 0.1) if node.type == RunMapData.NodeType.BOSS else Color.WHITE
+		var rect = ColorRect.new()
+		rect.color = door_color
+		rect.size = Vector2(80, 120)
+		rect.position = Vector2(-40, -120)
+		door.add_child(rect)
+
+		var label = Label.new()
+		label.text = node.get_type_name()
+		label.add_theme_font_size_override("font_size", 16)
+		label.add_theme_color_override("font_color", Color.WHITE)
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.size = Vector2(80, 30)
+		label.position = Vector2(-40, -75)
+		door.add_child(label)
+
+		var prompt = Label.new()
+		prompt.name = "PromptLabel"
+		prompt.text = "E - %s" % node.get_type_name()
+		prompt.add_theme_font_size_override("font_size", 14)
+		prompt.add_theme_color_override("font_color", Color.WHITE)
+		prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		prompt.size = Vector2(140, 20)
+		prompt.position = Vector2(-70, 10)
+		prompt.visible = false
+		door.add_child(prompt)
+
+		var area = Area2D.new()
+		area.name = "DoorArea"
+		var col = CollisionShape2D.new()
+		var shape = RectangleShape2D.new()
+		shape.size = Vector2(100, 140)
+		col.shape = shape
+		col.position = Vector2(0, -60)
+		area.add_child(col)
+		area.collision_layer = 0
+		area.collision_mask = 0
+		area.set_collision_mask_value(2, true)
+		area.monitoring = true
+		door.add_child(area)
+
+		var node_id = node.id
+		area.body_entered.connect(func(body):
+			if body is Murum or body.name == "Murum":
+				prompt.visible = true
+				door.set_meta("player_inside", true)
+		)
+		area.body_exited.connect(func(body):
+			if body is Murum or body.name == "Murum":
+				prompt.visible = false
+				door.set_meta("player_inside", false)
+		)
+
+		door.set_meta("node_id", node_id)
+		door.add_to_group("run_doors")
+
+	# Process E key for these doors
+	_start_arena_door_listener()
+
+
+func _start_arena_door_listener() -> void:
+	"""Listens for E key presses to enter doors in arena room"""
+	while true:
+		await get_tree().process_frame
+		var interact_pressed = false
+		if InputManager:
+			interact_pressed = InputManager.is_p1_action_just_pressed("interact")
+		else:
+			interact_pressed = Input.is_action_just_pressed("interact")
+
+		if not interact_pressed:
+			continue
+
+		for door in get_tree().get_nodes_in_group("run_doors"):
+			if door.has_meta("player_inside") and door.get_meta("player_inside"):
+				var node_id: int = door.get_meta("node_id")
+				print("[RunManager] Arena exit -> node %d" % node_id)
+				current_state = RunState.MAP_VIEW
+				select_map_node(node_id)
+				return
 
 
 func transition_to_next_world(next_world_id: RunMapData.WorldId) -> void:
