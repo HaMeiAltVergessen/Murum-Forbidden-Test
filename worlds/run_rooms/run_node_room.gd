@@ -221,11 +221,11 @@ func _setup_rest() -> void:
 
 # ============ EVENT SETUP ============
 var event_choice_made: bool = false
+var _player_in_choice: String = ""  # "A" or "B" or ""
 
 func _setup_event() -> void:
 	print("[RunNodeRoom] Event room")
 
-	# Connect to ChoiceA and ChoiceB Area2D nodes from the scene
 	var choices = get_node_or_null("EventChoices")
 	if not choices:
 		push_warning("[RunNodeRoom] No EventChoices node found in scene!")
@@ -237,23 +237,60 @@ func _setup_event() -> void:
 
 	if choice_a:
 		choice_a.body_entered.connect(func(body):
-			if event_choice_made:
-				return
 			if body is Murum or body.name == "Murum":
-				event_choice_made = true
-				EventBus.show_notification.emit("Du akzeptierst das Angebot.", 3.0)
-				_on_node_cleared()
+				_player_in_choice = "A"
+		)
+		choice_a.body_exited.connect(func(body):
+			if body is Murum or body.name == "Murum":
+				if _player_in_choice == "A":
+					_player_in_choice = ""
 		)
 
 	if choice_b:
 		choice_b.body_entered.connect(func(body):
-			if event_choice_made:
-				return
 			if body is Murum or body.name == "Murum":
-				event_choice_made = true
-				EventBus.show_notification.emit("Du gehst weiter.", 3.0)
-				_on_node_cleared()
+				_player_in_choice = "B"
 		)
+		choice_b.body_exited.connect(func(body):
+			if body is Murum or body.name == "Murum":
+				if _player_in_choice == "B":
+					_player_in_choice = ""
+		)
+
+
+func _confirm_event_choice() -> void:
+	"""Called when player presses E inside a choice zone"""
+	if event_choice_made or _player_in_choice == "":
+		return
+	event_choice_made = true
+
+	var choices = get_node_or_null("EventChoices")
+	if not choices:
+		return
+
+	var chosen_key := _player_in_choice  # "A" or "B"
+	var other_key := "B" if chosen_key == "A" else "A"
+
+	# Remove the chosen zone
+	var chosen_node = choices.get_node_or_null("Choice" + chosen_key)
+	if chosen_node:
+		chosen_node.queue_free()
+
+	# Grey out the other zone
+	var other_node = choices.get_node_or_null("Choice" + other_key)
+	if other_node:
+		other_node.modulate = Color(0.4, 0.4, 0.4, 0.5)
+		# Disable collision
+		var area = other_node as Area2D
+		if area:
+			area.monitoring = false
+
+	if chosen_key == "A":
+		EventBus.show_notification.emit("Du akzeptierst das Angebot.", 3.0)
+	else:
+		EventBus.show_notification.emit("Du gehst weiter.", 3.0)
+
+	_on_node_cleared()
 
 
 # ============ BOSS SETUP ============
@@ -288,12 +325,11 @@ func _on_node_cleared() -> void:
 		RunManager.map_updated.emit()
 
 		if RunManager.current_node.type == RunMapData.NodeType.BOSS:
-			var next_world := _get_next_world()
-			if next_world >= 0:
-				RunManager.transition_to_next_world(next_world as RunMapData.WorldId)
-			else:
+			# Last boss (Abgrund) ends the run
+			if _get_next_world() < 0:
 				RunManager.end_run(true)
-			return
+				return
+			# Other bosses: doors to next world (handled below)
 
 	_unlock_doors()
 
@@ -306,12 +342,6 @@ func _spawn_exit_doors() -> void:
 	if not RunManager or not RunManager.current_map:
 		return
 
-	var next_nodes = RunManager.current_map.get_accessible_nodes()
-	if next_nodes.is_empty():
-		return
-
-	doors_spawned = true
-
 	# Get door position markers from the scene
 	var door_positions: Array[Marker2D] = []
 	var door_pos_container = get_node_or_null("DoorPositions")
@@ -319,6 +349,20 @@ func _spawn_exit_doors() -> void:
 		for child in door_pos_container.get_children():
 			if child is Marker2D:
 				door_positions.append(child)
+
+	# Boss rooms (non-final): single door to next world
+	if node_type == RunMapData.NodeType.BOSS and _get_next_world() >= 0:
+		doors_spawned = true
+		var pos: Vector2 = door_positions[1].global_position if door_positions.size() > 1 else Vector2(700, 700)
+		_create_world_transition_door(pos)
+		print("[RunNodeRoom] Spawned world transition door")
+		return
+
+	var next_nodes = RunManager.current_map.get_accessible_nodes()
+	if next_nodes.is_empty():
+		return
+
+	doors_spawned = true
 
 	var door_count = next_nodes.size()
 	for i in range(door_count):
@@ -331,6 +375,92 @@ func _spawn_exit_doors() -> void:
 		_create_door(node, pos, i)
 
 	print("[RunNodeRoom] Spawned %d exit doors" % door_count)
+
+
+func _create_world_transition_door(pos: Vector2) -> void:
+	"""Create a door that transitions to the next world"""
+	var next_world := _get_next_world() as RunMapData.WorldId
+	var world_names := {
+		RunMapData.WorldId.KOLLEKTIV: "Das Kollektiv",
+		RunMapData.WorldId.ABGRUND: "Der Abgrund",
+	}
+	var door_label: String = world_names.get(next_world, "Naechste Welt")
+
+	var door_container = Node2D.new()
+	door_container.name = "WorldDoor"
+	door_container.global_position = pos
+	add_child(door_container)
+
+	var door_width: float = 100.0
+	var door_height: float = 140.0
+	var door_color := Color(1.0, 0.85, 0.2)
+
+	# Border
+	var border = ColorRect.new()
+	border.color = door_color * 0.6
+	border.size = Vector2(door_width + 6, door_height + 6)
+	border.position = Vector2(-door_width / 2.0 - 3, -door_height - 3)
+	border.z_index = -1
+	door_container.add_child(border)
+
+	# Door visual
+	var door_rect = ColorRect.new()
+	door_rect.color = door_color
+	door_rect.size = Vector2(door_width, door_height)
+	door_rect.position = Vector2(-door_width / 2.0, -door_height)
+	door_container.add_child(door_rect)
+
+	# Label
+	var type_label = Label.new()
+	type_label.text = door_label
+	type_label.add_theme_font_size_override("font_size", 16)
+	type_label.add_theme_color_override("font_color", Color.WHITE)
+	type_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	type_label.size = Vector2(door_width + 40, 30)
+	type_label.position = Vector2(-door_width / 2.0 - 20, -door_height / 2.0 - 15)
+	door_container.add_child(type_label)
+
+	# Interaction area
+	var area = Area2D.new()
+	area.name = "DoorArea"
+	var col = CollisionShape2D.new()
+	var shape = RectangleShape2D.new()
+	shape.size = Vector2(door_width + 20, door_height + 20)
+	col.shape = shape
+	col.position = Vector2(0, -door_height / 2.0)
+	area.add_child(col)
+	area.collision_layer = 0
+	area.collision_mask = 0
+	area.set_collision_mask_value(2, true)
+	area.monitoring = true
+	door_container.add_child(area)
+
+	# Prompt
+	var prompt = Label.new()
+	prompt.name = "PromptLabel"
+	prompt.text = "E - %s" % door_label
+	prompt.add_theme_font_size_override("font_size", 14)
+	prompt.add_theme_color_override("font_color", Color.WHITE)
+	prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	prompt.size = Vector2(160, 20)
+	prompt.position = Vector2(-80, 10)
+	prompt.visible = false
+	door_container.add_child(prompt)
+
+	# Signals
+	area.body_entered.connect(func(body):
+		if body is Murum or body.name == "Murum":
+			prompt.visible = true
+			door_container.set_meta("player_inside", true)
+	)
+	area.body_exited.connect(func(body):
+		if body is Murum or body.name == "Murum":
+			prompt.visible = false
+			door_container.set_meta("player_inside", false)
+	)
+
+	door_container.set_meta("world_transition", next_world)
+	door_container.add_to_group("run_doors")
 
 
 func _unlock_doors() -> void:
@@ -431,9 +561,6 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 
 
 func _process(_delta: float) -> void:
-	if not doors_spawned:
-		return
-
 	var interact_pressed = false
 	if InputManager:
 		interact_pressed = InputManager.is_p1_action_just_pressed("interact")
@@ -443,8 +570,23 @@ func _process(_delta: float) -> void:
 	if not interact_pressed:
 		return
 
+	# Event choice confirmation
+	if node_type == RunMapData.NodeType.EVENT and not event_choice_made:
+		_confirm_event_choice()
+		return
+
+	# Door interaction
+	if not doors_spawned:
+		return
+
 	for door in get_tree().get_nodes_in_group("run_doors"):
 		if door.has_meta("player_inside") and door.get_meta("player_inside"):
+			# World transition door (after boss)
+			if door.has_meta("world_transition"):
+				var next_world: int = door.get_meta("world_transition")
+				RunManager.transition_to_next_world(next_world as RunMapData.WorldId)
+				return
+			# Normal door
 			var node_id: int = door.get_meta("node_id")
 			_enter_door(node_id)
 			return
