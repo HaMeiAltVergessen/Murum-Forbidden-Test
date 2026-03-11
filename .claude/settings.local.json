@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(find \"C:\\\\Users\\\\Sebastian\\\\GodotProjects\\\\Murum-Forbidden-Test\" -name \"*run_node_room*\" -type f 2>/dev/null | head -20)",
-      "Bash(find \"C:\\\\Users\\\\Sebastian\\\\GodotProjects\\\\Murum-Forbidden-Test\" -name \"*run_map*\" -type f 2>/dev/null | head -20)"
+      "Bash(find \"C:\\\\Users\\\\Sebastian\\\\GodotProjects\\\\Murum-Forbidden-Test\" -name \"*run_map*\" -type f 2>/dev/null | head -20)",
+      "Bash(find \"C:\\\\Users\\\\Sebastian\\\\GodotProjects\\\\Murum-Forbidden-Test\" -name \"*reward*\" -o -name \"*loot*\" -o -name \"*drop*\" 2>/dev/null | head -20)"
     ]
   }
 }
