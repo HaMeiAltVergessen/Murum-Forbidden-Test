@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://6kwthd3m82gc"]
+
+[ext_resource type="PackedScene" path="res://environment/pickups/relic_pickup.tscn" id="1_v64n2"]
+
+[node name="RelicPickup" instance=ExtResource("1_v64n2")]
+relic_id = "auge_von_xy"
+qual_level = 5

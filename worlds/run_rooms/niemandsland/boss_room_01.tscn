@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://c4x721hpfcui4"]
+[gd_scene load_steps=7 format=3 uid="uid://c4x721hpfcui4"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="PackedScene" uid="uid://6kwthd3m82gc" path="res://environment/pickups/testpickup.tscn" id="2_c32y6"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(2600, 40)
@@ -96,3 +97,6 @@ offset_top = 20.0
 offset_right = 500.0
 offset_bottom = 50.0
 text = "Boss - Die Schwuere der Vier"
+
+[node name="RelicPickup" parent="." instance=ExtResource("2_c32y6")]
+position = Vector2(573, 668)
