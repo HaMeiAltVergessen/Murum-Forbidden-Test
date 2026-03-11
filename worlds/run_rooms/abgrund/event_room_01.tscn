@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://ct4od1i44bvqe"]
+[gd_scene load_steps=7 format=3 uid="uid://ct4od1i44bvqe"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 
@@ -99,7 +99,7 @@ horizontal_alignment = 1
 [node name="EventChoices" type="Node2D" parent="."]
 
 [node name="ChoiceA" type="Area2D" parent="EventChoices"]
-position = Vector2(300, 760)
+position = Vector2(259, 490)
 collision_layer = 0
 collision_mask = 2
 
@@ -138,7 +138,7 @@ text = "+20 HP, -10 Mana"
 horizontal_alignment = 1
 
 [node name="ChoiceB" type="Area2D" parent="EventChoices"]
-position = Vector2(1100, 760)
+position = Vector2(1059, 490)
 collision_layer = 0
 collision_mask = 2
 
