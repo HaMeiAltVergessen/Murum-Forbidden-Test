@@ -725,7 +725,7 @@ func _spawn_clone(pos: Vector2, duration: float, damage: int, clone_name: String
 	area.body_entered.connect(func(body_node):
 		if not is_instance_valid(clone):
 			return
-		if body_node.is_in_group("enemies") and not body_node.is_dead:
+		if body_node.is_in_group("enemies") and not body_node.get("is_dead"):
 			var last_hit: float = clone.get_meta("last_hit", 0.0)
 			var now: float = Time.get_ticks_msec() / 1000.0
 			if now - last_hit > 1.0:  # 1s cooldown per hit
