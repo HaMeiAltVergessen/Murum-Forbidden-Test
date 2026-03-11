@@ -259,7 +259,8 @@ func _gather_save_data(slot_index: int) -> Dictionary:
 		"achievements": _gather_achievements_data(),
 		"challenge_run": _gather_challenge_run_data(),
 		"run_manager": _gather_run_manager_data(),
-		"upgrades": _gather_upgrade_data()
+		"upgrades": _gather_upgrade_data(),
+		"found_relics": _gather_found_relics()
 	}
 
 	print("[SaveManager] Save data gathered successfully")
@@ -329,6 +330,13 @@ func _gather_player_data(player: Node) -> Dictionary:
 		"current_room": current_room,
 		"last_checkpoint": last_checkpoint
 	}
+
+func _gather_found_relics() -> Array:
+	"""Gathers permanently found relic IDs"""
+	if InventoryManager:
+		return InventoryManager.found_relics.duplicate()
+	return []
+
 
 func _gather_inventory_data() -> Dictionary:
 	"""Gathers inventory state from InventoryManager and GameManager"""
@@ -547,6 +555,17 @@ func _apply_save_data(save_data: Dictionary) -> void:
 	var upgrade_data = save_data.get("upgrades", {})
 	if UpgradeManager:
 		UpgradeManager.load_from_save(upgrade_data)
+
+	# Restore found relics
+	var found_relics_data = save_data.get("found_relics", [])
+	if InventoryManager:
+		InventoryManager.found_relics = found_relics_data.duplicate()
+		# Re-add found relics to inventory (permanent)
+		for relic_id in InventoryManager.found_relics:
+			if not relic_id in InventoryManager.inventory["relics"]:
+				InventoryManager.inventory["relics"].append(relic_id)
+				InventoryManager._apply_relic_stats(relic_id)
+		print("[SaveManager] Restored %d found relics" % found_relics_data.size())
 
 	# Get saved room data
 	var player_data = save_data.get("player", {})

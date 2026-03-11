@@ -15,6 +15,9 @@ var inventory: Dictionary = {
 	"key_items": []     # Array of item_id (String)
 }
 
+# Permanently discovered relics (persisted per save slot, survive run resets)
+var found_relics: Array = []
+
 # ============ SIGNALS ============
 signal item_added(item_id: String, category: String)
 signal item_removed(item_id: String, category: String)
@@ -24,6 +27,7 @@ signal inventory_changed()
 
 func _ready() -> void:
 	_load_item_database()
+	_load_relics_database()
 	_connect_p2_signals()
 	print("[InventoryManager] Initialized")
 
@@ -362,6 +366,53 @@ func _apply_flat_hp_regen(player: Node, regen_amount: float, duration: float) ->
 
 	timer.start()
 	print("[InventoryManager] Applied flat HP regen: ", regen_amount, " every 5s for ", duration, "s")
+
+
+# ============ RELIC DISCOVERY (Siegel-Run Relics) ============
+
+func _load_relics_database() -> void:
+	"""Loads relics from dedicated relics.json into item_database"""
+	_load_database_file("res://data/items/relics.json")
+	print("[InventoryManager] Relics database loaded: %d relics" % item_database["relics"].size())
+
+
+func discover_relic(relic_id: String) -> bool:
+	"""Permanently discovers a relic during a Siegel-Run. Returns true if newly found."""
+	if relic_id in found_relics:
+		print("[InventoryManager] Relic already discovered: %s" % relic_id)
+		return false
+
+	if not item_database["relics"].has(relic_id):
+		push_error("[InventoryManager] Unknown relic: %s" % relic_id)
+		return false
+
+	# Mark as permanently found
+	found_relics.append(relic_id)
+
+	# Add to active inventory
+	_add_relic(relic_id)
+
+	var item_data = get_item_data(relic_id)
+	var item_name = item_data.get("name", relic_id)
+
+	# Notify
+	item_added.emit(relic_id, "relics")
+	inventory_changed.emit()
+	EventBus.item_picked_up.emit(relic_id, item_name, "relics")
+
+	print("[InventoryManager] Relic discovered: %s (%s)" % [relic_id, item_name])
+	return true
+
+
+func is_relic_found(relic_id: String) -> bool:
+	"""Checks if a relic has been permanently found"""
+	return relic_id in found_relics
+
+
+func get_relic_qual_level(relic_id: String) -> int:
+	"""Returns the qual_level required for a relic"""
+	var data = item_database["relics"].get(relic_id, {})
+	return data.get("qual_level", 0)
 
 
 # ============ RELIC STATS ============
