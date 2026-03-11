@@ -72,7 +72,7 @@ func _ready() -> void:
 	_create_echo_system()
 
 	# Create staff visual
-	_create_staff_visual()
+	#_create_staff_visual()
 
 
 func _process(delta: float) -> void:
@@ -379,7 +379,7 @@ func _update_staff_facing() -> void:
 	staff_sprite.scale.x = facing
 
 
-func _create_staff_visual() -> void:
+#func _create_staff_visual() -> void:
 	"""Creates a simple staff sprite using ColorRects"""
 	# Create staff container
 	staff_sprite = Node2D.new()

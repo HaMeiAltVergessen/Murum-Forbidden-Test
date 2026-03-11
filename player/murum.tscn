@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="7_hurtbox"]
 [ext_resource type="Script" uid="uid://1ybv2u56wptt" path="res://player/player_camera.gd" id="8_camera"]
 [ext_resource type="SpriteFrames" uid="uid://q7syvpvkpd0" path="res://Assets/AIPlaceholder/Char/Murum/murum_frames.tres" id="9_murum_sprite"]
+[ext_resource type="Texture2D" uid="uid://bpdnixmhbn7cm" path="res://Assets/AIAssets/AIStuff/MurumStab01.png" id="9_pqydx"]
 [ext_resource type="Script" uid="uid://coip6pcvj3sba" path="res://player/combat_system/staff_controller.gd" id="10_staff"]
 [ext_resource type="Script" uid="uid://dew3k3qr3vpue" path="res://player/combat_system/launcher_system.gd" id="11_launcher"]
 [ext_resource type="Script" uid="uid://f68832icw4vd" path="res://player/combat_system/air_combo_system.gd" id="12_air_combo"]
@@ -18,7 +19,6 @@
 [ext_resource type="Script" uid="uid://b2dxi0i5oqthf" path="res://player/abilities/echo_von_urgathon.gd" id="16_echo"]
 [ext_resource type="Script" uid="uid://uooxoelljdeu" path="res://player/combat_system/luftgott_system.gd" id="16_luftgott"]
 [ext_resource type="Script" uid="uid://dn12rlk07wbkl" path="res://player/murum_animator.gd" id="17_animator"]
-[ext_resource type="Texture2D" uid="uid://dkhbprdklj1ko" path="res://Assets/AIPlaceholder/MurumStab.png" id="18_stab"]
 [ext_resource type="Script" uid="uid://d34wolsy72ys3" path="res://player/combat_system/weapon_glow_system.gd" id="19_glow"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
@@ -70,7 +70,8 @@ collision_mask = 128
 
 [node name="StaffSprite" type="Sprite2D" parent="."]
 position = Vector2(30, -5)
-texture = ExtResource("18_stab")
+scale = Vector2(0.142, 0.142)
+texture = ExtResource("9_pqydx")
 
 [node name="WeaponGlow" type="Node" parent="."]
 script = ExtResource("19_glow")
