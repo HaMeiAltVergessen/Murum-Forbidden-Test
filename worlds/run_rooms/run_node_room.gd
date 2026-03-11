@@ -225,103 +225,35 @@ var event_choice_made: bool = false
 func _setup_event() -> void:
 	print("[RunNodeRoom] Event room")
 
-	# Title label centered at top
-	var title = Label.new()
-	title.text = "Ein geheimnisvoller Wanderer bietet dir etwas an..."
-	title.add_theme_font_size_override("font_size", 22)
-	title.add_theme_color_override("font_color", Color(0.7, 0.4, 0.9))
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.position = Vector2(200, 300)
-	title.size = Vector2(1000, 40)
-	add_child(title)
+	# Connect to ChoiceA and ChoiceB Area2D nodes from the scene
+	var choices = get_node_or_null("EventChoices")
+	if not choices:
+		push_warning("[RunNodeRoom] No EventChoices node found in scene!")
+		_on_node_cleared()
+		return
 
-	# Choice A (left side) — walk into it to accept
-	_create_event_choice(
-		Vector2(400, 700),
-		"Annehmen",
-		"+20 HP, -10 Mana",
-		Color(0.3, 0.8, 0.4),
-		func():
-			EventBus.show_notification.emit("Du akzeptierst das Angebot.", 3.0)
-	)
+	var choice_a: Area2D = choices.get_node_or_null("ChoiceA")
+	var choice_b: Area2D = choices.get_node_or_null("ChoiceB")
 
-	# Choice B (right side) — walk into it to decline
-	_create_event_choice(
-		Vector2(1000, 700),
-		"Ablehnen",
-		"Weiter ohne Aenderung",
-		Color(0.8, 0.3, 0.3),
-		func():
-			EventBus.show_notification.emit("Du gehst weiter.", 3.0)
-	)
+	if choice_a:
+		choice_a.body_entered.connect(func(body):
+			if event_choice_made:
+				return
+			if body is Murum or body.name == "Murum":
+				event_choice_made = true
+				EventBus.show_notification.emit("Du akzeptierst das Angebot.", 3.0)
+				_on_node_cleared()
+		)
 
-
-func _create_event_choice(pos: Vector2, choice_name: String, desc: String, color: Color, on_chosen: Callable) -> void:
-	var choice_node = Node2D.new()
-	choice_node.global_position = pos
-	add_child(choice_node)
-
-	var zone_width: float = 160.0
-	var zone_height: float = 120.0
-
-	# Visual zone (colored rectangle)
-	var rect = ColorRect.new()
-	rect.color = Color(color.r, color.g, color.b, 0.3)
-	rect.size = Vector2(zone_width, zone_height)
-	rect.position = Vector2(-zone_width / 2.0, -zone_height)
-	choice_node.add_child(rect)
-
-	# Border
-	var border = ColorRect.new()
-	border.color = color
-	border.size = Vector2(zone_width + 4, zone_height + 4)
-	border.position = Vector2(-zone_width / 2.0 - 2, -zone_height - 2)
-	border.z_index = -1
-	choice_node.add_child(border)
-
-	# Choice name label above zone
-	var name_label = Label.new()
-	name_label.text = choice_name
-	name_label.add_theme_font_size_override("font_size", 22)
-	name_label.add_theme_color_override("font_color", color)
-	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	name_label.size = Vector2(zone_width + 60, 30)
-	name_label.position = Vector2(-zone_width / 2.0 - 30, -zone_height - 60)
-	choice_node.add_child(name_label)
-
-	# Description label
-	var desc_label = Label.new()
-	desc_label.text = desc
-	desc_label.add_theme_font_size_override("font_size", 16)
-	desc_label.add_theme_color_override("font_color", Color(0.8, 0.8, 0.9))
-	desc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	desc_label.size = Vector2(zone_width + 60, 25)
-	desc_label.position = Vector2(-zone_width / 2.0 - 30, -zone_height - 35)
-	choice_node.add_child(desc_label)
-
-	# Collision area
-	var area = Area2D.new()
-	area.collision_layer = 0
-	area.collision_mask = 0
-	area.set_collision_mask_value(2, true)  # Player on Layer 2
-	area.monitoring = true
-	var col = CollisionShape2D.new()
-	var shape = RectangleShape2D.new()
-	shape.size = Vector2(zone_width, zone_height)
-	col.shape = shape
-	col.position = Vector2(0, -zone_height / 2.0)
-	area.add_child(col)
-	choice_node.add_child(area)
-
-	# When player enters → choice made
-	area.body_entered.connect(func(body):
-		if event_choice_made:
-			return
-		if body is Murum or body.name == "Murum":
-			event_choice_made = true
-			on_chosen.call()
-			_on_node_cleared()
-	)
+	if choice_b:
+		choice_b.body_entered.connect(func(body):
+			if event_choice_made:
+				return
+			if body is Murum or body.name == "Murum":
+				event_choice_made = true
+				EventBus.show_notification.emit("Du gehst weiter.", 3.0)
+				_on_node_cleared()
+		)
 
 
 # ============ BOSS SETUP ============
