@@ -123,7 +123,7 @@ static func generate_map(world_id: RunMapData.WorldId, rng_seed: int = -1) -> Ru
 		next_id += 1
 
 		var boss_node = RunMapData.MapNode.new(next_id, boss_row_index, 1, RunMapData.NodeType.BOSS)
-		boss_node.reward_type = "boss"
+		boss_node.reward_type = "magicka"
 		map.nodes[next_id] = boss_node
 		var boss_id: int = next_id
 		next_id += 1
@@ -139,7 +139,7 @@ static func generate_map(world_id: RunMapData.WorldId, rng_seed: int = -1) -> Ru
 		# W1/W2: Boss row (single BOSS node)
 		var boss_row_index: int = config.num_rows
 		var boss_node = RunMapData.MapNode.new(next_id, boss_row_index, 0, RunMapData.NodeType.BOSS)
-		boss_node.reward_type = "boss"
+		boss_node.reward_type = "magicka"
 		map.nodes[next_id] = boss_node
 		map.rows.append([next_id])
 		next_id += 1
@@ -349,11 +349,11 @@ static func _assign_positions(map: RunMapData.Map) -> void:
 static func _get_default_reward(type: RunMapData.NodeType) -> String:
 	match type:
 		RunMapData.NodeType.COMBAT: return "gold"
-		RunMapData.NodeType.ELITE: return "relic"
+		RunMapData.NodeType.ELITE: return "gold"
 		RunMapData.NodeType.TREASURE: return "item"
 		RunMapData.NodeType.REST: return "heal"
 		RunMapData.NodeType.EVENT: return "event"
-		RunMapData.NodeType.BOSS: return "boss"
+		RunMapData.NodeType.BOSS: return "magicka"
 		RunMapData.NodeType.SHOP: return "shop"
 		RunMapData.NodeType.ARENA: return "arena"
 	return "gold"

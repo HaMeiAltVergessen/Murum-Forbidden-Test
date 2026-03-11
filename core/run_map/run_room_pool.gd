@@ -60,9 +60,11 @@ const ELITE_ENCOUNTERS_W3: Array = [
 ]
 
 # ============ REWARD POOLS ============
-const COMBAT_REWARDS: Array = ["gold", "gold", "gold", "item"]
-const ELITE_REWARDS: Array = ["relic", "relic", "item"]
-const TREASURE_ITEM_COUNT: int = 3  # Player picks 1 of 3
+# Reward logic moved to RewardManager autoload
+# Combat: Gold + 30% consumable drop
+# Elite: Gold only (Boon placeholder for later)
+# Treasure: 3 consumables to choose from
+# Boss: Magicka + full heal
 
 
 # ============ ROOM SCENE POOLS (handcrafted .tscn files per node type) ============
@@ -290,33 +292,16 @@ static func build_single_wave_config(world_id: RunMapData.WorldId, node_type: Ru
 
 
 static func get_reward_type(node_type: RunMapData.NodeType,
-		rng: RandomNumberGenerator = null) -> String:
-	"""Returns a random reward type for the given node type"""
-	var pool: Array = []
+		_rng: RandomNumberGenerator = null) -> String:
+	"""Returns the reward type label for the given node type.
+	Actual reward logic is in RewardManager."""
 	match node_type:
-		RunMapData.NodeType.COMBAT:
-			pool = COMBAT_REWARDS
-		RunMapData.NodeType.ELITE:
-			pool = ELITE_REWARDS
-		RunMapData.NodeType.TREASURE:
-			return "item"
-		RunMapData.NodeType.REST:
-			return "heal"
-		RunMapData.NodeType.EVENT:
-			return "event"
-		RunMapData.NodeType.BOSS:
-			return "boss"
-		RunMapData.NodeType.SHOP:
-			return "shop"
-		RunMapData.NodeType.ARENA:
-			return "arena"
-
-	if pool.is_empty():
-		return "gold"
-
-	var index: int = 0
-	if rng:
-		index = rng.randi_range(0, pool.size() - 1)
-	else:
-		index = randi() % pool.size()
-	return pool[index]
+		RunMapData.NodeType.COMBAT: return "gold"
+		RunMapData.NodeType.ELITE: return "gold"
+		RunMapData.NodeType.TREASURE: return "item"
+		RunMapData.NodeType.REST: return "heal"
+		RunMapData.NodeType.EVENT: return "event"
+		RunMapData.NodeType.BOSS: return "magicka"
+		RunMapData.NodeType.SHOP: return "shop"
+		RunMapData.NodeType.ARENA: return "arena"
+	return "gold"
