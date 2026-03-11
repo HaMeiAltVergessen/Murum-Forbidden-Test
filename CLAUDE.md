@@ -45,6 +45,8 @@ camera/               Coop-Kamera, Split-Screen-Manager
 | StatisticsManager | `core/autoloads/statistics_manager.gd` | 14 Gameplay-Statistiken (Kills, Tode, Schaden, etc.) |
 | AchievementManager | `core/autoloads/achievement_manager.gd` | 11 Achievements, JSON-Definitionen aus data/achievements.json |
 | ChallengeRunManager | `core/autoloads/challenge_run_manager.gd` | 33 Siegel-Modifikatoren, Tiefe-System, Schwellensicht |
+| RewardManager | `core/autoloads/reward_manager.gd` | Belohnungs-Pools pro Raumtyp & Welt |
+| BoonManager | `core/autoloads/boon_manager.gd` | 5 Pachron-Pfade (25 Boons), Run-volatil |
 | MusicScenePlayer | `core/autoloads/music_scene_player.tscn` | Musik pro Szene |
 
 ## Kampfsystem (P1 Murum)

@@ -39,6 +39,10 @@ func _activate() -> void:
 	_setup_player()
 	_spawn_exit_doors()
 
+	# Reset per-room boon state (kill counters, death save, etc.)
+	if BoonManager:
+		BoonManager.reset_room_state()
+
 	match node_type:
 		RunMapData.NodeType.COMBAT, RunMapData.NodeType.ELITE:
 			_setup_combat()

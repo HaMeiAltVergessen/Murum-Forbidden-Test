@@ -1,0 +1,314 @@
+{
+  "version": "1.0",
+  "paths": {
+    "arthra": {
+      "name": "Arthra",
+      "theme": "Arroganz vs Stolz",
+      "focus": "Schaden & Angriff",
+      "color": [1.0, 0.3, 0.2],
+      "boons": [
+        {
+          "id": "arthra_1",
+          "tier": 1,
+          "name": "Blitze der Macht",
+          "description": "Jeder 3. Angriff in einer Combo erzeugt einen Blitzschlag (+30% Extra-Schaden).",
+          "effect_type": "combo_lightning",
+          "params": {
+            "every_n_hits": 3,
+            "bonus_damage_percent": 0.3
+          }
+        },
+        {
+          "id": "arthra_2",
+          "tier": 2,
+          "name": "Unnachgiebiger Zorn",
+          "description": "Schaden steigt um 5% pro Kill im Raum (max +40%).",
+          "effect_type": "kill_damage_stack",
+          "params": {
+            "damage_per_kill_percent": 0.05,
+            "max_bonus_percent": 0.4
+          }
+        },
+        {
+          "id": "arthra_3",
+          "tier": 3,
+          "name": "Urteil der Sterne",
+          "description": "Nach Wolkenbruch spawnen 3 Meteoriten mit massivem AoE-Schaden.",
+          "effect_type": "wolkenbruch_meteors",
+          "params": {
+            "meteor_count": 3,
+            "damage_multiplier": 2.0,
+            "radius": 150
+          }
+        },
+        {
+          "id": "arthra_4",
+          "tier": 4,
+          "name": "Richter des Todes",
+          "description": "Jeder getroffene Gegner erhaelt automatisch Urteil (Death Mark).",
+          "effect_type": "auto_urteil",
+          "params": {}
+        },
+        {
+          "id": "arthra_5",
+          "tier": 5,
+          "name": "Arthra's Vermaechtnis",
+          "description": "Urteil-Kill: Explosion trifft alle Gegner in der Naehe, die AUCH Urteil erhalten. Kettenreaktion moeglich.",
+          "effect_type": "urteil_chain",
+          "params": {
+            "chain_radius": 200
+          }
+        }
+      ]
+    },
+    "raelear": {
+      "name": "Raelear",
+      "theme": "Verzweiflung vs Entschlossenheit",
+      "focus": "Illusionen",
+      "color": [0.5, 0.3, 0.8],
+      "boons": [
+        {
+          "id": "raelear_1",
+          "tier": 1,
+          "name": "Schattenbild",
+          "description": "Nach jedem Dodge Roll hinterlaesst Murum einen Klon (3s), der Gegner ablenkt und bei Beruehrung leichten Schaden macht.",
+          "effect_type": "dodge_clone",
+          "params": {
+            "clone_duration": 3.0,
+            "clone_damage": 10
+          }
+        },
+        {
+          "id": "raelear_2",
+          "tier": 2,
+          "name": "Schatten der Finsternis",
+          "description": "Getoetete Gegner spawnen einen Schattenklon (5s), der Gegner angreift (50% Schaden).",
+          "effect_type": "death_clone",
+          "params": {
+            "clone_duration": 5.0,
+            "damage_percent": 0.5
+          }
+        },
+        {
+          "id": "raelear_3",
+          "tier": 3,
+          "name": "Spiegelung",
+          "description": "Klone kopieren Murums naechste Faehigkeit einmal (halber Schaden).",
+          "effect_type": "clone_skill_copy",
+          "params": {
+            "damage_percent": 0.5
+          }
+        },
+        {
+          "id": "raelear_4",
+          "tier": 4,
+          "name": "Armee der Verzweiflung",
+          "description": "Max gleichzeitige Klone: 5 statt 2. Klone leben 8s statt 3-5s.",
+          "effect_type": "clone_upgrade",
+          "params": {
+            "max_clones": 5,
+            "duration_override": 8.0
+          }
+        },
+        {
+          "id": "raelear_5",
+          "tier": 5,
+          "name": "Entschlossene Kopie",
+          "description": "Einmal pro Raum: bei toedlichem Schaden opfert sich ein aktiver Klon statt Murum.",
+          "effect_type": "clone_death_save",
+          "params": {
+            "uses_per_room": 1
+          }
+        }
+      ]
+    },
+    "murrum": {
+      "name": "Mur|rum",
+      "theme": "Vergessen vs Erinnern",
+      "focus": "Elementar Magie",
+      "color": [0.2, 0.7, 0.9],
+      "boons": [
+        {
+          "id": "murrum_1",
+          "tier": 1,
+          "name": "Element-Finisher",
+          "description": "Am Ende jeder Combo: zufaelliger Elementarschaden (Feuer, Wasser, Erde, Luft/Blitz).",
+          "effect_type": "combo_element_finisher",
+          "params": {
+            "elements": ["fire", "water", "earth", "lightning"],
+            "bonus_damage": 15
+          }
+        },
+        {
+          "id": "murrum_2",
+          "tier": 2,
+          "name": "Zerfall",
+          "description": "Gegner die Elementarschaden nehmen bekommen 3s DoT.",
+          "effect_type": "elemental_dot",
+          "params": {
+            "dot_duration": 3.0,
+            "dot_damage_per_sec": 5
+          }
+        },
+        {
+          "id": "murrum_3",
+          "tier": 3,
+          "name": "Elementare Ueberladung",
+          "description": "Alle Skills wirken zusaetzlichen zufaelligen Elementarschaden.",
+          "effect_type": "skill_element_bonus",
+          "params": {
+            "bonus_damage_percent": 0.2
+          }
+        },
+        {
+          "id": "murrum_4",
+          "tier": 4,
+          "name": "Herr der Elemente",
+          "description": "Bei jedem Schaden werden alle 4 Elemente als Extra-Schaden dazu gerechnet.",
+          "effect_type": "all_elements_on_hit",
+          "params": {
+            "per_element_damage": 5
+          }
+        },
+        {
+          "id": "murrum_5",
+          "tier": 5,
+          "name": "Ewiges Element",
+          "description": "Jeder Elementarschaden heilt Murums Leben und Mana bruchstueckhaft.",
+          "effect_type": "elemental_lifesteal",
+          "params": {
+            "heal_percent": 0.02,
+            "mana_percent": 0.02
+          }
+        }
+      ]
+    },
+    "noron": {
+      "name": "Noron",
+      "theme": "Wahn vs Ruhe",
+      "focus": "Licht & Finsternis",
+      "color": [0.4, 0.8, 0.3],
+      "boons": [
+        {
+          "id": "noron_1",
+          "tier": 1,
+          "name": "Klingen des Zwielichts",
+          "description": "Bei Angriffen rotieren Licht- und Finsternisklingen um Murum (leichter Extra-Schaden).",
+          "effect_type": "twilight_blades",
+          "params": {
+            "blade_damage": 8,
+            "blade_radius": 80
+          }
+        },
+        {
+          "id": "noron_2",
+          "tier": 2,
+          "name": "Worte des Wahns",
+          "description": "Getroffene Gegner haben 15% Chance fuer 3s sich gegenseitig anzugreifen.",
+          "effect_type": "confusion_on_hit",
+          "params": {
+            "chance_percent": 0.15,
+            "confusion_duration": 3.0
+          }
+        },
+        {
+          "id": "noron_3",
+          "tier": 3,
+          "name": "Dualitaet",
+          "description": "Die Klingen (T1) heilen Murum: Licht heilt Leben, Finsternis heilt Mana. Klingen sind 30% staerker.",
+          "effect_type": "blade_heal_upgrade",
+          "params": {
+            "light_heal_per_hit": 3,
+            "dark_mana_per_hit": 3,
+            "blade_damage_bonus_percent": 0.3
+          }
+        },
+        {
+          "id": "noron_4",
+          "tier": 4,
+          "name": "Norons Wahnsinn",
+          "description": "Alle Gegner im Raum sind 20% langsamer. Jeder Kill erzeugt abwechselnd eine Licht-Explosion oder Schatten-Implosion (AoE).",
+          "effect_type": "madness_aura",
+          "params": {
+            "enemy_slow_percent": 0.2,
+            "kill_explosion_damage": 30,
+            "kill_explosion_radius": 120
+          }
+        },
+        {
+          "id": "noron_5",
+          "tier": 5,
+          "name": "Ewige Daemmerung",
+          "description": "25% Chance, dass feindliche Angriffe durch Murum hindurchgehen. Bei Miss: Schattenkopie kontert und explodiert in grosser AoE.",
+          "effect_type": "twilight_dodge",
+          "params": {
+            "miss_chance_percent": 0.25,
+            "counter_explosion_damage": 50,
+            "counter_explosion_radius": 150
+          }
+        }
+      ]
+    },
+    "sairias": {
+      "name": "Sairias",
+      "theme": "Angst vs Mut",
+      "focus": "Block & Konter",
+      "color": [0.9, 0.85, 0.2],
+      "boons": [
+        {
+          "id": "sairias_1",
+          "tier": 1,
+          "name": "Umleitung",
+          "description": "Blocken macht Gegnern in der Naehe leichten Schaden.",
+          "effect_type": "block_damage_aura",
+          "params": {
+            "block_aoe_damage": 10,
+            "block_aoe_radius": 100
+          }
+        },
+        {
+          "id": "sairias_2",
+          "tier": 2,
+          "name": "Perfekte Umleitung",
+          "description": "Perfect Parry reflektiert exakt den Schaden des Angriffs zurueck an den Angreifer.",
+          "effect_type": "parry_reflect",
+          "params": {}
+        },
+        {
+          "id": "sairias_3",
+          "tier": 3,
+          "name": "Himmel und Erde",
+          "description": "Blocken schleudert Gegner in die Luft (wenn am Boden) oder zu Boden (wenn in der Luft).",
+          "effect_type": "block_launch_slam",
+          "params": {
+            "launch_force": 400,
+            "slam_damage": 20
+          }
+        },
+        {
+          "id": "sairias_4",
+          "tier": 4,
+          "name": "Saeulen der Schoepfung",
+          "description": "Perfect Parry spawnt weisse Lichtsaeulen random um Murum herum, die massiven Schaden machen.",
+          "effect_type": "parry_light_pillars",
+          "params": {
+            "pillar_count": 3,
+            "pillar_damage": 40,
+            "pillar_radius": 60,
+            "spawn_range": 200
+          }
+        },
+        {
+          "id": "sairias_5",
+          "tier": 5,
+          "name": "Unbrechbar",
+          "description": "Hyperarmor waehrend aller Angriffe (keine Unterbrechung). Perfect Parry heilt 10% Max HP.",
+          "effect_type": "hyperarmor_parry_heal",
+          "params": {
+            "parry_heal_percent": 0.1
+          }
+        }
+      ]
+    }
+  }
+}

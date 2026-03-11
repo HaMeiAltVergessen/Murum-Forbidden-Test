@@ -260,7 +260,8 @@ func _gather_save_data(slot_index: int) -> Dictionary:
 		"challenge_run": _gather_challenge_run_data(),
 		"run_manager": _gather_run_manager_data(),
 		"upgrades": _gather_upgrade_data(),
-		"found_relics": _gather_found_relics()
+		"found_relics": _gather_found_relics(),
+		"boons": _gather_boon_data()
 	}
 
 	print("[SaveManager] Save data gathered successfully")
@@ -444,6 +445,13 @@ func _gather_upgrade_data() -> Dictionary:
 		return UpgradeManager.get_save_data()
 	return {"upgrade_levels": {}}
 
+
+func _gather_boon_data() -> Dictionary:
+	"""Gathers BoonManager run-volatile data (for mid-run saves)"""
+	if BoonManager:
+		return BoonManager.get_save_data()
+	return {"active_boons": {}}
+
 # ============================================================================
 # LOAD GAME
 # ============================================================================
@@ -555,6 +563,11 @@ func _apply_save_data(save_data: Dictionary) -> void:
 	var upgrade_data = save_data.get("upgrades", {})
 	if UpgradeManager:
 		UpgradeManager.load_from_save(upgrade_data)
+
+	# Restore BoonManager data (mid-run saves)
+	var boon_data = save_data.get("boons", {})
+	if BoonManager:
+		BoonManager.load_from_save(boon_data)
 
 	# Restore found relics
 	var found_relics_data = save_data.get("found_relics", [])
