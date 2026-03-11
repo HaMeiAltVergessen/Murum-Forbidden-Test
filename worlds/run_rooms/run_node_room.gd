@@ -885,12 +885,8 @@ func _open_run_shop() -> void:
 # ============ BOSS SETUP ============
 func _setup_boss() -> void:
 	var boss_name: String = _get_boss_name()
+	var is_final_boss: bool = _get_next_world() < 0
 	print("[RunNodeRoom] Boss room — %s (placeholder, auto-skip)" % boss_name)
-
-	# Grant boss rewards: Magicka + full heal
-	var w: int = RewardManager.get_world_id_int(world_id)
-	var magicka_amount: int = RewardManager.get_boss_magicka(w)
-	RunManager.add_magicka(magicka_amount)
 
 	# Full heal
 	if GameManager.player and is_instance_valid(GameManager.player):
@@ -900,9 +896,20 @@ func _setup_boss() -> void:
 		if player.has_node("ManaComponent"):
 			player.get_node("ManaComponent").reset_mana()
 
+	# Grant boss rewards: Magicka + full heal
+	var w: int = RewardManager.get_world_id_int(world_id)
+	var magicka_amount: int = RewardManager.get_boss_magicka(w)
+	RunManager.add_magicka(magicka_amount)
+
 	_show_completion_ui("BOSS: %s (uebersprungen)" % boss_name)
 	EventBus.show_notification.emit("+%d Magicka! Volle Heilung!" % magicka_amount, 4.0)
-	get_tree().create_timer(2.0).timeout.connect(_on_node_cleared)
+
+	if is_final_boss:
+		# Final boss: no boon selection, just end
+		get_tree().create_timer(2.0).timeout.connect(_on_node_cleared)
+	else:
+		# Non-final boss: boon selection after short delay
+		get_tree().create_timer(2.0).timeout.connect(_setup_boon_selection)
 
 
 func _get_boss_name() -> String:
@@ -1178,8 +1185,8 @@ func _process(_delta: float) -> void:
 		_confirm_treasure_choice()
 		return
 
-	# Boon choice confirmation (Elite rooms)
-	if node_type == RunMapData.NodeType.ELITE and not boon_choice_made and _player_in_boon != "":
+	# Boon choice confirmation (Elite + Boss rooms)
+	if node_type in [RunMapData.NodeType.ELITE, RunMapData.NodeType.BOSS] and not boon_choice_made and _player_in_boon != "":
 		_confirm_boon_choice()
 		return
 
