@@ -103,13 +103,31 @@ static func generate_map(world_id: RunMapData.WorldId, rng_seed: int = -1) -> Ru
 
 		map.rows.append(row_node_ids)
 
-	# ---- Boss row (always exactly 1 BOSS node) ----
+	# ---- Boss row ----
 	var boss_row_index: int = config.num_rows
-	var boss_node = RunMapData.MapNode.new(next_id, boss_row_index, 0, RunMapData.NodeType.BOSS)
+	var boss_row_ids: Array = []
+
+	# W3 (Abgrund): Arena + Boss in same row — player chooses
+	if world_id == RunMapData.WorldId.ABGRUND:
+		var arena_node = RunMapData.MapNode.new(next_id, boss_row_index, 0, RunMapData.NodeType.ARENA)
+		arena_node.reward_type = "arena"
+		map.nodes[next_id] = arena_node
+		boss_row_ids.append(next_id)
+		next_id += 1
+
+	var boss_node = RunMapData.MapNode.new(next_id, boss_row_index, boss_row_ids.size(), RunMapData.NodeType.BOSS)
 	boss_node.reward_type = "boss"
 	map.nodes[next_id] = boss_node
-	map.rows.append([next_id])
+	boss_row_ids.append(next_id)
 	next_id += 1
+
+	# Arena connects to Boss (after arena, player goes to boss)
+	if world_id == RunMapData.WorldId.ABGRUND and boss_row_ids.size() == 2:
+		var arena_id: int = boss_row_ids[0]
+		var boss_id: int = boss_row_ids[1]
+		map.nodes[arena_id].connections.append(boss_id)
+
+	map.rows.append(boss_row_ids)
 
 	# ---- Place shops (1 per world) ----
 	_place_shop(map, config, rng)
@@ -117,10 +135,6 @@ static func generate_map(world_id: RunMapData.WorldId, rng_seed: int = -1) -> Ru
 	# ---- Place events (Welt 2+) ----
 	if config.events_per_run > 0:
 		_place_events(map, config, rng)
-
-	# ---- Place arena (Welt 3 only: optional pre-boss) ----
-	if world_id == RunMapData.WorldId.ABGRUND:
-		_place_arena(map, config, rng)
 
 	# ---- Connect rows ----
 	_connect_rows(map, rng)
@@ -236,26 +250,6 @@ static func _place_shop(map: RunMapData.Map, config: RunMapData.WorldConfig,
 	chosen.type = RunMapData.NodeType.SHOP
 	chosen.reward_type = "shop"
 	print("[RunMapGenerator] Placed SHOP at row %d, col %d" % [chosen.row, chosen.column])
-
-
-# ============ ARENA PLACEMENT (W3 ONLY) ============
-
-static func _place_arena(map: RunMapData.Map, config: RunMapData.WorldConfig,
-		rng: RandomNumberGenerator) -> void:
-	"""Places 1 ARENA node in the pre-boss row of World 3"""
-	var pre_boss_row: int = config.num_rows - 1
-	if pre_boss_row < 0 or pre_boss_row >= map.rows.size():
-		return
-
-	var row_nodes: Array = map.rows[pre_boss_row]
-	# Replace one combat/elite node with ARENA
-	for node_id in row_nodes:
-		var node: RunMapData.MapNode = map.nodes[node_id]
-		if node.type == RunMapData.NodeType.COMBAT or node.type == RunMapData.NodeType.ELITE:
-			node.type = RunMapData.NodeType.ARENA
-			node.reward_type = "arena"
-			print("[RunMapGenerator] Placed ARENA at row %d, col %d" % [node.row, node.column])
-			return
 
 
 # ============ CONNECTION LOGIC ============
