@@ -136,8 +136,8 @@ func _setup_combat() -> void:
 	arena_controller.wave_configs = [wave_config]
 	arena_controller.start_mode = ArenaController.StartMode.MANUAL
 	arena_controller.lock_doors_during_waves = false
-	arena_controller.spawn_coins_on_clear = true
-	arena_controller.coins_per_wave = 15
+	arena_controller.spawn_coins_on_clear = false
+	arena_controller.coins_per_wave = 0
 	add_child(arena_controller)
 
 	for marker in enemy_spawn_markers:
@@ -160,34 +160,149 @@ func _setup_combat() -> void:
 
 func _on_combat_completed() -> void:
 	print("[RunNodeRoom] Combat completed!")
-	_show_completion_ui("Alle Gegner besiegt!")
+	var w: int = RewardManager.get_world_id_int(world_id)
+
+	# Grant gold
+	var gold: int = RewardManager.get_combat_gold(w)
+	GameManager.add_coins(gold)
+	_show_completion_ui("Alle Gegner besiegt! +%d Gold" % gold)
+
+	# 30% chance: drop 1 consumable
+	var consumable_id: String = RewardManager.get_combat_consumable_drop(w)
+	if consumable_id != "":
+		InventoryManager.add_item(consumable_id)
+		var item_name: String = RewardManager.get_item_name(consumable_id)
+		EventBus.show_notification.emit("Item gefunden: %s" % item_name, 3.0)
+		print("[RunNodeRoom] Consumable drop: %s" % consumable_id)
+
 	get_tree().create_timer(2.0).timeout.connect(_on_node_cleared)
 
 
 # ============ TREASURE SETUP ============
+var treasure_choice_made: bool = false
+var _player_in_treasure: String = ""  # "A", "B", "C" or ""
+var _treasure_items: Array = []       # Array of item_id strings
+
 func _setup_treasure() -> void:
 	print("[RunNodeRoom] Treasure room")
+	var w: int = RewardManager.get_world_id_int(world_id)
+	_treasure_items = RewardManager.get_treasure_choices(w)
 
-	# Heal player as bonus
-	if GameManager.player and is_instance_valid(GameManager.player):
-		var player = GameManager.player
-		if player.has_node("HealthComponent"):
-			player.get_node("HealthComponent").reset_health()
-		if player.has_node("ManaComponent"):
-			player.get_node("ManaComponent").reset_mana()
+	if _treasure_items.is_empty():
+		push_warning("[RunNodeRoom] No treasure items available!")
+		_on_node_cleared()
+		return
 
-	var items = [
-		{"name": "Heilkraut", "desc": "Heilt 30 HP"},
-		{"name": "Schattenstein", "desc": "+5% Schaden fuer diesen Run"},
-		{"name": "Mana-Elixier", "desc": "Stellt 20 Mana wieder her"},
-	]
-	var chosen = items[randi() % items.size()]
+	# Look for TreasureChoices node in scene (Area2D zones like EventChoices)
+	var choices = get_node_or_null("TreasureChoices")
+	if not choices:
+		# Fallback: create choice zones dynamically
+		choices = Node2D.new()
+		choices.name = "TreasureChoices"
+		add_child(choices)
+		_create_treasure_zones(choices)
 
-	_show_completion_ui("Schatz: %s gefunden!" % chosen["name"])
-	EventBus.show_notification.emit("Du erhaeltst: %s — %s" % [chosen["name"], chosen["desc"]], 4.0)
-	print("[RunNodeRoom] Treasure auto-collected: %s" % chosen["name"])
+	# Connect choice zones
+	var zone_keys := ["A", "B", "C"]
+	for i in range(mini(_treasure_items.size(), zone_keys.size())):
+		var key: String = zone_keys[i]
+		var zone: Area2D = choices.get_node_or_null("Choice" + key)
+		if not zone:
+			continue
 
-	get_tree().create_timer(2.0).timeout.connect(_on_node_cleared)
+		# Add item label to zone
+		var item_name: String = RewardManager.get_item_name(_treasure_items[i])
+		var item_desc: String = RewardManager.get_item_description(_treasure_items[i])
+		var label = Label.new()
+		label.text = "%s\n%s" % [item_name, item_desc]
+		label.add_theme_font_size_override("font_size", 16)
+		label.add_theme_color_override("font_color", Color(0.2, 0.9, 0.4))
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.size = Vector2(200, 60)
+		label.position = Vector2(-100, -80)
+		zone.add_child(label)
+
+		# Connect body signals
+		var captured_key := key
+		zone.body_entered.connect(func(body):
+			if body is Murum or body.name == "Murum":
+				_player_in_treasure = captured_key
+		)
+		zone.body_exited.connect(func(body):
+			if body is Murum or body.name == "Murum":
+				if _player_in_treasure == captured_key:
+					_player_in_treasure = ""
+		)
+
+	_show_completion_ui("Waehle einen Schatz!")
+
+
+func _create_treasure_zones(parent: Node2D) -> void:
+	"""Creates 3 choice zones dynamically if TreasureChoices not in scene"""
+	var positions := [Vector2(400, 700), Vector2(700, 700), Vector2(1000, 700)]
+	var keys := ["A", "B", "C"]
+
+	for i in range(mini(_treasure_items.size(), 3)):
+		var zone := Area2D.new()
+		zone.name = "Choice" + keys[i]
+		zone.global_position = positions[i]
+		zone.collision_layer = 0
+		zone.collision_mask = 0
+		zone.set_collision_mask_value(2, true)
+		zone.monitoring = true
+
+		var col := CollisionShape2D.new()
+		var shape := RectangleShape2D.new()
+		shape.size = Vector2(120, 120)
+		col.shape = shape
+		zone.add_child(col)
+
+		# Visual
+		var rect := ColorRect.new()
+		rect.color = Color(0.2, 0.7, 0.3, 0.6)
+		rect.size = Vector2(120, 120)
+		rect.position = Vector2(-60, -60)
+		zone.add_child(rect)
+
+		# Prompt
+		var prompt := Label.new()
+		prompt.name = "PromptLabel"
+		prompt.text = "E - Nehmen"
+		prompt.add_theme_font_size_override("font_size", 14)
+		prompt.add_theme_color_override("font_color", Color.WHITE)
+		prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		prompt.size = Vector2(120, 20)
+		prompt.position = Vector2(-60, 65)
+		zone.add_child(prompt)
+
+		parent.add_child(zone)
+
+
+func _confirm_treasure_choice() -> void:
+	"""Called when player presses E inside a treasure zone"""
+	if treasure_choice_made or _player_in_treasure == "":
+		return
+	treasure_choice_made = true
+
+	var index: int = ["A", "B", "C"].find(_player_in_treasure)
+	if index < 0 or index >= _treasure_items.size():
+		return
+
+	var item_id: String = _treasure_items[index]
+	InventoryManager.add_item(item_id)
+	var item_name: String = RewardManager.get_item_name(item_id)
+
+	# Remove all choice zones
+	var choices = get_node_or_null("TreasureChoices")
+	if choices:
+		for child in choices.get_children():
+			child.queue_free()
+
+	_show_completion_ui("Schatz: %s erhalten!" % item_name)
+	EventBus.show_notification.emit("Du erhaeltst: %s" % item_name, 3.0)
+	print("[RunNodeRoom] Treasure chosen: %s" % item_id)
+
+	_on_node_cleared()
 
 
 # ============ REST SETUP ============
@@ -227,76 +342,322 @@ func _setup_rest() -> void:
 
 # ============ EVENT SETUP ============
 var event_choice_made: bool = false
-var _player_in_choice: String = ""  # "A" or "B" or ""
+var _event_npc_in_range: bool = false
+var _event_dialog_started: bool = false
+var _event_choice_index: int = -1  # 0 = positive, 1 = negative
+var _event_npc_visual: Node2D = null
+var _event_template: Dictionary = {}  # Cached template for current event
+
+# Event templates per world: {npc_name, intro_text, offer_text, accept_text, reject_text, reward_desc}
+const EVENT_TEMPLATES_W1: Array = [
+	{
+		"npc": "Wanderer", "intro": "Eine verhüllte Gestalt sitzt am Wegesrand...",
+		"offer": "Ich trage etwas bei mir, das dir helfen könnte. Doch nichts ist umsonst.",
+		"accept": "Nimm es. Möge es dir dienen.", "reject": "Dann war unser Gespräch hier wohl vergebens.",
+		"reward_desc": "Annehmen",
+	},
+	{
+		"npc": "Alter Geist", "intro": "Ein schimmernder Geist erscheint vor dir...",
+		"offer": "Ich war einst wie du. Lass mich dir etwas hinterlassen.",
+		"accept": "Nimm meinen Segen.", "reject": "Du wagst es, mich abzulehnen?!",
+		"reward_desc": "Segen annehmen",
+	},
+]
+
+const EVENT_TEMPLATES_W2: Array = [
+	{
+		"npc": "Defekter Androide", "intro": "Ein beschädigter Androide flackert in der Ecke...",
+		"offer": "Mein Speicher enthält... nützliche Daten. Download möglich.",
+		"accept": "Transfer... abgeschlossen.", "reject": "Verbindung... verweigert. Protokoll: Verteidigung.",
+		"reward_desc": "Daten akzeptieren",
+	},
+]
+
+const EVENT_TEMPLATES_W3: Array = [
+	{
+		"npc": "Verzerrte Stimme", "intro": "Die Luft vibriert. Eine körperlose Stimme flüstert...",
+		"offer": "Ich biete Macht. Doch Macht hat ihren Preis.",
+		"accept": "Die Macht fließt in dich hinein...", "reject": "Dann... werde ich sie dir NEHMEN.",
+		"reward_desc": "Macht annehmen",
+	},
+]
+
 
 func _setup_event() -> void:
 	print("[RunNodeRoom] Event room")
 
-	var choices = get_node_or_null("EventChoices")
-	if not choices:
-		push_warning("[RunNodeRoom] No EventChoices node found in scene!")
-		_on_node_cleared()
+	# Hide old EventChoices if present in scene
+	var old_choices = get_node_or_null("EventChoices")
+	if old_choices:
+		old_choices.visible = false
+		for child in old_choices.get_children():
+			if child is Area2D:
+				child.monitoring = false
+
+	# Cache template and spawn NPC
+	_event_template = _get_event_template()
+	_spawn_event_npc()
+
+
+func _spawn_event_npc() -> void:
+	"""Creates an NPC visual with interaction area"""
+	_event_npc_visual = Node2D.new()
+	_event_npc_visual.name = "EventNPC"
+	_event_npc_visual.position = Vector2(700, 720)
+	add_child(_event_npc_visual)
+
+	# NPC body visual
+	var body_rect := ColorRect.new()
+	body_rect.color = Color(0.5, 0.3, 0.7, 0.9)
+	body_rect.size = Vector2(40, 80)
+	body_rect.position = Vector2(-20, -80)
+	_event_npc_visual.add_child(body_rect)
+
+	# NPC head
+	var head_rect := ColorRect.new()
+	head_rect.color = Color(0.6, 0.4, 0.8, 0.9)
+	head_rect.size = Vector2(30, 30)
+	head_rect.position = Vector2(-15, -110)
+	_event_npc_visual.add_child(head_rect)
+
+	# NPC name label
+	var name_label := Label.new()
+	name_label.text = _event_template["npc"]
+	name_label.add_theme_font_size_override("font_size", 16)
+	name_label.add_theme_color_override("font_color", Color(0.7, 0.4, 0.9))
+	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_label.size = Vector2(160, 20)
+	name_label.position = Vector2(-80, -130)
+	_event_npc_visual.add_child(name_label)
+
+	# Prompt label
+	var prompt := Label.new()
+	prompt.name = "PromptLabel"
+	prompt.text = "E - Sprechen"
+	prompt.add_theme_font_size_override("font_size", 14)
+	prompt.add_theme_color_override("font_color", Color.WHITE)
+	prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	prompt.size = Vector2(120, 20)
+	prompt.position = Vector2(-60, 10)
+	prompt.visible = false
+	_event_npc_visual.add_child(prompt)
+
+	# Glow
+	var glow := PointLight2D.new()
+	glow.color = Color(0.6, 0.3, 0.9, 0.6)
+	glow.energy = 0.4
+	glow.position = Vector2(0, -50)
+	var gradient_tex := GradientTexture2D.new()
+	gradient_tex.width = 128
+	gradient_tex.height = 128
+	gradient_tex.fill = GradientTexture2D.FILL_RADIAL
+	gradient_tex.fill_from = Vector2(0.5, 0.5)
+	gradient_tex.fill_to = Vector2(0.5, 0.0)
+	var gradient := Gradient.new()
+	gradient.colors = PackedColorArray([Color.WHITE, Color(1, 1, 1, 0)])
+	gradient.offsets = PackedFloat32Array([0.0, 1.0])
+	gradient_tex.gradient = gradient
+	glow.texture = gradient_tex
+	glow.texture_scale = 1.5
+	_event_npc_visual.add_child(glow)
+
+	# Interaction area
+	var area := Area2D.new()
+	area.collision_layer = 0
+	area.collision_mask = 0
+	area.set_collision_mask_value(2, true)
+	area.monitoring = true
+	var col := CollisionShape2D.new()
+	var shape := RectangleShape2D.new()
+	shape.size = Vector2(140, 100)
+	col.shape = shape
+	col.position = Vector2(0, -40)
+	area.add_child(col)
+	_event_npc_visual.add_child(area)
+
+	area.body_entered.connect(func(body):
+		if body is Murum or body.name == "Murum":
+			_event_npc_in_range = true
+			prompt.visible = true
+	)
+	area.body_exited.connect(func(body):
+		if body is Murum or body.name == "Murum":
+			_event_npc_in_range = false
+			prompt.visible = false
+	)
+
+
+func _get_event_template() -> Dictionary:
+	"""Returns a random event template for the current world"""
+	var templates: Array = []
+	match world_id:
+		RunMapData.WorldId.NIEMANDSLAND:
+			templates = EVENT_TEMPLATES_W1
+		RunMapData.WorldId.KOLLEKTIV:
+			templates = EVENT_TEMPLATES_W2
+		RunMapData.WorldId.ABGRUND:
+			templates = EVENT_TEMPLATES_W3
+
+	if templates.is_empty():
+		templates = EVENT_TEMPLATES_W1
+	return templates[randi() % templates.size()]
+
+
+func _start_event_dialog() -> void:
+	"""Creates and plays event dialog programmatically"""
+	if _event_dialog_started or event_choice_made:
+		return
+	if DialogManager and DialogManager.is_active:
 		return
 
-	var choice_a: Area2D = choices.get_node_or_null("ChoiceA")
-	var choice_b: Area2D = choices.get_node_or_null("ChoiceB")
+	_event_dialog_started = true
+	var template: Dictionary = _event_template
 
-	if choice_a:
-		choice_a.body_entered.connect(func(body):
-			if body is Murum or body.name == "Murum":
-				_player_in_choice = "A"
-		)
-		choice_a.body_exited.connect(func(body):
-			if body is Murum or body.name == "Murum":
-				if _player_in_choice == "A":
-					_player_in_choice = ""
-		)
+	# Build dialog resource
+	var dialog := DialogData.new()
+	dialog.dialog_id = "run_event_%d" % (node_data.id if node_data else 0)
 
-	if choice_b:
-		choice_b.body_entered.connect(func(body):
-			if body is Murum or body.name == "Murum":
-				_player_in_choice = "B"
-		)
-		choice_b.body_exited.connect(func(body):
-			if body is Murum or body.name == "Murum":
-				if _player_in_choice == "B":
-					_player_in_choice = ""
-		)
+	# Entry 1: Narration
+	var intro := DialogEntry.new()
+	intro.text = template["intro"]
+	dialog.entries.append(intro)
+
+	# Entry 2: NPC offer with choices
+	var offer := DialogEntry.new()
+	offer.speaker_name = template["npc"]
+	offer.text = template["offer"]
+
+	var choice_accept := DialogChoice.new()
+	choice_accept.choice_text = template["reward_desc"]
+	choice_accept.response_speaker = template["npc"]
+	choice_accept.response_text = template["accept"]
+
+	var choice_reject := DialogChoice.new()
+	choice_reject.choice_text = "Ablehnen"
+	choice_reject.response_speaker = template["npc"]
+	choice_reject.response_text = template["reject"]
+
+	offer.choices = [choice_accept, choice_reject]
+	dialog.entries.append(offer)
+
+	# Connect signals
+	EventBus.dialog_choice_selected.connect(_on_event_choice_selected)
+	EventBus.dialog_finished.connect(_on_event_dialog_finished, CONNECT_ONE_SHOT)
+
+	DialogManager.play_dialog_resource(dialog)
 
 
-func _confirm_event_choice() -> void:
-	"""Called when player presses E inside a choice zone"""
-	if event_choice_made or _player_in_choice == "":
+func _on_event_choice_selected(dialog_id: String, choice_index: int) -> void:
+	if not dialog_id.begins_with("run_event_"):
 		return
+	_event_choice_index = choice_index
+	# Disconnect after receiving choice
+	if EventBus.dialog_choice_selected.is_connected(_on_event_choice_selected):
+		EventBus.dialog_choice_selected.disconnect(_on_event_choice_selected)
+
+
+func _on_event_dialog_finished(_dialog_id: String) -> void:
 	event_choice_made = true
 
-	var choices = get_node_or_null("EventChoices")
-	if not choices:
-		return
-
-	var chosen_key := _player_in_choice  # "A" or "B"
-	var other_key := "B" if chosen_key == "A" else "A"
-
-	# Remove the chosen zone
-	var chosen_node = choices.get_node_or_null("Choice" + chosen_key)
-	if chosen_node:
-		chosen_node.queue_free()
-
-	# Grey out the other zone
-	var other_node = choices.get_node_or_null("Choice" + other_key)
-	if other_node:
-		other_node.modulate = Color(0.4, 0.4, 0.4, 0.5)
-		# Disable collision
-		var area = other_node as Area2D
-		if area:
-			area.monitoring = false
-
-	if chosen_key == "A":
-		EventBus.show_notification.emit("Du akzeptierst das Angebot.", 3.0)
+	if _event_choice_index == 0:
+		# Positive: give consumable
+		_event_positive_outcome()
 	else:
-		EventBus.show_notification.emit("Du gehst weiter.", 3.0)
+		# Negative: NPC becomes hostile
+		_event_negative_outcome()
+
+
+func _event_positive_outcome() -> void:
+	"""Player accepted — give a random consumable"""
+	var w: int = RewardManager.get_world_id_int(world_id)
+	var pool: Array = RewardManager.get_treasure_choices(w)
+	if not pool.is_empty():
+		var item_id: String = pool[0]
+		InventoryManager.add_item(item_id)
+		var item_name: String = RewardManager.get_item_name(item_id)
+		EventBus.show_notification.emit("Erhalten: %s" % item_name, 3.0)
+		print("[RunNodeRoom] Event positive: %s" % item_id)
+
+	# Remove NPC
+	if _event_npc_visual:
+		_event_npc_visual.queue_free()
 
 	_on_node_cleared()
+
+
+func _event_negative_outcome() -> void:
+	"""Player rejected — NPC becomes hostile, start combat"""
+	print("[RunNodeRoom] Event negative — NPC fight!")
+
+	# Change NPC color to hostile red
+	if _event_npc_visual:
+		_event_npc_visual.queue_free()
+
+	# Spawn enemies using combat system
+	var wave_config = RunRoomPool.build_single_wave_config(world_id, RunMapData.NodeType.COMBAT)
+	if not wave_config:
+		# Fallback: just give the consolation reward
+		_event_combat_reward()
+		return
+
+	var enemy_spawn_markers: Array[Marker2D] = []
+	var spawn_container = get_node_or_null("EnemySpawnPoints")
+	if spawn_container:
+		for child in spawn_container.get_children():
+			if child is Marker2D:
+				enemy_spawn_markers.append(child)
+
+	if enemy_spawn_markers.is_empty():
+		# No spawn points — create a fallback
+		var fallback := Marker2D.new()
+		fallback.position = Vector2(700, 720)
+		add_child(fallback)
+		enemy_spawn_markers.append(fallback)
+
+	arena_controller = ArenaController.new()
+	arena_controller.name = "EventArenaController"
+	arena_controller.arena_id = "event_npc_%d" % (node_data.id if node_data else 0)
+	arena_controller.wave_configs = [wave_config]
+	arena_controller.start_mode = ArenaController.StartMode.MANUAL
+	arena_controller.lock_doors_during_waves = false
+	arena_controller.spawn_coins_on_clear = false
+	arena_controller.coins_per_wave = 0
+	add_child(arena_controller)
+
+	for marker in enemy_spawn_markers:
+		arena_controller.spawn_points.append(arena_controller.get_path_to(marker))
+
+	arena_controller.arena_completed.connect(_on_event_combat_completed)
+
+	EventBus.show_notification.emit("Der NPC greift an!", 2.0)
+
+	get_tree().create_timer(1.0).timeout.connect(func():
+		if arena_controller and not arena_controller.is_cleared:
+			arena_controller.start_arena()
+	)
+
+
+func _on_event_combat_completed() -> void:
+	print("[RunNodeRoom] Event combat completed!")
+	_event_combat_reward()
+
+
+func _event_combat_reward() -> void:
+	"""Consolation reward after winning event combat: gold + small heal"""
+	var reward: Dictionary = RewardManager.get_event_combat_reward()
+	GameManager.add_coins(reward["gold"])
+
+	# Small heal
+	if GameManager.player and is_instance_valid(GameManager.player):
+		var player = GameManager.player
+		if player.has_node("HealthComponent"):
+			var health_comp = player.get_node("HealthComponent")
+			var heal_amount: float = health_comp.max_health * reward["heal_percent"]
+			health_comp.heal(heal_amount)
+
+	_show_completion_ui("Kampf gewonnen! +%d Gold" % reward["gold"])
+	EventBus.show_notification.emit("+%d Gold, kleine Heilung" % reward["gold"], 3.0)
+	get_tree().create_timer(2.0).timeout.connect(_on_node_cleared)
 
 
 # ============ SHOP SETUP ============
@@ -366,7 +727,21 @@ func _setup_boss() -> void:
 	var boss_name: String = _get_boss_name()
 	print("[RunNodeRoom] Boss room — %s (placeholder, auto-skip)" % boss_name)
 
+	# Grant boss rewards: Magicka + full heal
+	var w: int = RewardManager.get_world_id_int(world_id)
+	var magicka_amount: int = RewardManager.get_boss_magicka(w)
+	RunManager.add_magicka(magicka_amount)
+
+	# Full heal
+	if GameManager.player and is_instance_valid(GameManager.player):
+		var player = GameManager.player
+		if player.has_node("HealthComponent"):
+			player.get_node("HealthComponent").reset_health()
+		if player.has_node("ManaComponent"):
+			player.get_node("ManaComponent").reset_mana()
+
 	_show_completion_ui("BOSS: %s (uebersprungen)" % boss_name)
+	EventBus.show_notification.emit("+%d Magicka! Volle Heilung!" % magicka_amount, 4.0)
 	get_tree().create_timer(2.0).timeout.connect(_on_node_cleared)
 
 
@@ -638,9 +1013,14 @@ func _process(_delta: float) -> void:
 	if not interact_pressed:
 		return
 
-	# Event choice confirmation
-	if node_type == RunMapData.NodeType.EVENT and not event_choice_made:
-		_confirm_event_choice()
+	# Treasure choice confirmation
+	if node_type == RunMapData.NodeType.TREASURE and not treasure_choice_made:
+		_confirm_treasure_choice()
+		return
+
+	# Event NPC interaction
+	if node_type == RunMapData.NodeType.EVENT and not event_choice_made and _event_npc_in_range:
+		_start_event_dialog()
 		return
 
 	# Shop interaction
