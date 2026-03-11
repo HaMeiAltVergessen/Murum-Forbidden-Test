@@ -260,6 +260,9 @@ func clear_boons() -> void:
 	active_boons.clear()
 	_room_state.clear()
 	arthra_kill_bonus = 0.0
+	# Cleanup active boon effects (blades, DoTs, etc.)
+	if BoonEffectHandler:
+		BoonEffectHandler.cleanup()
 	boons_cleared.emit()
 	print("[BoonManager] All boons cleared")
 

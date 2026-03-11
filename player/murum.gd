@@ -166,6 +166,20 @@ func _on_health_depleted() -> void:
 	if is_dead:
 		return
 
+	# Boon: Raelear T5 — death save (clone sacrifices itself)
+	if BoonManager and BoonManager.is_death_save_available():
+		BoonManager.consume_death_save()
+		# Restore some HP
+		if health_component:
+			health_component.current_health = int(health_component.max_health * 0.2)
+			health_component.health_changed.emit(health_component.current_health, health_component.max_health)
+		# Destroy a clone if any
+		if BoonEffectHandler:
+			BoonEffectHandler.consume_clone_for_death_save(global_position)
+		EventBus.show_notification.emit("Entschlossene Kopie! Ein Klon opfert sich!", 3.0)
+		print("[Murum] Raelear T5: Death save triggered! 20% HP restored")
+		return
+
 	is_dead = true
 
 	# Disable controls

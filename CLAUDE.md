@@ -47,6 +47,7 @@ camera/               Coop-Kamera, Split-Screen-Manager
 | ChallengeRunManager | `core/autoloads/challenge_run_manager.gd` | 33 Siegel-Modifikatoren, Tiefe-System, Schwellensicht |
 | RewardManager | `core/autoloads/reward_manager.gd` | Belohnungs-Pools pro Raumtyp & Welt |
 | BoonManager | `core/autoloads/boon_manager.gd` | 5 Pachron-Pfade (25 Boons), Run-volatil |
+| BoonEffectHandler | `core/autoloads/boon_effect_handler.gd` | Alle 25 Boon-Effekte (T1–T5) via EventBus |
 | MusicScenePlayer | `core/autoloads/music_scene_player.tscn` | Musik pro Szene |
 
 ## Kampfsystem (P1 Murum)

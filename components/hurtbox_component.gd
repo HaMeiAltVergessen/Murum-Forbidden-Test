@@ -60,6 +60,23 @@ func take_damage(damage: int, knockback: Vector2, hitstun: float, attacker: Node
 	# Note: Parry/block detection is now handled by ParryBlockSystem (spatial collision)
 	# Perfect parry and block effects are applied automatically via collision detection
 
+	# Boon: Noron T5 — 25% miss chance (player only)
+	var parent: Node = get_parent()
+	if parent is Murum and BoonManager and BoonManager.has_boon("noron", 5):
+		var miss_chance: float = BoonManager.get_param("noron", 5, "miss_chance_percent", 0.25)
+		if randf() <= miss_chance:
+			# Attack passes through — counter explosion
+			if BoonEffectHandler:
+				BoonEffectHandler.noron_t5_counter(parent.global_position)
+			return false
+
+	# Boon: Sairias T5 — Hyperarmor during attacks (no knockback/hitstun)
+	if parent is Murum and BoonManager and BoonManager.has_boon("sairias", 5):
+		var combo_tracker = parent.get_node_or_null("CombatSystem/ComboTracker")
+		if combo_tracker and combo_tracker.is_active:
+			knockback = Vector2.ZERO
+			hitstun = 0.0
+
 	# Emit damage signal
 	damage_received.emit(damage, knockback, hitstun)
 
