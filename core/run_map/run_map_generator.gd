@@ -103,31 +103,46 @@ static func generate_map(world_id: RunMapData.WorldId, rng_seed: int = -1) -> Ru
 
 		map.rows.append(row_node_ids)
 
-	# ---- Boss row ----
-	var boss_row_index: int = config.num_rows
-	var boss_row_ids: Array = []
-
-	# W3 (Abgrund): Arena + Boss in same row — player chooses
+	# ---- W3: Pre-Boss room (single node) → Arena + Boss row ----
 	if world_id == RunMapData.WorldId.ABGRUND:
+		# Pre-Boss row: 1 REST node (safe room before final choice)
+		var pre_boss_row_index: int = config.num_rows
+		var pre_boss_node = RunMapData.MapNode.new(next_id, pre_boss_row_index, 0, RunMapData.NodeType.REST)
+		pre_boss_node.reward_type = "heal"
+		map.nodes[next_id] = pre_boss_node
+		map.rows.append([next_id])
+		var pre_boss_id: int = next_id
+		next_id += 1
+
+		# Boss row: Arena + Boss — pre-boss connects to both
+		var boss_row_index: int = pre_boss_row_index + 1
 		var arena_node = RunMapData.MapNode.new(next_id, boss_row_index, 0, RunMapData.NodeType.ARENA)
 		arena_node.reward_type = "arena"
 		map.nodes[next_id] = arena_node
-		boss_row_ids.append(next_id)
+		var arena_id: int = next_id
 		next_id += 1
 
-	var boss_node = RunMapData.MapNode.new(next_id, boss_row_index, boss_row_ids.size(), RunMapData.NodeType.BOSS)
-	boss_node.reward_type = "boss"
-	map.nodes[next_id] = boss_node
-	boss_row_ids.append(next_id)
-	next_id += 1
+		var boss_node = RunMapData.MapNode.new(next_id, boss_row_index, 1, RunMapData.NodeType.BOSS)
+		boss_node.reward_type = "boss"
+		map.nodes[next_id] = boss_node
+		var boss_id: int = next_id
+		next_id += 1
 
-	# Arena connects to Boss (after arena, player goes to boss)
-	if world_id == RunMapData.WorldId.ABGRUND and boss_row_ids.size() == 2:
-		var arena_id: int = boss_row_ids[0]
-		var boss_id: int = boss_row_ids[1]
-		map.nodes[arena_id].connections.append(boss_id)
+		# Pre-boss connects to both Arena and Boss
+		pre_boss_node.connections.append(arena_id)
+		pre_boss_node.connections.append(boss_id)
+		# Arena connects to Boss (after arena → boss)
+		arena_node.connections.append(boss_id)
 
-	map.rows.append(boss_row_ids)
+		map.rows.append([arena_id, boss_id])
+	else:
+		# W1/W2: Boss row (single BOSS node)
+		var boss_row_index: int = config.num_rows
+		var boss_node = RunMapData.MapNode.new(next_id, boss_row_index, 0, RunMapData.NodeType.BOSS)
+		boss_node.reward_type = "boss"
+		map.nodes[next_id] = boss_node
+		map.rows.append([next_id])
+		next_id += 1
 
 	# ---- Place shops (1 per world) ----
 	_place_shop(map, config, rng)
