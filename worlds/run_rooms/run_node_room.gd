@@ -22,7 +22,6 @@ var node_data: RunMapData.MapNode = null
 # ============ INTERNAL STATE ============
 var arena_controller: ArenaController = null
 var doors_spawned: bool = false
-var doors_locked: bool = true
 
 
 func _ready() -> void:
@@ -36,7 +35,7 @@ func _activate() -> void:
 		GameManager.current_state = GameManager.GameState.PLAYING
 
 	_setup_player()
-	_spawn_exit_doors_locked()
+	_spawn_exit_doors()
 
 	match node_type:
 		RunMapData.NodeType.COMBAT, RunMapData.NodeType.ELITE:
@@ -367,8 +366,8 @@ func _on_node_cleared() -> void:
 	_unlock_doors()
 
 
-func _spawn_exit_doors_locked() -> void:
-	"""Spawn doors immediately but locked — called at room start"""
+func _spawn_exit_doors() -> void:
+	"""Spawn doors immediately — always open for now"""
 	if doors_spawned:
 		return
 
@@ -380,7 +379,6 @@ func _spawn_exit_doors_locked() -> void:
 		return
 
 	doors_spawned = true
-	doors_locked = true
 
 	# Get door position markers from the scene
 	var door_positions: Array[Marker2D] = []
@@ -400,43 +398,18 @@ func _spawn_exit_doors_locked() -> void:
 			pos = Vector2(400 + i * 300, 700)
 		_create_door(node, pos, i)
 
-	print("[RunNodeRoom] Spawned %d exit doors (locked)" % door_count)
+	print("[RunNodeRoom] Spawned %d exit doors" % door_count)
 
 
 func _unlock_doors() -> void:
-	"""Unlock all doors after room is cleared"""
+	"""Called when node is cleared — doors are already open, just show hint"""
 	if not doors_spawned:
 		return
-	doors_locked = false
-
 	_show_completion_ui("Waehle den naechsten Raum!")
-
-	for door in get_tree().get_nodes_in_group("run_doors"):
-		# Brighten door visual
-		var door_rect = door.get_node_or_null("DoorRect")
-		if door_rect:
-			door_rect.color.a = 1.0
-		var border = door.get_node_or_null("DoorBorder")
-		if border:
-			border.color.a = 1.0
-		# Remove lock label
-		var lock_label = door.get_node_or_null("LockLabel")
-		if lock_label:
-			lock_label.queue_free()
-		# Enable interaction area
-		var area = door.get_node_or_null("DoorArea")
-		if area:
-			area.monitoring = true
-		# Show prompt hint
-		var prompt = door.get_node_or_null("PromptLabel")
-		if prompt:
-			prompt.modulate.a = 1.0
-
-	print("[RunNodeRoom] Doors unlocked!")
 
 
 func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
-	"""Create a single Hades-style door — starts locked (dark, no interaction)"""
+	"""Create a single Hades-style door — always open"""
 	var door_container = Node2D.new()
 	door_container.name = "Door_%d" % index
 	door_container.global_position = pos
@@ -446,19 +419,17 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 	var door_height: float = 120.0
 	var door_color: Color = DOOR_COLORS.get(node.type, Color.WHITE)
 
-	# Door border (dimmed when locked)
+	# Door border
 	var border = ColorRect.new()
-	border.name = "DoorBorder"
-	border.color = Color(door_color.r * 0.6, door_color.g * 0.6, door_color.b * 0.6, 0.4)
+	border.color = door_color * 0.6
 	border.size = Vector2(door_width + 6, door_height + 6)
 	border.position = Vector2(-door_width / 2.0 - 3, -door_height - 3)
 	border.z_index = -1
 	door_container.add_child(border)
 
-	# Door visual (dimmed when locked)
+	# Door visual
 	var door_rect = ColorRect.new()
-	door_rect.name = "DoorRect"
-	door_rect.color = Color(door_color.r, door_color.g, door_color.b, 0.35)
+	door_rect.color = door_color
 	door_rect.size = Vector2(door_width, door_height)
 	door_rect.position = Vector2(-door_width / 2.0, -door_height)
 	door_container.add_child(door_rect)
@@ -483,18 +454,7 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 	reward_label.position = Vector2(-door_width / 2.0, -door_height - 25)
 	door_container.add_child(reward_label)
 
-	# Lock indicator
-	var lock_label = Label.new()
-	lock_label.name = "LockLabel"
-	lock_label.text = "Gesperrt"
-	lock_label.add_theme_font_size_override("font_size", 12)
-	lock_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.3, 0.8))
-	lock_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lock_label.size = Vector2(door_width, 20)
-	lock_label.position = Vector2(-door_width / 2.0, -door_height / 2.0 + 15)
-	door_container.add_child(lock_label)
-
-	# Interaction area (starts disabled)
+	# Interaction area
 	var area = Area2D.new()
 	area.name = "DoorArea"
 	var col = CollisionShape2D.new()
@@ -506,10 +466,10 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 	area.collision_layer = 0
 	area.collision_mask = 0
 	area.set_collision_mask_value(2, true)  # Player on Layer 2
-	area.monitoring = false  # Locked — no interaction yet
+	area.monitoring = true
 	door_container.add_child(area)
 
-	# Prompt label (hidden, faded until unlocked)
+	# Prompt label
 	var prompt = Label.new()
 	prompt.name = "PromptLabel"
 	prompt.text = "E - %s" % node.get_type_name()
@@ -519,7 +479,6 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 	prompt.size = Vector2(140, 20)
 	prompt.position = Vector2(-70, 10)
 	prompt.visible = false
-	prompt.modulate.a = 0.0
 	door_container.add_child(prompt)
 
 	# Connect signals
@@ -540,7 +499,7 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 
 
 func _process(_delta: float) -> void:
-	if not doors_spawned or doors_locked:
+	if not doors_spawned:
 		return
 
 	var interact_pressed = false
