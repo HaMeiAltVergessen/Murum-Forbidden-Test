@@ -29,6 +29,8 @@ func _activate() -> void:
 	if not GameManager.player or not is_instance_valid(GameManager.player):
 		print("[Limbus] No player found, spawning new player")
 		_spawn_new_player()
+		_ensure_staff_visible()
+		_auto_save()
 		return
 
 	# Player transferred from run (death/victory) — reposition
@@ -54,7 +56,13 @@ func _activate() -> void:
 	if player.has_method("respawn"):
 		player.respawn(spawn_point.global_position)
 
+	# Ensure staff is visible (manifested after intro)
+	_ensure_staff_visible()
+
 	print("[Limbus] Player repositioned at hub")
+
+	# Auto-save when reaching Limbus
+	_auto_save()
 
 
 func _spawn_new_player() -> void:
@@ -75,3 +83,41 @@ func _spawn_new_player() -> void:
 		SaveManager.pending_player_data = {}
 
 	print("[Limbus] Player spawned at ", spawn_point.global_position)
+
+
+func _ensure_staff_visible() -> void:
+	"""Ensures staff is visible and controller active (manifested after intro)"""
+	var p = GameManager.player if GameManager else null
+	if not p or not is_instance_valid(p):
+		return
+
+	var staff_sprite = p.get_node_or_null("StaffSprite")
+	if staff_sprite:
+		staff_sprite.visible = true
+
+	var staff_controller = p.get_node_or_null("StaffController")
+	if staff_controller:
+		staff_controller.set_process(true)
+		staff_controller.set_process_input(true)
+		staff_controller.set_physics_process(true)
+
+
+func _auto_save() -> void:
+	"""Auto-saves to the active slot when entering Limbus"""
+	if not SaveManager:
+		return
+
+	if SaveManager.current_slot < 1:
+		print("[Limbus] No active slot, skipping auto-save")
+		return
+
+	# Set world/room for save data
+	if WorldManager:
+		WorldManager.current_world = WORLD_ID
+		WorldManager.current_room = ROOM_ID
+
+	var success = SaveManager.save_current_game()
+	if success:
+		print("[Limbus] Auto-saved to slot %d" % SaveManager.current_slot)
+	else:
+		push_warning("[Limbus] Auto-save failed")

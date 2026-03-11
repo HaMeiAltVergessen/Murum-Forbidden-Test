@@ -4,6 +4,7 @@ class_name MainMenu
 # Node References
 @onready var continue_button: Button = %ContinueButton
 @onready var new_game_button: Button = %NewGameButton
+@onready var load_game_button: Button = %LoadGameButton
 @onready var challenge_button: Button = %ChallengeButton
 @onready var statistics_button: Button = %StatisticsButton
 @onready var achievements_button: Button = %AchievementsButton
@@ -11,22 +12,24 @@ class_name MainMenu
 @onready var quit_button: Button = %QuitButton
 @onready var music_player: AudioStreamPlayer = $MusicPlayer
 @onready var main_menu_container: Control = %MenuContainer
-@onready var overwrite_dialog: ConfirmationDialog = %OverwriteDialog
 
-# Options Menu
+# Sub-screens
 const OPTIONS_MENU_SCENE = preload("res://ui/menus/options_submenu.tscn")
 const STATISTICS_SCENE = preload("res://ui/menus/statistics_screen.tscn")
 const ACHIEVEMENTS_SCENE = preload("res://ui/menus/achievements_screen.tscn")
 const CHALLENGE_RUN_MENU_SCENE = preload("res://ui/menus/challenge_run_menu.tscn")
+const SAVE_SLOT_SCREEN_SCENE = preload("res://ui/menus/save_slot_screen.tscn")
 var options_menu_instance: Control = null
 var statistics_instance: Control = null
 var achievements_instance: Control = null
 var challenge_menu_instance: Node = null
+var save_slot_instance: Control = null
 
 # Constants
 const TEST_ROOM_PATH = "res://levels/test_room.tscn"
 const WORLD_1_ENTRY_PATH = "res://worlds/world_1_ruins/section_1_entrance/room_01_entry.tscn"
 const LIMBUS_PATH = "res://worlds/limbus/limbus.tscn"
+const INTRO_PATH = "res://worlds/intro/weg_zum_limbus.tscn"
 const MUSIC_FADE_DURATION = 1.0  # Sekunden
 
 
@@ -59,47 +62,34 @@ func _ready():
 		music_player.play()
 		print("[MainMenu] Music started")
 
-	# Prüfe ob Save-Datei existiert (COMMIT 016: SaveManager Integration)
-	var save_exists = SaveManager.has_save_file()
-	continue_button.visible = save_exists
-	print("[MainMenu] Save file exists: %s, Continue button visible: %s" % [save_exists, save_exists])
-
-	# Challenge Run button - always visible
+	# Check save state for button visibility
+	var has_continue = SaveManager.get_last_saved_slot() > 0
+	var has_any_save = SaveManager.has_any_save()
+	continue_button.visible = has_continue
+	load_game_button.visible = has_any_save
 	challenge_button.visible = true
 
-	# Signals verbinden mit Debug-Prints
+	# Connect signals
 	continue_button.pressed.connect(_on_continue_pressed)
-	continue_button.mouse_entered.connect(func(): print("[MainMenu DEBUG] Mouse entered: Continue Button"))
-
 	new_game_button.pressed.connect(_on_new_game_pressed)
-	new_game_button.mouse_entered.connect(func(): print("[MainMenu DEBUG] Mouse entered: New Game Button"))
-
+	load_game_button.pressed.connect(_on_load_game_pressed)
 	challenge_button.pressed.connect(_on_challenge_pressed)
 	statistics_button.pressed.connect(_on_statistics_pressed)
 	achievements_button.pressed.connect(_on_achievements_pressed)
-
 	options_button.pressed.connect(_on_options_pressed)
-	options_button.mouse_entered.connect(func(): print("[MainMenu DEBUG] Mouse entered: Options Button"))
-
 	quit_button.pressed.connect(_on_quit_pressed)
-	quit_button.mouse_entered.connect(func(): print("[MainMenu DEBUG] Mouse entered: Quit Button"))
 
 	# Initialize Options Menu (create but keep hidden)
 	_setup_options_menu()
 
-	# Setup Overwrite Dialog (COMMIT 017: Save Overwrite Warning)
-	_setup_overwrite_dialog()
-
 	# Setup Focus Navigation (Skip disabled buttons)
 	_setup_focus_neighbors()
 
-	# Initialen Fokus setzen
-	if save_exists and continue_button.visible:
+	# Initial focus
+	if has_continue and continue_button.visible:
 		continue_button.grab_focus()
-		print("[MainMenu] Focus set to Continue button")
 	else:
 		new_game_button.grab_focus()
-		print("[MainMenu] Focus set to New Game button")
 
 	print("[MainMenu] Initialization complete")
 
@@ -108,7 +98,7 @@ func _setup_focus_neighbors():
 	"""Setzt Focus-Nachbarn für Keyboard/Controller Navigation mit Wrap-around"""
 	# Erstelle Liste der aktiven Buttons (nicht disabled)
 	var active_buttons: Array[Button] = []
-	for btn in [continue_button, new_game_button, challenge_button, statistics_button, achievements_button, options_button, quit_button]:
+	for btn in [continue_button, new_game_button, load_game_button, challenge_button, statistics_button, achievements_button, options_button, quit_button]:
 		if btn.visible and not btn.disabled:
 			active_buttons.append(btn)
 
@@ -136,151 +126,125 @@ func _setup_options_menu():
 	print("[MainMenu] Options menu initialized (hidden)")
 
 
-func _setup_overwrite_dialog():
-	"""Sets up the save overwrite confirmation dialog (COMMIT 017: Save Overwrite Warning)"""
-	if overwrite_dialog:
-		overwrite_dialog.confirmed.connect(_on_overwrite_confirmed)
-		overwrite_dialog.canceled.connect(_on_overwrite_canceled)
-		print("[MainMenu] Overwrite dialog initialized")
-
-
 # Button Callbacks
 func _on_continue_pressed():
+	"""Loads the last saved slot directly"""
 	print("[MainMenu] ========== CONTINUE BUTTON PRESSED ==========")
 
-	# Fade out music first
+	var slot = SaveManager.get_last_saved_slot()
+	if slot < 1:
+		push_warning("[MainMenu] No last saved slot found")
+		return
+
+	_load_slot(slot)
+
+
+func _on_new_game_pressed():
+	"""Opens save slot screen in NEW_GAME mode"""
+	print("[MainMenu] ========== NEW GAME BUTTON PRESSED ==========")
+	_show_save_slot_screen(0)  # Mode.NEW_GAME
+
+
+func _on_load_game_pressed():
+	"""Opens save slot screen in LOAD_GAME mode"""
+	print("[MainMenu] ========== LOAD GAME BUTTON PRESSED ==========")
+	_show_save_slot_screen(1)  # Mode.LOAD_GAME
+
+
+func _show_save_slot_screen(mode: int) -> void:
+	if main_menu_container:
+		main_menu_container.visible = false
+
+	if save_slot_instance:
+		save_slot_instance.queue_free()
+
+	save_slot_instance = SAVE_SLOT_SCREEN_SCENE.instantiate()
+	add_child(save_slot_instance)
+
+	# Setup mode after adding to tree
+	save_slot_instance.setup(mode)
+
+	save_slot_instance.slot_selected.connect(func(slot_index: int):
+		if mode == 0:  # NEW_GAME
+			_start_new_game_in_slot(slot_index)
+		else:  # LOAD_GAME
+			_load_slot(slot_index)
+	)
+	save_slot_instance.back_pressed.connect(_on_save_slot_back)
+
+
+func _on_save_slot_back() -> void:
+	if save_slot_instance:
+		save_slot_instance.queue_free()
+		save_slot_instance = null
+
+	if main_menu_container:
+		main_menu_container.visible = true
+
+	_restore_focus()
+
+
+func _load_slot(slot_index: int) -> void:
+	"""Loads an existing save slot"""
+	print("[MainMenu] Loading slot %d" % slot_index)
+
+	# Fade music
 	if music_player and music_player.playing:
 		var tween = create_tween()
 		tween.tween_property(music_player, "volume_db", -80, MUSIC_FADE_DURATION)
 		tween.tween_callback(music_player.stop)
-		print("[MainMenu] Music fading out...")
 		await tween.finished
 
-	# Show HUD before loading
-	if has_node("/root/HUD"):
-		var hud_autoload = get_node("/root/HUD")
-		hud_autoload.visible = true
-		print("[MainMenu] HUD Autoload shown")
+	_show_hud()
 
-	if HUDManager:
-		HUDManager.show_all_hud()
-		print("[MainMenu] HUDManager HUDs shown")
-
-	# Load saved game (COMMIT 016: SaveManager Integration)
-	# This will automatically transition to saved room via WorldManager
-	var success = SaveManager.load_current_game()
-
+	var success = SaveManager.load_game(slot_index)
 	if not success:
-		print("[MainMenu] Failed to load save, falling back to test room")
+		push_warning("[MainMenu] Failed to load slot %d" % slot_index)
 		get_tree().change_scene_to_file(TEST_ROOM_PATH)
-		return
-
-	print("[MainMenu] Save loaded successfully, WorldManager handling scene transition")
 
 
-func _on_new_game_pressed():
-	print("[MainMenu] ========== NEW GAME BUTTON PRESSED ==========")
+func _start_new_game_in_slot(slot_index: int) -> void:
+	"""Starts a new game in the selected slot"""
+	print("[MainMenu] Starting new game in slot %d" % slot_index)
 
-	# Check if save exists - show warning dialog (COMMIT 017: Save Overwrite Warning)
-	if SaveManager.has_save_file():
-		print("[MainMenu] Save exists, showing overwrite dialog")
-		overwrite_dialog.popup_centered()
-		return
+	# Delete old save in this slot if exists
+	if SaveManager.slot_exists(slot_index):
+		SaveManager.delete_save(slot_index)
 
-	# No save exists, start directly
-	_start_new_game()
+	# Set active slot (but don't save yet — save happens when reaching Limbus)
+	SaveManager.set_current_slot(slot_index)
 
-
-func _on_overwrite_confirmed():
-	"""Called when user confirms overwriting save (COMMIT 017: Save Overwrite Warning)"""
-	print("[MainMenu] User confirmed overwrite, starting new game")
-	_start_new_game()
-
-
-func _on_overwrite_canceled():
-	"""Called when user cancels overwriting save (COMMIT 017: Save Overwrite Warning)"""
-	print("[MainMenu] User canceled overwrite, returning to main menu")
-	# Just close dialog, stays in main menu
-	new_game_button.grab_focus()
-
-
-func _start_new_game():
-	"""Starts a new game (deletes old save if exists) (COMMIT 017: Save Overwrite Warning)"""
-	# Delete old save if exists (fresh start)
-	if SaveManager.has_save_file():
-		SaveManager.delete_current_save()
-		print("[MainMenu] Old save deleted for fresh start")
-
-	# Set WorldManager to Limbus
+	# Reset all managers for fresh start
 	if WorldManager:
 		WorldManager.current_world = "limbus"
 		WorldManager.current_room = "limbus"
-		print("[MainMenu] WorldManager preset to limbus")
 
-	# Reset RunManager for fresh start
 	if RunManager:
 		RunManager.magicka = 0
 		RunManager.max_lives = RunManager.BASE_LIVES
 		RunManager.current_state = RunManager.RunState.IDLE
 
-	# Reset UpgradeManager for fresh start
 	if UpgradeManager:
 		UpgradeManager.reset_all()
 
-	# Create new save file with correct room data
-	SaveManager.create_new_save()
-	print("[MainMenu] New save created")
+	_show_hud()
 
-	# HUD Autoload wieder anzeigen
-	if has_node("/root/HUD"):
-		var hud_autoload = get_node("/root/HUD")
-		hud_autoload.visible = true
-		print("[MainMenu] HUD Autoload shown")
-
-	# HUDManager HUDs wieder anzeigen
-	if HUDManager:
-		HUDManager.show_all_hud()
-		print("[MainMenu] HUDManager HUDs shown")
-
-	# Musik fade-out
+	# Fade music
 	if music_player and music_player.playing:
 		var tween = create_tween()
 		tween.tween_property(music_player, "volume_db", -80, MUSIC_FADE_DURATION)
 		tween.tween_callback(music_player.stop)
-		print("[MainMenu] Music fading out...")
 
-	# Load Limbus hub directly
-	print("[MainMenu] Loading Limbus hub")
+	# Load intro sequence (Weg zum Limbus)
 	GameManager.current_state = GameManager.GameState.PLAYING
-	get_tree().change_scene_to_file(LIMBUS_PATH)
+	get_tree().change_scene_to_file(INTRO_PATH)
 
 
-func _start_game(scene_path: String):
-	"""Zeigt HUD wieder an und lädt die Szene mit Musik-Fade-Out"""
-	print("[MainMenu] Starting game, loading scene: ", scene_path)
-
-	# Musik fade-out
-	if music_player and music_player.playing:
-		var tween = create_tween()
-		tween.tween_property(music_player, "volume_db", -80, MUSIC_FADE_DURATION)
-		tween.tween_callback(music_player.stop)
-		print("[MainMenu] Music fading out...")
-		await tween.finished
-
-	# HUD Autoload wieder anzeigen
+func _show_hud() -> void:
 	if has_node("/root/HUD"):
-		var hud_autoload = get_node("/root/HUD")
-		hud_autoload.visible = true
-		print("[MainMenu] HUD Autoload shown")
-
-	# HUDManager HUDs wieder anzeigen
+		get_node("/root/HUD").visible = true
 	if HUDManager:
 		HUDManager.show_all_hud()
-		print("[MainMenu] HUDManager HUDs shown")
-
-	# Szene laden
-	print("[MainMenu] Calling change_scene_to_file...")
-	get_tree().change_scene_to_file(scene_path)
 
 
 func _on_options_pressed():
@@ -309,13 +273,7 @@ func _on_options_back_pressed():
 	if main_menu_container:
 		main_menu_container.visible = true
 
-	# Restore focus
-	var save_exists = SaveManager.has_save_file()
-	if save_exists and continue_button.visible:
-		continue_button.grab_focus()
-	else:
-		new_game_button.grab_focus()
-
+	_restore_focus()
 	print("[MainMenu] Returned to main menu")
 
 
@@ -433,14 +391,13 @@ func _on_challenge_started():
 		challenge_menu_instance.queue_free()
 		challenge_menu_instance = null
 
-	# Start new game with challenge modifiers active
-	_start_new_game()
+	# Open slot screen for challenge run (same as new game)
+	_show_save_slot_screen(0)  # Mode.NEW_GAME
 
 
 func _restore_focus():
 	"""Restores focus to appropriate button"""
-	var save_exists = SaveManager.has_save_file()
-	if save_exists and continue_button.visible:
+	if continue_button.visible:
 		continue_button.grab_focus()
 	else:
 		new_game_button.grab_focus()

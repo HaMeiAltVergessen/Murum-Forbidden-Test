@@ -10,6 +10,7 @@ extends Node
 const SAVE_VERSION: String = "1.0.0"
 const SAVE_DIR: String = "user://saves/"
 const SETTINGS_PATH: String = "user://settings.json"
+const META_PATH: String = "user://saves/meta.json"
 
 const MAX_SLOTS: int = 3
 const AUTO_SAVE_ENABLED: bool = true
@@ -66,6 +67,7 @@ class SaveSlotMetadata:
 # ============================================================================
 
 var current_slot: int = -1
+var last_saved_slot: int = -1  # Persisted in meta.json
 var slot_metadata: Array[SaveSlotMetadata] = []
 
 var playtime_seconds: int = 0
@@ -94,10 +96,13 @@ func _ready() -> void:
 	# Load slot metadata
 	_load_all_slot_metadata()
 
+	# Load meta (last_saved_slot)
+	_load_meta()
+
 	# Load settings
 	load_settings()
 
-	print("[SaveManager] Initialized")
+	print("[SaveManager] Initialized (last_saved_slot: %d)" % last_saved_slot)
 	print("[SaveManager] Save directory: %s" % SAVE_DIR)
 
 func _process(delta: float) -> void:
@@ -221,7 +226,9 @@ func save_game(slot_index: int) -> bool:
 
 	# Update metadata
 	current_slot = slot_index
+	last_saved_slot = slot_index
 	_load_all_slot_metadata()
+	_save_meta()
 
 	print("[SaveManager] Save completed: %s" % file_path)
 	save_completed.emit(slot_index, true)
@@ -776,39 +783,93 @@ func set_current_slot(slot_index: int) -> void:
 	print("[SaveManager] Set current slot to %d" % slot_index)
 
 # ============================================================================
-# SINGLE-SLOT CONVENIENCE FUNCTIONS (COMMIT 016)
+# META FILE (cross-slot persistent data)
 # ============================================================================
-# These functions provide simple API for single-save games
-# All operations default to Slot 1
 
-const DEFAULT_SLOT: int = 1
+func _save_meta() -> void:
+	var meta_data = {
+		"last_saved_slot": last_saved_slot
+	}
+	var json_string = JSON.stringify(meta_data, "\t")
+	var file = FileAccess.open(META_PATH, FileAccess.WRITE)
+	if file:
+		file.store_string(json_string)
+		file.close()
+
+
+func _load_meta() -> void:
+	if not FileAccess.file_exists(META_PATH):
+		return
+
+	var file = FileAccess.open(META_PATH, FileAccess.READ)
+	if not file:
+		return
+
+	var json = JSON.new()
+	if json.parse(file.get_as_text()) == OK:
+		var data = json.data
+		last_saved_slot = data.get("last_saved_slot", -1)
+	file.close()
+
+
+# ============================================================================
+# CONVENIENCE FUNCTIONS
+# ============================================================================
+
+func has_any_save() -> bool:
+	for i in range(1, MAX_SLOTS + 1):
+		if slot_exists(i):
+			return true
+	return false
+
 
 func has_save_file() -> bool:
-	"""Checks if default save file exists (Slot 1)"""
-	return slot_exists(DEFAULT_SLOT)
+	"""Checks if any save slot exists (backwards compat)"""
+	return has_any_save()
+
+
+func get_last_saved_slot() -> int:
+	"""Returns last saved slot, or -1 if none"""
+	if last_saved_slot > 0 and slot_exists(last_saved_slot):
+		return last_saved_slot
+	return -1
+
 
 func create_new_save() -> bool:
-	"""Creates new save file in default slot (Slot 1)"""
-	print("[SaveManager] Creating new save in slot %d..." % DEFAULT_SLOT)
+	"""Creates new save in current_slot"""
+	if current_slot < 1:
+		push_error("[SaveManager] No slot selected for new save")
+		return false
+	print("[SaveManager] Creating new save in slot %d..." % current_slot)
+	return save_game(current_slot)
 
-	# Set current slot for playtime tracking
-	set_current_slot(DEFAULT_SLOT)
-
-	# Save immediately to create file
-	return save_game(DEFAULT_SLOT)
 
 func save_current_game() -> bool:
-	"""Saves current game to default slot (Slot 1)"""
-	return save_game(DEFAULT_SLOT)
+	"""Saves current game to active slot"""
+	if current_slot < 1:
+		push_warning("[SaveManager] No active slot, cannot auto-save")
+		return false
+	return save_game(current_slot)
+
 
 func load_current_game() -> bool:
-	"""Loads game from default slot (Slot 1)"""
-	return load_game(DEFAULT_SLOT)
+	"""Loads game from last saved slot"""
+	var slot = get_last_saved_slot()
+	if slot < 1:
+		push_error("[SaveManager] No last saved slot to continue from")
+		return false
+	return load_game(slot)
+
 
 func delete_current_save() -> bool:
-	"""Deletes save from default slot (Slot 1)"""
-	return delete_save(DEFAULT_SLOT)
+	"""Deletes save from current slot"""
+	if current_slot < 1:
+		return false
+	return delete_save(current_slot)
+
 
 func get_current_save_metadata() -> SaveSlotMetadata:
-	"""Returns metadata for default slot (Slot 1)"""
-	return get_slot_metadata(DEFAULT_SLOT)
+	"""Returns metadata for current slot"""
+	if current_slot < 1:
+		return SaveSlotMetadata.new()
+	return get_slot_metadata(current_slot)

@@ -98,6 +98,17 @@ theme_override_colors/font_pressed_color = Color(0.8, 0.8, 0.8, 1)
 theme_override_font_sizes/font_size = 28
 text = "Neues Spiel"
 
+[node name="LoadGameButton" type="Button" parent="CenterContainer/MenuContainer/ButtonsContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
+theme_override_colors/font_disabled_color = Color(0.266667, 0.266667, 0.266667, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.533333, 0.533333, 0.533333, 1)
+theme_override_colors/font_pressed_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 28
+text = "Laden"
+
 [node name="ChallengeButton" type="Button" parent="CenterContainer/MenuContainer/ButtonsContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 50)
@@ -156,13 +167,3 @@ text = "Verlassen"
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_music")
 volume_db = -6.0
-
-[node name="OverwriteDialog" type="ConfirmationDialog" parent="."]
-unique_name_in_owner = true
-title = "Spielstand überschreiben?"
-initial_position = 2
-size = Vector2i(500, 150)
-ok_button_text = "Ja"
-dialog_text = "Alter Spielstand wird überschrieben.
-Soll das so sein?"
-cancel_button_text = "Nein"
