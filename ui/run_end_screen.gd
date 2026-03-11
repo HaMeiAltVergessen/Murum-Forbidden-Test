@@ -10,6 +10,7 @@ const MAGICKA_VICTORY_BONUS: int = 5
 var victory: bool = false
 var rooms_completed: int = 0
 var enemies_killed: int = 0
+var run_time_seconds: int = 0
 var magicka_earned: int = 0
 
 
@@ -22,6 +23,10 @@ func show_summary(p_victory: bool, p_rooms: int, p_kills: int) -> void:
 	victory = p_victory
 	rooms_completed = p_rooms
 	enemies_killed = p_kills
+
+	# Get run time from StatisticsManager
+	if StatisticsManager:
+		run_time_seconds = StatisticsManager.run_playtime_seconds
 
 	# Calculate Magicka reward
 	magicka_earned = rooms_completed * MAGICKA_PER_ROOM
@@ -77,6 +82,7 @@ func _build_ui() -> void:
 	vbox.add_child(sep)
 
 	# Stats
+	_add_stat(vbox, "Zeit", _format_time(run_time_seconds))
 	_add_stat(vbox, "Raeume abgeschlossen", str(rooms_completed))
 	_add_stat(vbox, "Gegner besiegt", str(enemies_killed))
 
@@ -128,6 +134,12 @@ func _add_stat(parent: VBoxContainer, label_text: String, value_text: String,
 	val.add_theme_color_override("font_color", color)
 	val.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	hbox.add_child(val)
+
+
+func _format_time(total_seconds: int) -> String:
+	var minutes = total_seconds / 60
+	var seconds = total_seconds % 60
+	return "%02d:%02d" % [minutes, seconds]
 
 
 func _on_continue() -> void:

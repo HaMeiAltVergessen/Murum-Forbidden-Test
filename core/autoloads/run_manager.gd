@@ -46,6 +46,7 @@ signal node_selected(node: RefCounted)  # Player selected a node
 func _ready() -> void:
 	print("[RunManager] Initialized")
 	EventBus.player_died.connect(_on_player_died_in_run)
+	EventBus.enemy_died.connect(_on_enemy_died_in_run)
 
 
 # ============ RUN LIFECYCLE ============
@@ -444,6 +445,10 @@ func on_room_completed() -> void:
 func on_enemy_killed() -> void:
 	if is_run_active():
 		run_enemies_killed += 1
+
+
+func _on_enemy_died_in_run(_enemy: Node, _position: Vector2) -> void:
+	on_enemy_killed()
 
 
 # ============ DEATH HANDLING ============
