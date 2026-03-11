@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=3 uid="uid://b7yq7v8xoycin"]
 
-[ext_resource type="Script" uid="uid://re2sh6bilyhi" path="res://levels/item_room.gd" id="1"]
+[ext_resource type="Script" uid="uid://bdgf8vtqkvbss" path="res://levels/item_room.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://bk7a8n73qcfla" path="res://environment/pickups/pickup_base.tscn" id="3"]
 [ext_resource type="Script" uid="uid://2jypdg4vx0n2" path="res://environment/door.gd" id="4"]
 
