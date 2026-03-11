@@ -61,6 +61,9 @@ func start_run(world_id: RunMapData.WorldId = RunMapData.WorldId.NIEMANDSLAND) -
 	run_enemies_killed = 0
 	current_node = null
 
+	# Clear run-specific room states from WorldManager (prevents "already cleared" bug)
+	_clear_run_room_states()
+
 	# Generate the map
 	current_map = RunMapGenerator.generate_map(world_id)
 	RunMapGenerator.print_map(current_map)
@@ -379,6 +382,13 @@ func _return_to_limbus() -> void:
 	current_map = null
 	current_node = null
 
+	# Clear run-specific room states
+	_clear_run_room_states()
+
+	# Clear run-volatile boons
+	if BoonManager:
+		BoonManager.clear_boons()
+
 	# Reset run-volatile data (Gold, Consumables)
 	if GameManager:
 		GameManager.coins_collected = 0
@@ -524,6 +534,23 @@ func get_accessible_nodes() -> Array:
 
 
 # ============ HELPERS ============
+func _clear_run_room_states() -> void:
+	"""Clears run-specific room states from WorldManager to prevent stale 'already cleared' flags"""
+	if not WorldManager:
+		return
+
+	var keys_to_remove: Array = []
+	for key in WorldManager.cleared_rooms.keys():
+		if key.begins_with("run_node_") or key.begins_with("event_npc_"):
+			keys_to_remove.append(key)
+
+	for key in keys_to_remove:
+		WorldManager.cleared_rooms.erase(key)
+
+	if keys_to_remove.size() > 0:
+		print("[RunManager] Cleared %d stale run room states" % keys_to_remove.size())
+
+
 func _get_world_name(world_id: RunMapData.WorldId) -> String:
 	match world_id:
 		RunMapData.WorldId.NIEMANDSLAND: return "Das Niemandsland"
