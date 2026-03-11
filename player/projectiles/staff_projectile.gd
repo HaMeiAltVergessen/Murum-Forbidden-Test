@@ -35,7 +35,7 @@ const HIT_COOLDOWN_ROTATION: float = 0.15  # Shorter cooldown during rotation fo
 # REFERENCES
 # ============================================================================
 
-@onready var sprite: Sprite2D = $Sprite2D
+var sprite: Sprite2D = null
 @onready var trail: GPUParticles2D = $Trail
 
 # ============================================================================

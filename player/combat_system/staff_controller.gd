@@ -106,8 +106,12 @@ func _throw_staff() -> void:
 	if AudioManager:
 		AudioManager.play_sfx_at_position("player/staff_throw", player.global_position, 0.1)
 
+	# Reparent StaffSprite from player to projectile
 	if staff_sprite:
-		staff_sprite.visible = false
+		var original_global_pos = staff_sprite.global_position
+		staff_sprite.reparent(active_staff)
+		staff_sprite.global_position = original_global_pos
+		active_staff.sprite = staff_sprite
 
 	staff_thrown.emit()
 	_disable_melee_attack()
@@ -155,15 +159,18 @@ func _on_staff_caught() -> void:
 	current_state = State.COOLDOWN
 	cooldown_timer = COOLDOWN_AFTER_CATCH
 
+	# Reparent StaffSprite back to player before freeing projectile
+	if staff_sprite and active_staff and is_instance_valid(active_staff):
+		staff_sprite.reparent(player)
+		staff_sprite.position = Vector2(30, -5)
+		staff_sprite.rotation = 0.0
+
 	if active_staff:
 		active_staff.queue_free()
 		active_staff = null
 
 	if AudioManager:
 		AudioManager.play_sfx_at_position("player/staff_catch", player.global_position, 0.12)
-
-	if staff_sprite:
-		staff_sprite.visible = true
 
 	staff_caught.emit()
 	_enable_melee_attack()
