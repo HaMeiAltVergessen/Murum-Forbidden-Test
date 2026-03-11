@@ -12,6 +12,8 @@ const DOOR_COLORS: Dictionary = {
 	RunMapData.NodeType.REST: Color(0.3, 0.6, 0.9),
 	RunMapData.NodeType.EVENT: Color(0.7, 0.4, 0.9),
 	RunMapData.NodeType.BOSS: Color(0.9, 0.1, 0.1),
+	RunMapData.NodeType.SHOP: Color(1.0, 0.85, 0.2),
+	RunMapData.NodeType.ARENA: Color(0.9, 0.2, 0.5),
 }
 
 # ============ ROOM CONFIG (set by RunManager before adding to tree) ============
@@ -48,6 +50,10 @@ func _activate() -> void:
 			_setup_event()
 		RunMapData.NodeType.BOSS:
 			_setup_boss()
+		RunMapData.NodeType.SHOP:
+			_setup_shop()
+		RunMapData.NodeType.ARENA:
+			_setup_arena()
 
 
 # ============ PLAYER SETUP ============
@@ -291,6 +297,102 @@ func _confirm_event_choice() -> void:
 		EventBus.show_notification.emit("Du gehst weiter.", 3.0)
 
 	_on_node_cleared()
+
+
+# ============ SHOP SETUP ============
+var _player_in_shop_area: bool = false
+
+func _setup_shop() -> void:
+	print("[RunNodeRoom] Shop room")
+
+	var merchant_area: Area2D = get_node_or_null("MerchantArea")
+	if not merchant_area:
+		push_warning("[RunNodeRoom] No MerchantArea in shop room!")
+		_on_node_cleared()
+		return
+
+	merchant_area.body_entered.connect(func(body):
+		if body is Murum or body.name == "Murum":
+			_player_in_shop_area = true
+	)
+	merchant_area.body_exited.connect(func(body):
+		if body is Murum or body.name == "Murum":
+			_player_in_shop_area = false
+	)
+
+	# Show hint
+	var hint = Label.new()
+	hint.name = "ShopHint"
+	hint.text = "E - Einkaufen"
+	hint.add_theme_font_size_override("font_size", 18)
+	hint.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.position = Vector2(600, 500)
+	hint.size = Vector2(200, 30)
+	add_child(hint)
+
+
+func _open_run_shop() -> void:
+	"""Opens the shop for the current world"""
+	var shop_file: String = ""
+	match world_id:
+		RunMapData.WorldId.NIEMANDSLAND:
+			shop_file = "res://data/shops/run_shop_w1.json"
+		RunMapData.WorldId.KOLLEKTIV:
+			shop_file = "res://data/shops/run_shop_w2.json"
+		RunMapData.WorldId.ABGRUND:
+			shop_file = "res://data/shops/run_shop_w3.json"
+
+	if shop_file == "" or not FileAccess.file_exists(shop_file):
+		EventBus.show_notification.emit("Kein Angebot verfuegbar.", 2.0)
+		return
+
+	var file = FileAccess.open(shop_file, FileAccess.READ)
+	var json = JSON.new()
+	var parse_result = json.parse(file.get_as_text())
+	file.close()
+
+	if parse_result != OK:
+		push_error("[RunNodeRoom] Failed to parse shop data: %s" % shop_file)
+		return
+
+	var shop_data: Dictionary = json.data
+	var merchant_name: String = shop_data.get("merchant_name", "Haendler")
+	ShopManager.open_shop(shop_data, merchant_name, "Was darf es sein?")
+
+
+# ============ ARENA SETUP ============
+func _setup_arena() -> void:
+	print("[RunNodeRoom] Arena room — Urgathons Pruefung")
+
+	# Spawn Lythrun boss at BossSpawn marker
+	var boss_spawn = null
+	var spawn_container = get_node_or_null("EnemySpawnPoints")
+	if spawn_container:
+		boss_spawn = spawn_container.get_node_or_null("BossSpawn")
+
+	var boss_scene_path = "res://bosses/lythrun/lythrun_boss.tscn"
+	if ResourceLoader.exists(boss_scene_path) and boss_spawn:
+		var boss_scene = load(boss_scene_path)
+		var boss = boss_scene.instantiate()
+		boss.global_position = boss_spawn.global_position
+		add_child(boss)
+
+		# Connect boss death to completion
+		if boss.has_node("HealthComponent"):
+			boss.get_node("HealthComponent").died.connect(func():
+				print("[RunNodeRoom] Arena boss defeated!")
+				_show_completion_ui("Urgathon besiegt!")
+				get_tree().create_timer(2.0).timeout.connect(_on_node_cleared)
+			)
+
+		_show_completion_ui("Urgathons Pruefung!")
+		print("[RunNodeRoom] Lythrun boss spawned for arena")
+	else:
+		# Fallback: placeholder skip
+		_show_completion_ui("Arena: Urgathons Pruefung (Placeholder)")
+		EventBus.show_notification.emit("PvP oder Lythrun-Kampf — noch Placeholder", 3.0)
+		get_tree().create_timer(2.0).timeout.connect(_on_node_cleared)
 
 
 # ============ BOSS SETUP ============
@@ -573,6 +675,11 @@ func _process(_delta: float) -> void:
 	# Event choice confirmation
 	if node_type == RunMapData.NodeType.EVENT and not event_choice_made:
 		_confirm_event_choice()
+		return
+
+	# Shop interaction
+	if node_type == RunMapData.NodeType.SHOP and _player_in_shop_area:
+		_open_run_shop()
 		return
 
 	# Door interaction

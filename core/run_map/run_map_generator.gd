@@ -111,9 +111,16 @@ static func generate_map(world_id: RunMapData.WorldId, rng_seed: int = -1) -> Ru
 	map.rows.append([next_id])
 	next_id += 1
 
+	# ---- Place shops (1 per world) ----
+	_place_shop(map, config, rng)
+
 	# ---- Place events (Welt 2+) ----
 	if config.events_per_run > 0:
 		_place_events(map, config, rng)
+
+	# ---- Place arena (Welt 3 only: optional pre-boss) ----
+	if world_id == RunMapData.WorldId.ABGRUND:
+		_place_arena(map, config, rng)
 
 	# ---- Connect rows ----
 	_connect_rows(map, rng)
@@ -206,6 +213,51 @@ static func _place_events(map: RunMapData.Map, config: RunMapData.WorldConfig,
 	print("[RunMapGenerator] Placed %d/%d events" % [events_placed, config.events_per_run])
 
 
+# ============ SHOP PLACEMENT ============
+
+static func _place_shop(map: RunMapData.Map, config: RunMapData.WorldConfig,
+		rng: RandomNumberGenerator) -> void:
+	"""Places exactly 1 SHOP node per world — replaces a COMBAT node"""
+	var eligible_nodes: Array = []
+
+	for node_id in map.nodes:
+		var node: RunMapData.MapNode = map.nodes[node_id]
+		if node.type == RunMapData.NodeType.COMBAT:
+			# Not in row 0, not pre-boss, not rest row
+			if node.row > 0 and node.row < config.num_rows - 1 and node.row != config.rest_row:
+				eligible_nodes.append(node)
+
+	if eligible_nodes.is_empty():
+		push_warning("[RunMapGenerator] No eligible node for SHOP placement")
+		return
+
+	eligible_nodes.shuffle()
+	var chosen: RunMapData.MapNode = eligible_nodes[0]
+	chosen.type = RunMapData.NodeType.SHOP
+	chosen.reward_type = "shop"
+	print("[RunMapGenerator] Placed SHOP at row %d, col %d" % [chosen.row, chosen.column])
+
+
+# ============ ARENA PLACEMENT (W3 ONLY) ============
+
+static func _place_arena(map: RunMapData.Map, config: RunMapData.WorldConfig,
+		rng: RandomNumberGenerator) -> void:
+	"""Places 1 ARENA node in the pre-boss row of World 3"""
+	var pre_boss_row: int = config.num_rows - 1
+	if pre_boss_row < 0 or pre_boss_row >= map.rows.size():
+		return
+
+	var row_nodes: Array = map.rows[pre_boss_row]
+	# Replace one combat/elite node with ARENA
+	for node_id in row_nodes:
+		var node: RunMapData.MapNode = map.nodes[node_id]
+		if node.type == RunMapData.NodeType.COMBAT or node.type == RunMapData.NodeType.ELITE:
+			node.type = RunMapData.NodeType.ARENA
+			node.reward_type = "arena"
+			print("[RunMapGenerator] Placed ARENA at row %d, col %d" % [node.row, node.column])
+			return
+
+
 # ============ CONNECTION LOGIC ============
 
 static func _connect_rows(map: RunMapData.Map, rng: RandomNumberGenerator) -> void:
@@ -293,6 +345,8 @@ static func _get_default_reward(type: RunMapData.NodeType) -> String:
 		RunMapData.NodeType.REST: return "heal"
 		RunMapData.NodeType.EVENT: return "event"
 		RunMapData.NodeType.BOSS: return "boss"
+		RunMapData.NodeType.SHOP: return "shop"
+		RunMapData.NodeType.ARENA: return "arena"
 	return "gold"
 
 

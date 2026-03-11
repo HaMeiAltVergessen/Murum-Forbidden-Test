@@ -10,7 +10,9 @@ enum NodeType {
 	TREASURE,        # S: Schatz (Wahl aus 3 Items)
 	REST,            # RAST: Mini-Hub, volle Heilung, NPCs
 	EVENT,           # Er: Ereignis (Text-Event, ab Welt 2)
-	BOSS             # BOSS: Fester Abschlussknoten
+	BOSS,            # BOSS: Fester Abschlussknoten
+	SHOP,            # Haendler: Items kaufen
+	ARENA            # Arena: Optionaler PvP/Boss-Kampf (W3)
 }
 
 # ============ WORLD CONFIG ============
@@ -47,6 +49,8 @@ class MapNode:
 			NodeType.REST: return "Rast"
 			NodeType.EVENT: return "Ereignis"
 			NodeType.BOSS: return "Boss"
+			NodeType.SHOP: return "Haendler"
+			NodeType.ARENA: return "Arena"
 		return "?"
 
 	func to_dict() -> Dictionary:

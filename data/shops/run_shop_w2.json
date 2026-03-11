@@ -1,0 +1,40 @@
+{
+  "merchant_id": "run_merchant_w2",
+  "merchant_name": "Daten-Haendler",
+  "world": 2,
+  "items": [
+    {
+      "id": "heilkraeuter",
+      "name": "Heilkraeuter",
+      "type": "consumable",
+      "category": "healing",
+      "price": 30,
+      "description": "Medizinische Versorgung",
+      "effect": "Stelle 40% HP wieder her",
+      "duration": "Sofort",
+      "lythrun_influence": "Lythrun heilt 20%"
+    },
+    {
+      "id": "schimmernde_essenz",
+      "name": "Schimmernde Essenz",
+      "type": "consumable",
+      "category": "buff",
+      "price": 60,
+      "description": "Regenerative Kraft",
+      "effect": "HP-Regen (5 HP/5s)",
+      "duration": "3 Minuten",
+      "lythrun_influence": "Lythrun regeneriert langsam"
+    },
+    {
+      "id": "funken_gnade",
+      "name": "Funken der Gnade",
+      "type": "consumable",
+      "category": "special",
+      "price": 150,
+      "description": "Eine zweite Chance",
+      "effect": "Respawn an Todesort",
+      "duration": "Einmalig",
+      "lythrun_influence": "+1 Lythrun Revive"
+    }
+  ]
+}

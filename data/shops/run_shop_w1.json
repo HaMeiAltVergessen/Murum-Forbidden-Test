@@ -1,0 +1,40 @@
+{
+  "merchant_id": "run_merchant_w1",
+  "merchant_name": "Wandernder Haendler",
+  "world": 1,
+  "items": [
+    {
+      "id": "heilkraeuter",
+      "name": "Heilkraeuter",
+      "type": "consumable",
+      "category": "healing",
+      "price": 30,
+      "description": "Heilende Kraeuter aus den Ruinen",
+      "effect": "Stelle 40% HP wieder her",
+      "duration": "Sofort",
+      "lythrun_influence": "Lythrun heilt 20%"
+    },
+    {
+      "id": "glas_gleichgewicht",
+      "name": "Glas des Gleichgewichts",
+      "type": "consumable",
+      "category": "buff",
+      "price": 50,
+      "description": "Erweitert dein Parry-Timing",
+      "effect": "+0.5s Parry-Fenster",
+      "duration": "Rest des Runs",
+      "lythrun_influence": "Lythrun bekommt erweitertes Parry-Fenster"
+    },
+    {
+      "id": "zerbrochene_muenze",
+      "name": "Zerbrochene Muenze",
+      "type": "consumable",
+      "category": "buff",
+      "price": 40,
+      "description": "Zieht mehr Reichtum an",
+      "effect": "+10% Muenz-Drops",
+      "duration": "Rest des Runs",
+      "lythrun_influence": "Lythrun droppt Muenzen"
+    }
+  ]
+}

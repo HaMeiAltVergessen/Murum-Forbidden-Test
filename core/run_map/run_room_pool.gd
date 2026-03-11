@@ -89,6 +89,9 @@ const ROOM_SCENES_W1: Dictionary = {
 	RunMapData.NodeType.BOSS: [
 		"res://worlds/run_rooms/niemandsland/boss_room_01.tscn",
 	],
+	RunMapData.NodeType.SHOP: [
+		"res://worlds/run_rooms/niemandsland/shop_room_01.tscn",
+	],
 }
 
 const ROOM_SCENES_W2: Dictionary = {
@@ -114,6 +117,9 @@ const ROOM_SCENES_W2: Dictionary = {
 	],
 	RunMapData.NodeType.BOSS: [
 		"res://worlds/run_rooms/kollektiv/boss_room_01.tscn",
+	],
+	RunMapData.NodeType.SHOP: [
+		"res://worlds/run_rooms/kollektiv/shop_room_01.tscn",
 	],
 }
 
@@ -142,6 +148,12 @@ const ROOM_SCENES_W3: Dictionary = {
 	],
 	RunMapData.NodeType.BOSS: [
 		"res://worlds/run_rooms/abgrund/boss_room_01.tscn",
+	],
+	RunMapData.NodeType.SHOP: [
+		"res://worlds/run_rooms/abgrund/shop_room_01.tscn",
+	],
+	RunMapData.NodeType.ARENA: [
+		"res://worlds/run_rooms/abgrund/arena_room_01.tscn",
 	],
 }
 
@@ -294,6 +306,10 @@ static func get_reward_type(node_type: RunMapData.NodeType,
 			return "event"
 		RunMapData.NodeType.BOSS:
 			return "boss"
+		RunMapData.NodeType.SHOP:
+			return "shop"
+		RunMapData.NodeType.ARENA:
+			return "arena"
 
 	if pool.is_empty():
 		return "gold"
