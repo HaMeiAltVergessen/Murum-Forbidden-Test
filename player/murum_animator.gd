@@ -159,11 +159,11 @@ func _play_attack_stretch() -> void:
 	if _attack_stretch_tween and _attack_stretch_tween.is_valid():
 		_attack_stretch_tween.kill()
 
-	var base_scale_x := abs(staff_sprite.scale.x)
-	var base_scale_y := abs(staff_sprite.scale.y)
-	var stretch_x := base_scale_x * 1.25  # 25% breiter
-	var stretch_y := base_scale_y * 0.85  # 15% flacher (squash)
-	var sign_x := 1.0 if facing_right else -1.0
+	var base_scale_x: float = absf(staff_sprite.scale.x)
+	var base_scale_y: float = absf(staff_sprite.scale.y)
+	var stretch_x: float = base_scale_x * 1.25  # 25% breiter
+	var stretch_y: float = base_scale_y * 0.85  # 15% flacher (squash)
+	var sign_x: float = 1.0 if facing_right else -1.0
 
 	_attack_stretch_tween = create_tween()
 	# Schnell strecken
@@ -184,9 +184,9 @@ func _reset_staff_stretch() -> void:
 	if not staff_sprite or not staff_sprite.get_parent() == player:
 		return
 
-	var base_scale := abs(staff_sprite.scale.x)
-	var sign_x := 1.0 if facing_right else -1.0
-	staff_sprite.scale = Vector2(base_scale * sign_x, abs(staff_sprite.scale.y))
+	var base_scale: float = absf(staff_sprite.scale.x)
+	var sign_x: float = 1.0 if facing_right else -1.0
+	staff_sprite.scale = Vector2(base_scale * sign_x, absf(staff_sprite.scale.y))
 
 # ============ RESONANCE ORB GLOW ============
 func _create_orb_glow() -> void:
