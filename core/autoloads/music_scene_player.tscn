@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://gal2jig1ret7"]
+[gd_scene load_steps=21 format=3 uid="uid://gal2jig1ret7"]
 
 [ext_resource type="Script" uid="uid://da24g0xx1gj5a" path="res://core/autoloads/music_scene_player.gd" id="1_script"]
 [ext_resource type="Script" uid="uid://dolt5e1qrwg51" path="res://resources/audio/music_scene.gd" id="2_am636"]
@@ -6,7 +6,21 @@
 [ext_resource type="Resource" path="res://data/music/world1_temple.tres" id="3_scene2"]
 [ext_resource type="Resource" path="res://data/music/world1_boss.tres" id="4_scene3"]
 [ext_resource type="Resource" uid="uid://kiodblbs42uy" path="res://data/music/world1_Dorf.tres" id="6_km3oj"]
+[ext_resource type="Resource" path="res://data/music/run_weg_zum_limbus.tres" id="7_wegzl"]
+[ext_resource type="Resource" path="res://data/music/run_limbus.tres" id="8_limbus"]
+[ext_resource type="Resource" path="res://data/music/run_w1_combat.tres" id="9_w1c"]
+[ext_resource type="Resource" path="res://data/music/run_w2_combat.tres" id="10_w2c"]
+[ext_resource type="Resource" path="res://data/music/run_w3_combat.tres" id="11_w3c"]
+[ext_resource type="Resource" path="res://data/music/run_elite.tres" id="12_elite"]
+[ext_resource type="Resource" path="res://data/music/run_w1_calm.tres" id="13_w1calm"]
+[ext_resource type="Resource" path="res://data/music/run_w2_calm.tres" id="14_w2calm"]
+[ext_resource type="Resource" path="res://data/music/run_w3_calm.tres" id="15_w3calm"]
+[ext_resource type="Resource" path="res://data/music/run_w1_boss.tres" id="16_w1boss"]
+[ext_resource type="Resource" path="res://data/music/run_w2_boss.tres" id="17_w2boss"]
+[ext_resource type="Resource" path="res://data/music/run_w3_boss.tres" id="18_w3boss"]
+[ext_resource type="Resource" path="res://data/music/run_event_normal.tres" id="19_evnorm"]
+[ext_resource type="Resource" path="res://data/music/run_event_battle.tres" id="20_evbattle"]
 
 [node name="MusicScenePlayer" type="Node"]
 script = ExtResource("1_script")
-music_scenes = Array[ExtResource("2_am636")]([ExtResource("2_scene1"), ExtResource("3_scene2"), ExtResource("4_scene3"), ExtResource("6_km3oj")])
+music_scenes = Array[ExtResource("2_am636")]([ExtResource("2_scene1"), ExtResource("3_scene2"), ExtResource("4_scene3"), ExtResource("6_km3oj"), ExtResource("7_wegzl"), ExtResource("8_limbus"), ExtResource("9_w1c"), ExtResource("10_w2c"), ExtResource("11_w3c"), ExtResource("12_elite"), ExtResource("13_w1calm"), ExtResource("14_w2calm"), ExtResource("15_w3calm"), ExtResource("16_w1boss"), ExtResource("17_w2boss"), ExtResource("18_w3boss"), ExtResource("19_evnorm"), ExtResource("20_evbattle")])

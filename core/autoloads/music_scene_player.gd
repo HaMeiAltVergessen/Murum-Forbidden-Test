@@ -4,6 +4,7 @@ extends Node
 ## Spielt Musik pro Szene (Gruppe von Levels). Beim Wechsel innerhalb
 ## einer Szene laeuft die Musik weiter. Bei Szenenwechsel: Crossfade.
 ## Tracks werden zufaellig abgespielt. Volume ueber den Music-Bus.
+## Unterstuetzt force_play_scene() fuer Run-Raeume (blockiert auto-detection).
 
 # ============================================================================
 # INSPECTOR
@@ -23,6 +24,49 @@ var current_scene: MusicScene = null
 var current_track_index: int = -1
 var _last_scene_path: String = ""
 var _crossfading: bool = false
+var _forced: bool = false  # Blockiert auto-detection wenn force_play_scene aktiv
+
+# ============================================================================
+# RUN MUSIC MAPPING (world_id + node_type -> scene_name)
+# ============================================================================
+
+const RUN_MUSIC_MAP: Dictionary = {
+	# Welt 1: Niemandsland
+	"w0_combat": "W1Combat",
+	"w0_elite": "Elite",
+	"w0_treasure": "W1Calm",
+	"w0_rest": "W1Calm",
+	"w0_shop": "W1Calm",
+	"w0_event": "EventNormal",
+	"w0_boss": "W1Boss",
+	# Welt 2: Kollektiv
+	"w1_combat": "W2Combat",
+	"w1_elite": "Elite",
+	"w1_treasure": "W2Calm",
+	"w1_rest": "W2Calm",
+	"w1_shop": "W2Calm",
+	"w1_event": "EventNormal",
+	"w1_boss": "W2Boss",
+	# Welt 3: Abgrund
+	"w2_combat": "W3Combat",
+	"w2_elite": "Elite",
+	"w2_treasure": "W3Calm",
+	"w2_rest": "W3Calm",
+	"w2_shop": "W3Calm",
+	"w2_event": "EventNormal",
+	"w2_boss": "W3Boss",
+}
+
+const NODE_TYPE_KEYS: Dictionary = {
+	0: "combat",   # COMBAT
+	1: "elite",    # ELITE
+	2: "treasure", # TREASURE
+	3: "rest",     # REST
+	4: "event",    # EVENT
+	5: "boss",     # BOSS
+	6: "shop",     # SHOP
+	7: "arena",    # ARENA -> combat
+}
 
 # ============================================================================
 # AUDIO PLAYERS (zwei fuer Crossfade)
@@ -74,6 +118,17 @@ func _process(_delta: float) -> void:
 		return
 
 	_last_scene_path = scene_path
+
+	# Wenn force aktiv: nur bei level_paths-Match aufheben, sonst ignorieren
+	if _forced:
+		var match_scene := _find_scene_for_level(scene_path)
+		if match_scene != null:
+			# Szene mit level_paths gefunden -> force aufheben, normal wechseln
+			_forced = false
+			_on_level_changed(scene_path)
+		# Sonst: force bleibt aktiv, auto-detection wird uebersprungen
+		return
+
 	_on_level_changed(scene_path)
 
 
@@ -206,6 +261,7 @@ func _pick_random_track() -> int:
 func stop_music(fade: bool = true) -> void:
 	"""Stoppt die aktuelle Musik"""
 	current_scene = null
+	_forced = false
 	if fade:
 		_fade_out_current()
 	else:
@@ -213,10 +269,33 @@ func stop_music(fade: bool = true) -> void:
 
 
 func force_play_scene(scene_name: String) -> void:
-	"""Erzwingt eine bestimmte Musik-Szene (z.B. fuer Cutscenes)"""
+	"""Erzwingt eine bestimmte Musik-Szene (blockiert auto-detection bis level_paths-Match)"""
 	for scene in music_scenes:
 		if scene.scene_name == scene_name:
+			if current_scene == scene:
+				# Gleiche Szene - Musik laeuft weiter
+				return
+			_forced = true
 			current_scene = scene
 			_play_random_track_crossfade()
+			print("[MusicScenePlayer] Force play: %s" % scene_name)
 			return
 	push_warning("[MusicScenePlayer] Scene not found: %s" % scene_name)
+
+
+func play_for_run_room(world_id: int, node_type: int) -> void:
+	"""Spielt die passende Musik fuer einen Run-Raum (world_id + node_type)"""
+	var type_key: String = NODE_TYPE_KEYS.get(node_type, "combat")
+	var lookup: String = "w%d_%s" % [world_id, type_key]
+	var scene_name: String = RUN_MUSIC_MAP.get(lookup, "")
+
+	if scene_name.is_empty():
+		push_warning("[MusicScenePlayer] No run music for: %s" % lookup)
+		return
+
+	force_play_scene(scene_name)
+
+
+func play_event_battle_music() -> void:
+	"""Wechselt zu Event-Kampfmusik (fuer Events mit Kampf)"""
+	force_play_scene("EventBattle")

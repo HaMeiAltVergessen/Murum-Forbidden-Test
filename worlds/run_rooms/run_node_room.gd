@@ -43,6 +43,10 @@ func _activate() -> void:
 	if BoonManager:
 		BoonManager.reset_room_state()
 
+	# Musik passend zum Raumtyp + Welt starten
+	if MusicScenePlayer:
+		MusicScenePlayer.play_for_run_room(world_id, node_type)
+
 	match node_type:
 		RunMapData.NodeType.COMBAT, RunMapData.NodeType.ELITE:
 			_setup_combat()
