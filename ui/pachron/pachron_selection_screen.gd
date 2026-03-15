@@ -49,7 +49,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	layer = 100
 	_build_ui()
-	_setup_symbol_phase()
+	# _setup_symbol_phase() is called from setup() after paths are set
 
 
 # ============ UI CONSTRUCTION ============

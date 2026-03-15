@@ -570,17 +570,18 @@ func _open_pachron_selection() -> void:
 	var screen_scene = load("res://ui/pachron/pachron_selection_screen.tscn")
 	_pachron_screen = screen_scene.instantiate()
 
-	# Pick 3 random paths to offer
+	_pachron_screen.boon_flow_completed.connect(_on_pachron_flow_completed)
+	_pachron_screen.selection_cancelled.connect(_on_pachron_cancelled)
+
+	# Add to tree first so _ready() runs and builds UI
+	get_tree().root.add_child(_pachron_screen)
+	get_tree().paused = true
+
+	# Then setup with offered paths
 	var available_paths: Array = BoonManager.PATH_IDS.duplicate()
 	available_paths.shuffle()
 	var offered: Array = available_paths.slice(0, mini(3, available_paths.size()))
 	_pachron_screen.setup(offered)
-
-	_pachron_screen.boon_flow_completed.connect(_on_pachron_flow_completed)
-	_pachron_screen.selection_cancelled.connect(_on_pachron_cancelled)
-
-	get_tree().root.add_child(_pachron_screen)
-	get_tree().paused = true
 	print("[RunNodeRoom] Pachron selection screen opened")
 
 
