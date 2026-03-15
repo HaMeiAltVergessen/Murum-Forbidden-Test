@@ -226,19 +226,23 @@ func _activate_twilight_blades() -> void:
 
 	var blade_radius: float = BoonManager.get_param("noron", 1, "blade_radius", 80)
 
-	# Create 2 blade visuals (light + dark)
+	# Create 2 blade visuals (light + dark) using Noron explosion sprites
+	var light_tex: Texture2D = load(VFX_BASE + "Explosion_1/Explosion_1.png")
+	var dark_tex: Texture2D = load(VFX_BASE + "Explosion_2/Explosion_1.png")
+
 	for i in range(2):
-		var blade := ColorRect.new()
+		var blade := Sprite2D.new()
 		blade.name = "Blade_%d" % i
-		blade.size = Vector2(20, 6)
-		blade.position = Vector2(-10, -3)  # Center pivot
+		blade.scale = Vector2(0.15, 0.15)
 		var angle: float = i * PI  # Opposite sides
-		blade.position += Vector2(cos(angle), sin(angle)) * blade_radius
+		blade.position = Vector2(cos(angle), sin(angle)) * blade_radius
 
 		if i == 0:
-			blade.color = Color(1.0, 1.0, 0.8, 0.8)  # Light blade
+			blade.texture = light_tex
+			blade.modulate = Color(1.0, 1.0, 0.8, 0.8)  # Light blade
 		else:
-			blade.color = Color(0.3, 0.1, 0.4, 0.8)  # Dark blade
+			blade.texture = dark_tex
+			blade.modulate = Color(0.5, 0.2, 0.6, 0.8)  # Dark blade
 		_twilight_blades_node.add_child(blade)
 
 	print("[BoonEffect] Noron T1: Twilight blades activated")

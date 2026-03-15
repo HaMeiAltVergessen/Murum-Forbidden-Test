@@ -153,6 +153,7 @@ func increase_combo() -> void:
 
 	# Emit signal
 	combo_increased.emit(combo_count, multiplier)
+	EventBus.combo_increased.emit(combo_count, multiplier)
 
 	print("[CombatManager] Combo: %d (×%.2f)" % [combo_count, multiplier])
 
@@ -171,6 +172,7 @@ func break_combo() -> void:
 
 	# Emit signal
 	combo_broken.emit(final_count)
+	EventBus.combo_broken.emit(final_count)
 
 	print("[CombatManager] Combo broken! Final count: %d" % final_count)
 
