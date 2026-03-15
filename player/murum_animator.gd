@@ -44,12 +44,9 @@ func _ready() -> void:
 	staff_sprite = player.get_node_or_null("StaffSprite")
 	staff_controller = player.get_node_or_null("StaffController")
 
-	# Connect to combat signals if available
-	if combat_system:
-		if combat_system.has_signal("attack_started"):
-			combat_system.attack_started.connect(_on_attack_started)
-		if combat_system.has_signal("attack_ended"):
-			combat_system.attack_ended.connect(_on_attack_ended)
+	# Connect to attack signal via EventBus (CombatSystem has no local signals)
+	if EventBus:
+		EventBus.player_attacked.connect(_on_player_attacked)
 
 	# Connect resonance signals
 	if EventBus:
@@ -143,14 +140,10 @@ func _update_staff_position() -> void:
 		staff_sprite.scale.x = -abs(staff_sprite.scale.x)
 
 # ============ ATTACK STRETCH ============
-func _on_attack_started() -> void:
+func _on_player_attacked(attack_number: int) -> void:
 	is_attacking = true
 	play_animation("attack")
 	_play_attack_stretch()
-
-func _on_attack_ended() -> void:
-	is_attacking = false
-	_reset_staff_stretch()
 
 func _play_attack_stretch() -> void:
 	if not staff_sprite or not staff_sprite.get_parent() == player:
@@ -172,9 +165,10 @@ func _play_attack_stretch() -> void:
 	# Zurueck federn (leichtes Overshoot)
 	_attack_stretch_tween.tween_property(staff_sprite, "scale",
 		Vector2(base_scale_x * 0.95 * sign_x, base_scale_y * 1.05), 0.08)
-	# Normal
+	# Normal + is_attacking zuruecksetzen
 	_attack_stretch_tween.tween_property(staff_sprite, "scale",
 		Vector2(base_scale_x * sign_x, base_scale_y), 0.1)
+	_attack_stretch_tween.tween_callback(func(): is_attacking = false)
 
 func _reset_staff_stretch() -> void:
 	if _attack_stretch_tween and _attack_stretch_tween.is_valid():
