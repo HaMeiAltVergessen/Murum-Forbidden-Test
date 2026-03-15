@@ -69,10 +69,9 @@ func _process(_delta: float) -> void:
 func _update_animation_state() -> void:
 	var new_animation: String = "idle"
 
-	# Priority: Attack > Dash > Climbing > Wall Slide > Jump/Fall > Walk > Idle
-	if is_attacking:
-		new_animation = "attack"
-	elif movement_controller and movement_controller.is_dashing:
+	# Priority: Dash > Climbing > Wall Slide > Jump/Fall > Walk > Idle
+	# (Attack-Animation wird NICHT ueber MurumAnimator gesteuert — CombatSystem macht das)
+	if movement_controller and movement_controller.is_dashing:
 		new_animation = "dash"
 	elif movement_controller and movement_controller.is_climbing:
 		new_animation = "climb"
@@ -139,8 +138,9 @@ func _update_staff_position() -> void:
 
 # ============ ATTACK STRETCH ============
 func _on_player_attacked(attack_number: int) -> void:
-	is_attacking = true
-	play_animation("attack")
+	# NICHT play_animation("attack") — die "attack"-Animation auf dem AnimatedSprite2D
+	# hat Frames mit anderen Offsets, die den ganzen Charakter visuell verschieben.
+	# CombatSystem handhabt seine eigenen Angriffsvisuals (Stab-Rotation, Tip-Farbe).
 	_play_attack_stretch()
 
 func _play_attack_stretch() -> void:
