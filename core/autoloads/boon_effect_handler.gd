@@ -41,6 +41,9 @@ var _dot_targets: Array = []  # Array of {enemy, timer, dps}
 # ============ RAELEAR CLONE TRACKING ============
 var _active_clones: Array = []  # Track active clones for max limit
 
+# ============ STAFF TRACKING ============
+var _staff_projectile: Node = null  # Reference to active staff projectile
+
 
 func _ready() -> void:
 	# Connect to EventBus signals — T1/T2
@@ -56,6 +59,11 @@ func _ready() -> void:
 	# T3/T4 signals
 	EventBus.wolkenbruch_impact.connect(_on_wolkenbruch_impact)
 
+	# Staff signals
+	EventBus.staff_thrown.connect(_on_staff_thrown)
+	EventBus.staff_caught.connect(_on_staff_caught)
+	EventBus.staff_hit_enemy.connect(_on_staff_hit_enemy)
+
 	_preload_vfx()
 	print("[BoonEffectHandler] Initialized")
 
@@ -65,6 +73,13 @@ func _process(delta: float) -> void:
 	if _twilight_blades_active and _twilight_blades_node and is_instance_valid(_twilight_blades_node):
 		_blade_rotation += delta * 3.0  # Rotation speed
 		_twilight_blades_node.rotation = _blade_rotation
+
+		# If staff is thrown, blades orbit the staff instead of the player
+		if _staff_projectile and is_instance_valid(_staff_projectile):
+			_twilight_blades_node.global_position = _staff_projectile.global_position
+		else:
+			_twilight_blades_node.position = Vector2.ZERO  # Reset to player center
+
 		_process_blade_damage(delta)
 
 	# Murrum T2: process DoTs
@@ -282,7 +297,12 @@ func _process_blade_damage(delta: float) -> void:
 		var bonus_pct: float = BoonManager.get_param("noron", 3, "blade_damage_bonus_percent", 0.3)
 		blade_dmg = int(blade_dmg * (1.0 + bonus_pct))
 
-	var enemies: Array = _get_enemies_in_radius(player.global_position, blade_radius + 20.0)
+	# Blade damage center: staff position if thrown, player position otherwise
+	var blade_center: Vector2 = player.global_position
+	if _staff_projectile and is_instance_valid(_staff_projectile):
+		blade_center = _staff_projectile.global_position
+
+	var enemies: Array = _get_enemies_in_radius(blade_center, blade_radius + 20.0)
 	for enemy in enemies:
 		enemy.take_damage(blade_dmg, player)
 
@@ -382,10 +402,14 @@ func _on_wolkenbruch_impact(_powered: bool) -> void:
 	var base_damage: int = 30
 	var meteor_damage: int = int(base_damage * dmg_mult)
 
-	# Spawn meteors around player position with delay
+	# Spawn meteors at staff position if thrown, otherwise around player
+	var meteor_center: Vector2 = player.global_position
+	if _staff_projectile and is_instance_valid(_staff_projectile):
+		meteor_center = _staff_projectile.global_position
+
 	for i in range(meteor_count):
 		var offset := Vector2(randf_range(-200, 200), randf_range(-200, 200))
-		var target_pos: Vector2 = player.global_position + offset
+		var target_pos: Vector2 = meteor_center + offset
 
 		# Delayed meteor impact
 		get_tree().create_timer(0.3 + i * 0.2).timeout.connect(func():
@@ -629,6 +653,40 @@ func _arthra_t5_chain_urteil(position: Vector2) -> void:
 
 	if not enemies.is_empty():
 		print("[BoonEffect] Arthra T5: Urteil chain! %d enemies marked" % enemies.size())
+
+
+# ============ STAFF BOON INTERACTIONS ============
+func _on_staff_thrown(staff_proj: Node) -> void:
+	_staff_projectile = staff_proj
+
+func _on_staff_caught() -> void:
+	_staff_projectile = null
+
+	# Reset blade position to player center (in case they were following staff)
+	if _twilight_blades_active and _twilight_blades_node and is_instance_valid(_twilight_blades_node):
+		_twilight_blades_node.position = Vector2.ZERO
+
+func _on_staff_hit_enemy(enemy: Node, staff_state: int, staff_pos: Vector2) -> void:
+	if not _is_in_run():
+		return
+	if not is_instance_valid(enemy):
+		return
+
+	# Noron T2: 100% confusion during staff rotation (instead of 15%)
+	if BoonManager.has_boon("noron", 2) and staff_state == 1:  # 1 = ROTATING_AT_END
+		var duration: float = BoonManager.get_param("noron", 2, "confusion_duration", 3.0)
+		_apply_confusion(enemy, duration)
+		print("[BoonEffect] Noron T2 + Staff: Guaranteed confusion on %s" % enemy.name)
+
+	# Sairias T3: staff return launches enemies upward
+	if BoonManager.has_boon("sairias", 3) and staff_state == 2:  # 2 = RETURNING
+		if enemy is CharacterBody2D:
+			var launch_force: float = BoonManager.get_param("sairias", 3, "launch_force", 400)
+			enemy.velocity.y = -launch_force
+			if enemy.has_method("enter_juggle_state"):
+				enemy.enter_juggle_state()
+			_spawn_explosion_vfx(enemy.global_position, PATH_VFX["sairias"][0], 0.4)
+			print("[BoonEffect] Sairias T3 + Staff: Launched %s on return" % enemy.name)
 
 
 # ============ MURRUM T2: DOT SYSTEM ============

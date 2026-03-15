@@ -114,6 +114,7 @@ func _throw_staff() -> void:
 		active_staff.sprite = staff_sprite
 
 	staff_thrown.emit()
+	EventBus.staff_thrown.emit(active_staff)
 	_disable_melee_attack()
 
 func _get_throw_direction() -> Vector2:
@@ -173,6 +174,7 @@ func _on_staff_caught() -> void:
 		AudioManager.play_sfx_at_position("player/staff_catch", player.global_position, 0.12)
 
 	staff_caught.emit()
+	EventBus.staff_caught.emit()
 	_enable_melee_attack()
 
 # ============================================================================

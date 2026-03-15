@@ -132,6 +132,7 @@ func _start_rotating() -> void:
 	current_state = State.ROTATING_AT_END
 	total_rotation = 0.0  # Reset rotation counter
 	staff_max_range_reached.emit()
+	EventBus.staff_rotating_at.emit(global_position)
 
 func _start_return() -> void:
 	if current_state != State.ROTATING_AT_END:
@@ -195,6 +196,7 @@ func _on_area_entered(area: Area2D) -> void:
 
 		_add_hit_enemy(enemy)
 		_play_hit_effect(enemy.global_position)
+		EventBus.staff_hit_enemy.emit(enemy, current_state, global_position)
 		return
 
 	# Fallback for enemies without HurtboxComponent
@@ -211,6 +213,7 @@ func _on_area_entered(area: Area2D) -> void:
 
 	_add_hit_enemy(area.owner)
 	_play_hit_effect(area.owner.global_position)
+	EventBus.staff_hit_enemy.emit(area.owner, current_state, global_position)
 
 func _on_body_entered(body: Node2D) -> void:
 	print("[StaffProjectile] Body entered: %s (class: %s, groups: %s)" % [body.name, body.get_class(), body.get_groups()])

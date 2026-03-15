@@ -352,6 +352,19 @@ signal wolkenbruch_impact(powered: bool)
 ## Emitted when Wolkenbruch is completed
 signal wolkenbruch_completed
 
+# ============ STAFF THROW EVENTS ============
+## Emitted when staff is thrown (includes projectile reference)
+signal staff_thrown(staff_projectile: Node)
+
+## Emitted when staff is caught by player
+signal staff_caught
+
+## Emitted when staff hits an enemy (state: 0=FLYING_OUT, 1=ROTATING, 2=RETURNING)
+signal staff_hit_enemy(enemy: Node, staff_state: int, staff_position: Vector2)
+
+## Emitted when staff starts rotating at end of range
+signal staff_rotating_at(position: Vector2)
+
 # ============ ECHO VON URGATHON EVENTS ============
 ## Emitted when mana is gained from Echo passive ability
 signal echo_mana_gained(amount: int)
