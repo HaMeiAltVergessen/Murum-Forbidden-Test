@@ -5,6 +5,28 @@ extends Node
 # ============ CONSTANTS ============
 const CLONE_SCENE_COLOR := Color(0.5, 0.3, 0.8, 0.6)  # Raelear purple
 
+# ============ EXPLOSION VFX ============
+const VFX_BASE := "res://vfx/placeholder/Free-Animated-Explosions/PNG/"
+
+# Path -> [primary_folder, secondary_folder]
+const PATH_VFX := {
+	"noron": ["Explosion_1", "Explosion_2"],
+	"arthra": ["Explosion_3", "Explosion_4/1"],
+	"sairias": ["Explosion_5", "Explosion_6"],
+	"murrum": ["Explosion_8", "Explosion_7/1"],
+	"raelear": ["Explosion_9", "Explosion_10"],
+}
+
+# Murrum element -> Explosion_7 subfolder
+const ELEMENT_VFX := {
+	"fire": "Explosion_7/1",
+	"water": "Explosion_7/2",
+	"earth": "Explosion_7/3",
+	"lightning": "Explosion_7/4",
+}
+
+var _vfx_cache: Dictionary = {}  # folder_key -> SpriteFrames
+
 # ============ NORON T1 STATE ============
 var _twilight_blades_active: bool = false
 var _twilight_blades_node: Node2D = null
@@ -34,6 +56,7 @@ func _ready() -> void:
 	# T3/T4 signals
 	EventBus.wolkenbruch_impact.connect(_on_wolkenbruch_impact)
 
+	_preload_vfx()
 	print("[BoonEffectHandler] Initialized")
 
 
@@ -409,15 +432,9 @@ func _spawn_kill_explosion(position: Vector2) -> void:
 	for enemy in enemies:
 		enemy.take_damage(dmg, player)
 
-	# Alternate color
-	var color: Color
-	if _kill_explosion_toggle:
-		color = Color(1.0, 1.0, 0.8, 0.7)  # Light
-	else:
-		color = Color(0.3, 0.1, 0.4, 0.7)  # Dark
+	# Alternate light/dark explosion
+	_spawn_noron_vfx(position, radius, _kill_explosion_toggle)
 	_kill_explosion_toggle = not _kill_explosion_toggle
-
-	_spawn_aoe_vfx(position, radius, color)
 	print("[BoonEffect] Noron T4: Kill explosion! %d enemies hit" % enemies.size())
 
 
@@ -549,7 +566,7 @@ func noron_t5_counter(pos: Vector2) -> void:
 	for enemy in enemies:
 		enemy.take_damage(counter_dmg, player)
 
-	_spawn_aoe_vfx(pos, counter_radius, Color(0.3, 0.1, 0.5, 0.7))
+	_spawn_noron_vfx(pos, counter_radius, false)
 	print("[BoonEffect] Noron T5: Counter explosion! %d enemies hit for %d" % [enemies.size(), counter_dmg])
 
 
@@ -559,7 +576,7 @@ func consume_clone_for_death_save(player_pos: Vector2) -> void:
 	_cleanup_dead_clones()
 	if _active_clones.is_empty():
 		# No clone to destroy, but death save still works
-		_spawn_aoe_vfx(player_pos, 60.0, Color(0.5, 0.3, 0.8, 0.8))
+		_spawn_raelear_vfx(player_pos, 60.0)
 		return
 
 	# Find and destroy nearest clone
@@ -573,7 +590,7 @@ func consume_clone_for_death_save(player_pos: Vector2) -> void:
 				nearest_clone = clone
 
 	if nearest_clone:
-		_spawn_aoe_vfx(nearest_clone.global_position, 80.0, Color(0.5, 0.3, 0.8, 0.9))
+		_spawn_raelear_vfx(nearest_clone.global_position, 80.0)
 		nearest_clone.queue_free()
 		_active_clones.erase(nearest_clone)
 		print("[BoonEffect] Raelear T5: Clone sacrificed!")
@@ -638,7 +655,7 @@ func _process_dots(delta: float) -> void:
 
 	for i in range(_dot_targets.size()):
 		var dot: Dictionary = _dot_targets[i]
-		if not is_instance_valid(dot["enemy"]) or dot["enemy"].is_dead:
+		if not is_instance_valid(dot["enemy"]) or dot["enemy"].get("is_dead"):
 			to_remove.append(i)
 			continue
 
@@ -748,122 +765,99 @@ func _spawn_clone(pos: Vector2, duration: float, damage: int, clone_name: String
 	)
 
 
-# ============ VFX HELPERS (placeholder visuals) ============
-func _spawn_lightning_vfx(pos: Vector2) -> void:
-	"""Spawns lightning VFX placeholder at position"""
+# ============ VFX SYSTEM (Animated Explosion Sprites) ============
+func _preload_vfx() -> void:
+	"""Preloads all explosion sprite frames into cache"""
+	var folders: Array = []
+	for path_name in PATH_VFX:
+		for folder in PATH_VFX[path_name]:
+			if folder not in folders:
+				folders.append(folder)
+	for folder in ELEMENT_VFX.values():
+		if folder not in folders:
+			folders.append(folder)
+
+	for folder in folders:
+		var sprite_frames := SpriteFrames.new()
+		sprite_frames.remove_animation("default")
+		sprite_frames.add_animation("play")
+		sprite_frames.set_animation_loop("play", false)
+		sprite_frames.set_animation_speed("play", 20.0)
+
+		var i := 1
+		while true:
+			var path: String = VFX_BASE + folder + "/Explosion_%d.png" % i
+			if not ResourceLoader.exists(path):
+				break
+			sprite_frames.add_frame("play", load(path))
+			i += 1
+
+		if sprite_frames.get_frame_count("play") > 0:
+			_vfx_cache[folder] = sprite_frames
+			print("[BoonVFX] Cached %s: %d frames" % [folder, sprite_frames.get_frame_count("play")])
+
+
+func _spawn_explosion_vfx(pos: Vector2, folder: String, vfx_scale: float = 1.0, tint: Color = Color.WHITE) -> void:
+	"""Spawns an animated explosion sprite at position"""
 	var scene_root = get_tree().current_scene
 	if not scene_root:
 		return
 
-	var flash := ColorRect.new()
-	flash.color = Color(1.0, 1.0, 0.3, 0.8)
-	flash.size = Vector2(40, 40)
-	flash.position = pos - Vector2(20, 20)
-	scene_root.add_child(flash)
+	var frames: SpriteFrames = _vfx_cache.get(folder)
+	if not frames:
+		return
 
-	var tween := flash.create_tween()
-	tween.tween_property(flash, "modulate:a", 0.0, 0.3)
-	tween.tween_callback(flash.queue_free)
+	var anim := AnimatedSprite2D.new()
+	anim.sprite_frames = frames
+	anim.global_position = pos
+	anim.scale = Vector2(vfx_scale, vfx_scale)
+	anim.modulate = tint
+	anim.z_index = 10
+	scene_root.add_child(anim)
+	anim.play("play")
+	anim.animation_finished.connect(anim.queue_free)
+
+
+func _spawn_lightning_vfx(pos: Vector2) -> void:
+	"""Arthra: Lightning strike VFX"""
+	_spawn_explosion_vfx(pos, PATH_VFX["arthra"][0], 0.5)
 
 
 func _spawn_element_vfx(pos: Vector2, element: String) -> void:
-	"""Spawns elemental VFX placeholder"""
-	var colors: Dictionary = {
-		"fire": Color(1.0, 0.4, 0.1),
-		"water": Color(0.2, 0.5, 1.0),
-		"earth": Color(0.6, 0.4, 0.2),
-		"lightning": Color(1.0, 1.0, 0.3),
-	}
-	var color: Color = colors.get(element, Color.WHITE)
-
-	var scene_root = get_tree().current_scene
-	if not scene_root:
-		return
-
-	var flash := ColorRect.new()
-	flash.color = color
-	flash.color.a = 0.6
-	flash.size = Vector2(80, 80)
-	flash.position = pos - Vector2(40, 40)
-	scene_root.add_child(flash)
-
-	var tween := flash.create_tween()
-	tween.tween_property(flash, "modulate:a", 0.0, 0.5)
-	tween.tween_callback(flash.queue_free)
+	"""Murrum: Elemental finisher VFX (4 elements = 4 explosion variants)"""
+	var folder: String = ELEMENT_VFX.get(element, PATH_VFX["murrum"][0])
+	_spawn_explosion_vfx(pos, folder, 0.8)
 
 
 func _spawn_block_aoe_vfx(pos: Vector2, radius: float) -> void:
-	"""Spawns block AoE VFX placeholder"""
-	var scene_root = get_tree().current_scene
-	if not scene_root:
-		return
-
-	var flash := ColorRect.new()
-	flash.color = Color(0.9, 0.85, 0.2, 0.4)
-	flash.size = Vector2(radius * 2, radius * 2)
-	flash.position = pos - Vector2(radius, radius)
-	scene_root.add_child(flash)
-
-	var tween := flash.create_tween()
-	tween.tween_property(flash, "modulate:a", 0.0, 0.4)
-	tween.tween_callback(flash.queue_free)
+	"""Sairias: Block AoE VFX"""
+	_spawn_explosion_vfx(pos, PATH_VFX["sairias"][0], radius / 80.0)
 
 
 func _spawn_reflect_vfx(pos: Vector2) -> void:
-	"""Spawns parry reflect VFX placeholder"""
-	var scene_root = get_tree().current_scene
-	if not scene_root:
-		return
-
-	var flash := ColorRect.new()
-	flash.color = Color(1.0, 0.9, 0.5, 0.9)
-	flash.size = Vector2(50, 50)
-	flash.position = pos - Vector2(25, 25)
-	scene_root.add_child(flash)
-
-	var tween := flash.create_tween()
-	tween.tween_property(flash, "modulate:a", 0.0, 0.3)
-	tween.tween_callback(flash.queue_free)
+	"""Sairias: Parry reflect VFX"""
+	_spawn_explosion_vfx(pos, PATH_VFX["sairias"][1], 0.5)
 
 
 func _spawn_meteor_vfx(pos: Vector2, radius: float) -> void:
-	"""Spawns meteor impact VFX placeholder"""
-	_spawn_aoe_vfx(pos, radius, Color(1.0, 0.3, 0.1, 0.7))
+	"""Arthra: Meteor impact VFX"""
+	_spawn_explosion_vfx(pos, PATH_VFX["arthra"][1], radius / 80.0)
 
 
 func _spawn_pillar_vfx(pos: Vector2, radius: float) -> void:
-	"""Spawns light pillar VFX placeholder"""
-	var scene_root = get_tree().current_scene
-	if not scene_root:
-		return
-
-	# Tall white pillar
-	var pillar := ColorRect.new()
-	pillar.color = Color(1.0, 1.0, 0.9, 0.8)
-	pillar.size = Vector2(radius, 300)
-	pillar.position = pos - Vector2(radius / 2.0, 300)
-	scene_root.add_child(pillar)
-
-	var tween := pillar.create_tween()
-	tween.tween_property(pillar, "modulate:a", 0.0, 0.5)
-	tween.tween_callback(pillar.queue_free)
+	"""Sairias: Light pillar VFX"""
+	_spawn_explosion_vfx(pos, PATH_VFX["sairias"][0], radius / 40.0, Color(1.0, 1.0, 0.9))
 
 
-func _spawn_aoe_vfx(pos: Vector2, radius: float, color: Color) -> void:
-	"""Generic AoE circle VFX placeholder"""
-	var scene_root = get_tree().current_scene
-	if not scene_root:
-		return
+func _spawn_noron_vfx(pos: Vector2, radius: float, is_light: bool) -> void:
+	"""Noron: Light/dark explosion VFX"""
+	var idx: int = 0 if is_light else 1
+	_spawn_explosion_vfx(pos, PATH_VFX["noron"][idx], radius / 80.0)
 
-	var flash := ColorRect.new()
-	flash.color = color
-	flash.size = Vector2(radius * 2, radius * 2)
-	flash.position = pos - Vector2(radius, radius)
-	scene_root.add_child(flash)
 
-	var tween := flash.create_tween()
-	tween.tween_property(flash, "modulate:a", 0.0, 0.4)
-	tween.tween_callback(flash.queue_free)
+func _spawn_raelear_vfx(pos: Vector2, radius: float) -> void:
+	"""Raelear: Shadow clone VFX"""
+	_spawn_explosion_vfx(pos, PATH_VFX["raelear"][0], radius / 80.0, Color(0.7, 0.4, 1.0))
 
 
 # ============ UTILITY ============
@@ -884,7 +878,7 @@ func _get_nearest_enemy(pos: Vector2, max_range: float) -> Node:
 	var nearest_dist: float = max_range
 
 	for enemy in enemies:
-		if not is_instance_valid(enemy) or enemy.is_dead:
+		if not is_instance_valid(enemy) or enemy.get("is_dead"):
 			continue
 		var dist: float = enemy.global_position.distance_to(pos)
 		if dist < nearest_dist:
@@ -900,7 +894,7 @@ func _get_enemies_in_radius(center: Vector2, radius: float) -> Array:
 	var result: Array = []
 
 	for enemy in enemies:
-		if not is_instance_valid(enemy) or enemy.is_dead:
+		if not is_instance_valid(enemy) or enemy.get("is_dead"):
 			continue
 		if enemy.global_position.distance_to(center) <= radius:
 			result.append(enemy)
