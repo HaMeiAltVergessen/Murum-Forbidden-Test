@@ -22,12 +22,10 @@ const STAFF_POS_LEFT: Vector2 = Vector2(-30, -5)
 var _attack_stretch_tween: Tween = null
 
 # Resonance glow (orb at staff tip)
-var _orb_glow: PointLight2D = null
+var _orb_glow: Sprite2D = null
 var _orb_glow_tween: Tween = null
 var _resonance_pct: float = 0.0
 const ORB_COLOR: Color = Color(0.6, 0.8, 1.0)  # Blau-weiss
-const ORB_MAX_ENERGY: float = 1.5
-const ORB_MAX_SCALE: float = 0.4
 const ORB_OFFSET_RIGHT: Vector2 = Vector2(12, -28)  # Relativ zum StaffSprite
 const ORB_OFFSET_LEFT: Vector2 = Vector2(-12, -28)
 
@@ -183,13 +181,14 @@ func _reset_staff_stretch() -> void:
 
 # ============ RESONANCE ORB GLOW ============
 func _create_orb_glow() -> void:
-	_orb_glow = PointLight2D.new()
+	# Sprite2D statt PointLight2D — kein Einfluss auf andere Sprites
+	_orb_glow = Sprite2D.new()
 	_orb_glow.name = "StaffOrbGlow"
-	_orb_glow.color = ORB_COLOR
-	_orb_glow.energy = 0.0
-	_orb_glow.texture_scale = 0.05
-	_orb_glow.blend_mode = Light2D.BLEND_MODE_ADD
-	# Use default white texture for soft glow
+	_orb_glow.modulate = ORB_COLOR
+	_orb_glow.modulate.a = 0.0  # Unsichtbar am Start
+	_orb_glow.scale = Vector2(0.3, 0.3)
+	_orb_glow.z_index = 5
+	# Gradient-Textur fuer weichen Glow
 	var tex := GradientTexture2D.new()
 	tex.width = 64
 	tex.height = 64
@@ -201,7 +200,6 @@ func _create_orb_glow() -> void:
 	grad.set_color(1, Color(1, 1, 1, 0))
 	tex.gradient = grad
 	_orb_glow.texture = tex
-	_orb_glow.visible = false
 	player.add_child(_orb_glow)
 
 func _update_orb_glow_position() -> void:
@@ -209,10 +207,9 @@ func _update_orb_glow_position() -> void:
 		return
 
 	if staff_sprite and staff_sprite.get_parent() == player:
-		# Orb sitzt am oberen Ende des Stabs
 		_orb_glow.position = staff_sprite.position + (ORB_OFFSET_RIGHT if facing_right else ORB_OFFSET_LEFT)
 	else:
-		_orb_glow.visible = false
+		_orb_glow.modulate.a = 0.0
 
 func _on_resonance_changed(current: float, maximum: float, percentage: float) -> void:
 	_resonance_pct = percentage / 100.0  # 0.0 - 1.0
@@ -220,37 +217,30 @@ func _on_resonance_changed(current: float, maximum: float, percentage: float) ->
 	if not _orb_glow:
 		return
 
-	# Glow erst ab 25% sichtbar
+	# Glow erst ab 25% sichtbar (ueber Alpha)
 	if _resonance_pct < 0.25:
-		_orb_glow.visible = false
-		_orb_glow.energy = 0.0
+		_orb_glow.modulate.a = 0.0
 		return
 
-	_orb_glow.visible = true
-	# Energie skaliert mit Resonanz (0.25-1.0 -> 0.0-ORB_MAX_ENERGY)
-	var t := (_resonance_pct - 0.25) / 0.75  # Normalize to 0-1
-	_orb_glow.energy = t * ORB_MAX_ENERGY
-	_orb_glow.texture_scale = 0.05 + t * ORB_MAX_SCALE
-
-	# Farbe wird waermer bei hoeherer Resonanz (blau -> weiss -> gold)
-	_orb_glow.color = ORB_COLOR.lerp(Color(1.0, 0.95, 0.7), t)
+	var t: float = (_resonance_pct - 0.25) / 0.75  # Normalize to 0-1
+	_orb_glow.modulate = ORB_COLOR.lerp(Color(1.0, 0.95, 0.7), t)
+	_orb_glow.modulate.a = t * 0.8  # Max 80% opak
+	_orb_glow.scale = Vector2(0.3 + t * 0.4, 0.3 + t * 0.4)
 
 func _on_resonance_mode_activated() -> void:
 	if not _orb_glow:
 		return
 
-	# Volle Strahlung mit Pulsieren
-	_orb_glow.visible = true
-
 	if _orb_glow_tween and _orb_glow_tween.is_valid():
 		_orb_glow_tween.kill()
 
-	_orb_glow_tween = create_tween().set_loops()
-	_orb_glow_tween.tween_property(_orb_glow, "energy", ORB_MAX_ENERGY * 1.8, 0.4)
-	_orb_glow_tween.tween_property(_orb_glow, "energy", ORB_MAX_ENERGY * 1.0, 0.4)
+	_orb_glow.modulate = Color(1.0, 0.9, 0.5)  # Gold
+	_orb_glow.modulate.a = 1.0
+	_orb_glow.scale = Vector2(0.7, 0.7)
 
-	_orb_glow.color = Color(1.0, 0.9, 0.5)  # Gold
-	_orb_glow.texture_scale = 0.05 + ORB_MAX_SCALE
+	_orb_glow_tween = create_tween().set_loops()
+	_orb_glow_tween.tween_property(_orb_glow, "modulate:a", 1.0, 0.4)
+	_orb_glow_tween.tween_property(_orb_glow, "modulate:a", 0.5, 0.4)
 
 func _on_resonance_mode_deactivated() -> void:
 	if not _orb_glow:
@@ -260,6 +250,5 @@ func _on_resonance_mode_deactivated() -> void:
 		_orb_glow_tween.kill()
 		_orb_glow_tween = null
 
-	_orb_glow.visible = false
-	_orb_glow.energy = 0.0
+	_orb_glow.modulate.a = 0.0
 	_resonance_pct = 0.0
