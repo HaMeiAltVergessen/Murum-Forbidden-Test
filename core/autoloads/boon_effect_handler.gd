@@ -82,6 +82,10 @@ func _process(delta: float) -> void:
 
 		_process_blade_damage(delta)
 
+	# Staff boon effects (while staff is in flight)
+	if _staff_projectile and is_instance_valid(_staff_projectile) and _is_in_run():
+		_process_staff_boons(delta)
+
 	# Murrum T2: process DoTs
 	_process_dots(delta)
 
@@ -182,8 +186,14 @@ func _on_enemy_died(enemy: Node, position: Vector2) -> void:
 	if BoonManager.has_boon("raelear", 4):
 		duration = BoonManager.get_param("raelear", 4, "duration_override", 8.0)
 
-	_spawn_clone(position, duration, clone_dmg, "DeathClone")
-	print("[BoonEffect] Raelear T2: Death clone at %v (%.1fs, %d/%d)" % [position, duration, _active_clones.size(), max_clones])
+	# Raelear T2 + Staff: clone spawns at staff position instead of death position
+	var clone_pos: Vector2 = position
+	if _staff_projectile and is_instance_valid(_staff_projectile):
+		clone_pos = _staff_projectile.global_position
+
+	_spawn_clone(clone_pos, duration, clone_dmg, "DeathClone")
+	_spawn_raelear_vfx(clone_pos, 60.0)
+	print("[BoonEffect] Raelear T2: Death clone at %v (%.1fs, %d/%d)" % [clone_pos, duration, _active_clones.size(), max_clones])
 
 
 # ============ MURRUM T1: ELEMENT-FINISHER ============
@@ -659,6 +669,10 @@ func _arthra_t5_chain_urteil(position: Vector2) -> void:
 func _on_staff_thrown(staff_proj: Node) -> void:
 	_staff_projectile = staff_proj
 
+	# Murrum T3: start element trail tracking
+	if BoonManager.has_boon("murrum", 3) and staff_proj:
+		staff_proj.set_meta("trail_tick", 0.0)
+
 func _on_staff_caught() -> void:
 	_staff_projectile = null
 
@@ -687,6 +701,66 @@ func _on_staff_hit_enemy(enemy: Node, staff_state: int, staff_pos: Vector2) -> v
 				enemy.enter_juggle_state()
 			_spawn_explosion_vfx(enemy.global_position, PATH_VFX["sairias"][0], 0.4)
 			print("[BoonEffect] Sairias T3 + Staff: Launched %s on return" % enemy.name)
+
+	# Raelear T2: staff kill spawns clone at staff position (instead of enemy death pos)
+	# Handled in _on_enemy_died via _staff_projectile reference
+
+
+# ============ STAFF PROCESS EFFECTS (per-frame while staff is in flight) ============
+func _process_staff_boons(delta: float) -> void:
+	var staff_pos: Vector2 = _staff_projectile.global_position
+	var player = _get_player()
+
+	# Sairias T1: Staff destroys enemy projectiles in flight
+	if BoonManager.has_boon("sairias", 1):
+		var projectiles = get_tree().get_nodes_in_group("enemy_attacks")
+		for proj in projectiles:
+			if not is_instance_valid(proj) or proj == _staff_projectile:
+				continue
+			if proj.global_position.distance_to(staff_pos) < 50.0:
+				_spawn_explosion_vfx(proj.global_position, PATH_VFX["sairias"][1], 0.3)
+				proj.queue_free()
+				print("[BoonEffect] Sairias T1 + Staff: Blocked projectile")
+
+	# Murrum T3: Element trail along staff flight path (every 0.15s)
+	if BoonManager.has_boon("murrum", 3) and _staff_projectile.current_state == 0:  # 0 = FLYING_OUT
+		var trail_tick: float = _staff_projectile.get_meta("trail_tick", 0.0) + delta
+		_staff_projectile.set_meta("trail_tick", trail_tick)
+		if trail_tick >= 0.15:
+			_staff_projectile.set_meta("trail_tick", 0.0)
+			var elements: Array = ["fire", "water", "earth", "lightning"]
+			var element: String = elements[randi() % elements.size()]
+			var trail_pos: Vector2 = staff_pos
+
+			# Small AoE damage at trail position
+			var trail_dmg: int = int(BoonManager.get_param("murrum", 3, "bonus_damage_percent", 0.2) * 20)
+			if trail_dmg < 1:
+				trail_dmg = 1
+			var trail_enemies: Array = _get_enemies_in_radius(trail_pos, 40.0)
+			for enemy in trail_enemies:
+				enemy.take_damage(trail_dmg, player)
+				if BoonManager.has_boon("murrum", 2):
+					_apply_dot(enemy)
+
+			# Element VFX at trail point
+			var folder: String = ELEMENT_VFX.get(element, PATH_VFX["murrum"][0])
+			_spawn_explosion_vfx(trail_pos, folder, 0.3)
+
+	# Noron T4: Light/dark AoE pulses during staff rotation
+	if BoonManager.has_boon("noron", 4) and _staff_projectile.current_state == 1:  # 1 = ROTATING_AT_END
+		var pulse_tick: float = _staff_projectile.get_meta("pulse_tick", 0.0) + delta
+		_staff_projectile.set_meta("pulse_tick", pulse_tick)
+		# Pulse every 0.4s (roughly once per rotation at 25 rad/s)
+		if pulse_tick >= 0.4:
+			_staff_projectile.set_meta("pulse_tick", 0.0)
+			var pulse_dmg: int = BoonManager.get_param("noron", 4, "kill_explosion_damage", 30) / 2
+			var pulse_radius: float = BoonManager.get_param("noron", 4, "kill_explosion_radius", 120)
+			var pulse_enemies: Array = _get_enemies_in_radius(staff_pos, pulse_radius)
+			for enemy in pulse_enemies:
+				enemy.take_damage(pulse_dmg, player)
+			_spawn_noron_vfx(staff_pos, pulse_radius, _kill_explosion_toggle)
+			_kill_explosion_toggle = not _kill_explosion_toggle
+			print("[BoonEffect] Noron T4 + Staff: Rotation pulse! %d enemies hit" % pulse_enemies.size())
 
 
 # ============ MURRUM T2: DOT SYSTEM ============
