@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "paths": {
     "arthra": {
       "name": "Arthra",
@@ -16,6 +16,9 @@
           "params": {
             "every_n_hits": 3,
             "bonus_damage_percent": 0.3
+          },
+          "level_scaling": {
+            "bonus_damage_percent": 0.05
           }
         },
         {
@@ -27,6 +30,10 @@
           "params": {
             "damage_per_kill_percent": 0.05,
             "max_bonus_percent": 0.4
+          },
+          "level_scaling": {
+            "damage_per_kill_percent": 0.01,
+            "max_bonus_percent": 0.05
           }
         },
         {
@@ -39,6 +46,10 @@
             "meteor_count": 3,
             "damage_multiplier": 2.0,
             "radius": 150
+          },
+          "level_scaling": {
+            "damage_multiplier": 0.3,
+            "radius": 15
           }
         },
         {
@@ -47,7 +58,8 @@
           "name": "Richter des Todes",
           "description": "Jeder getroffene Gegner erhaelt automatisch Urteil (Death Mark).",
           "effect_type": "auto_urteil",
-          "params": {}
+          "params": {},
+          "level_scaling": {}
         },
         {
           "id": "arthra_5",
@@ -57,6 +69,9 @@
           "effect_type": "urteil_chain",
           "params": {
             "chain_radius": 200
+          },
+          "level_scaling": {
+            "chain_radius": 25
           }
         }
       ]
@@ -76,6 +91,10 @@
           "params": {
             "clone_duration": 3.0,
             "clone_damage": 10
+          },
+          "level_scaling": {
+            "clone_duration": 0.5,
+            "clone_damage": 2
           }
         },
         {
@@ -87,6 +106,10 @@
           "params": {
             "clone_duration": 5.0,
             "damage_percent": 0.5
+          },
+          "level_scaling": {
+            "clone_duration": 0.5,
+            "damage_percent": 0.05
           }
         },
         {
@@ -97,6 +120,9 @@
           "effect_type": "clone_skill_copy",
           "params": {
             "damage_percent": 0.5
+          },
+          "level_scaling": {
+            "damage_percent": 0.05
           }
         },
         {
@@ -108,6 +134,9 @@
           "params": {
             "max_clones": 5,
             "duration_override": 8.0
+          },
+          "level_scaling": {
+            "duration_override": 1.0
           }
         },
         {
@@ -118,7 +147,8 @@
           "effect_type": "clone_death_save",
           "params": {
             "uses_per_room": 1
-          }
+          },
+          "level_scaling": {}
         }
       ]
     },
@@ -137,6 +167,9 @@
           "params": {
             "elements": ["fire", "water", "earth", "lightning"],
             "bonus_damage": 15
+          },
+          "level_scaling": {
+            "bonus_damage": 3
           }
         },
         {
@@ -148,6 +181,9 @@
           "params": {
             "dot_duration": 3.0,
             "dot_damage_per_sec": 5
+          },
+          "level_scaling": {
+            "dot_damage_per_sec": 1
           }
         },
         {
@@ -158,6 +194,9 @@
           "effect_type": "skill_element_bonus",
           "params": {
             "bonus_damage_percent": 0.2
+          },
+          "level_scaling": {
+            "bonus_damage_percent": 0.03
           }
         },
         {
@@ -168,6 +207,9 @@
           "effect_type": "all_elements_on_hit",
           "params": {
             "per_element_damage": 5
+          },
+          "level_scaling": {
+            "per_element_damage": 1
           }
         },
         {
@@ -179,6 +221,10 @@
           "params": {
             "heal_percent": 0.02,
             "mana_percent": 0.02
+          },
+          "level_scaling": {
+            "heal_percent": 0.005,
+            "mana_percent": 0.005
           }
         }
       ]
@@ -198,6 +244,9 @@
           "params": {
             "blade_damage": 8,
             "blade_radius": 80
+          },
+          "level_scaling": {
+            "blade_damage": 2
           }
         },
         {
@@ -209,6 +258,10 @@
           "params": {
             "chance_percent": 0.15,
             "confusion_duration": 3.0
+          },
+          "level_scaling": {
+            "chance_percent": 0.03,
+            "confusion_duration": 0.3
           }
         },
         {
@@ -221,6 +274,11 @@
             "light_heal_per_hit": 3,
             "dark_mana_per_hit": 3,
             "blade_damage_bonus_percent": 0.3
+          },
+          "level_scaling": {
+            "light_heal_per_hit": 1,
+            "dark_mana_per_hit": 1,
+            "blade_damage_bonus_percent": 0.05
           }
         },
         {
@@ -233,6 +291,10 @@
             "enemy_slow_percent": 0.2,
             "kill_explosion_damage": 30,
             "kill_explosion_radius": 120
+          },
+          "level_scaling": {
+            "kill_explosion_damage": 5,
+            "kill_explosion_radius": 15
           }
         },
         {
@@ -245,6 +307,11 @@
             "miss_chance_percent": 0.25,
             "counter_explosion_damage": 50,
             "counter_explosion_radius": 150
+          },
+          "level_scaling": {
+            "miss_chance_percent": 0.03,
+            "counter_explosion_damage": 8,
+            "counter_explosion_radius": 15
           }
         }
       ]
@@ -264,6 +331,10 @@
           "params": {
             "block_aoe_damage": 10,
             "block_aoe_radius": 100
+          },
+          "level_scaling": {
+            "block_aoe_damage": 2,
+            "block_aoe_radius": 10
           }
         },
         {
@@ -272,7 +343,8 @@
           "name": "Perfekte Umleitung",
           "description": "Perfect Parry reflektiert exakt den Schaden des Angriffs zurueck an den Angreifer.",
           "effect_type": "parry_reflect",
-          "params": {}
+          "params": {},
+          "level_scaling": {}
         },
         {
           "id": "sairias_3",
@@ -283,6 +355,10 @@
           "params": {
             "launch_force": 400,
             "slam_damage": 20
+          },
+          "level_scaling": {
+            "launch_force": 50,
+            "slam_damage": 5
           }
         },
         {
@@ -296,6 +372,10 @@
             "pillar_damage": 40,
             "pillar_radius": 60,
             "spawn_range": 200
+          },
+          "level_scaling": {
+            "pillar_damage": 8,
+            "pillar_radius": 5
           }
         },
         {
@@ -306,6 +386,9 @@
           "effect_type": "hyperarmor_parry_heal",
           "params": {
             "parry_heal_percent": 0.1
+          },
+          "level_scaling": {
+            "parry_heal_percent": 0.02
           }
         }
       ]

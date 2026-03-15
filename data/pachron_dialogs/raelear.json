@@ -1,0 +1,43 @@
+{
+  "pachron_id": "raelear",
+  "greetings": [
+    "Du bist zurueckgekommen... Das ueberrascht mich. Und gibt mir Hoffnung.",
+    "Jeder Schatten, den du wirfst, traegt ein Stueck meiner Verzweiflung.",
+    "Ah... du. Ich habe auf dich gewartet. Schon so lange."
+  ],
+  "farewells": [
+    "Geh. Aber vergiss nicht — die Schatten beschuetzen dich, solange du an sie glaubst.",
+    "Sei vorsichtig da draussen. Die Dunkelheit ist nicht immer dein Freund.",
+    "Bis zum naechsten Mal... ich werde hier sein. Immer."
+  ],
+  "loop": [
+    "Verzweiflung und Entschlossenheit — sie sind naeher verwandt, als du denkst.",
+    "Jeder Klon, den du erschaffst, ist ein Echo meiner eigenen zerbrochenen Seele.",
+    "Die Schatten luegen nicht. Sie zeigen, was wirklich ist — auch wenn es wehtut.",
+    "Manchmal ist die beste Verteidigung eine Illusion. Manchmal ist es die Wahrheit."
+  ],
+  "story": [
+    {
+      "id": "story_1",
+      "text": "Ich habe alles verloren — mein Volk, meinen Namen, meine Gestalt. Nur die Schatten blieben mir treu.",
+      "requires_tier": 0
+    },
+    {
+      "id": "story_2",
+      "text": "Die Klone sind nicht nur Illusionen. Sie sind Fragmente dessen, was ich einst war. Jeder einzelne traegt eine Erinnerung.",
+      "requires_tier": 2
+    },
+    {
+      "id": "story_3",
+      "text": "Entschlossenheit bedeutet nicht, keine Angst zu haben. Es bedeutet, trotz der Angst weiterzugehen. Das habe ich von dir gelernt.",
+      "requires_tier": 4
+    }
+  ],
+  "wegwerf": [
+    "...",
+    "Hmm.",
+    "Die Schatten bewegen sich heute anders.",
+    "Verzeih mir. Ich war in Gedanken.",
+    "Ja..."
+  ]
+}

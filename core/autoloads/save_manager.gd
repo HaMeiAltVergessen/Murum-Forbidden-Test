@@ -261,7 +261,8 @@ func _gather_save_data(slot_index: int) -> Dictionary:
 		"run_manager": _gather_run_manager_data(),
 		"upgrades": _gather_upgrade_data(),
 		"found_relics": _gather_found_relics(),
-		"boons": _gather_boon_data()
+		"boons": _gather_boon_data(),
+		"pachron_dialogs": _gather_pachron_dialog_data()
 	}
 
 	print("[SaveManager] Save data gathered successfully")
@@ -452,6 +453,13 @@ func _gather_boon_data() -> Dictionary:
 		return BoonManager.get_save_data()
 	return {"active_boons": {}}
 
+
+func _gather_pachron_dialog_data() -> Dictionary:
+	"""Gathers PachronDialogSystem story tracking (persistent across runs)"""
+	if PachronDialogSystem:
+		return PachronDialogSystem.get_save_data()
+	return {"seen_stories": {}}
+
 # ============================================================================
 # LOAD GAME
 # ============================================================================
@@ -568,6 +576,11 @@ func _apply_save_data(save_data: Dictionary) -> void:
 	var boon_data = save_data.get("boons", {})
 	if BoonManager:
 		BoonManager.load_from_save(boon_data)
+
+	# Restore PachronDialogSystem story tracking
+	var pachron_data = save_data.get("pachron_dialogs", {})
+	if PachronDialogSystem:
+		PachronDialogSystem.load_from_save(pachron_data)
 
 	# Restore found relics
 	var found_relics_data = save_data.get("found_relics", [])

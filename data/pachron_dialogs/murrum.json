@@ -1,0 +1,43 @@
+{
+  "pachron_id": "murrum",
+  "greetings": [
+    "Du... ich kenne dich. Oder kannte ich dich? Die Erinnerungen verschwimmen.",
+    "Feuer, Wasser, Erde, Luft... sie alle sprechen zu mir. Und ueber dich.",
+    "Willkommen zurueck. Ich glaube, wir haben uns schon einmal getroffen."
+  ],
+  "farewells": [
+    "Geh. Die Elemente werden dich fuehren — wenn du ihnen zuhoerst.",
+    "Vergiss nicht... nein, vergiss. Es ist besser so. Manchmal.",
+    "Die Erinnerung verblasst. Aber die Macht bleibt."
+  ],
+  "loop": [
+    "Vergessen und Erinnern — beides ist Macht. Die Frage ist nur, welche du waehlst.",
+    "Die Elemente sind aelter als jedes Wesen. Sie waren da vor mir. Sie werden da sein nach dir.",
+    "Manchmal vergesse ich, wer ich bin. Dann erinnern mich die Flammen.",
+    "Feuer verbrennt. Wasser heilt. Erde schuetzt. Blitz... Blitz entscheidet."
+  ],
+  "story": [
+    {
+      "id": "story_1",
+      "text": "Mein Name... Mur|rum. Gespalten wie mein Wesen. Ich erinnere mich an zwei Leben — oder waren es eines, zweimal gelebt?",
+      "requires_tier": 0
+    },
+    {
+      "id": "story_2",
+      "text": "Die Elemente gehorchen keinem Meister. Ich habe das auf die harte Tour gelernt. Aber sie respektieren jene, die sie verstehen.",
+      "requires_tier": 2
+    },
+    {
+      "id": "story_3",
+      "text": "Ewiges Element... Das ist kein Boon. Das ist eine Erinnerung an das, was die Welt einst war — reine, ungezaehmte Magie.",
+      "requires_tier": 4
+    }
+  ],
+  "wegwerf": [
+    "Hmm... was war die Frage?",
+    "Oh. Ja.",
+    "Die Flammen tanzen heute anders.",
+    "...",
+    "Ich hatte einen Gedanken. Er ist weg."
+  ]
+}

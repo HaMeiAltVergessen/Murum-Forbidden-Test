@@ -12,6 +12,7 @@ const BOON_CHOICES_COUNT: int = 3  # How many boons to offer in elite rooms
 
 # ============ SIGNALS ============
 signal boon_acquired(path_id: String, tier: int, boon_data: Dictionary)
+signal boon_upgraded(path_id: String, tier: int, new_level: int)
 signal boons_cleared()
 signal boon_choices_ready(choices: Array)  # Array of boon dicts
 
@@ -21,6 +22,7 @@ var _all_boons: Dictionary = {}      # boon_id -> boon dict (flat lookup)
 
 # ============ RUN STATE (volatile) ============
 var active_boons: Dictionary = {}    # path_id -> Array[int] of acquired tiers (e.g. {"arthra": [1, 2]})
+var boon_levels: Dictionary = {}     # boon_id -> int level (e.g. {"arthra_1": 2, "arthra_2": 1})
 var _room_state: Dictionary = {}     # Per-room volatile state (kill counters, etc.)
 
 # ============ ARTHRA T2 STATE ============
@@ -193,10 +195,63 @@ func get_boon_choices() -> Array:
 
 # ============ EFFECT PARAMETER HELPERS ============
 func get_param(path_id: String, tier: int, param_name: String, default_value = null):
-	"""Shorthand to get a boon's effect parameter."""
+	"""Shorthand to get a boon's effect parameter (base value, no scaling)."""
 	var boon: Dictionary = get_boon_data(path_id, tier)
 	var params: Dictionary = boon.get("params", {})
 	return params.get(param_name, default_value)
+
+
+func get_scaled_param(path_id: String, tier: int, param_name: String, default_value: float = 0.0) -> float:
+	"""Returns param scaled by boon level: base + (level-1) * scaling."""
+	var boon: Dictionary = get_boon_data(path_id, tier)
+	var params: Dictionary = boon.get("params", {})
+	var base_value: float = float(params.get(param_name, default_value))
+
+	var level: int = get_boon_level(path_id, tier)
+	if level <= 1:
+		return base_value
+
+	var scaling: Dictionary = boon.get("level_scaling", {})
+	var scale_per_level: float = float(scaling.get(param_name, 0.0))
+	return base_value + (level - 1) * scale_per_level
+
+
+func get_boon_level(path_id: String, tier: int) -> int:
+	"""Returns the level of a boon (default 1 if acquired, 0 if not)."""
+	if not has_boon(path_id, tier):
+		return 0
+	var boon_id: String = "%s_%d" % [path_id, tier]
+	return boon_levels.get(boon_id, 1)
+
+
+func upgrade_boon(path_id: String, tier: int) -> bool:
+	"""Upgrades a boon by 1 level. Returns false if not owned."""
+	if not has_boon(path_id, tier):
+		push_warning("[BoonManager] Cannot upgrade: %s T%d not owned" % [path_id, tier])
+		return false
+
+	var boon_id: String = "%s_%d" % [path_id, tier]
+	var current_level: int = boon_levels.get(boon_id, 1)
+	var new_level: int = current_level + 1
+	boon_levels[boon_id] = new_level
+
+	boon_upgraded.emit(path_id, tier, new_level)
+	if EventBus:
+		EventBus.boon_upgraded.emit(path_id, tier, new_level)
+	print("[BoonManager] Boon upgraded: %s T%d → Level %d" % [path_id, tier, new_level])
+	return true
+
+
+func get_upgradeable_boons(path_id: String) -> Array:
+	"""Returns all acquired boons of a path that have level_scaling defined."""
+	var result: Array = []
+	var tiers: Array = active_boons.get(path_id, [])
+	for tier in tiers:
+		var boon: Dictionary = get_boon_data(path_id, tier)
+		var scaling: Dictionary = boon.get("level_scaling", {})
+		if not scaling.is_empty():
+			result.append(boon)
+	return result
 
 
 func get_damage_multiplier() -> float:
@@ -258,6 +313,7 @@ func _on_run_ended(_victory: bool) -> void:
 func clear_boons() -> void:
 	"""Clears all active boons (called at run start/end)."""
 	active_boons.clear()
+	boon_levels.clear()
 	_room_state.clear()
 	arthra_kill_bonus = 0.0
 	# Cleanup active boon effects (blades, DoTs, etc.)
@@ -271,11 +327,13 @@ func clear_boons() -> void:
 func get_save_data() -> Dictionary:
 	return {
 		"active_boons": active_boons.duplicate(true),
+		"boon_levels": boon_levels.duplicate(true),
 		"arthra_kill_bonus": arthra_kill_bonus,
 	}
 
 
 func load_from_save(data: Dictionary) -> void:
 	active_boons = data.get("active_boons", {})
+	boon_levels = data.get("boon_levels", {})
 	arthra_kill_bonus = data.get("arthra_kill_bonus", 0.0)
 	print("[BoonManager] Loaded: %d active boons" % get_active_boon_count())

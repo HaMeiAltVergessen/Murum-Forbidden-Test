@@ -478,152 +478,134 @@ func _confirm_treasure_choice() -> void:
 	_on_node_cleared()
 
 
-# ============ BOON SELECTION (Elite rooms) ============
+# ============ BOON SELECTION (Elite/Boss rooms — Pachron Altar) ============
 var boon_choice_made: bool = false
-var _player_in_boon: String = ""  # "A", "B", "C" or ""
-var _boon_choices: Array = []     # Array of boon dicts from BoonManager
+var _player_in_altar: bool = false
+var _pachron_screen: Node = null
 
 func _setup_boon_selection() -> void:
-	"""After elite combat: spawn 3 boon choice zones"""
-	_boon_choices = BoonManager.get_boon_choices()
+	"""After elite/boss combat: spawn Pachron altar interactable"""
+	# Check if any boons are available at all
+	var any_available: bool = false
+	for path_id in BoonManager.PATH_IDS:
+		if BoonManager.get_next_available_tier(path_id) > 0:
+			any_available = true
+			break
+		if not BoonManager.get_upgradeable_boons(path_id).is_empty():
+			any_available = true
+			break
 
-	if _boon_choices.is_empty():
-		print("[RunNodeRoom] No boons available — skipping selection")
+	if not any_available:
+		print("[RunNodeRoom] No boons/upgrades available — skipping selection")
 		EventBus.show_notification.emit("Keine Pachron verfuegbar.", 2.0)
 		_on_node_cleared()
 		return
 
-	print("[RunNodeRoom] Boon selection: %d choices" % _boon_choices.size())
+	print("[RunNodeRoom] Spawning Pachron altar")
 
-	var choices_container = Node2D.new()
-	choices_container.name = "BoonChoices"
-	add_child(choices_container)
+	# Spawn altar at center of room
+	var altar := Area2D.new()
+	altar.name = "PachronAltar"
+	altar.global_position = Vector2(700, 650)
+	altar.collision_layer = 0
+	altar.collision_mask = 0
+	altar.set_collision_mask_value(2, true)
+	altar.monitoring = true
 
-	var positions := [Vector2(350, 650), Vector2(700, 650), Vector2(1050, 650)]
-	var keys := ["A", "B", "C"]
+	var col := CollisionShape2D.new()
+	var shape := RectangleShape2D.new()
+	shape.size = Vector2(120, 100)
+	col.shape = shape
+	altar.add_child(col)
 
-	for i in range(_boon_choices.size()):
-		var boon: Dictionary = _boon_choices[i]
-		var key: String = keys[i]
-		var path_id: String = boon.get("path_id", "")
-		var path_color: Color = BoonManager.get_path_color(path_id)
+	# Altar visual (placeholder)
+	var rect := ColorRect.new()
+	rect.color = Color(0.6, 0.4, 0.8, 0.7)
+	rect.size = Vector2(120, 100)
+	rect.position = Vector2(-60, -50)
+	altar.add_child(rect)
 
-		var zone := Area2D.new()
-		zone.name = "BoonChoice" + key
-		zone.global_position = positions[i]
-		zone.collision_layer = 0
-		zone.collision_mask = 0
-		zone.set_collision_mask_value(2, true)
-		zone.monitoring = true
+	# Symbol on altar
+	var symbol := Label.new()
+	symbol.text = "☽"
+	symbol.add_theme_font_size_override("font_size", 40)
+	symbol.add_theme_color_override("font_color", Color(1.0, 0.9, 0.6))
+	symbol.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	symbol.size = Vector2(120, 50)
+	symbol.position = Vector2(-60, -45)
+	altar.add_child(symbol)
 
-		var col := CollisionShape2D.new()
-		var shape := RectangleShape2D.new()
-		shape.size = Vector2(160, 140)
-		col.shape = shape
-		zone.add_child(col)
+	# Prompt
+	var prompt := Label.new()
+	prompt.name = "PromptLabel"
+	prompt.text = "E - Pachron-Altar"
+	prompt.add_theme_font_size_override("font_size", 16)
+	prompt.add_theme_color_override("font_color", Color(0.9, 0.85, 0.7))
+	prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	prompt.size = Vector2(200, 25)
+	prompt.position = Vector2(-100, 55)
+	prompt.visible = false
+	altar.add_child(prompt)
 
-		# Background with path color
-		var rect := ColorRect.new()
-		rect.color = Color(path_color.r, path_color.g, path_color.b, 0.5)
-		rect.size = Vector2(160, 140)
-		rect.position = Vector2(-80, -70)
-		zone.add_child(rect)
+	altar.body_entered.connect(func(body):
+		if body is Murum or body.name == "Murum":
+			_player_in_altar = true
+			prompt.visible = true
+	)
+	altar.body_exited.connect(func(body):
+		if body is Murum or body.name == "Murum":
+			_player_in_altar = false
+			prompt.visible = false
+	)
 
-		# Path name + tier
-		var path_data: Dictionary = BoonManager.get_path_data(path_id)
-		var path_name: String = path_data.get("name", path_id.capitalize())
-		var tier: int = boon.get("tier", 1)
-
-		var path_label := Label.new()
-		path_label.text = "%s T%d" % [path_name, tier]
-		path_label.add_theme_font_size_override("font_size", 14)
-		path_label.add_theme_color_override("font_color", path_color)
-		path_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		path_label.size = Vector2(160, 20)
-		path_label.position = Vector2(-80, -100)
-		zone.add_child(path_label)
-
-		# Boon name
-		var name_label := Label.new()
-		name_label.text = boon.get("name", "?")
-		name_label.add_theme_font_size_override("font_size", 18)
-		name_label.add_theme_color_override("font_color", Color.WHITE)
-		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		name_label.size = Vector2(160, 25)
-		name_label.position = Vector2(-80, -65)
-		zone.add_child(name_label)
-
-		# Description
-		var desc_label := Label.new()
-		desc_label.text = boon.get("description", "")
-		desc_label.add_theme_font_size_override("font_size", 12)
-		desc_label.add_theme_color_override("font_color", Color(0.85, 0.85, 0.85))
-		desc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		desc_label.size = Vector2(150, 80)
-		desc_label.position = Vector2(-75, -35)
-		zone.add_child(desc_label)
-
-		# Prompt
-		var prompt := Label.new()
-		prompt.name = "PromptLabel"
-		prompt.text = "E - Waehlen"
-		prompt.add_theme_font_size_override("font_size", 14)
-		prompt.add_theme_color_override("font_color", Color.WHITE)
-		prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		prompt.size = Vector2(160, 20)
-		prompt.position = Vector2(-80, 75)
-		zone.add_child(prompt)
-
-		# Connect body signals
-		var captured_key := key
-		zone.body_entered.connect(func(body):
-			if body is Murum or body.name == "Murum":
-				_player_in_boon = captured_key
-		)
-		zone.body_exited.connect(func(body):
-			if body is Murum or body.name == "Murum":
-				if _player_in_boon == captured_key:
-					_player_in_boon = ""
-		)
-
-		choices_container.add_child(zone)
-
-	_show_completion_ui("Waehle einen Pachron!")
+	add_child(altar)
+	_show_completion_ui("Pachron-Altar erschienen!")
 
 
-func _confirm_boon_choice() -> void:
-	"""Called when player presses E inside a boon zone"""
-	if boon_choice_made or _player_in_boon == "":
+func _open_pachron_selection() -> void:
+	"""Opens the Pachron selection screen UI"""
+	if boon_choice_made or _pachron_screen != null:
 		return
+
+	var screen_scene = load("res://ui/pachron/pachron_selection_screen.tscn")
+	_pachron_screen = screen_scene.instantiate()
+
+	# Pick 3 random paths to offer
+	var available_paths: Array = BoonManager.PATH_IDS.duplicate()
+	available_paths.shuffle()
+	var offered: Array = available_paths.slice(0, mini(3, available_paths.size()))
+	_pachron_screen.setup(offered)
+
+	_pachron_screen.boon_flow_completed.connect(_on_pachron_flow_completed)
+	_pachron_screen.selection_cancelled.connect(_on_pachron_cancelled)
+
+	get_tree().root.add_child(_pachron_screen)
+	get_tree().paused = true
+	print("[RunNodeRoom] Pachron selection screen opened")
+
+
+func _on_pachron_flow_completed() -> void:
+	"""Called when the full Pachron flow is done (dialog + boon choice)"""
 	boon_choice_made = true
+	_pachron_screen = null
+	get_tree().paused = false
 
-	var index: int = ["A", "B", "C"].find(_player_in_boon)
-	if index < 0 or index >= _boon_choices.size():
-		return
+	# Remove altar
+	var altar = get_node_or_null("PachronAltar")
+	if altar:
+		altar.queue_free()
 
-	var boon: Dictionary = _boon_choices[index]
-	var path_id: String = boon.get("path_id", "")
-	var tier: int = boon.get("tier", 1)
-	var boon_name: String = boon.get("name", "?")
-
-	var success: bool = BoonManager.add_boon(path_id, tier)
-	if not success:
-		boon_choice_made = false
-		EventBus.show_notification.emit("Pachron konnte nicht erworben werden!", 2.0)
-		return
-
-	# Remove all choice zones
-	var choices_node = get_node_or_null("BoonChoices")
-	if choices_node:
-		choices_node.queue_free()
-
-	var path_color: Color = BoonManager.get_path_color(path_id)
-	_show_completion_ui("Pachron: %s erworben!" % boon_name)
-	EventBus.show_notification.emit("%s T%d: %s" % [path_id.capitalize(), tier, boon_name], 4.0)
-	print("[RunNodeRoom] Boon chosen: %s T%d — %s" % [path_id, tier, boon_name])
-
+	_show_completion_ui("Pachron-Segen erhalten!")
 	_on_node_cleared()
+
+
+func _on_pachron_cancelled() -> void:
+	"""Player cancelled the selection — return to altar"""
+	if _pachron_screen:
+		_pachron_screen.queue_free()
+		_pachron_screen = null
+	get_tree().paused = false
+	print("[RunNodeRoom] Pachron selection cancelled")
 
 
 # ============ REST SETUP ============
@@ -1346,9 +1328,9 @@ func _process(_delta: float) -> void:
 		_confirm_treasure_choice()
 		return
 
-	# Boon choice confirmation (Elite + Boss rooms)
-	if node_type in [RunMapData.NodeType.ELITE, RunMapData.NodeType.BOSS] and not boon_choice_made and _player_in_boon != "":
-		_confirm_boon_choice()
+	# Pachron altar interaction (Elite + Boss rooms)
+	if node_type in [RunMapData.NodeType.ELITE, RunMapData.NodeType.BOSS] and not boon_choice_made and _player_in_altar:
+		_open_pachron_selection()
 		return
 
 	# Event NPC interaction

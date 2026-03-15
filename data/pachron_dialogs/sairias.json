@@ -1,0 +1,43 @@
+{
+  "pachron_id": "sairias",
+  "greetings": [
+    "Du stehst hier. Das allein erfordert Mut. Gut.",
+    "Angst ist natuerlich. Sie zu ueberwinden — das ist goettlich.",
+    "Willkommen, Kaempfer. Zeig mir deinen Willen."
+  ],
+  "farewells": [
+    "Steh fest. Egal was kommt — steh fest.",
+    "Der Schild ist nicht aus Stahl. Er ist aus deinem Willen geschmiedet.",
+    "Geh mit Mut. Und komm mit Ehre zurueck."
+  ],
+  "loop": [
+    "Angst und Mut sind keine Gegensaetze. Mut existiert nur, weil Angst existiert.",
+    "Ein perfekter Block ist kein Zufall. Er ist die Summe tausender Fehler.",
+    "Die Saeulen der Schoepfung tragen die Welt. Und du traegst die Saeulen.",
+    "Verteidigung ist keine Schwaeche. Sie ist die hoechste Form der Kontrolle."
+  ],
+  "story": [
+    {
+      "id": "story_1",
+      "text": "Ich war einst ein Feigling. Ich hatte Angst vor allem — vor dem Kampf, vor dem Tod, vor dem Leben selbst. Bis ich lernte, die Angst zu umarmen.",
+      "requires_tier": 0
+    },
+    {
+      "id": "story_2",
+      "text": "Ein Schild schuetzt nicht nur den Traeger. Er schuetzt alles, was hinter ihm steht. Das ist die wahre Last des Verteidigers.",
+      "requires_tier": 2
+    },
+    {
+      "id": "story_3",
+      "text": "Unbrechbar. Nicht weil der Koerper es ist — sondern weil der Geist sich weigert, zu fallen. Das ist mein letztes Geschenk an dich.",
+      "requires_tier": 4
+    }
+  ],
+  "wegwerf": [
+    "Hmm.",
+    "Steh gerade.",
+    "...",
+    "Gut. Weiter.",
+    "Die Angst ist nur ein Schatten."
+  ]
+}

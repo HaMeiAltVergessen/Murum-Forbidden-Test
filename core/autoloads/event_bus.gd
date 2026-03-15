@@ -445,5 +445,16 @@ signal consumable_buff_applied(item_data: Dictionary)
 signal coins_changed(new_amount: int)
 
 
+# ============ PACHRON / BOON SIGNALS ============
+## Emitted when a boon is upgraded to a higher level
+signal boon_upgraded(path_id: String, tier: int, new_level: int)
+
+## Emitted when Pachron dialog starts
+signal pachron_dialog_started(path_id: String)
+
+## Emitted when Pachron dialog finishes
+signal pachron_dialog_finished(path_id: String)
+
+
 func _ready() -> void:
 	print("[EventBus] Initialized")

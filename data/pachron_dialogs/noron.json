@@ -1,0 +1,43 @@
+{
+  "pachron_id": "noron",
+  "greetings": [
+    "Ha! Du bist wieder da. Oder... warst du je weg? Schwer zu sagen.",
+    "Licht... Finsternis... Was ist der Unterschied? Komm naeher.",
+    "Ah, ein Besucher! Oder eine Erinnerung? Egal, egal..."
+  ],
+  "farewells": [
+    "Geh... oder bleib. Beides ist dasselbe am Ende.",
+    "Die Daemmerung folgt dir. Sie fluesternd... hoerst du sie auch?",
+    "Hahahaha... bis bald. Oder war es schon bald?"
+  ],
+  "loop": [
+    "Wahn und Ruhe sind Geschwister. Beide fluesternd dir Geheimnisse zu — nur verschiedene.",
+    "Die Klingen tanzen zwischen Licht und Schatten. Wie ich. Wie du.",
+    "Manchmal frage ich mich, ob die Feinde real sind. Sind sie es? Bist du es?",
+    "Zwielicht ist nicht das Ende des Tages. Es ist der Moment, in dem alles moeglich wird."
+  ],
+  "story": [
+    {
+      "id": "story_1",
+      "text": "Ich war einst ein Gelehrter. Dann fand ich die Grenze zwischen Licht und Finsternis — und ich blieb dort stehen. Fuer immer.",
+      "requires_tier": 0
+    },
+    {
+      "id": "story_2",
+      "text": "Der Wahnsinn ist kein Fluch. Er ist ein Geschenk — er zeigt dir, was andere nicht sehen koennen. Die Wahrheit hinter der Wahrheit.",
+      "requires_tier": 2
+    },
+    {
+      "id": "story_3",
+      "text": "Ewige Daemmerung... Kein Sonnenaufgang, kein Untergang. Nur der endlose Moment dazwischen. Das ist mein Geschenk an dich.",
+      "requires_tier": 4
+    }
+  ],
+  "wegwerf": [
+    "Hm? Oh. Du bist noch hier.",
+    "...die Stimmen sagen, ich soll dir vertrauen.",
+    "Ha!",
+    "...",
+    "Seltsam. Sehr seltsam."
+  ]
+}

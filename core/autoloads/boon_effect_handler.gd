@@ -102,7 +102,7 @@ func _on_combo_increased(new_count: int, _multiplier: float) -> void:
 	if not BoonManager.has_boon("arthra", 1):
 		return
 
-	var every_n: int = BoonManager.get_param("arthra", 1, "every_n_hits", 3)
+	var every_n: int = BoonManager.get_scaled_param("arthra", 1, "every_n_hits", 3)
 	if new_count % every_n != 0:
 		return
 
@@ -111,7 +111,7 @@ func _on_combo_increased(new_count: int, _multiplier: float) -> void:
 	if not player:
 		return
 
-	var bonus_pct: float = BoonManager.get_param("arthra", 1, "bonus_damage_percent", 0.3)
+	var bonus_pct: float = BoonManager.get_scaled_param("arthra", 1, "bonus_damage_percent", 0.3)
 	var base_damage: int = 20  # Base lightning damage
 	var total_damage: int = int(base_damage * (1.0 + bonus_pct))
 
@@ -137,16 +137,16 @@ func _on_dodge_completed() -> void:
 	_cleanup_dead_clones()
 	var max_clones: int = 2
 	if BoonManager.has_boon("raelear", 4):
-		max_clones = BoonManager.get_param("raelear", 4, "max_clones", 5)
+		max_clones = BoonManager.get_scaled_param("raelear", 4, "max_clones", 5)
 	if _active_clones.size() >= max_clones:
 		return
 
-	var duration: float = BoonManager.get_param("raelear", 1, "clone_duration", 3.0)
-	var clone_dmg: int = BoonManager.get_param("raelear", 1, "clone_damage", 10)
+	var duration: float = BoonManager.get_scaled_param("raelear", 1, "clone_duration", 3.0)
+	var clone_dmg: int = BoonManager.get_scaled_param("raelear", 1, "clone_damage", 10)
 
 	# Raelear T4: duration override
 	if BoonManager.has_boon("raelear", 4):
-		duration = BoonManager.get_param("raelear", 4, "duration_override", 8.0)
+		duration = BoonManager.get_scaled_param("raelear", 4, "duration_override", 8.0)
 
 	_spawn_clone(player.global_position, duration, clone_dmg, "DodgeClone")
 	print("[BoonEffect] Raelear T1: Dodge clone (%.1fs, %d/%d)" % [duration, _active_clones.size(), max_clones])
@@ -174,17 +174,17 @@ func _on_enemy_died(enemy: Node, position: Vector2) -> void:
 	_cleanup_dead_clones()
 	var max_clones: int = 2
 	if BoonManager.has_boon("raelear", 4):
-		max_clones = BoonManager.get_param("raelear", 4, "max_clones", 5)
+		max_clones = BoonManager.get_scaled_param("raelear", 4, "max_clones", 5)
 	if _active_clones.size() >= max_clones:
 		return
 
-	var duration: float = BoonManager.get_param("raelear", 2, "clone_duration", 5.0)
-	var dmg_pct: float = BoonManager.get_param("raelear", 2, "damage_percent", 0.5)
+	var duration: float = BoonManager.get_scaled_param("raelear", 2, "clone_duration", 5.0)
+	var dmg_pct: float = BoonManager.get_scaled_param("raelear", 2, "damage_percent", 0.5)
 	var clone_dmg: int = int(20 * dmg_pct)  # Base 20 * 50% = 10
 
 	# Raelear T4: duration override
 	if BoonManager.has_boon("raelear", 4):
-		duration = BoonManager.get_param("raelear", 4, "duration_override", 8.0)
+		duration = BoonManager.get_scaled_param("raelear", 4, "duration_override", 8.0)
 
 	# Raelear T2 + Staff: clone spawns at staff position instead of death position
 	var clone_pos: Vector2 = position
@@ -208,7 +208,7 @@ func _on_combo_finisher_executed(_combo_count: int) -> void:
 		return
 
 	var elements: Array = BoonManager.get_param("murrum", 1, "elements", ["fire", "water", "earth", "lightning"])
-	var bonus_damage: int = BoonManager.get_param("murrum", 1, "bonus_damage", 15)
+	var bonus_damage: int = BoonManager.get_scaled_param("murrum", 1, "bonus_damage", 15)
 	var element: String = elements[randi() % elements.size()]
 
 	# AoE around player
@@ -249,7 +249,7 @@ func _activate_twilight_blades() -> void:
 	_twilight_blades_node.name = "TwilightBlades"
 	player.add_child(_twilight_blades_node)
 
-	var blade_radius: float = BoonManager.get_param("noron", 1, "blade_radius", 80)
+	var blade_radius: float = BoonManager.get_scaled_param("noron", 1, "blade_radius", 80)
 
 	# Create 2 blade visuals (light + dark) using Noron explosion sprites
 	var light_tex: Texture2D = load(VFX_BASE + "Explosion_1/Explosion_1.png")
@@ -299,12 +299,12 @@ func _process_blade_damage(delta: float) -> void:
 		return
 	_twilight_blades_node.set_meta("tick", 0.0)
 
-	var blade_dmg: int = BoonManager.get_param("noron", 1, "blade_damage", 8)
-	var blade_radius: float = BoonManager.get_param("noron", 1, "blade_radius", 80)
+	var blade_dmg: int = BoonManager.get_scaled_param("noron", 1, "blade_damage", 8)
+	var blade_radius: float = BoonManager.get_scaled_param("noron", 1, "blade_radius", 80)
 
 	# Noron T3 bonus
 	if BoonManager.has_boon("noron", 3):
-		var bonus_pct: float = BoonManager.get_param("noron", 3, "blade_damage_bonus_percent", 0.3)
+		var bonus_pct: float = BoonManager.get_scaled_param("noron", 3, "blade_damage_bonus_percent", 0.3)
 		blade_dmg = int(blade_dmg * (1.0 + bonus_pct))
 
 	# Blade damage center: staff position if thrown, player position otherwise
@@ -323,8 +323,8 @@ func _process_blade_damage(delta: float) -> void:
 
 func _noron_t3_blade_heal(player: Node) -> void:
 	"""Noron T3: Blades heal HP (light) and Mana (dark) on hit"""
-	var light_heal: int = BoonManager.get_param("noron", 3, "light_heal_per_hit", 3)
-	var dark_mana: int = BoonManager.get_param("noron", 3, "dark_mana_per_hit", 3)
+	var light_heal: int = BoonManager.get_scaled_param("noron", 3, "light_heal_per_hit", 3)
+	var dark_mana: int = BoonManager.get_scaled_param("noron", 3, "dark_mana_per_hit", 3)
 
 	# Alternate between light and dark heal
 	var toggle: bool = _twilight_blades_node.get_meta("heal_toggle", false)
@@ -352,9 +352,9 @@ func _on_enemy_damaged(enemy: Node, _damage: int) -> void:
 
 	# Noron T2: Worte des Wahns — 15% confusion
 	if BoonManager.has_boon("noron", 2):
-		var chance: float = BoonManager.get_param("noron", 2, "chance_percent", 0.15)
+		var chance: float = BoonManager.get_scaled_param("noron", 2, "chance_percent", 0.15)
 		if randf() <= chance:
-			var duration: float = BoonManager.get_param("noron", 2, "confusion_duration", 3.0)
+			var duration: float = BoonManager.get_scaled_param("noron", 2, "confusion_duration", 3.0)
 			_apply_confusion(enemy, duration)
 
 	# Arthra T4: Richter des Todes — auto Urteil mark on hit
@@ -364,7 +364,7 @@ func _on_enemy_damaged(enemy: Node, _damage: int) -> void:
 	# Murrum T3: Elementare Überladung — +20% extra elemental damage on all hits
 	var elemental_damage_dealt: int = 0
 	if BoonManager.has_boon("murrum", 3):
-		var bonus_pct: float = BoonManager.get_param("murrum", 3, "bonus_damage_percent", 0.2)
+		var bonus_pct: float = BoonManager.get_scaled_param("murrum", 3, "bonus_damage_percent", 0.2)
 		var extra_dmg: int = int(_damage * bonus_pct)
 		if extra_dmg > 0:
 			enemy.take_damage(extra_dmg, _get_player())
@@ -375,7 +375,7 @@ func _on_enemy_damaged(enemy: Node, _damage: int) -> void:
 
 	# Murrum T4: Herr der Elemente — all 4 elements as extra damage
 	if BoonManager.has_boon("murrum", 4):
-		var per_element: int = BoonManager.get_param("murrum", 4, "per_element_damage", 5)
+		var per_element: int = BoonManager.get_scaled_param("murrum", 4, "per_element_damage", 5)
 		var total: int = per_element * 4
 		enemy.take_damage(total, _get_player())
 		elemental_damage_dealt += total
@@ -390,7 +390,7 @@ func _on_enemy_damaged(enemy: Node, _damage: int) -> void:
 	if BoonManager.has_boon("noron", 4):
 		if not enemy.has_meta("noron_slowed"):
 			enemy.set_meta("noron_slowed", true)
-			var slow_pct: float = BoonManager.get_param("noron", 4, "enemy_slow_percent", 0.2)
+			var slow_pct: float = BoonManager.get_scaled_param("noron", 4, "enemy_slow_percent", 0.2)
 			if "move_speed" in enemy:
 				enemy.move_speed *= (1.0 - slow_pct)
 
@@ -406,9 +406,9 @@ func _on_wolkenbruch_impact(_powered: bool) -> void:
 	if not player:
 		return
 
-	var meteor_count: int = BoonManager.get_param("arthra", 3, "meteor_count", 3)
-	var dmg_mult: float = BoonManager.get_param("arthra", 3, "damage_multiplier", 2.0)
-	var radius: float = BoonManager.get_param("arthra", 3, "radius", 150)
+	var meteor_count: int = BoonManager.get_scaled_param("arthra", 3, "meteor_count", 3)
+	var dmg_mult: float = BoonManager.get_scaled_param("arthra", 3, "damage_multiplier", 2.0)
+	var radius: float = BoonManager.get_scaled_param("arthra", 3, "radius", 150)
 	var base_damage: int = 30
 	var meteor_damage: int = int(base_damage * dmg_mult)
 
@@ -463,8 +463,8 @@ func _spawn_kill_explosion(position: Vector2) -> void:
 	if not player:
 		return
 
-	var dmg: int = BoonManager.get_param("noron", 4, "kill_explosion_damage", 30)
-	var radius: float = BoonManager.get_param("noron", 4, "kill_explosion_radius", 120)
+	var dmg: int = BoonManager.get_scaled_param("noron", 4, "kill_explosion_damage", 30)
+	var radius: float = BoonManager.get_scaled_param("noron", 4, "kill_explosion_radius", 120)
 
 	var enemies: Array = _get_enemies_in_radius(position, radius)
 	for enemy in enemies:
@@ -482,8 +482,8 @@ func _block_launch_slam(enemy: Node) -> void:
 	if not is_instance_valid(enemy):
 		return
 
-	var launch_force: float = BoonManager.get_param("sairias", 3, "launch_force", 400)
-	var slam_damage: int = BoonManager.get_param("sairias", 3, "slam_damage", 20)
+	var launch_force: float = BoonManager.get_scaled_param("sairias", 3, "launch_force", 400)
+	var slam_damage: int = BoonManager.get_scaled_param("sairias", 3, "slam_damage", 20)
 
 	if enemy.has_method("is_on_floor") and enemy.is_on_floor():
 		# Launch upward
@@ -507,10 +507,10 @@ func _spawn_light_pillars(center: Vector2) -> void:
 	if not player:
 		return
 
-	var pillar_count: int = BoonManager.get_param("sairias", 4, "pillar_count", 3)
-	var pillar_dmg: int = BoonManager.get_param("sairias", 4, "pillar_damage", 40)
-	var pillar_radius: float = BoonManager.get_param("sairias", 4, "pillar_radius", 60)
-	var spawn_range: float = BoonManager.get_param("sairias", 4, "spawn_range", 200)
+	var pillar_count: int = BoonManager.get_scaled_param("sairias", 4, "pillar_count", 3)
+	var pillar_dmg: int = BoonManager.get_scaled_param("sairias", 4, "pillar_damage", 40)
+	var pillar_radius: float = BoonManager.get_scaled_param("sairias", 4, "pillar_radius", 60)
+	var spawn_range: float = BoonManager.get_scaled_param("sairias", 4, "spawn_range", 200)
 
 	for i in range(pillar_count):
 		var offset := Vector2(randf_range(-spawn_range, spawn_range), randf_range(-spawn_range, spawn_range))
@@ -538,8 +538,8 @@ func _on_attack_blocked(enemy: Node, _damage_reduction: float) -> void:
 
 	# Sairias T1: Block AoE damage
 	if BoonManager.has_boon("sairias", 1):
-		var aoe_damage: int = BoonManager.get_param("sairias", 1, "block_aoe_damage", 10)
-		var aoe_radius: float = BoonManager.get_param("sairias", 1, "block_aoe_radius", 100)
+		var aoe_damage: int = BoonManager.get_scaled_param("sairias", 1, "block_aoe_damage", 10)
+		var aoe_radius: float = BoonManager.get_scaled_param("sairias", 1, "block_aoe_radius", 100)
 
 		var enemies: Array = _get_enemies_in_radius(player.global_position, aoe_radius)
 		for e in enemies:
@@ -583,7 +583,7 @@ func _on_perfect_parry_executed(enemy: Node) -> void:
 
 	# Sairias T5: Unbrechbar — perfect parry heals 10% max HP
 	if BoonManager.has_boon("sairias", 5) and player:
-		var heal_pct: float = BoonManager.get_param("sairias", 5, "parry_heal_percent", 0.1)
+		var heal_pct: float = BoonManager.get_scaled_param("sairias", 5, "parry_heal_percent", 0.1)
 		var health = player.get_node_or_null("HealthComponent")
 		if health and health.has_method("heal"):
 			var heal_amount: int = int(health.max_health * heal_pct)
@@ -596,8 +596,8 @@ func _on_perfect_parry_executed(enemy: Node) -> void:
 # -- Noron T5: Ewige Dämmerung — counter explosion on miss --
 func noron_t5_counter(pos: Vector2) -> void:
 	"""Called from HurtboxComponent when Noron T5 miss triggers"""
-	var counter_dmg: int = BoonManager.get_param("noron", 5, "counter_explosion_damage", 50)
-	var counter_radius: float = BoonManager.get_param("noron", 5, "counter_explosion_radius", 150)
+	var counter_dmg: int = BoonManager.get_scaled_param("noron", 5, "counter_explosion_damage", 50)
+	var counter_radius: float = BoonManager.get_scaled_param("noron", 5, "counter_explosion_radius", 150)
 
 	var player = _get_player()
 	var enemies: Array = _get_enemies_in_radius(pos, counter_radius)
@@ -636,8 +636,8 @@ func consume_clone_for_death_save(player_pos: Vector2) -> void:
 
 # -- Murrum T5: Ewiges Element — elemental damage heals HP + Mana --
 func _murrum_t5_lifesteal(player: Node, elemental_damage: int) -> void:
-	var heal_pct: float = BoonManager.get_param("murrum", 5, "heal_percent", 0.02)
-	var mana_pct: float = BoonManager.get_param("murrum", 5, "mana_percent", 0.02)
+	var heal_pct: float = BoonManager.get_scaled_param("murrum", 5, "heal_percent", 0.02)
+	var mana_pct: float = BoonManager.get_scaled_param("murrum", 5, "mana_percent", 0.02)
 
 	var health = player.get_node_or_null("HealthComponent")
 	if health and health.has_method("heal"):
@@ -654,7 +654,7 @@ func _murrum_t5_lifesteal(player: Node, elemental_damage: int) -> void:
 # -- Arthra T5: Urteil Chain — explosion on marked enemy applies marks to nearby --
 func _arthra_t5_chain_urteil(position: Vector2) -> void:
 	"""When an Urteil-marked enemy dies and explodes, mark all nearby enemies too"""
-	var chain_radius: float = BoonManager.get_param("arthra", 5, "chain_radius", 200)
+	var chain_radius: float = BoonManager.get_scaled_param("arthra", 5, "chain_radius", 200)
 	var enemies: Array = _get_enemies_in_radius(position, chain_radius)
 
 	for enemy in enemies:
@@ -688,14 +688,14 @@ func _on_staff_hit_enemy(enemy: Node, staff_state: int, staff_pos: Vector2) -> v
 
 	# Noron T2: 100% confusion during staff rotation (instead of 15%)
 	if BoonManager.has_boon("noron", 2) and staff_state == 1:  # 1 = ROTATING_AT_END
-		var duration: float = BoonManager.get_param("noron", 2, "confusion_duration", 3.0)
+		var duration: float = BoonManager.get_scaled_param("noron", 2, "confusion_duration", 3.0)
 		_apply_confusion(enemy, duration)
 		print("[BoonEffect] Noron T2 + Staff: Guaranteed confusion on %s" % enemy.name)
 
 	# Sairias T3: staff return launches enemies upward
 	if BoonManager.has_boon("sairias", 3) and staff_state == 2:  # 2 = RETURNING
 		if enemy is CharacterBody2D:
-			var launch_force: float = BoonManager.get_param("sairias", 3, "launch_force", 400)
+			var launch_force: float = BoonManager.get_scaled_param("sairias", 3, "launch_force", 400)
 			enemy.velocity.y = -launch_force
 			if enemy.has_method("enter_juggle_state"):
 				enemy.enter_juggle_state()
@@ -733,7 +733,7 @@ func _process_staff_boons(delta: float) -> void:
 			var trail_pos: Vector2 = staff_pos
 
 			# Small AoE damage at trail position
-			var trail_dmg: int = int(BoonManager.get_param("murrum", 3, "bonus_damage_percent", 0.2) * 20)
+			var trail_dmg: int = int(BoonManager.get_scaled_param("murrum", 3, "bonus_damage_percent", 0.2) * 20)
 			if trail_dmg < 1:
 				trail_dmg = 1
 			var trail_enemies: Array = _get_enemies_in_radius(trail_pos, 40.0)
@@ -753,8 +753,8 @@ func _process_staff_boons(delta: float) -> void:
 		# Pulse every 0.4s (roughly once per rotation at 25 rad/s)
 		if pulse_tick >= 0.4:
 			_staff_projectile.set_meta("pulse_tick", 0.0)
-			var pulse_dmg: int = BoonManager.get_param("noron", 4, "kill_explosion_damage", 30) / 2
-			var pulse_radius: float = BoonManager.get_param("noron", 4, "kill_explosion_radius", 120)
+			var pulse_dmg: int = BoonManager.get_scaled_param("noron", 4, "kill_explosion_damage", 30) / 2
+			var pulse_radius: float = BoonManager.get_scaled_param("noron", 4, "kill_explosion_radius", 120)
 			var pulse_enemies: Array = _get_enemies_in_radius(staff_pos, pulse_radius)
 			for enemy in pulse_enemies:
 				enemy.take_damage(pulse_dmg, player)
@@ -769,8 +769,8 @@ func _apply_dot(enemy: Node) -> void:
 	if not is_instance_valid(enemy):
 		return
 
-	var dot_duration: float = BoonManager.get_param("murrum", 2, "dot_duration", 3.0)
-	var dot_dps: int = BoonManager.get_param("murrum", 2, "dot_damage_per_sec", 5)
+	var dot_duration: float = BoonManager.get_scaled_param("murrum", 2, "dot_duration", 3.0)
+	var dot_dps: int = BoonManager.get_scaled_param("murrum", 2, "dot_damage_per_sec", 5)
 
 	# Check if already has DoT — refresh timer
 	for dot in _dot_targets:

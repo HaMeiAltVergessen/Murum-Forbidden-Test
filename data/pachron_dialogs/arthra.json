@@ -1,0 +1,43 @@
+{
+  "pachron_id": "arthra",
+  "greetings": [
+    "Ah, du bist zurueck... Ich spuere deinen Hunger nach Macht.",
+    "Du wagst es erneut, vor mir zu knien? Gut. Sehr gut.",
+    "Der Blitz erkennt dich. Du hast sein Urteil verdient."
+  ],
+  "farewells": [
+    "Geh. Und enttaeusche mich nicht.",
+    "Der Blitz folgt dir. Nutze ihn — oder er wird dich verschlingen.",
+    "Bis zum naechsten Mal... falls du ueberlebst."
+  ],
+  "loop": [
+    "Macht ist nie genug. Immer hungriger wirst du — und das ist gut so.",
+    "Stolz ist keine Schwaeche. Er ist die einzige Wahrheit, die zaehlt.",
+    "Jeder Blitz, den du entfesselst, traegt mein Urteil. Vergiss das nie.",
+    "Die Schwachen betteln um Gnade. Du nicht. Das gefaellt mir."
+  ],
+  "story": [
+    {
+      "id": "story_1",
+      "text": "Einst war ich wie du. Schwach. Aber ich habe gelernt, dass Macht nicht gegeben wird — sie wird genommen.",
+      "requires_tier": 0
+    },
+    {
+      "id": "story_2",
+      "text": "Der Blitz gehorcht mir seit Aeonen. Er ist kein Werkzeug — er ist ein Urteil. Jeder Schlag entscheidet ueber Leben und Tod.",
+      "requires_tier": 2
+    },
+    {
+      "id": "story_3",
+      "text": "Du traegst nun mein Vermaechtnis. Die Sterne selbst werden vor dir zittern... wenn du stark genug bist, sie herauszufordern.",
+      "requires_tier": 4
+    }
+  ],
+  "wegwerf": [
+    "Hmph.",
+    "Interessant.",
+    "Du redest zu viel.",
+    "...",
+    "Staerker. Du musst staerker werden."
+  ]
+}

@@ -5,7 +5,10 @@
       "Bash(find \"C:\\\\Users\\\\Sebastian\\\\GodotProjects\\\\Murum-Forbidden-Test\" -name \"*run_map*\" -type f 2>/dev/null | head -20)",
       "Bash(find \"C:\\\\Users\\\\Sebastian\\\\GodotProjects\\\\Murum-Forbidden-Test\" -name \"*reward*\" -o -name \"*loot*\" -o -name \"*drop*\" 2>/dev/null | head -20)",
       "Bash(find /c/Users/Sebastian/GodotProjects/Murum-Forbidden-Test -name \"*hurtbox*\" -type f | grep -E \"\\\\.\\(gd|tscn\\)$\")",
-      "Bash(grep -r \"MusicScenePlayer\\\\|play_music\\\\|AudioManager\" \"C:\\\\Users\\\\Sebastian\\\\GodotProjects\\\\Murum-Forbidden-Test\" --include=\"*.gd\" 2>/dev/null | head -20)"
+      "Bash(grep -r \"MusicScenePlayer\\\\|play_music\\\\|AudioManager\" \"C:\\\\Users\\\\Sebastian\\\\GodotProjects\\\\Murum-Forbidden-Test\" --include=\"*.gd\" 2>/dev/null | head -20)",
+      "Bash(find \"/c/Users/Sebastian/GodotProjects/Murum-Forbidden-Test\" -name \"*.gd\" | xargs grep -l \"class_name DialogEntry\" 2>/dev/null)",
+      "Bash(find \"/c/Users/Sebastian/GodotProjects/Murum-Forbidden-Test\" -name \"*.gd\" | xargs grep -l \"class_name DialogChoice\" 2>/dev/null)",
+      "Bash(ls -la \"/c/Users/Sebastian/GodotProjects/Murum-Forbidden-Test/systems/dialog/\" 2>/dev/null | grep -E \"\\\\.tscn$\")"
     ]
   }
 }
