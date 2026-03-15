@@ -3,60 +3,70 @@ extends RefCounted
 ## Used by RunNodeRoom to configure combat encounters
 class_name RunRoomPool
 
-# ============ ENEMY SCENES (Geist + Untote zum Testen) ============
+# ============ ENEMY SCENES ============
 const ENEMY_SCENES_W1: Dictionary = {
 	"geist": "res://enemies/world_1_ruins/geist.tscn",
 	"untote": "res://enemies/untote.tscn",
+	"hermit": "res://enemies/world_1_ruins/hermit.tscn",
 }
 
 const ENEMY_SCENES_W2: Dictionary = {
-	"geist": "res://enemies/world_1_ruins/geist.tscn",
-	"untote": "res://enemies/untote.tscn",
+	"monster_creature": "res://enemies/placeholder/monster_creature.tscn",
+	"fire_worm": "res://enemies/placeholder/fire_worm.tscn",
+	"golem": "res://enemies/placeholder/golem.tscn",
 }
 
 const ENEMY_SCENES_W3: Dictionary = {
-	"geist": "res://enemies/world_1_ruins/geist.tscn",
+	"dark_fantasy": "res://enemies/placeholder/dark_fantasy.tscn",
+	"fire_worm": "res://enemies/placeholder/fire_worm.tscn",
 	"untote": "res://enemies/untote.tscn",
+	"geist": "res://enemies/world_1_ruins/geist.tscn",
+	"monster_creature": "res://enemies/placeholder/monster_creature.tscn",
+	"cthulu": "res://enemies/placeholder/cthulu.tscn",
 }
 
 # ============ ENCOUNTER TEMPLATES ============
 # Each template: single list of {scene_key, count} — all spawn at once, no waves
 
-# K: Kampf
+# === WELT 1: Niemandsland (Untote + Geist, Elite: Hermit) ===
 const COMBAT_ENCOUNTERS_W1: Array = [
 	[{"key": "geist", "count": 2}, {"key": "untote", "count": 1}],
 	[{"key": "geist", "count": 3}],
 	[{"key": "untote", "count": 2}, {"key": "geist", "count": 1}],
+	[{"key": "untote", "count": 3}],
 ]
 
-# E: Elite
 const ELITE_ENCOUNTERS_W1: Array = [
-	[{"key": "untote", "count": 2}, {"key": "geist", "count": 3}],
-	[{"key": "geist", "count": 4}, {"key": "untote", "count": 2}],
+	[{"key": "hermit", "count": 1}, {"key": "geist", "count": 2}],
+	[{"key": "hermit", "count": 1}, {"key": "untote", "count": 2}],
 ]
 
-# W2: Kollektiv (etwas haerter)
+# === WELT 2: Kollektiv (Monster Creature + Fire Worm, Elite: Golem x2) ===
 const COMBAT_ENCOUNTERS_W2: Array = [
-	[{"key": "geist", "count": 3}, {"key": "untote", "count": 1}],
-	[{"key": "untote", "count": 2}, {"key": "geist", "count": 2}],
-	[{"key": "geist", "count": 2}, {"key": "untote", "count": 2}],
+	[{"key": "monster_creature", "count": 2}, {"key": "fire_worm", "count": 1}],
+	[{"key": "fire_worm", "count": 2}, {"key": "monster_creature", "count": 1}],
+	[{"key": "monster_creature", "count": 3}],
+	[{"key": "fire_worm", "count": 2}, {"key": "monster_creature", "count": 2}],
 ]
 
 const ELITE_ENCOUNTERS_W2: Array = [
-	[{"key": "untote", "count": 3}, {"key": "geist", "count": 3}],
-	[{"key": "geist", "count": 4}, {"key": "untote", "count": 2}],
+	[{"key": "golem", "count": 2}, {"key": "monster_creature", "count": 1}],
+	[{"key": "golem", "count": 2}, {"key": "fire_worm", "count": 1}],
 ]
 
-# W3: Abgrund (am haertesten)
+# === WELT 3: Abgrund (Alle Gegner gemischt, Elite: Cthulu x3) ===
 const COMBAT_ENCOUNTERS_W3: Array = [
-	[{"key": "geist", "count": 3}, {"key": "untote", "count": 2}],
-	[{"key": "untote", "count": 3}, {"key": "geist", "count": 2}],
-	[{"key": "geist", "count": 4}, {"key": "untote", "count": 1}],
+	[{"key": "dark_fantasy", "count": 2}, {"key": "geist", "count": 2}],
+	[{"key": "fire_worm", "count": 2}, {"key": "untote", "count": 2}],
+	[{"key": "monster_creature", "count": 2}, {"key": "dark_fantasy", "count": 1}],
+	[{"key": "geist", "count": 2}, {"key": "fire_worm", "count": 1}, {"key": "untote", "count": 1}],
+	[{"key": "dark_fantasy", "count": 3}, {"key": "monster_creature", "count": 1}],
 ]
 
 const ELITE_ENCOUNTERS_W3: Array = [
-	[{"key": "untote", "count": 3}, {"key": "geist", "count": 4}],
-	[{"key": "geist", "count": 5}, {"key": "untote", "count": 3}],
+	[{"key": "cthulu", "count": 3}],
+	[{"key": "cthulu", "count": 3}, {"key": "dark_fantasy", "count": 1}],
+	[{"key": "cthulu", "count": 3}, {"key": "geist", "count": 2}],
 ]
 
 # ============ REWARD POOLS ============
