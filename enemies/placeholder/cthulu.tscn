@@ -4,8 +4,8 @@
 [ext_resource type="Texture2D" uid="uid://r1k3vdhxonp6" path="res://Assets/Placeholder/Gegner/free_cthulu_v1/free_cthulu/animations/cthulu_192x112_SpriteSheet.png" id="2_sprite"]
 
 [node name="Cthulu" instance=ExtResource("1_base")]
-max_health = 150
 scale = Vector2(3.65184, 3.65184)
+max_health = 150
 move_speed = 55.0
 attack_damage = 35
 attack_range = 90.0
