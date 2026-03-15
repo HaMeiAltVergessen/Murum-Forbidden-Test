@@ -162,9 +162,9 @@ func _play_attack_stretch() -> void:
 	# Schnell strecken (Stab wird laenger)
 	_attack_stretch_tween.tween_property(staff_sprite, "scale",
 		Vector2(squash_x * sign_x, stretch_y), 0.05)
-	# Zurueck federn
+	# Sanft zurueck (kein Elastic — das verursacht Bounce auf dem ganzen Player)
 	_attack_stretch_tween.tween_property(staff_sprite, "scale",
-		Vector2(base_x * sign_x, base_y), 0.12).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+		Vector2(base_x * sign_x, base_y), 0.1)
 	_attack_stretch_tween.tween_callback(func(): is_attacking = false)
 
 func _reset_staff_stretch() -> void:
