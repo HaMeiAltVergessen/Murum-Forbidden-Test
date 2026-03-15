@@ -2,13 +2,20 @@ extends Node
 ## PachronDialogSystem — Manages Pachron-specific dialog sequences.
 ## Uses the existing DialogManager with programmatically created DialogData resources.
 ## Tracks story progress, cycles through loop dialogs, and picks random filler.
-class_name PachronDialogSystem
+## NOTE: No class_name — registered as autoload singleton "PachronDialogSystem"
 
 # ============ SIGNALS ============
 signal dialog_sequence_finished()
 
 # ============ CONSTANTS ============
 const DIALOG_DATA_PATH: String = "res://data/pachron_dialogs/"
+const PACHRON_IMAGES: Dictionary = {
+	"arthra": "res://Assets/AIPlaceholder/Char/Pachrons/Arthra/NORON_Pachron_of_Twilight_Use__Nano_Banana_Pro_58172.jpg",
+	"noron": "res://Assets/AIPlaceholder/Char/Pachrons/Noron/NORON_Pachron_of_Twilight_Use__Nano_Banana_Pro_34835.jpg",
+	"raelear": "res://Assets/AIPlaceholder/Char/Pachrons/Realear/_Use_the_provided_Murum_artwor_Nano_Banana_60213.jpg",
+	"murrum": "res://Assets/AIPlaceholder/Char/Pachrons/Mur_rum/_Use_the_provided_Murum_artwor_Nano_Banana_78991.jpg",
+	"sairias": "res://Assets/AIPlaceholder/Char/Pachrons/Sairias/_Use_the_provided_Murum_artwor_Nano_Banana_45046.jpg",
+}
 
 # ============ STATE ============
 var _pachron_dialogs: Dictionary = {}  # path_id -> parsed JSON dict
@@ -139,7 +146,7 @@ func _make_entry(path_id: String, text: String) -> DialogEntry:
 	entry.text_speed = 35.0
 
 	# Load Pachron image as speaker sprite
-	var img_path: String = PachronSelectionScreen.PACHRON_IMAGES.get(path_id, "")
+	var img_path: String = PACHRON_IMAGES.get(path_id, "")
 	if img_path != "" and ResourceLoader.exists(img_path):
 		entry.speaker_sprite = load(img_path)
 
