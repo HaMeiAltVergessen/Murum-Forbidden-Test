@@ -44,12 +44,9 @@ func _ready() -> void:
 	staff_sprite = player.get_node_or_null("StaffSprite")
 	staff_controller = player.get_node_or_null("StaffController")
 
-	# Connect to combat signals if available
-	if combat_system:
-		if combat_system.has_signal("attack_started"):
-			combat_system.attack_started.connect(_on_attack_started)
-		if combat_system.has_signal("attack_ended"):
-			combat_system.attack_ended.connect(_on_attack_ended)
+	# Connect to attack signal via EventBus (CombatSystem has no local signals)
+	if EventBus:
+		EventBus.player_attacked.connect(_on_player_attacked)
 
 	# Connect resonance signals
 	if EventBus:
@@ -143,14 +140,10 @@ func _update_staff_position() -> void:
 		staff_sprite.scale.x = -abs(staff_sprite.scale.x)
 
 # ============ ATTACK STRETCH ============
-func _on_attack_started() -> void:
+func _on_player_attacked(attack_number: int) -> void:
 	is_attacking = true
 	play_animation("attack")
 	_play_attack_stretch()
-
-func _on_attack_ended() -> void:
-	is_attacking = false
-	_reset_staff_stretch()
 
 func _play_attack_stretch() -> void:
 	if not staff_sprite or not staff_sprite.get_parent() == player:
@@ -159,22 +152,22 @@ func _play_attack_stretch() -> void:
 	if _attack_stretch_tween and _attack_stretch_tween.is_valid():
 		_attack_stretch_tween.kill()
 
-	var base_scale_x: float = absf(staff_sprite.scale.x)
-	var base_scale_y: float = absf(staff_sprite.scale.y)
-	var stretch_x: float = base_scale_x * 1.25  # 25% breiter
-	var stretch_y: float = base_scale_y * 0.85  # 15% flacher (squash)
+	var base_x: float = absf(staff_sprite.scale.x)  # 0.142
+	var base_y: float = absf(staff_sprite.scale.y)  # 0.142
 	var sign_x: float = 1.0 if facing_right else -1.0
 
+	# Subtiler Stretch: nur 8% in Y (Laenge), 5% squash in X
+	var stretch_y: float = base_y * 1.08
+	var squash_x: float = base_x * 0.95
+
 	_attack_stretch_tween = create_tween()
-	# Schnell strecken
+	# Schnell strecken (Stab wird laenger)
 	_attack_stretch_tween.tween_property(staff_sprite, "scale",
-		Vector2(stretch_x * sign_x, stretch_y), 0.06)
-	# Zurueck federn (leichtes Overshoot)
+		Vector2(squash_x * sign_x, stretch_y), 0.05)
+	# Zurueck federn
 	_attack_stretch_tween.tween_property(staff_sprite, "scale",
-		Vector2(base_scale_x * 0.95 * sign_x, base_scale_y * 1.05), 0.08)
-	# Normal
-	_attack_stretch_tween.tween_property(staff_sprite, "scale",
-		Vector2(base_scale_x * sign_x, base_scale_y), 0.1)
+		Vector2(base_x * sign_x, base_y), 0.12).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+	_attack_stretch_tween.tween_callback(func(): is_attacking = false)
 
 func _reset_staff_stretch() -> void:
 	if _attack_stretch_tween and _attack_stretch_tween.is_valid():
