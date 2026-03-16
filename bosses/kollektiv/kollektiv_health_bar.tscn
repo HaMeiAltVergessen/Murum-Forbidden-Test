@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bkollektiv_hbar"]
+
+[ext_resource type="Script" path="res://bosses/kollektiv/kollektiv_health_bar.gd" id="1"]
+
+[node name="KollektivHealthBar" type="Control"]
+script = ExtResource("1")

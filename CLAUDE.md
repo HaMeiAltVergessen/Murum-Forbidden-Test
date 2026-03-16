@@ -167,7 +167,13 @@ worlds/world_1_ruins/
 - **Welt 1**: "Die Heldengruppe" — 5-Helden-Gruppenkampf (Ritter, Kleriker, Blutjaeger, Barbar, Nekromant) [IMPLEMENTIERT]
   - `bosses/hero_group/` — HeroGroupController + HeroGroupMember Basisklasse + 5 Held-Subklassen
   - Taktische Kill-Reihenfolge, Last-Standing-Phasen, Necro-Resurrect
-- **Welt 2**: "Das Kollektiv der Einen Stimme" — Raumschiff-Koerper (geplant)
+- **Welt 2**: "Das Kollektiv der Einen Stimme" — 5-Core-Modulkampf + Central Hub [IMPLEMENTIERT]
+  - `bosses/kollektiv/` — KollektivController + KollektivCore Basisklasse + 5 Cores + Central Hub
+  - 5 Cores: Energy (Reaktor), Defense (Waffen), Mobility (Navigation), Fabricator (Drohnen), Cognition (KI, geschirmt)
+  - 4 Drohnentypen: Melee, Kamikaze, Ranged, Repair Bot
+  - Eskalationssystem: Je mehr Cores zerstoert, desto aggressiver
+  - Finale Phase: Alle Cores tot → Central Hub (80 HP) → Umgebungschaos
+  - Kill-Order-Strategie: Spieler entscheidet Reihenfolge
 - **Welt 3**: "Murum (Spiegel)" — Spiegelung des Spielers, Endless-Runner (geplant)
 
 ### Veraltete Boss-Konzepte (NICHT MEHR GUELTIG)
@@ -233,7 +239,8 @@ worlds/world_1_ruins/
 - [ ] Limbus-Hub-Szene (dunkler Raum + Siegel + Licht-Tuer)
 - [ ] Welt-2- und Welt-3-Gegner
 - [x] Welt-1-Boss: "Die Heldengruppe" (5-Helden-Gruppenkampf)
-- [ ] Welt-2- und Welt-3-Bosse
+- [x] Welt-2-Boss: "Das Kollektiv der Einen Stimme" (5-Core-Modulkampf + Central Hub)
+- [ ] Welt-3-Boss: "Murum (Spiegel)" (Spiegelung)
 
 ## Bekannte TODOs
 

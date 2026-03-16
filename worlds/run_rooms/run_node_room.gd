@@ -1038,6 +1038,8 @@ func _setup_boss() -> void:
 	match world_id:
 		RunMapData.WorldId.NIEMANDSLAND:
 			_setup_hero_group_boss(is_final_boss)
+		RunMapData.WorldId.KOLLEKTIV:
+			_setup_kollektiv_boss(is_final_boss)
 		_:
 			# Other worlds: placeholder (auto-skip)
 			_setup_boss_placeholder(boss_name, is_final_boss)
@@ -1076,8 +1078,41 @@ func _setup_hero_group_boss(is_final_boss: bool) -> void:
 	)
 
 
+func _setup_kollektiv_boss(is_final_boss: bool) -> void:
+	"""Spawns the Kollektiv boss for Welt 2"""
+	var controller_scene: PackedScene = load("res://bosses/kollektiv/kollektiv_controller.tscn")
+	if not controller_scene:
+		push_warning("[RunNodeRoom] Kollektiv controller scene not found!")
+		_setup_boss_placeholder("Das Kollektiv der Einen Stimme", is_final_boss)
+		return
+
+	_boss_controller = controller_scene.instantiate()
+
+	# Position at center of arena
+	var boss_spawn: Marker2D = null
+	var spawn_container = get_node_or_null("EnemySpawnPoints")
+	if spawn_container:
+		boss_spawn = spawn_container.get_node_or_null("BossSpawn") as Marker2D
+	if boss_spawn:
+		_boss_controller.global_position = boss_spawn.global_position
+	else:
+		_boss_controller.global_position = Vector2(1400, 1400)
+
+	add_child(_boss_controller)
+
+	# Connect defeated signal
+	_boss_controller.defeated.connect(_on_boss_defeated.bind(is_final_boss))
+
+	# Start fight after delay
+	_show_completion_ui("Das Kollektiv der Einen Stimme")
+	get_tree().create_timer(2.0).timeout.connect(func():
+		if _boss_controller and _boss_controller.has_method("start_fight"):
+			_boss_controller.start_fight()
+	)
+
+
 func _on_boss_defeated(is_final_boss: bool) -> void:
-	"""Called when the hero group boss is defeated"""
+	"""Called when a boss is defeated"""
 	print("[RunNodeRoom] Boss defeated!")
 
 	# Full heal
