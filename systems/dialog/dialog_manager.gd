@@ -66,6 +66,7 @@ var current_entries: Array[DialogEntry] = []
 var entry_stack: Array = []  # Stack of {entries, index} for nested dialog navigation
 
 var dialog_ui: Node = null
+var _was_paused_before_dialog: bool = false  # Track if game was already paused when dialog started
 
 var is_active: bool:
 	get:
@@ -223,15 +224,19 @@ func _end_dialog() -> void:
 
 
 func _pause_game() -> void:
+	_was_paused_before_dialog = get_tree().paused
 	get_tree().paused = true
-	if EventBus:
+	if EventBus and not _was_paused_before_dialog:
 		EventBus.game_paused.emit()
 
 
 func _resume_game() -> void:
-	get_tree().paused = false
-	if EventBus:
-		EventBus.game_unpaused.emit()
+	# Only unpause if the game wasn't already paused before dialog started
+	# (e.g. PachronSelectionScreen pauses the game, dialog should not unpause it)
+	if not _was_paused_before_dialog:
+		get_tree().paused = false
+		if EventBus:
+			EventBus.game_unpaused.emit()
 
 
 func _on_text_completed() -> void:
