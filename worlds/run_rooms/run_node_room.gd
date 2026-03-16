@@ -506,7 +506,7 @@ func _setup_boon_selection() -> void:
 	# Spawn altar at center of room
 	var altar := Area2D.new()
 	altar.name = "PachronAltar"
-	altar.global_position = Vector2(700, 650)
+	altar.global_position = Vector2(800, 800)
 	altar.collision_layer = 0
 	altar.collision_mask = 0
 	altar.set_collision_mask_value(2, true)
