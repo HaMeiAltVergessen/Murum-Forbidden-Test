@@ -5,10 +5,10 @@
 [ext_resource type="Script" path="res://components/hurtbox_component.gd" id="3_hurtbox"]
 
 [sub_resource type="RectangleShape2D" id="body_shape"]
-size = Vector2(28, 55)
+size = Vector2(55, 110)
 
 [sub_resource type="RectangleShape2D" id="hurtbox_shape"]
-size = Vector2(36, 65)
+size = Vector2(70, 130)
 
 [node name="HeroCleric" type="CharacterBody2D" groups=["enemies", "hero_group"]]
 collision_layer = 8
@@ -16,13 +16,13 @@ collision_mask = 7
 script = ExtResource("1_script")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(0, -60)
-scale = Vector2(1.2, 1.2)
+position = Vector2(0, -120)
+scale = Vector2(3.6, 3.6)
 texture = ExtResource("2_idle")
 hframes = 8
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -28)
+position = Vector2(0, -55)
 shape = SubResource("body_shape")
 
 [node name="HurtboxComponent" type="Area2D" parent="."]
@@ -32,5 +32,5 @@ script = ExtResource("3_hurtbox")
 invulnerability_duration = 0.3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]
-position = Vector2(0, -32)
+position = Vector2(0, -65)
 shape = SubResource("hurtbox_shape")

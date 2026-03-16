@@ -268,7 +268,7 @@ func _on_damage_received(damage: int, knockback: Vector2, hitstun: float) -> voi
 		stun(hitstun * 0.5)  # Reduced hitstun for bosses
 
 
-func take_damage(amount: float) -> void:
+func take_damage(amount: float, _attacker: Node = null) -> void:
 	if current_hp <= 0:
 		return
 
@@ -467,8 +467,7 @@ func _spawn_melee_hitbox(damage_amount: int, range_px: float, knockback: float =
 	hitbox.damage = damage_amount
 	hitbox.knockback_force = knockback
 	hitbox.hitstun_duration = hitstun
-	hitbox.owner = self
-
+	# owner will be set after add_child via _set_hitbox_owner
 	# Collision: Layer 128 (enemy attacks), Mask 1024 (player hurtbox)
 	hitbox.collision_layer = 128
 	hitbox.collision_mask = 1024
@@ -481,6 +480,7 @@ func _spawn_melee_hitbox(damage_amount: int, range_px: float, knockback: float =
 	hitbox.add_child(shape)
 
 	add_child(hitbox)
+	hitbox.owner = self
 	hitbox.activate()
 
 	await get_tree().create_timer(duration).timeout
@@ -505,6 +505,7 @@ func _spawn_aoe_hitbox(damage_amount: int, radius: float, knockback: float = 300
 	hitbox.add_child(shape)
 
 	add_child(hitbox)
+	hitbox.owner = self
 	hitbox.activate()
 
 	await get_tree().create_timer(duration).timeout
