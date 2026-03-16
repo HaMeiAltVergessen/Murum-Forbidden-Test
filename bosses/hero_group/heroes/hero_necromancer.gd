@@ -322,4 +322,3 @@ var _mass_resurrect_cooldown: float = 0.0
 func _on_last_standing() -> void:
 	# Immediately try mass resurrect
 	_execute_attack("mass_resurrect")
-
