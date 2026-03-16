@@ -17,6 +17,7 @@ var facing_right: bool = true
 # ============ STAFF VISUAL CONFIG ============
 const STAFF_POS_RIGHT: Vector2 = Vector2(30, -5)
 const STAFF_POS_LEFT: Vector2 = Vector2(-30, -5)
+const STAFF_BASE_SCALE: float = 0.142  # Original scale from murum.tscn
 
 # Attack stretch
 var _attack_stretch_tween: Tween = null
@@ -131,10 +132,10 @@ func _update_staff_position() -> void:
 
 	if facing_right:
 		staff_sprite.position = STAFF_POS_RIGHT
-		staff_sprite.scale.x = abs(staff_sprite.scale.x)
+		staff_sprite.scale = Vector2(STAFF_BASE_SCALE, STAFF_BASE_SCALE)
 	else:
 		staff_sprite.position = STAFF_POS_LEFT
-		staff_sprite.scale.x = -abs(staff_sprite.scale.x)
+		staff_sprite.scale = Vector2(-STAFF_BASE_SCALE, STAFF_BASE_SCALE)
 
 # ============ ATTACK STRETCH ============
 func _on_player_attacked(attack_number: int) -> void:
@@ -150,13 +151,11 @@ func _play_attack_stretch() -> void:
 	if _attack_stretch_tween and _attack_stretch_tween.is_valid():
 		_attack_stretch_tween.kill()
 
-	var base_x: float = absf(staff_sprite.scale.x)  # 0.142
-	var base_y: float = absf(staff_sprite.scale.y)  # 0.142
 	var sign_x: float = 1.0 if facing_right else -1.0
 
 	# Subtiler Stretch: nur 8% in Y (Laenge), 5% squash in X
-	var stretch_y: float = base_y * 1.08
-	var squash_x: float = base_x * 0.95
+	var stretch_y: float = STAFF_BASE_SCALE * 1.08
+	var squash_x: float = STAFF_BASE_SCALE * 0.95
 
 	_attack_stretch_tween = create_tween()
 	# Schnell strecken (Stab wird laenger)
@@ -164,7 +163,7 @@ func _play_attack_stretch() -> void:
 		Vector2(squash_x * sign_x, stretch_y), 0.05)
 	# Sanft zurueck (kein Elastic — das verursacht Bounce auf dem ganzen Player)
 	_attack_stretch_tween.tween_property(staff_sprite, "scale",
-		Vector2(base_x * sign_x, base_y), 0.1)
+		Vector2(STAFF_BASE_SCALE * sign_x, STAFF_BASE_SCALE), 0.1)
 	_attack_stretch_tween.tween_callback(func(): is_attacking = false)
 
 func _reset_staff_stretch() -> void:
@@ -175,9 +174,8 @@ func _reset_staff_stretch() -> void:
 	if not staff_sprite or not staff_sprite.get_parent() == player:
 		return
 
-	var base_scale: float = absf(staff_sprite.scale.x)
 	var sign_x: float = 1.0 if facing_right else -1.0
-	staff_sprite.scale = Vector2(base_scale * sign_x, absf(staff_sprite.scale.y))
+	staff_sprite.scale = Vector2(STAFF_BASE_SCALE * sign_x, STAFF_BASE_SCALE)
 
 # ============ RESONANCE ORB GLOW ============
 func _create_orb_glow() -> void:

@@ -164,14 +164,16 @@ func _on_staff_caught() -> void:
 	if staff_sprite and active_staff and is_instance_valid(active_staff):
 		staff_sprite.reparent(player)
 		staff_sprite.rotation = 0.0
-		# Restore position based on current facing direction
+		# Restore position and scale to known base values
 		var animator = player.get_node_or_null("MurumAnimator")
 		if animator and animator is MurumAnimator:
 			var right: bool = animator.facing_right
 			staff_sprite.position = Vector2(30, -5) if right else Vector2(-30, -5)
-			staff_sprite.scale.x = abs(staff_sprite.scale.x) * (1.0 if right else -1.0)
+			var base: float = MurumAnimator.STAFF_BASE_SCALE
+			staff_sprite.scale = Vector2(base if right else -base, base)
 		else:
 			staff_sprite.position = Vector2(30, -5)
+			staff_sprite.scale = Vector2(0.142, 0.142)
 
 	if active_staff:
 		active_staff.queue_free()
