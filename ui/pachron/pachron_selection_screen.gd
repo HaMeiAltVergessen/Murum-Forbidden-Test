@@ -164,16 +164,7 @@ func _setup_symbol_phase() -> void:
 		vbox.add_child(mask_rect)
 		_mask_nodes.append(mask_rect)
 
-		# Path name
-		var name_label := Label.new()
-		name_label.text = path_name
-		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		name_label.add_theme_font_size_override("font_size", 30)
-		name_label.add_theme_color_override("font_color", path_color)
-		name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		vbox.add_child(name_label)
-
-		# Focus
+		# Focus (no Pachron name — only gameplay hint)
 		var focus_label := Label.new()
 		focus_label.text = path_data.get("focus", "")
 		focus_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -242,9 +233,8 @@ func _setup_boon_phase() -> void:
 	# Header
 	var header := Label.new()
 	var path_data: Dictionary = BoonManager.get_path_data(_selected_path_id)
-	var path_name: String = path_data.get("name", _selected_path_id.capitalize())
 	var path_color: Color = BoonManager.get_path_color(_selected_path_id)
-	header.text = path_name
+	header.text = "Waehle einen Segen"
 	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	header.add_theme_font_size_override("font_size", 28)
 	header.add_theme_color_override("font_color", path_color)
