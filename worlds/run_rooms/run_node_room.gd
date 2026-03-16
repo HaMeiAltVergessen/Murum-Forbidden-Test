@@ -1027,10 +1027,58 @@ func _open_run_shop() -> void:
 
 
 # ============ BOSS SETUP ============
+var _boss_controller: Node = null
+
 func _setup_boss() -> void:
 	var boss_name: String = _get_boss_name()
 	var is_final_boss: bool = _get_next_world() < 0
-	print("[RunNodeRoom] Boss room — %s (placeholder, auto-skip)" % boss_name)
+	print("[RunNodeRoom] Boss room — %s" % boss_name)
+
+	# Try to spawn the actual boss based on world
+	match world_id:
+		RunMapData.WorldId.NIEMANDSLAND:
+			_setup_hero_group_boss(is_final_boss)
+		_:
+			# Other worlds: placeholder (auto-skip)
+			_setup_boss_placeholder(boss_name, is_final_boss)
+
+
+func _setup_hero_group_boss(is_final_boss: bool) -> void:
+	"""Spawns the hero group boss for Welt 1"""
+	var controller_scene: PackedScene = load("res://bosses/hero_group/hero_group_controller.tscn")
+	if not controller_scene:
+		push_warning("[RunNodeRoom] Hero group controller scene not found!")
+		_setup_boss_placeholder("Die Heldengruppe", is_final_boss)
+		return
+
+	_boss_controller = controller_scene.instantiate()
+
+	# Position at center of arena
+	var boss_spawn: Marker2D = null
+	var spawn_container = get_node_or_null("EnemySpawnPoints")
+	if spawn_container:
+		boss_spawn = spawn_container.get_node_or_null("BossSpawn") as Marker2D
+	if boss_spawn:
+		_boss_controller.global_position = boss_spawn.global_position
+	else:
+		_boss_controller.global_position = Vector2(1300, 760)
+
+	add_child(_boss_controller)
+
+	# Connect defeated signal
+	_boss_controller.defeated.connect(_on_boss_defeated.bind(is_final_boss))
+
+	# Start fight after delay
+	_show_completion_ui("Die Heldengruppe")
+	get_tree().create_timer(2.0).timeout.connect(func():
+		if _boss_controller and _boss_controller.has_method("start_fight"):
+			_boss_controller.start_fight()
+	)
+
+
+func _on_boss_defeated(is_final_boss: bool) -> void:
+	"""Called when the hero group boss is defeated"""
+	print("[RunNodeRoom] Boss defeated!")
 
 	# Full heal
 	if GameManager.player and is_instance_valid(GameManager.player):
@@ -1040,7 +1088,32 @@ func _setup_boss() -> void:
 		if player.has_node("ManaComponent"):
 			player.get_node("ManaComponent").reset_mana()
 
-	# Grant boss rewards: Magicka + full heal
+	# Grant boss rewards: Magicka
+	var w: int = RewardManager.get_world_id_int(world_id)
+	var magicka_amount: int = RewardManager.get_boss_magicka(w)
+	RunManager.add_magicka(magicka_amount)
+
+	_show_completion_ui("Boss besiegt! +%d Magicka!" % magicka_amount)
+	EventBus.show_notification.emit("+%d Magicka! Volle Heilung!" % magicka_amount, 4.0)
+
+	if is_final_boss:
+		get_tree().create_timer(2.0).timeout.connect(_on_node_cleared)
+	else:
+		get_tree().create_timer(2.0).timeout.connect(_setup_boon_selection)
+
+
+func _setup_boss_placeholder(boss_name: String, is_final_boss: bool) -> void:
+	"""Placeholder for unimplemented bosses — auto-skip"""
+	print("[RunNodeRoom] Boss placeholder — %s (auto-skip)" % boss_name)
+
+	# Full heal
+	if GameManager.player and is_instance_valid(GameManager.player):
+		var player = GameManager.player
+		if player.has_node("HealthComponent"):
+			player.get_node("HealthComponent").reset_health()
+		if player.has_node("ManaComponent"):
+			player.get_node("ManaComponent").reset_mana()
+
 	var w: int = RewardManager.get_world_id_int(world_id)
 	var magicka_amount: int = RewardManager.get_boss_magicka(w)
 	RunManager.add_magicka(magicka_amount)
@@ -1049,17 +1122,15 @@ func _setup_boss() -> void:
 	EventBus.show_notification.emit("+%d Magicka! Volle Heilung!" % magicka_amount, 4.0)
 
 	if is_final_boss:
-		# Final boss: no boon selection, just end
 		get_tree().create_timer(2.0).timeout.connect(_on_node_cleared)
 	else:
-		# Non-final boss: boon selection after short delay
 		get_tree().create_timer(2.0).timeout.connect(_setup_boon_selection)
 
 
 func _get_boss_name() -> String:
 	match world_id:
 		RunMapData.WorldId.NIEMANDSLAND:
-			return "Die Schwuere der Vier"
+			return "Die Heldengruppe"
 		RunMapData.WorldId.KOLLEKTIV:
 			return "Das Kollektiv der Einen Stimme"
 		RunMapData.WorldId.ABGRUND:

@@ -290,6 +290,9 @@ signal door_unlocked(door_id: String)
 ## Emitted when world is unlocked
 signal world_unlocked(world_id: String)
 
+## Emitted when boss fight starts
+signal boss_fight_started(boss_id: String)
+
 ## Emitted when boss is defeated
 signal boss_defeated(boss_id: String)
 

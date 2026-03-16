@@ -96,7 +96,7 @@ offset_left = 40.0
 offset_top = 20.0
 offset_right = 500.0
 offset_bottom = 50.0
-text = "Boss - Die Schwuere der Vier"
+text = "Boss - Die Heldengruppe"
 
 [node name="RelicPickup" parent="." instance=ExtResource("2_c32y6")]
 position = Vector2(573, 668)

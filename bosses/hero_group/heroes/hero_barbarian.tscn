@@ -1,0 +1,36 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://bosses/hero_group/heroes/hero_barbarian.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://Assets/placeholders/5heros/barbarian/Huntress/Sprites/Idle.png" id="2_idle"]
+[ext_resource type="Script" path="res://components/hurtbox_component.gd" id="3_hurtbox"]
+
+[sub_resource type="RectangleShape2D" id="body_shape"]
+size = Vector2(26, 52)
+
+[sub_resource type="RectangleShape2D" id="hurtbox_shape"]
+size = Vector2(34, 62)
+
+[node name="HeroBarbarian" type="CharacterBody2D" groups=["enemies", "hero_group"]]
+collision_layer = 8
+collision_mask = 7
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -42)
+scale = Vector2(1.4, 1.4)
+texture = ExtResource("2_idle")
+hframes = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -26)
+shape = SubResource("body_shape")
+
+[node name="HurtboxComponent" type="Area2D" parent="."]
+collision_layer = 1024
+collision_mask = 48
+script = ExtResource("3_hurtbox")
+invulnerability_duration = 0.3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]
+position = Vector2(0, -31)
+shape = SubResource("hurtbox_shape")

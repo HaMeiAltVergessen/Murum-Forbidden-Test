@@ -163,13 +163,16 @@ worlds/world_1_ruins/
 **Lythrun-Boss**: `bosses/lythrun/lythrun_boss.gd` mit `adaptive_ai.gd` und Phase-Manager
 **Boss-Komponenten**: `bosses/components/` — AttackPatternManager, PhaseManager, VictorySequence, BossCameraController
 
-### Run-Bosse (geplant)
-- **Welt 1**: "Die Schwuere der Vier" — 4 Geister (Krieger, Magier, Priester, Schuetzin)
-- **Welt 2**: "Das Kollektiv der Einen Stimme" — Raumschiff-Koerper
-- **Welt 3**: "Murum (Spiegel)" — Spiegelung des Spielers, Endless-Runner
+### Run-Bosse
+- **Welt 1**: "Die Heldengruppe" — 5-Helden-Gruppenkampf (Ritter, Kleriker, Blutjaeger, Barbar, Nekromant) [IMPLEMENTIERT]
+  - `bosses/hero_group/` — HeroGroupController + HeroGroupMember Basisklasse + 5 Held-Subklassen
+  - Taktische Kill-Reihenfolge, Last-Standing-Phasen, Necro-Resurrect
+- **Welt 2**: "Das Kollektiv der Einen Stimme" — Raumschiff-Koerper (geplant)
+- **Welt 3**: "Murum (Spiegel)" — Spiegelung des Spielers, Endless-Runner (geplant)
 
 ### Veraltete Boss-Konzepte (NICHT MEHR GUELTIG)
-- ~~Urgathon als Welt-1-Boss~~ → ersetzt durch "Die Schwuere der Vier"
+- ~~Urgathon als Welt-1-Boss~~ → ersetzt durch "Die Heldengruppe"
+- ~~"Die Schwuere der Vier"~~ → weiterentwickelt zu "Die Heldengruppe" (5 Helden statt 4 Geister)
 - ~~Myrkur als Welt-3-Boss~~ → ersetzt durch "Murum (Spiegel)"
 
 ## UI-Screens
@@ -229,7 +232,8 @@ worlds/world_1_ruins/
 - [ ] Run-Ende-Screen (Belohnungen, Statistiken)
 - [ ] Limbus-Hub-Szene (dunkler Raum + Siegel + Licht-Tuer)
 - [ ] Welt-2- und Welt-3-Gegner
-- [ ] Alle 3 Run-Bosse
+- [x] Welt-1-Boss: "Die Heldengruppe" (5-Helden-Gruppenkampf)
+- [ ] Welt-2- und Welt-3-Bosse
 
 ## Bekannte TODOs
 
