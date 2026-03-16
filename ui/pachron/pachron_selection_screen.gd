@@ -58,7 +58,7 @@ func _build_ui() -> void:
 	_bg = ColorRect.new()
 	_bg.color = Color(0, 0, 0, 0.85)
 	_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_bg.mouse_filter = Control.MOUSE_FILTER_STOP
+	_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_bg)
 
 	# Title
@@ -170,6 +170,24 @@ func _setup_symbol_phase() -> void:
 		focus_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
 		card.add_child(focus_label)
 
+		# Mouse click support
+		var captured_i := i
+		var button := Button.new()
+		button.flat = true
+		button.set_anchors_preset(Control.PRESET_FULL_RECT)
+		button.mouse_filter = Control.MOUSE_FILTER_STOP
+		button.process_mode = Node.PROCESS_MODE_ALWAYS
+		button.pressed.connect(func():
+			_selected_index = captured_i
+			_update_mask_highlight()
+			_confirm_symbol_selection()
+		)
+		button.mouse_entered.connect(func():
+			_selected_index = captured_i
+			_update_mask_highlight()
+		)
+		card.add_child(button)
+
 		_mask_container.add_child(card)
 
 	_update_mask_highlight()
@@ -250,6 +268,20 @@ func _setup_boon_phase() -> void:
 		var card := _create_boon_option_card(option, i)
 		_boon_panel.add_child(card)
 		_boon_option_nodes.append(card)
+
+		# Mouse click support
+		var captured_i := i
+		card.gui_input.connect(func(event: InputEvent):
+			if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+				_boon_option_index = captured_i
+				_update_boon_highlight()
+				_confirm_boon_selection()
+		)
+		card.mouse_entered.connect(func():
+			_boon_option_index = captured_i
+			_update_boon_highlight()
+		)
+		card.mouse_filter = Control.MOUSE_FILTER_STOP
 
 	_boon_option_index = 0
 	_update_boon_highlight()
@@ -351,10 +383,7 @@ func _update_boon_highlight() -> void:
 
 
 # ============ INPUT ============
-func _unhandled_input(event: InputEvent) -> void:
-	if not visible:
-		return
-
+func _input(event: InputEvent) -> void:
 	if current_phase == Phase.SYMBOL_SELECT:
 		_handle_symbol_input(event)
 	elif current_phase == Phase.BOON_CHOICE:
