@@ -72,15 +72,15 @@ func _build_ui() -> void:
 	_title_label.text = "Waehle einen Pachron"
 	add_child(_title_label)
 
-	# Mask container (centered)
+	# Mask container (fill most of screen)
 	_mask_container = HBoxContainer.new()
-	_mask_container.set_anchors_preset(Control.PRESET_CENTER)
-	_mask_container.offset_left = -400
-	_mask_container.offset_right = 400
-	_mask_container.offset_top = -150
-	_mask_container.offset_bottom = 150
+	_mask_container.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_mask_container.offset_left = 40
+	_mask_container.offset_right = -40
+	_mask_container.offset_top = 110
+	_mask_container.offset_bottom = -30
 	_mask_container.alignment = BoxContainer.ALIGNMENT_CENTER
-	_mask_container.add_theme_constant_override("separation", 60)
+	_mask_container.add_theme_constant_override("separation", 30)
 	add_child(_mask_container)
 
 	# Pachron image (left side, hidden initially)
@@ -140,7 +140,8 @@ func _setup_symbol_phase() -> void:
 
 		# Use a container that allows overlay children
 		var card := Control.new()
-		card.custom_minimum_size = Vector2(200, 280)
+		card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		card.size_flags_vertical = Control.SIZE_EXPAND_FILL
 
 		# Content layout
 		var vbox := VBoxContainer.new()
@@ -149,11 +150,12 @@ func _setup_symbol_phase() -> void:
 		vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		card.add_child(vbox)
 
-		# Mask image
+		# Mask image (fills available space, keeps aspect ratio)
 		var mask_rect := TextureRect.new()
-		mask_rect.custom_minimum_size = Vector2(180, 180)
+		mask_rect.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		mask_rect.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		mask_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		mask_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+		mask_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		mask_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var mask_path: String = PACHRON_MASKS.get(path_id, "")
 		if mask_path != "" and ResourceLoader.exists(mask_path):
@@ -166,7 +168,7 @@ func _setup_symbol_phase() -> void:
 		var name_label := Label.new()
 		name_label.text = path_name
 		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		name_label.add_theme_font_size_override("font_size", 22)
+		name_label.add_theme_font_size_override("font_size", 30)
 		name_label.add_theme_color_override("font_color", path_color)
 		name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		vbox.add_child(name_label)
@@ -175,7 +177,7 @@ func _setup_symbol_phase() -> void:
 		var focus_label := Label.new()
 		focus_label.text = path_data.get("focus", "")
 		focus_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		focus_label.add_theme_font_size_override("font_size", 14)
+		focus_label.add_theme_font_size_override("font_size", 20)
 		focus_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
 		focus_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		vbox.add_child(focus_label)
@@ -220,6 +222,7 @@ func _update_mask_highlight() -> void:
 # ============ PHASE 3: BOON CHOICE/UPGRADE ============
 func _setup_boon_phase() -> void:
 	current_phase = Phase.BOON_CHOICE
+	_bg.visible = true
 	_title_label.visible = false
 	_mask_container.visible = false
 	_pachron_image.visible = true
@@ -447,17 +450,12 @@ func _confirm_symbol_selection() -> void:
 
 func _start_dialog_phase() -> void:
 	current_phase = Phase.DIALOG
+	# Hide all PachronSelectionScreen visuals — DialogUI has its own dark bg + character sprite
 	_mask_container.visible = false
 	_title_label.visible = false
-
-	# Show Pachron image during dialog
-	_pachron_image.visible = true
-	var img_path: String = PACHRON_IMAGES.get(_selected_path_id, "")
-	if img_path != "" and ResourceLoader.exists(img_path):
-		_pachron_image.texture = load(img_path)
-	_pachron_image.modulate = Color(1, 1, 1, 0)
-	var tween := create_tween()
-	tween.tween_property(_pachron_image, "modulate:a", 1.0, 0.5)
+	_pachron_image.visible = false
+	_boon_panel.visible = false
+	_bg.visible = false
 
 	# Start Pachron dialog
 	if PachronDialogSystem:
@@ -506,7 +504,10 @@ func _confirm_boon_selection() -> void:
 
 func _start_farewell_phase() -> void:
 	current_phase = Phase.FAREWELL
+	# Hide all visuals — DialogUI handles display
 	_boon_panel.visible = false
+	_pachron_image.visible = false
+	_bg.visible = false
 
 	if PachronDialogSystem:
 		PachronDialogSystem.play_farewell(_selected_path_id)
