@@ -11,7 +11,7 @@ class_name Hermit
 # CONSTANTS
 # ============================================================================
 
-const MAX_HP: int = 100
+const MAX_HP: int = 10
 const MOVE_SPEED: float = 80.0
 const PROJECTILE_DAMAGE: int = 35
 const MELEE_DAMAGE: int = 50
