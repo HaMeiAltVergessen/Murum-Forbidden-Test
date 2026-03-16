@@ -44,6 +44,19 @@ func _ai_update(delta: float) -> void:
 		velocity.x = 0
 		return
 
+	# Last standing: retry mass resurrect periodically
+	if is_last_standing and mass_resurrect_attempted:
+		_mass_resurrect_cooldown -= delta
+		if _mass_resurrect_cooldown <= 0 and controller:
+			var dead: Array = controller.get_dead_heroes()
+			if not dead.is_empty():
+				mass_resurrect_attempted = false
+				_mass_resurrect_cooldown = 5.0
+				_execute_attack("mass_resurrect")
+				return
+		# Fight with empowered pattern between attempts
+		attack_pattern = ["empowered_projectile", "death_nova", "empowered_projectile"]
+
 	# Keep maximum distance
 	if target and is_instance_valid(target):
 		var dist: float = global_position.distance_to(target.global_position)
@@ -310,41 +323,3 @@ func _on_last_standing() -> void:
 	# Immediately try mass resurrect
 	_execute_attack("mass_resurrect")
 
-func _ai_update_last_standing(delta: float) -> void:
-	# After mass resurrect (or interruption), switch to combat + retry
-	if not is_channeling_resurrect and mass_resurrect_attempted:
-		# Attack pattern: empowered + death nova, retry mass resurrect after 5s
-		_mass_resurrect_cooldown -= delta
-		if _mass_resurrect_cooldown <= 0 and not mass_resurrect_attempted:
-			_execute_attack("mass_resurrect")
-			_mass_resurrect_cooldown = 5.0
-			return
-
-	# Use combat pattern between attempts
-	if not is_channeling_resurrect:
-		super._ai_update(delta)
-
-# Override ai_update to handle last standing properly
-func _ai_update(delta: float) -> void:
-	if is_last_standing and not is_channeling_resurrect:
-		# After first mass resurrect attempt, fight + retry
-		if mass_resurrect_attempted:
-			_mass_resurrect_cooldown -= delta
-			if _mass_resurrect_cooldown <= 0 and controller:
-				var dead: Array = controller.get_dead_heroes()
-				if not dead.is_empty():
-					mass_resurrect_attempted = false
-					_mass_resurrect_cooldown = 5.0
-					_execute_attack("mass_resurrect")
-					return
-
-			# Fight with empowered pattern
-			attack_pattern = ["empowered_projectile", "death_nova", "empowered_projectile"]
-		super._ai_update(delta)
-		return
-
-	if is_channeling_resurrect:
-		velocity.x = 0
-		return
-
-	super._ai_update(delta)
