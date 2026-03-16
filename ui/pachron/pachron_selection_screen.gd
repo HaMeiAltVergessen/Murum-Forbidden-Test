@@ -138,20 +138,28 @@ func _setup_symbol_phase() -> void:
 		var path_data: Dictionary = BoonManager.get_path_data(path_id)
 		var path_name: String = path_data.get("name", path_id.capitalize())
 
-		var card := VBoxContainer.new()
+		# Use a container that allows overlay children
+		var card := Control.new()
 		card.custom_minimum_size = Vector2(200, 280)
-		card.alignment = BoxContainer.ALIGNMENT_CENTER
+
+		# Content layout
+		var vbox := VBoxContainer.new()
+		vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
+		vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+		vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(vbox)
 
 		# Mask image
 		var mask_rect := TextureRect.new()
 		mask_rect.custom_minimum_size = Vector2(180, 180)
 		mask_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		mask_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+		mask_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var mask_path: String = PACHRON_MASKS.get(path_id, "")
 		if mask_path != "" and ResourceLoader.exists(mask_path):
 			mask_rect.texture = load(mask_path)
 		mask_rect.modulate = Color(path_color.r, path_color.g, path_color.b, 0.7)
-		card.add_child(mask_rect)
+		vbox.add_child(mask_rect)
 		_mask_nodes.append(mask_rect)
 
 		# Path name
@@ -160,7 +168,8 @@ func _setup_symbol_phase() -> void:
 		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		name_label.add_theme_font_size_override("font_size", 22)
 		name_label.add_theme_color_override("font_color", path_color)
-		card.add_child(name_label)
+		name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		vbox.add_child(name_label)
 
 		# Focus
 		var focus_label := Label.new()
@@ -168,15 +177,17 @@ func _setup_symbol_phase() -> void:
 		focus_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		focus_label.add_theme_font_size_override("font_size", 14)
 		focus_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
-		card.add_child(focus_label)
+		focus_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		vbox.add_child(focus_label)
 
-		# Mouse click support
+		# Clickable overlay covering the entire card
 		var captured_i := i
 		var button := Button.new()
 		button.flat = true
 		button.set_anchors_preset(Control.PRESET_FULL_RECT)
 		button.mouse_filter = Control.MOUSE_FILTER_STOP
 		button.process_mode = Node.PROCESS_MODE_ALWAYS
+		button.modulate = Color(1, 1, 1, 0)  # Invisible
 		button.pressed.connect(func():
 			_selected_index = captured_i
 			_update_mask_highlight()
