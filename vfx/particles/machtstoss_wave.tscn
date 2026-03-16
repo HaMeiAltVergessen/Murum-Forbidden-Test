@@ -1,6 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://machtstoss_wave_001"]
+[gd_scene load_steps=4 format=3]
 
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Misc/Grotto-escape-2-FX/sprites/slash-circular/_0000_Layer-1.png" id="1_wave"]
+[ext_resource type="Texture2D" uid="uid://bcoiprtp2ncb" path="res://Assets/Placeholder/Legacy Collection/Assets/Misc/Grotto-escape-2-FX/sprites/slash-circular/_0000_Layer-1.png" id="1_wave"]
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_wave"]
 particle_flag_disable_z = true

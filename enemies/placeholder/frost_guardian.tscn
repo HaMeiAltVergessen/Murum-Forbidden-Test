@@ -1,7 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://frost_guardian_001"]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="PackedScene" uid="uid://bhjxv6dwpb3ya" path="res://enemies/base_enemy.tscn" id="1_base"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Gegner/Frost_Guardian_FREE_v1.0/Frost_Guardian_FREE_v1.0/frost_guardian_free_192x128_SpriteSheet.png" id="2_sprite"]
+[ext_resource type="Texture2D" uid="uid://c15l7l6mpw5qy" path="res://Assets/Placeholder/Gegner/Frost_Guardian_FREE_v1.0/Frost_Guardian_FREE_v1.0/frost_guardian_free_192x128_SpriteSheet.png" id="2_sprite"]
 
 [node name="FrostGuardian" instance=ExtResource("1_base")]
 max_health = 80

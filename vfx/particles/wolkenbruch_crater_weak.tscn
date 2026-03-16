@@ -1,7 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://wolkenbruch_crater_weak"]
+[gd_scene load_steps=4 format=3]
 
-[ext_resource type="Script" path="res://vfx/particles/wolkenbruch_crater_weak.gd" id="1_crater_weak_script"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Misc/Explosions pack/explosion-1-d/Sprites/explosion-d3.png" id="2_crater_texture"]
+[ext_resource type="Script" uid="uid://cdgtmf8ff1y8a" path="res://vfx/particles/wolkenbruch_crater_weak.gd" id="1_crater_weak_script"]
+[ext_resource type="Texture2D" uid="uid://dymfy88sanpc4" path="res://Assets/Placeholder/Legacy Collection/Assets/Misc/Explosions pack/explosion-1-d/Sprites/explosion-d3.png" id="2_crater_texture"]
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_crater_weak"]
 emission_shape = 1

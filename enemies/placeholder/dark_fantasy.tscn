@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3 uid="uid://b5grq3napa7sq"]
 
-[ext_resource type="Script" uid="uid://cycpxlc7nrms2" path="res://enemies/placeholder/dark_fantasy.gd" id="1"]
-[ext_resource type="Script" uid="uid://dxbu5xxjgye0i" path="res://enemies/placeholder/dark_fantasy_ai.gd" id="2"]
+[ext_resource type="Script" uid="uid://dkd3dybj788vh" path="res://enemies/placeholder/dark_fantasy.gd" id="1"]
+[ext_resource type="Script" uid="uid://dwyngr8fadtus" path="res://enemies/placeholder/dark_fantasy_ai.gd" id="2"]
 [ext_resource type="Script" uid="uid://be8au7dl6rc4k" path="res://components/hurtbox_component.gd" id="3"]
 [ext_resource type="Script" uid="uid://ccjbelb33h57n" path="res://components/hitbox_component.gd" id="4"]
 [ext_resource type="Texture2D" uid="uid://5mesl6q2ein3" path="res://Assets/Placeholder/Gegner/DarkFantasyEnemies_FREE/DarkFantasyEnemies_FREE/Bat/Bat with VFX/Bat-IdleFly.png" id="5"]

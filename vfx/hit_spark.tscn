@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://bvw3dqr8s1m1k"]
 
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Misc/Grotto-escape-2-FX/sprites/slash-horizontal/_0000_Layer-1.png" id="1_slash"]
+[ext_resource type="Texture2D" uid="uid://0y4ek6dqgdwq" path="res://Assets/Placeholder/Legacy Collection/Assets/Misc/Grotto-escape-2-FX/sprites/slash-horizontal/_0000_Layer-1.png" id="1_slash"]
 
 [sub_resource type="Curve" id="Curve_lifetime"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.0, 0.0, 0, 0]

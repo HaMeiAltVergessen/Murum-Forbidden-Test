@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://c8jvg5x7m3nqd"]
 
-[ext_resource type="Script" path="res://environment/hazards/spike_trap.gd" id="1_spike_trap"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Packs/Gothicvania Church/Stomper Asset Files/environment/spikes.png" id="2_spikes"]
+[ext_resource type="Script" uid="uid://cai8mae21lgem" path="res://environment/hazards/spike_trap.gd" id="1_spike_trap"]
+[ext_resource type="Texture2D" uid="uid://cjor06tpoji3k" path="res://Assets/Placeholder/Legacy Collection/Assets/Packs/Gothicvania Church/Stomper Asset Files/environment/spikes.png" id="2_spikes"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hitbox"]
 size = Vector2(128, 32)

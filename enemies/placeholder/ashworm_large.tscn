@@ -1,10 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://ashworm_large_001"]
+[gd_scene load_steps=6 format=3]
 
-[ext_resource type="Script" path="res://enemies/placeholder/ashworm_large.gd" id="1"]
-[ext_resource type="Script" path="res://enemies/placeholder/ashworm_large_ai.gd" id="2"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Gegner/Fire Worm/Fire Worm/Sprites/Worm/Walk.png" id="3"]
-[ext_resource type="Script" path="res://components/hurtbox_component.gd" id="4"]
-[ext_resource type="Script" path="res://components/hitbox_component.gd" id="5"]
+[ext_resource type="Script" uid="uid://23oipib66ka" path="res://enemies/placeholder/ashworm_large.gd" id="1"]
+[ext_resource type="Script" uid="uid://b16jo5e7qulai" path="res://enemies/placeholder/ashworm_large_ai.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://c2sa121egpawt" path="res://Assets/Placeholder/Gegner/Fire Worm/Fire Worm/Sprites/Worm/Walk.png" id="3"]
+[ext_resource type="Script" uid="uid://be8au7dl6rc4k" path="res://components/hurtbox_component.gd" id="4"]
+[ext_resource type="Script" uid="uid://ccjbelb33h57n" path="res://components/hitbox_component.gd" id="5"]
 
 [sub_resource type="RectangleShape2D" id="1"]
 size = Vector2(180, 180)

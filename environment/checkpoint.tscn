@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://c2nx5q8v4kmpr"]
 
-[ext_resource type="Script" path="res://environment/checkpoint.gd" id="1_checkpoint"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Background/Free Industrial Zone Tileset/3 Objects/Flag.png" id="2_flag"]
+[ext_resource type="Script" uid="uid://bpxodgiga6m80" path="res://environment/checkpoint.gd" id="1_checkpoint"]
+[ext_resource type="Texture2D" uid="uid://bto7ih1xjykuw" path="res://Assets/Placeholder/Background/Free Industrial Zone Tileset/3 Objects/Flag.png" id="2_flag"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_checkpoint"]
 size = Vector2(64, 64)

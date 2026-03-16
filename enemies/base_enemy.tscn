@@ -1,12 +1,12 @@
 [gd_scene load_steps=8 format=3 uid="uid://bhjxv6dwpb3ya"]
 
-[ext_resource type="Script" path="res://enemies/base_enemy.gd" id="1_base"]
-[ext_resource type="Script" path="res://enemies/ai_controller.gd" id="2_ai"]
-[ext_resource type="Script" path="res://player/health_component.gd" id="3_health"]
+[ext_resource type="Script" uid="uid://d0lykak52c1if" path="res://enemies/base_enemy.gd" id="1_base"]
+[ext_resource type="Script" uid="uid://dl1v7pgfdif50" path="res://enemies/ai_controller.gd" id="2_ai"]
+[ext_resource type="Script" uid="uid://c2qc384qkctay" path="res://player/health_component.gd" id="3_health"]
 [ext_resource type="PackedScene" uid="uid://dmqxgb7cyujwa" path="res://components/hitbox_component.tscn" id="4_hitbox"]
 [ext_resource type="PackedScene" uid="uid://c5jf8k3m0ph8n" path="res://components/hurtbox_component.tscn" id="5_hurtbox"]
 [ext_resource type="Texture2D" uid="uid://d2vjm1flfq7ko" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/Battle Sprites/Living Pack 1/Slime/slime-sheet.png" id="6_slime"]
-[ext_resource type="Script" path="res://core/components/knockback_component.gd" id="7_knockback"]
+[ext_resource type="Script" uid="uid://ow07w24sfks1" path="res://core/components/knockback_component.gd" id="7_knockback"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_detection"]
 radius = 300.0

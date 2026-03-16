@@ -1,7 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://wolkenbruch_shockwave"]
+[gd_scene load_steps=3 format=3]
 
-[ext_resource type="Script" path="res://vfx/particles/wolkenbruch_shockwave.gd" id="1_shockwave_script"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Misc/Explosions pack/explosion-1-d/Sprites/explosion-d1.png" id="2_explosion"]
+[ext_resource type="Script" uid="uid://dvhicsoni5lrh" path="res://vfx/particles/wolkenbruch_shockwave.gd" id="1_shockwave_script"]
+[ext_resource type="Texture2D" uid="uid://bdv2uid50c30c" path="res://Assets/Placeholder/Legacy Collection/Assets/Misc/Explosions pack/explosion-1-d/Sprites/explosion-d1.png" id="2_explosion"]
 
 [node name="WolkenbruchShockwave" type="Sprite2D"]
 modulate = Color(1.5, 1.0, 0.5, 0.8)

@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3 uid="uid://c7m4lvjkpao0i"]
 
 [ext_resource type="Script" uid="uid://dcb3d0scqqfuh" path="res://enemies/placeholder/monster_creature.gd" id="1"]
-[ext_resource type="Script" uid="uid://d0vh5a7axa3vj" path="res://enemies/placeholder/monster_creature_ai.gd" id="2"]
+[ext_resource type="Script" uid="uid://m4l1y7a4ayqh" path="res://enemies/placeholder/monster_creature_ai.gd" id="2"]
 [ext_resource type="Script" uid="uid://be8au7dl6rc4k" path="res://components/hurtbox_component.gd" id="3"]
 [ext_resource type="Script" uid="uid://ccjbelb33h57n" path="res://components/hitbox_component.gd" id="4"]
 [ext_resource type="Texture2D" uid="uid://b5ksdlj0tiuwr" path="res://Assets/Placeholder/Gegner/Monster_Creatures_Fantasy(Version 1.3)/Monster_Creatures_Fantasy(Version 1.3)/Flying eye/Attack3.png" id="5"]
