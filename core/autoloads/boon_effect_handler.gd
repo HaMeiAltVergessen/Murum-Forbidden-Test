@@ -920,6 +920,7 @@ func _preload_vfx() -> void:
 		sprite_frames.set_animation_loop("play", false)
 		sprite_frames.set_animation_speed("play", 20.0)
 
+		# Try standard pattern: Explosion_1.png, Explosion_2.png, ...
 		var i := 1
 		while true:
 			var path: String = VFX_BASE + folder + "/Explosion_%d.png" % i
@@ -927,6 +928,20 @@ func _preload_vfx() -> void:
 				break
 			sprite_frames.add_frame("play", load(path))
 			i += 1
+
+		# If no frames found, try subfolder patterns: Explosion_X_1.png, Explosion_X_2.png, ...
+		# (used by Explosion_7/2, /3, /4 with patterns like Explosion_1_1.png, Explosion_2_1.png, etc.)
+		if sprite_frames.get_frame_count("play") == 0:
+			for prefix in range(1, 10):
+				i = 1
+				while true:
+					var path: String = VFX_BASE + folder + "/Explosion_%d_%d.png" % [prefix, i]
+					if not ResourceLoader.exists(path):
+						break
+					sprite_frames.add_frame("play", load(path))
+					i += 1
+				if sprite_frames.get_frame_count("play") > 0:
+					break
 
 		if sprite_frames.get_frame_count("play") > 0:
 			_vfx_cache[folder] = sprite_frames
