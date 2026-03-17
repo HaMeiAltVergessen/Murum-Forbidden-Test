@@ -1,0 +1,115 @@
+extends CanvasLayer
+## MomentumBar — HUD element showing momentum value and state
+## Positioned at top of screen, replaces traditional boss HP bar
+class_name MomentumBar
+
+# ============ COLORS ============
+const COLOR_RUECKSTAND := Color(0.8, 0.2, 0.2)      # Red
+const COLOR_GLEICHAUF := Color(0.8, 0.8, 0.2)        # Yellow
+const COLOR_UEBERHOLEN := Color(0.2, 0.8, 0.4)       # Green
+const COLOR_MAX := Color(1.0, 1.0, 1.0)              # White (pulsing)
+const COLOR_BG := Color(0.1, 0.1, 0.1, 0.8)
+const COLOR_BORDER := Color(0.5, 0.5, 0.5, 0.6)
+
+# ============ LAYOUT ============
+const BAR_WIDTH: float = 600.0
+const BAR_HEIGHT: float = 20.0
+const BAR_Y: float = 40.0
+
+# ============ STATE ============
+var momentum_system: MomentumSystem = null
+var _bar_container: Control = null
+var _bar_bg: ColorRect = null
+var _bar_fill: ColorRect = null
+var _label: Label = null
+var _finisher_label: Label = null
+var _pulse_tween: Tween = null
+
+
+func _ready() -> void:
+	_create_ui()
+
+	# Connect to momentum system
+	if momentum_system:
+		momentum_system.momentum_changed.connect(_on_momentum_changed)
+		momentum_system.finisher_window_opened.connect(_on_finisher_window_opened)
+		momentum_system.finisher_window_closed.connect(_on_finisher_window_closed)
+
+
+func _create_ui() -> void:
+	_bar_container = Control.new()
+	_bar_container.name = "MomentumBarContainer"
+	add_child(_bar_container)
+
+	# Background
+	_bar_bg = ColorRect.new()
+	_bar_bg.position = Vector2((1920.0 - BAR_WIDTH) * 0.5, BAR_Y)
+	_bar_bg.size = Vector2(BAR_WIDTH, BAR_HEIGHT)
+	_bar_bg.color = COLOR_BG
+	_bar_container.add_child(_bar_bg)
+
+	# Fill bar
+	_bar_fill = ColorRect.new()
+	_bar_fill.position = Vector2((1920.0 - BAR_WIDTH) * 0.5, BAR_Y)
+	_bar_fill.size = Vector2(0, BAR_HEIGHT)
+	_bar_fill.color = COLOR_RUECKSTAND
+	_bar_container.add_child(_bar_fill)
+
+	# State label
+	_label = Label.new()
+	_label.position = Vector2((1920.0 - BAR_WIDTH) * 0.5, BAR_Y - 24.0)
+	_label.size = Vector2(BAR_WIDTH, 24.0)
+	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_label.text = "Momentum"
+	_label.add_theme_font_size_override("font_size", 16)
+	_label.add_theme_color_override("font_color", Color.WHITE)
+	_bar_container.add_child(_label)
+
+	# Finisher prompt (hidden by default)
+	_finisher_label = Label.new()
+	_finisher_label.position = Vector2((1920.0 - BAR_WIDTH) * 0.5, BAR_Y + BAR_HEIGHT + 8.0)
+	_finisher_label.size = Vector2(BAR_WIDTH, 30.0)
+	_finisher_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_finisher_label.text = "FINISHER! Combo Finisher oder Machtbruch!"
+	_finisher_label.add_theme_font_size_override("font_size", 20)
+	_finisher_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.2))
+	_finisher_label.visible = false
+	_bar_container.add_child(_finisher_label)
+
+
+func _on_momentum_changed(value: float, state: int) -> void:
+	# Update fill width
+	var fill_ratio: float = value / 100.0
+	_bar_fill.size.x = BAR_WIDTH * fill_ratio
+
+	# Update color based on state
+	match state:
+		MomentumSystem.State.RUECKSTAND:
+			_bar_fill.color = COLOR_RUECKSTAND
+			_label.text = "Rueckstand"
+		MomentumSystem.State.GLEICHAUF:
+			_bar_fill.color = COLOR_GLEICHAUF
+			_label.text = "Gleichauf"
+		MomentumSystem.State.UEBERHOLEN:
+			_bar_fill.color = COLOR_UEBERHOLEN
+			_label.text = "Ueberholen!"
+		MomentumSystem.State.MAX:
+			_bar_fill.color = COLOR_MAX
+			_label.text = "MAX!"
+
+
+func _on_finisher_window_opened() -> void:
+	_finisher_label.visible = true
+	# Pulse the bar
+	if _pulse_tween:
+		_pulse_tween.kill()
+	_pulse_tween = create_tween().set_loops()
+	_pulse_tween.tween_property(_bar_fill, "color", Color(1.0, 1.0, 1.0, 1.0), 0.3)
+	_pulse_tween.tween_property(_bar_fill, "color", Color(0.8, 0.6, 1.0, 1.0), 0.3)
+
+
+func _on_finisher_window_closed() -> void:
+	_finisher_label.visible = false
+	if _pulse_tween:
+		_pulse_tween.kill()
+		_pulse_tween = null

@@ -1040,6 +1040,8 @@ func _setup_boss() -> void:
 			_setup_hero_group_boss(is_final_boss)
 		RunMapData.WorldId.KOLLEKTIV:
 			_setup_kollektiv_boss(is_final_boss)
+		RunMapData.WorldId.ABGRUND:
+			_setup_mirror_boss(is_final_boss)
 		_:
 			# Other worlds: placeholder (auto-skip)
 			_setup_boss_placeholder(boss_name, is_final_boss)
@@ -1105,6 +1107,36 @@ func _setup_kollektiv_boss(is_final_boss: bool) -> void:
 
 	# Start fight after delay
 	_show_completion_ui("Das Kollektiv der Einen Stimme")
+	get_tree().create_timer(2.0).timeout.connect(func():
+		if _boss_controller and _boss_controller.has_method("start_fight"):
+			_boss_controller.start_fight()
+	)
+
+
+func _setup_mirror_boss(is_final_boss: bool) -> void:
+	"""Spawns the Mirror boss for Welt 3"""
+	var controller_scene: PackedScene = load("res://bosses/mirror/mirror_controller.tscn")
+	if not controller_scene:
+		push_warning("[RunNodeRoom] Mirror controller scene not found!")
+		_setup_boss_placeholder("Murum (Spiegel)", is_final_boss)
+		return
+
+	_boss_controller = controller_scene.instantiate()
+
+	# Position at player start (runner boss doesn't use BossSpawn)
+	var player: Node2D = GameManager.player if GameManager else null
+	if player and is_instance_valid(player):
+		_boss_controller.global_position = player.global_position
+	else:
+		_boss_controller.global_position = Vector2(300, 760)
+
+	add_child(_boss_controller)
+
+	# Connect defeated signal
+	_boss_controller.defeated.connect(_on_boss_defeated.bind(is_final_boss))
+
+	# Start fight after delay
+	_show_completion_ui("Murum (Spiegel)")
 	get_tree().create_timer(2.0).timeout.connect(func():
 		if _boss_controller and _boss_controller.has_method("start_fight"):
 			_boss_controller.start_fight()
