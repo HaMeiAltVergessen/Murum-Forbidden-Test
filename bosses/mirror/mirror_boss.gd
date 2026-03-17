@@ -49,7 +49,7 @@ var _is_grounded: bool = false  # True while boss is stunned on the floor
 
 # ============ NODE REFS ============
 @onready var _sprite: ColorRect = $Sprite
-@onready var _hurtbox: Area2D = $HurtboxArea
+@onready var _hurtbox: HurtboxComponent = $HurtboxArea
 var _hitbox: Area2D = null
 
 
@@ -61,9 +61,9 @@ func _ready() -> void:
 	if CombatManager:
 		CombatManager.register_enemy(self)
 
-	# Connect hurtbox signal
+	# Connect HurtboxComponent damage signal for visual feedback
 	if _hurtbox:
-		_hurtbox.area_entered.connect(_on_hurtbox_area_entered)
+		_hurtbox.damage_received.connect(_on_damage_received)
 
 	set_process(false)
 	set_physics_process(false)
@@ -363,24 +363,22 @@ func enter_defeated_state() -> void:
 
 
 # ============ DAMAGE HANDLING ============
-func _on_hurtbox_area_entered(area: Area2D) -> void:
-	"""Handle being hit by player attacks"""
+func _on_damage_received(_damage: int, _knockback: Vector2, _hitstun: float) -> void:
+	"""Called by HurtboxComponent when a hit lands — show visual feedback"""
 	if current_state == State.DEFEATED:
 		return
 
-	if current_state == State.VULNERABLE:
-		# Check if this is a finisher-capable hit
-		# MomentumSystem handles the finisher logic via EventBus
-		pass
-
-	# Boss doesn't take traditional damage — momentum system handles progression
+	# Flash sprite white as hit feedback
+	if _sprite:
+		var tween := create_tween()
+		tween.tween_property(_sprite, "modulate", Color(2.0, 2.0, 2.0, 1.0), 0.05)
+		tween.tween_property(_sprite, "modulate", Color.WHITE, 0.15)
 
 
 func take_damage(amount: float, _attacker: Node = null) -> void:
-	"""Interface compatibility — boss doesn't use HP"""
-	if current_state == State.VULNERABLE:
-		# Damage during vulnerability = potential finisher (handled by momentum system)
-		pass
+	"""Called by Wolkenbruch and other systems — route through hurtbox for consistent feedback"""
+	if _hurtbox and not _hurtbox.is_invulnerable:
+		_on_damage_received(int(amount), Vector2.ZERO, 0.0)
 
 
 # ============ ATTACKS ============

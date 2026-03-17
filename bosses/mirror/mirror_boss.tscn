@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://bosses/mirror/mirror_boss.gd" id="1_script"]
+[ext_resource type="Script" path="res://components/hurtbox_component.gd" id="2_hurtbox"]
 
 [sub_resource type="RectangleShape2D" id="body_shape"]
 size = Vector2(96, 240)
@@ -27,6 +28,7 @@ color = Color(0.4, 0, 0.6, 0.8)
 [node name="HurtboxArea" type="Area2D" parent="."]
 collision_layer = 1024
 collision_mask = 48
+script = ExtResource("2_hurtbox")
 
 [node name="HurtboxShape" type="CollisionShape2D" parent="HurtboxArea"]
 position = Vector2(0, -132)
