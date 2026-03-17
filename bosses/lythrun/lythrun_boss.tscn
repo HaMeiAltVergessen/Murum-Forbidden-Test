@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3 uid="uid://c0jv5x45rrurh"]
 
 [ext_resource type="PackedScene" path="res://bosses/boss_base.tscn" id="1"]
 [ext_resource type="Script" uid="uid://d1tc2iiuirt7y" path="res://bosses/lythrun/lythrun_boss.gd" id="2"]
@@ -38,6 +38,7 @@ gold_reward = 1500
 unlock_flag = "lythrun_defeated"
 
 [node name="AnimatedSprite2D" parent="." index="0"]
+scale = Vector2(0.2, 0.203795)
 sprite_frames = SubResource("lythrun_sprite_frames")
 animation = &"idle"
 autoplay = "idle"
@@ -48,3 +49,5 @@ texture = ExtResource("7_sense")
 
 [node name="AdaptiveAI" type="Node" parent="." index="7"]
 script = ExtResource("3")
+
+[editable path="HurtboxComponent"]
