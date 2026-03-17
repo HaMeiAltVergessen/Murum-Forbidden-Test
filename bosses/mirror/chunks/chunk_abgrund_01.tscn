@@ -1,0 +1,80 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://bosses/mirror/chunks/chunk_base.gd" id="1_script"]
+
+[sub_resource type="RectangleShape2D" id="island1_shape"]
+size = Vector2(300, 30)
+
+[sub_resource type="RectangleShape2D" id="island2_shape"]
+size = Vector2(200, 30)
+
+[sub_resource type="RectangleShape2D" id="island3_shape"]
+size = Vector2(250, 30)
+
+[sub_resource type="RectangleShape2D" id="island4_shape"]
+size = Vector2(180, 30)
+
+[node name="ChunkAbgrund01" type="Node2D"]
+script = ExtResource("1_script")
+chunk_width = 1400.0
+
+[node name="Island1" type="StaticBody2D" parent="."]
+position = Vector2(180, 750)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Island1"]
+shape = SubResource("island1_shape")
+
+[node name="Visual" type="ColorRect" parent="Island1"]
+offset_left = -150.0
+offset_top = -15.0
+offset_right = 150.0
+offset_bottom = 15.0
+color = Color(0.25, 0.08, 0.12, 1)
+
+[node name="Island2" type="StaticBody2D" parent="."]
+position = Vector2(520, 600)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Island2"]
+shape = SubResource("island2_shape")
+
+[node name="Visual" type="ColorRect" parent="Island2"]
+offset_left = -100.0
+offset_top = -15.0
+offset_right = 100.0
+offset_bottom = 15.0
+color = Color(0.25, 0.08, 0.12, 1)
+
+[node name="Island3" type="StaticBody2D" parent="."]
+position = Vector2(880, 700)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Island3"]
+shape = SubResource("island3_shape")
+
+[node name="Visual" type="ColorRect" parent="Island3"]
+offset_left = -125.0
+offset_top = -15.0
+offset_right = 125.0
+offset_bottom = 15.0
+color = Color(0.25, 0.08, 0.12, 1)
+
+[node name="Island4" type="StaticBody2D" parent="."]
+position = Vector2(1220, 520)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Island4"]
+shape = SubResource("island4_shape")
+
+[node name="Visual" type="ColorRect" parent="Island4"]
+offset_left = -90.0
+offset_top = -15.0
+offset_right = 90.0
+offset_bottom = 15.0
+color = Color(0.25, 0.08, 0.12, 1)
+
+[node name="BossWaypoint_0" type="Marker2D" parent="."]
+position = Vector2(180, 700)
+
+[node name="BossWaypoint_1" type="Marker2D" parent="."]
+position = Vector2(700, 550)
+
+[node name="BossWaypoint_2" type="Marker2D" parent="."]
+position = Vector2(1220, 470)

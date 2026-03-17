@@ -29,6 +29,7 @@ const RANGED_ATTACK_COOLDOWN: float = 4.0
 const MELEE_ATTACK_RANGE: float = 120.0
 const MELEE_ATTACK_COOLDOWN: float = 3.0
 const VULNERABLE_DURATION: float = 5.0
+const URTEIL_COOLDOWN: float = 12.0
 
 # ============ VISUAL ============
 const BOSS_COLOR := Color(0.4, 0.0, 0.6, 0.8)
@@ -48,6 +49,7 @@ var _melee_timer: float = 0.0
 var _current_waypoint: Marker2D = null
 var _finisher_count: int = 0
 var _facing_right: bool = true
+var _urteil_timer: float = 0.0
 
 # ============ NODE REFS ============
 @onready var _sprite: ColorRect = $Sprite
@@ -123,11 +125,23 @@ func _process(delta: float) -> void:
 	# Attack timers
 	_attack_timer += delta
 	_melee_timer += delta
+	if _grav_schnitt_timer > 0.0:
+		_grav_schnitt_timer -= delta
+	if _urteil_timer > 0.0:
+		_urteil_timer -= delta
 
 	# Check for ranged attack opportunity
 	if current_state == State.RUNNING and _attack_timer >= RANGED_ATTACK_COOLDOWN:
 		if controller and controller.current_section >= MirrorController.Section.DER_FALL:
 			_start_ranged_attack()
+
+	# Gravitaetsschnitt check (section 2+)
+	if current_state == State.RUNNING:
+		try_gravitaetsschnitt()
+
+	# Urteil-Spiegel check (section 3+)
+	if current_state == State.RUNNING:
+		_try_urteil_spiegel()
 
 
 # ============ RUNNING AI ============
@@ -338,17 +352,175 @@ func take_damage(amount: float, _attacker: Node = null) -> void:
 		pass
 
 
-# ============ PLACEHOLDER ATTACKS ============
+# ============ ATTACKS ============
+const DARK_ORB_SCENE: PackedScene = preload("res://bosses/mirror/entities/dark_orb.tscn")
+
 func _spawn_dark_orb() -> void:
-	"""Placeholder — will be replaced in Commit 5"""
-	print("[MirrorBoss] Dark Orb fired! (placeholder)")
-	# TODO: Instantiate dark_orb.tscn
+	"""Fire a dark orb backward toward the player"""
+	var player: Node2D = GameManager.player if GameManager else null
+	if not player or not is_instance_valid(player):
+		return
+
+	var orb: DarkOrb = DARK_ORB_SCENE.instantiate()
+	orb.global_position = global_position + Vector2(-30, -50)  # Spawn from hand area
+
+	# Direction toward player (slightly behind boss)
+	var dir: Vector2 = (player.global_position - global_position).normalized()
+	orb.direction = dir
+	orb.shooter = self
+
+	get_tree().current_scene.add_child(orb)
+	print("[MirrorBoss] Dark Orb fired!")
 
 
 func _do_melee_combo() -> void:
-	"""Placeholder — will be replaced in Commit 6"""
-	print("[MirrorBoss] Melee combo! (placeholder)")
-	# TODO: Activate hitbox, play animation
+	"""3-hit melee combo — each hit is parry-able"""
+	print("[MirrorBoss] Melee combo start!")
+
+	# Create melee hitbox if not present
+	if not _hitbox:
+		_setup_melee_hitbox()
+
+	# 3-hit combo with delays
+	for i in range(3):
+		if current_state != State.ATTACKING_MELEE:
+			break
+		_activate_melee_hitbox(i)
+		await get_tree().create_timer(0.35).timeout
+
+	_deactivate_melee_hitbox()
+
+
+func _setup_melee_hitbox() -> void:
+	"""Create a melee hitbox Area2D for the boss"""
+	_hitbox = Area2D.new()
+	_hitbox.name = "MeleeHitbox"
+	_hitbox.collision_layer = 128  # Layer 8 — Enemy hitbox (parry-able)
+	_hitbox.collision_mask = 2  # Layer 2 — Player body
+	_hitbox.monitoring = false
+	_hitbox.monitorable = true  # So parry BlockArea can detect us
+
+	var shape := CollisionShape2D.new()
+	var rect := RectangleShape2D.new()
+	rect.size = Vector2(60, 70)
+	shape.shape = rect
+	shape.position = Vector2(40, -40)  # In front of boss
+	_hitbox.add_child(shape)
+
+	# Add to hitbox group for parry detection
+	_hitbox.add_to_group("hitbox")
+
+	# Connect for damage dealing
+	_hitbox.area_entered.connect(_on_melee_hitbox_area_entered)
+
+	add_child(_hitbox)
+
+
+const MELEE_DAMAGE: Array[int] = [10, 10, 18]  # 3rd hit is stronger
+
+func _activate_melee_hitbox(hit_index: int) -> void:
+	"""Flash the hitbox on for a brief window"""
+	if not _hitbox:
+		return
+
+	# Update hitbox position based on facing
+	var facing: float = get_facing_direction()
+	for child in _hitbox.get_children():
+		if child is CollisionShape2D:
+			child.position.x = 40 * facing
+
+	_hitbox.set_meta("current_damage", MELEE_DAMAGE[mini(hit_index, MELEE_DAMAGE.size() - 1)])
+	_hitbox.monitoring = true
+
+	# Visual flash (brief weapon swing indicator)
+	var swing := ColorRect.new()
+	swing.name = "SwingVisual"
+	swing.size = Vector2(50, 60)
+	swing.position = Vector2(20 * facing - 25, -80)
+	swing.color = Color(0.8, 0.3, 1.0, 0.6)
+	add_child(swing)
+
+	# Deactivate after brief window
+	await get_tree().create_timer(0.15).timeout
+	_hitbox.monitoring = false
+	if is_instance_valid(swing):
+		swing.queue_free()
+
+
+func _deactivate_melee_hitbox() -> void:
+	if _hitbox:
+		_hitbox.monitoring = false
+
+
+func _on_melee_hitbox_area_entered(area: Area2D) -> void:
+	"""Melee hit detection"""
+	if area is HurtboxComponent:
+		var owner_node: Node = area.get_parent()
+		if owner_node and (owner_node.is_in_group("player") or owner_node.is_in_group("player2")):
+			if area.is_invulnerable:
+				return  # Player is blocking/parrying
+			var dmg: int = _hitbox.get_meta("current_damage", 10)
+			var knockback: Vector2 = Vector2(get_facing_direction() * 200, -100)
+			area.take_damage(dmg, knockback, 0.3, self)
+			print("[MirrorBoss] Melee hit for %d damage!" % dmg)
+
+
+# ============ GRAVITAETSSCHNITT ============
+const GRAV_SCHNITT_COOLDOWN: float = 8.0
+const GRAV_SCHNITT_RANGE: float = 500.0
+var _grav_schnitt_timer: float = 0.0
+
+func try_gravitaetsschnitt() -> void:
+	"""Attempt to split a platform under the player (called from _process)"""
+	if _grav_schnitt_timer > 0.0:
+		return
+
+	var player: Node2D = GameManager.player if GameManager else null
+	if not player or not is_instance_valid(player):
+		return
+
+	# Only in section 2+
+	if not controller or controller.current_section < MirrorController.Section.DER_SPIEGELKAMPF:
+		return
+
+	# Check distance
+	var dist: float = abs(global_position.x - player.global_position.x)
+	if dist > GRAV_SCHNITT_RANGE:
+		return
+
+	# Find platform under player via raycast
+	var space_state: PhysicsDirectSpaceState2D = get_world_2d().direct_space_state
+	var query := PhysicsRayQueryParameters2D.create(
+		player.global_position, player.global_position + Vector2(0, 100), 1
+	)
+	var result: Dictionary = space_state.intersect_ray(query)
+
+	if result.is_empty():
+		return
+
+	var collider: Node = result["collider"]
+	if collider is SplittingPlatform:
+		_grav_schnitt_timer = GRAV_SCHNITT_COOLDOWN
+		collider.start_split()
+		print("[MirrorBoss] Gravitaetsschnitt! Splitting platform under player!")
+
+
+# ============ URTEIL-SPIEGEL ============
+func _try_urteil_spiegel() -> void:
+	"""Mark the player with Urteil-Spiegel (section 3+)"""
+	if _urteil_timer > 0.0:
+		return
+	if not controller or controller.current_section < MirrorController.Section.DER_GEBROCHENE_ABGRUND:
+		return
+
+	var player: Node2D = GameManager.player if GameManager else null
+	if not player or not is_instance_valid(player):
+		return
+
+	_urteil_timer = URTEIL_COOLDOWN
+	var mark: UrteilMark = UrteilMark.create_on_target(player)
+	get_tree().current_scene.add_child(mark)
+	print("[MirrorBoss] Urteil-Spiegel! Player marked!")
 
 
 # ============ UTILITY ============

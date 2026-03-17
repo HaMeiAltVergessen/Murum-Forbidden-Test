@@ -18,11 +18,14 @@ const BAR_Y: float = 40.0
 
 # ============ STATE ============
 var momentum_system: MomentumSystem = null
+var controller: Node = null  # MirrorController for finisher count
 var _bar_container: Control = null
 var _bar_bg: ColorRect = null
 var _bar_fill: ColorRect = null
 var _label: Label = null
 var _finisher_label: Label = null
+var _finisher_counter: Label = null
+var _countdown_label: Label = null
 var _pulse_tween: Tween = null
 
 
@@ -75,6 +78,39 @@ func _create_ui() -> void:
 	_finisher_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.2))
 	_finisher_label.visible = false
 	_bar_container.add_child(_finisher_label)
+
+	# Finisher counter (top-right of bar)
+	_finisher_counter = Label.new()
+	_finisher_counter.position = Vector2((1920.0 + BAR_WIDTH) * 0.5 + 16.0, BAR_Y - 4.0)
+	_finisher_counter.size = Vector2(120.0, 24.0)
+	_finisher_counter.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_finisher_counter.text = "0/4"
+	_finisher_counter.add_theme_font_size_override("font_size", 18)
+	_finisher_counter.add_theme_color_override("font_color", Color(0.8, 0.6, 1.0))
+	_bar_container.add_child(_finisher_counter)
+
+	# Countdown timer (shown during finisher window)
+	_countdown_label = Label.new()
+	_countdown_label.position = Vector2((1920.0 - BAR_WIDTH) * 0.5 - 80.0, BAR_Y - 4.0)
+	_countdown_label.size = Vector2(70.0, 24.0)
+	_countdown_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_countdown_label.add_theme_font_size_override("font_size", 18)
+	_countdown_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.2))
+	_countdown_label.visible = false
+	_bar_container.add_child(_countdown_label)
+
+
+func _process(_delta: float) -> void:
+	# Update finisher counter
+	if controller and _finisher_counter:
+		_finisher_counter.text = "%d/%d" % [controller.finisher_count, controller.finishers_required]
+
+	# Update countdown during finisher window
+	if momentum_system and momentum_system.is_finisher_window_open() and _countdown_label:
+		_countdown_label.visible = true
+		_countdown_label.text = "%.1fs" % momentum_system._finisher_window_timer
+	elif _countdown_label:
+		_countdown_label.visible = false
 
 
 func _on_momentum_changed(value: float, state: int) -> void:

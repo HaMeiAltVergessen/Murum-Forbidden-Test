@@ -1,0 +1,115 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://bosses/mirror/chunks/chunk_base.gd" id="1_script"]
+
+[sub_resource type="RectangleShape2D" id="large1_shape"]
+size = Vector2(300, 30)
+
+[sub_resource type="RectangleShape2D" id="step1_shape"]
+size = Vector2(100, 20)
+
+[sub_resource type="RectangleShape2D" id="large2_shape"]
+size = Vector2(280, 30)
+
+[sub_resource type="RectangleShape2D" id="step2_shape"]
+size = Vector2(100, 20)
+
+[sub_resource type="RectangleShape2D" id="step3_shape"]
+size = Vector2(100, 20)
+
+[sub_resource type="RectangleShape2D" id="large3_shape"]
+size = Vector2(300, 30)
+
+[node name="ChunkAbgrund03" type="Node2D"]
+script = ExtResource("1_script")
+chunk_width = 1400.0
+
+[node name="LargePlat1" type="StaticBody2D" parent="."]
+position = Vector2(180, 750)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LargePlat1"]
+shape = SubResource("large1_shape")
+
+[node name="Visual" type="ColorRect" parent="LargePlat1"]
+offset_left = -150.0
+offset_top = -15.0
+offset_right = 150.0
+offset_bottom = 15.0
+color = Color(0.25, 0.08, 0.12, 1)
+
+[node name="StepStone1" type="StaticBody2D" parent="."]
+position = Vector2(420, 690)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StepStone1"]
+shape = SubResource("step1_shape")
+
+[node name="Visual" type="ColorRect" parent="StepStone1"]
+offset_left = -50.0
+offset_top = -10.0
+offset_right = 50.0
+offset_bottom = 10.0
+color = Color(0.25, 0.08, 0.12, 1)
+
+[node name="LargePlat2" type="StaticBody2D" parent="."]
+position = Vector2(640, 620)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LargePlat2"]
+shape = SubResource("large2_shape")
+
+[node name="Visual" type="ColorRect" parent="LargePlat2"]
+offset_left = -140.0
+offset_top = -15.0
+offset_right = 140.0
+offset_bottom = 15.0
+color = Color(0.25, 0.08, 0.12, 1)
+
+[node name="StepStone2" type="StaticBody2D" parent="."]
+position = Vector2(870, 560)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StepStone2"]
+shape = SubResource("step2_shape")
+
+[node name="Visual" type="ColorRect" parent="StepStone2"]
+offset_left = -50.0
+offset_top = -10.0
+offset_right = 50.0
+offset_bottom = 10.0
+color = Color(0.25, 0.08, 0.12, 1)
+
+[node name="StepStone3" type="StaticBody2D" parent="."]
+position = Vector2(1000, 650)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StepStone3"]
+shape = SubResource("step3_shape")
+
+[node name="Visual" type="ColorRect" parent="StepStone3"]
+offset_left = -50.0
+offset_top = -10.0
+offset_right = 50.0
+offset_bottom = 10.0
+color = Color(0.25, 0.08, 0.12, 1)
+
+[node name="LargePlat3" type="StaticBody2D" parent="."]
+position = Vector2(1240, 720)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LargePlat3"]
+shape = SubResource("large3_shape")
+
+[node name="Visual" type="ColorRect" parent="LargePlat3"]
+offset_left = -150.0
+offset_top = -15.0
+offset_right = 150.0
+offset_bottom = 15.0
+color = Color(0.25, 0.08, 0.12, 1)
+
+[node name="BossWaypoint_0" type="Marker2D" parent="."]
+position = Vector2(180, 700)
+
+[node name="BossWaypoint_1" type="Marker2D" parent="."]
+position = Vector2(640, 570)
+
+[node name="BossWaypoint_2" type="Marker2D" parent="."]
+position = Vector2(1000, 600)
+
+[node name="BossWaypoint_3" type="Marker2D" parent="."]
+position = Vector2(1240, 670)

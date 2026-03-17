@@ -1,0 +1,96 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://bosses/mirror/chunks/chunk_base.gd" id="1_script"]
+
+[sub_resource type="RectangleShape2D" id="ground_shape"]
+size = Vector2(1200, 40)
+
+[sub_resource type="RectangleShape2D" id="plat1_shape"]
+size = Vector2(160, 20)
+
+[sub_resource type="RectangleShape2D" id="plat2_shape"]
+size = Vector2(160, 20)
+
+[sub_resource type="RectangleShape2D" id="plat3_shape"]
+size = Vector2(160, 20)
+
+[sub_resource type="RectangleShape2D" id="plat4_shape"]
+size = Vector2(160, 20)
+
+[node name="ChunkSpiegel03" type="Node2D"]
+script = ExtResource("1_script")
+chunk_width = 1200.0
+
+[node name="Ground" type="StaticBody2D" parent="."]
+position = Vector2(600, 800)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
+shape = SubResource("ground_shape")
+
+[node name="Visual" type="ColorRect" parent="Ground"]
+offset_left = -600.0
+offset_top = -20.0
+offset_right = 600.0
+offset_bottom = 20.0
+color = Color(0.15, 0.08, 0.2, 1)
+
+[node name="ZigzagPlat1" type="StaticBody2D" parent="."]
+position = Vector2(200, 680)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ZigzagPlat1"]
+shape = SubResource("plat1_shape")
+
+[node name="Visual" type="ColorRect" parent="ZigzagPlat1"]
+offset_left = -80.0
+offset_top = -10.0
+offset_right = 80.0
+offset_bottom = 10.0
+color = Color(0.3, 0.15, 0.35, 1)
+
+[node name="ZigzagPlat2" type="StaticBody2D" parent="."]
+position = Vector2(500, 570)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ZigzagPlat2"]
+shape = SubResource("plat2_shape")
+
+[node name="Visual" type="ColorRect" parent="ZigzagPlat2"]
+offset_left = -80.0
+offset_top = -10.0
+offset_right = 80.0
+offset_bottom = 10.0
+color = Color(0.3, 0.15, 0.35, 1)
+
+[node name="ZigzagPlat3" type="StaticBody2D" parent="."]
+position = Vector2(780, 460)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ZigzagPlat3"]
+shape = SubResource("plat3_shape")
+
+[node name="Visual" type="ColorRect" parent="ZigzagPlat3"]
+offset_left = -80.0
+offset_top = -10.0
+offset_right = 80.0
+offset_bottom = 10.0
+color = Color(0.3, 0.15, 0.35, 1)
+
+[node name="ZigzagPlat4" type="StaticBody2D" parent="."]
+position = Vector2(1050, 350)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ZigzagPlat4"]
+shape = SubResource("plat4_shape")
+
+[node name="Visual" type="ColorRect" parent="ZigzagPlat4"]
+offset_left = -80.0
+offset_top = -10.0
+offset_right = 80.0
+offset_bottom = 10.0
+color = Color(0.3, 0.15, 0.35, 1)
+
+[node name="BossWaypoint_0" type="Marker2D" parent="."]
+position = Vector2(200, 630)
+
+[node name="BossWaypoint_1" type="Marker2D" parent="."]
+position = Vector2(640, 420)
+
+[node name="BossWaypoint_2" type="Marker2D" parent="."]
+position = Vector2(1050, 300)

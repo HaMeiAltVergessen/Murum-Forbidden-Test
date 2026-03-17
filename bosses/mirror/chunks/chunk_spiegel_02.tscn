@@ -1,0 +1,80 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://bosses/mirror/chunks/chunk_base.gd" id="1_script"]
+
+[sub_resource type="RectangleShape2D" id="ground_left_shape"]
+size = Vector2(400, 40)
+
+[sub_resource type="RectangleShape2D" id="ground_right_shape"]
+size = Vector2(400, 40)
+
+[sub_resource type="RectangleShape2D" id="plat_low_shape"]
+size = Vector2(220, 20)
+
+[sub_resource type="RectangleShape2D" id="plat_high_shape"]
+size = Vector2(180, 20)
+
+[node name="ChunkSpiegel02" type="Node2D"]
+script = ExtResource("1_script")
+chunk_width = 1200.0
+
+[node name="GroundLeft" type="StaticBody2D" parent="."]
+position = Vector2(200, 800)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GroundLeft"]
+shape = SubResource("ground_left_shape")
+
+[node name="Visual" type="ColorRect" parent="GroundLeft"]
+offset_left = -200.0
+offset_top = -20.0
+offset_right = 200.0
+offset_bottom = 20.0
+color = Color(0.15, 0.08, 0.2, 1)
+
+[node name="GroundRight" type="StaticBody2D" parent="."]
+position = Vector2(1000, 800)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GroundRight"]
+shape = SubResource("ground_right_shape")
+
+[node name="Visual" type="ColorRect" parent="GroundRight"]
+offset_left = -200.0
+offset_top = -20.0
+offset_right = 200.0
+offset_bottom = 20.0
+color = Color(0.15, 0.08, 0.2, 1)
+
+[node name="FloatingPlatLow" type="StaticBody2D" parent="."]
+position = Vector2(520, 680)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FloatingPlatLow"]
+shape = SubResource("plat_low_shape")
+
+[node name="Visual" type="ColorRect" parent="FloatingPlatLow"]
+offset_left = -110.0
+offset_top = -10.0
+offset_right = 110.0
+offset_bottom = 10.0
+color = Color(0.3, 0.15, 0.35, 1)
+
+[node name="FloatingPlatHigh" type="StaticBody2D" parent="."]
+position = Vector2(720, 520)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FloatingPlatHigh"]
+shape = SubResource("plat_high_shape")
+
+[node name="Visual" type="ColorRect" parent="FloatingPlatHigh"]
+offset_left = -90.0
+offset_top = -10.0
+offset_right = 90.0
+offset_bottom = 10.0
+color = Color(0.3, 0.15, 0.35, 1)
+
+[node name="BossWaypoint_0" type="Marker2D" parent="."]
+position = Vector2(200, 750)
+
+[node name="BossWaypoint_1" type="Marker2D" parent="."]
+position = Vector2(620, 470)
+
+[node name="BossWaypoint_2" type="Marker2D" parent="."]
+position = Vector2(1000, 750)

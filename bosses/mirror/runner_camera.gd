@@ -12,6 +12,8 @@ class_name RunnerCamera
 # ============ STATE ============
 var is_scrolling: bool = true
 var _start_x: float = 0.0
+var _shake_intensity: float = 0.0
+var _shake_decay: float = 5.0
 
 
 func _ready() -> void:
@@ -33,6 +35,16 @@ func _process(delta: float) -> void:
 	if player and is_instance_valid(player):
 		var target_y: float = player.global_position.y + y_offset
 		global_position.y = lerpf(global_position.y, target_y, y_smoothing * delta)
+
+	# Camera shake
+	if _shake_intensity > 0.01:
+		offset = Vector2(
+			randf_range(-_shake_intensity, _shake_intensity),
+			randf_range(-_shake_intensity, _shake_intensity)
+		)
+		_shake_intensity = lerpf(_shake_intensity, 0.0, _shake_decay * delta)
+	elif offset != Vector2.ZERO:
+		offset = Vector2.ZERO
 
 
 # ============ CONTROL ============
@@ -57,3 +69,9 @@ func get_right_edge() -> float:
 func get_scroll_distance() -> float:
 	"""Total distance scrolled since fight start"""
 	return global_position.x - _start_x
+
+
+func shake(intensity: float = 8.0, decay: float = 5.0) -> void:
+	"""Trigger camera shake"""
+	_shake_intensity = max(_shake_intensity, intensity)
+	_shake_decay = decay

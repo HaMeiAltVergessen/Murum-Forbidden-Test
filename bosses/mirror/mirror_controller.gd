@@ -56,6 +56,15 @@ var mirror_boss: CharacterBody2D = null
 var momentum_system: Node = null
 var momentum_bar: CanvasLayer = null
 
+# ============ BACKGROUND IMAGES (per section) ============
+const BG_PATHS: Dictionary = {
+	Section.DER_FALL: "res://Assets/AIPlaceholder/AlbtraumWelten/Welt3_Abgrund/2D_pixel_art_cosmic_horror_bac_GPT_Image_15_29025.jpg",
+	Section.DER_SPIEGELKAMPF: "res://Assets/AIPlaceholder/AlbtraumWelten/Welt3_Abgrund/2D_pixel_art_cosmic_horror_bac_GPT_Image_15_45960.jpg",
+	Section.DER_GEBROCHENE_ABGRUND: "res://Assets/AIPlaceholder/AlbtraumWelten/Welt3_Abgrund/2D_pixel_art_cosmic_horror_env_GPT_Image_15_03661.jpg",
+	Section.FINALE_VERFOLGUNG: "res://Assets/AIPlaceholder/AlbtraumWelten/Welt3_Abgrund/2D_pixel_art_cosmic_horror_bos_GPT_Image_15_12927.jpg",
+}
+var _bg_sprite: Sprite2D = null
+
 # ============ DEATH ZONE ============
 const DEATH_ZONE_OFFSET: float = -80.0  # px left of camera edge
 const DEATH_ZONE_DAMAGE: int = 50
@@ -101,6 +110,7 @@ func start_fight() -> void:
 
 	# Setup subsystems
 	_setup_runner_camera()
+	_setup_background()
 	_setup_chunk_spawner()
 	_setup_momentum_system()
 	_setup_momentum_bar()
@@ -144,6 +154,30 @@ func _setup_runner_camera() -> void:
 	runner_camera.make_current()
 
 
+func _setup_background() -> void:
+	_bg_sprite = Sprite2D.new()
+	_bg_sprite.name = "BackgroundSprite"
+	_bg_sprite.z_index = -20
+	_bg_sprite.modulate = Color(0.6, 0.6, 0.6, 0.8)
+	runner_camera.add_child(_bg_sprite)
+	_update_background(Section.DER_FALL)
+
+
+func _update_background(section: int) -> void:
+	if not _bg_sprite:
+		return
+	var path: String = BG_PATHS.get(section, "")
+	if path.is_empty() or not ResourceLoader.exists(path):
+		return
+	var tex: Texture2D = load(path)
+	if tex:
+		_bg_sprite.texture = tex
+		# Scale to fill viewport
+		var tex_size: Vector2 = tex.get_size()
+		if tex_size.x > 0 and tex_size.y > 0:
+			_bg_sprite.scale = Vector2(1920.0 / tex_size.x, 1080.0 / tex_size.y) * 1.2
+
+
 func _setup_chunk_spawner() -> void:
 	chunk_spawner = preload("res://bosses/mirror/chunk_spawner.gd").new()
 	chunk_spawner.name = "ChunkSpawner"
@@ -164,6 +198,7 @@ func _setup_momentum_bar() -> void:
 	momentum_bar.name = "MomentumBar"
 	momentum_bar.layer = 10
 	momentum_bar.momentum_system = momentum_system
+	momentum_bar.controller = self
 	add_child(momentum_bar)
 
 
@@ -205,6 +240,13 @@ func _advance_section() -> void:
 		runner_camera.scroll_speed = config["scroll_speed"]
 
 	_show_section_title(config["name"])
+
+	# Update background
+	_update_background(current_section)
+
+	# Camera shake on transition
+	if runner_camera and runner_camera.has_method("shake"):
+		runner_camera.shake(6.0, 4.0)
 
 
 func _get_current_scroll_speed() -> float:
@@ -264,6 +306,10 @@ func on_finisher_landed() -> void:
 	"""Called by MomentumSystem when player lands a finisher during MAX window"""
 	finisher_count += 1
 	print("[MirrorController] Finisher %d/%d landed!" % [finisher_count, finishers_required])
+
+	# Camera shake (stronger each finisher)
+	if runner_camera and runner_camera.has_method("shake"):
+		runner_camera.shake(10.0 + finisher_count * 5.0, 3.0)
 
 	if mirror_boss and mirror_boss.has_method("on_finisher_hit"):
 		mirror_boss.on_finisher_hit(finisher_count)

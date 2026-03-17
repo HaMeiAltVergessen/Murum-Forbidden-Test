@@ -14,6 +14,10 @@ const GROUND_Y: float = 800.0
 func _ready() -> void:
 	# Store width as metadata for ChunkSpawner
 	set_meta("chunk_width", chunk_width)
+	# Auto-add waypoints to group by name pattern
+	for child in get_children():
+		if child is Marker2D and child.name.begins_with("BossWaypoint"):
+			child.add_to_group("boss_waypoints")
 
 
 # ============ WAYPOINTS ============

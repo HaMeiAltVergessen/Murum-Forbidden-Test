@@ -174,7 +174,16 @@ worlds/world_1_ruins/
   - Eskalationssystem: Je mehr Cores zerstoert, desto aggressiver
   - Finale Phase: Alle Cores tot → Central Hub (80 HP) → Umgebungschaos
   - Kill-Order-Strategie: Spieler entscheidet Reihenfolge
-- **Welt 3**: "Murum (Spiegel)" — Spiegelung des Spielers, Endless-Runner (geplant)
+- **Welt 3**: "Murum (Spiegel)" — Inverted Boss Fight als Auto-Scrolling Runner [IMPLEMENTIERT]
+  - `bosses/mirror/` — MirrorController + MirrorBoss (CharacterBody2D) + RunnerCamera
+  - Auto-Scrolling Runner durch 4 Abschnitte (Der Fall → Spiegelkampf → Abgrund → Finale)
+  - MomentumSystem (0-100) statt HP: Parry/Combo steigert, Schaden senkt
+  - 4 Finisher-Fenster bei MAX Momentum zum Besiegen (kein klassisches HP)
+  - ChunkSpawner: 12 handcrafted Chunks (3 pro Abschnitt), procedural aneinandergereiht
+  - Boss-Angriffe: Dark Orbs (parry-bar), Melee-Combo, Gravitaetsschnitt, Urteil-Spiegel
+  - Entities: DarkOrb, SplittingPlatform, TimeFragment, UrteilMark
+  - Defeat-Sequenz: Dialog + Boss-Dissolve + Fade to Black
+  - P2 optional: Stirbt bei Todeszone, kein Game Over
 
 ### Veraltete Boss-Konzepte (NICHT MEHR GUELTIG)
 - ~~Urgathon als Welt-1-Boss~~ → ersetzt durch "Die Heldengruppe"
@@ -240,7 +249,7 @@ worlds/world_1_ruins/
 - [ ] Welt-2- und Welt-3-Gegner
 - [x] Welt-1-Boss: "Die Heldengruppe" (5-Helden-Gruppenkampf)
 - [x] Welt-2-Boss: "Das Kollektiv der Einen Stimme" (5-Core-Modulkampf + Central Hub)
-- [ ] Welt-3-Boss: "Murum (Spiegel)" (Spiegelung)
+- [x] Welt-3-Boss: "Murum (Spiegel)" (Auto-Scrolling Runner, 4 Abschnitte, Momentum-System)
 
 ## Bekannte TODOs
 

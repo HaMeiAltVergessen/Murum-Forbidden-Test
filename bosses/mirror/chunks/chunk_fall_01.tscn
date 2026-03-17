@@ -1,0 +1,61 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://bosses/mirror/chunks/chunk_base.gd" id="1_script"]
+
+[sub_resource type="RectangleShape2D" id="ground_shape"]
+size = Vector2(1000, 40)
+
+[sub_resource type="RectangleShape2D" id="plat1_shape"]
+size = Vector2(250, 20)
+
+[sub_resource type="RectangleShape2D" id="plat2_shape"]
+size = Vector2(200, 20)
+
+[node name="ChunkFall01" type="Node2D"]
+script = ExtResource("1_script")
+chunk_width = 1000.0
+
+[node name="Ground" type="StaticBody2D" parent="."]
+position = Vector2(500, 800)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
+shape = SubResource("ground_shape")
+
+[node name="Visual" type="ColorRect" parent="Ground"]
+offset_left = -500.0
+offset_top = -20.0
+offset_right = 500.0
+offset_bottom = 20.0
+color = Color(0.12, 0.1, 0.18, 1)
+
+[node name="Platform1" type="StaticBody2D" parent="."]
+position = Vector2(300, 600)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform1"]
+shape = SubResource("plat1_shape")
+
+[node name="Visual" type="ColorRect" parent="Platform1"]
+offset_left = -125.0
+offset_top = -10.0
+offset_right = 125.0
+offset_bottom = 10.0
+color = Color(0.18, 0.14, 0.25, 1)
+
+[node name="Platform2" type="StaticBody2D" parent="."]
+position = Vector2(700, 650)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform2"]
+shape = SubResource("plat2_shape")
+
+[node name="Visual" type="ColorRect" parent="Platform2"]
+offset_left = -100.0
+offset_top = -10.0
+offset_right = 100.0
+offset_bottom = 10.0
+color = Color(0.18, 0.14, 0.25, 1)
+
+[node name="BossWaypoint_0" type="Marker2D" parent="."]
+position = Vector2(250, 550)
+
+[node name="BossWaypoint_1" type="Marker2D" parent="."]
+position = Vector2(750, 600)
