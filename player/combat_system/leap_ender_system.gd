@@ -323,6 +323,10 @@ func _check_leap_hits() -> void:
 	for enemy in enemies:
 		if enemy in hit_enemies:
 			continue  # Already hit
+		if not is_instance_valid(enemy) or not enemy.has_method("take_damage"):
+			continue
+		if enemy.get("is_destroyed") or enemy.get("is_dead"):
+			continue
 
 		var distance = player.global_position.distance_to(enemy.global_position)
 
@@ -436,6 +440,14 @@ func _teleport_to_nearest_enemy(current_enemy: Node) -> void:
 
 		if not is_instance_valid(enemy):
 			continue  # Skip invalid/dead enemies
+
+		# Skip non-damageable nodes (e.g. shields, Area2Ds in enemies group)
+		if not enemy.has_method("take_damage"):
+			continue
+
+		# Skip destroyed cores
+		if enemy.get("is_destroyed"):
+			continue
 
 		# Check if enemy is alive
 		if enemy.has_method("is_alive") and not enemy.is_alive():

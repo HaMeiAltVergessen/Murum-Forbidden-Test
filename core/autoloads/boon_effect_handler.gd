@@ -1040,12 +1040,16 @@ func _get_nearest_enemy(pos: Vector2, max_range: float) -> Node:
 
 
 func _get_enemies_in_radius(center: Vector2, radius: float) -> Array:
-	"""Returns all living enemies within radius"""
+	"""Returns all living enemies within radius that can take damage"""
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	var result: Array = []
 
 	for enemy in enemies:
-		if not is_instance_valid(enemy) or enemy.get("is_dead"):
+		if not is_instance_valid(enemy):
+			continue
+		if not enemy.has_method("take_damage"):
+			continue
+		if enemy.get("is_dead") or enemy.get("is_destroyed"):
 			continue
 		if enemy.global_position.distance_to(center) <= radius:
 			result.append(enemy)

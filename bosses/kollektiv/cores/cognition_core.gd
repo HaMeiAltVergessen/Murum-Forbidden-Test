@@ -47,7 +47,6 @@ func _create_shield() -> void:
 	_shield.collision_mask = 48
 	_shield.monitoring = false
 	_shield.monitorable = true
-	_shield.add_to_group("enemies")
 	_shield.add_to_group("kollektiv_shield")
 
 	var shape := CollisionShape2D.new()
