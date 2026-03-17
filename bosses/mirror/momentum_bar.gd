@@ -26,6 +26,7 @@ var _label: Label = null
 var _finisher_label: Label = null
 var _finisher_counter: Label = null
 var _countdown_label: Label = null
+var _section_label: Label = null
 var _pulse_tween: Tween = null
 
 
@@ -99,11 +100,28 @@ func _create_ui() -> void:
 	_countdown_label.visible = false
 	_bar_container.add_child(_countdown_label)
 
+	# Section indicator (bottom-right)
+	_section_label = Label.new()
+	_section_label.position = Vector2((1920.0 + BAR_WIDTH) * 0.5 + 16.0, BAR_Y + BAR_HEIGHT + 4.0)
+	_section_label.size = Vector2(200.0, 20.0)
+	_section_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_section_label.text = "Abschnitt 1/4"
+	_section_label.add_theme_font_size_override("font_size", 14)
+	_section_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	_bar_container.add_child(_section_label)
+
 
 func _process(_delta: float) -> void:
 	# Update finisher counter
 	if controller and _finisher_counter:
 		_finisher_counter.text = "%d/%d" % [controller.finisher_count, controller.finishers_required]
+
+	# Update section label
+	if controller and _section_label:
+		var section_names: Array[String] = ["Der Fall", "Spiegelkampf", "Abgrund", "Finale"]
+		var idx: int = clampi(controller.current_section, 0, 3)
+		var speed: float = controller.get_scroll_speed()
+		_section_label.text = "%s (%d/%d) | %.0f px/s" % [section_names[idx], idx + 1, 4, speed]
 
 	# Update countdown during finisher window
 	if momentum_system and momentum_system.is_finisher_window_open() and _countdown_label:

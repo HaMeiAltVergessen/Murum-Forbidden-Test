@@ -93,6 +93,16 @@ func _process(delta: float) -> void:
 	if runner_camera:
 		runner_camera.scroll_speed = scroll_speed
 
+	# Debug: log section/speed every 5 seconds
+	if int(section_timer) % 5 == 0 and section_timer - delta < float(int(section_timer)):
+		print("[MirrorController] Section %d (%s) | Timer: %.1fs/%.1fs | Speed: %.0f" % [
+			current_section,
+			SECTION_CONFIG[current_section]["name"],
+			section_timer,
+			config["duration"],
+			scroll_speed
+		])
+
 	# Death zone check
 	_check_death_zone(delta)
 

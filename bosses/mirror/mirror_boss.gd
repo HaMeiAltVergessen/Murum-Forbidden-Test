@@ -111,6 +111,21 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
+	# Safety: keep boss within camera view
+	if controller and controller.runner_camera:
+		var cam_left: float = controller.runner_camera.get_left_edge()
+		var cam_right: float = controller.runner_camera.get_right_edge()
+		# Boss should stay in the right ~60% of screen
+		var min_x: float = cam_left + 400.0
+		var max_x: float = cam_right - 100.0
+		if global_position.x > max_x:
+			global_position.x = max_x
+			velocity.x = min(velocity.x, controller.get_scroll_speed())
+		elif global_position.x < min_x:
+			# Boss fell behind — teleport forward
+			global_position.x = min_x
+			velocity.x = controller.get_scroll_speed()
+
 	# Update facing direction
 	if velocity.x > 10.0:
 		_facing_right = true
@@ -146,36 +161,42 @@ func _process(delta: float) -> void:
 
 # ============ RUNNING AI ============
 func _process_running(delta: float) -> void:
+	# Get camera scroll speed as our base reference
+	var scroll_speed: float = 200.0
+	if controller:
+		scroll_speed = controller.get_scroll_speed()
+
 	var player: Node2D = GameManager.player if GameManager else null
 	if not player or not is_instance_valid(player):
-		# Just run right
-		velocity.x = MOVE_SPEED
+		velocity.x = scroll_speed
 		return
 
-	# Calculate desired position (ahead of player)
+	# Distance: positive = boss is ahead of player (desired)
 	var distance_to_player: float = global_position.x - player.global_position.x
-	var target_speed: float = MOVE_SPEED
 
-	if distance_to_player < MIN_DISTANCE:
-		# Too close — speed up
-		target_speed = MOVE_SPEED * 1.5
-	elif distance_to_player > MAX_DISTANCE:
-		# Too far ahead — slow down slightly
-		target_speed = MOVE_SPEED * 0.7
-	else:
-		# Good distance — match scroll speed + slight lead
-		if controller and controller.runner_camera:
-			target_speed = max(MOVE_SPEED, controller.get_scroll_speed() * 1.1)
+	# Boss speed is based on CAMERA speed, with proportional adjustment
+	# to maintain PREFERRED_DISTANCE ahead of player
+	var distance_error: float = distance_to_player - PREFERRED_DISTANCE
+	# Negative error = too close to player, need to speed up
+	# Positive error = too far ahead, need to slow down
+	var speed_adjustment: float = -distance_error * 2.0
+
+	var target_speed: float = scroll_speed + speed_adjustment
+
+	# Clamp: never slower than 60% of scroll speed (or boss falls behind camera)
+	# Never faster than scroll_speed + 150 (reasonable catch-up)
+	target_speed = clampf(target_speed, scroll_speed * 0.6, scroll_speed + 150.0)
 
 	velocity.x = target_speed
 
 	# Jump logic — check for gaps or platforms ahead
 	_ai_jump_logic()
 
-	# Check melee range
-	if distance_to_player < MELEE_ATTACK_RANGE and _melee_timer >= MELEE_ATTACK_COOLDOWN:
-		if controller and controller.current_section >= MirrorController.Section.DER_SPIEGELKAMPF:
-			_start_melee_attack()
+	# Check melee range (only when close enough)
+	if distance_to_player < MELEE_ATTACK_RANGE and distance_to_player > -50.0:
+		if _melee_timer >= MELEE_ATTACK_COOLDOWN:
+			if controller and controller.current_section >= MirrorController.Section.DER_SPIEGELKAMPF:
+				_start_melee_attack()
 
 
 func _ai_jump_logic() -> void:
@@ -245,18 +266,27 @@ func _start_melee_attack() -> void:
 
 
 func _process_attacking(_delta: float) -> void:
-	# Slow down during ranged attack but keep moving
-	velocity.x = MOVE_SPEED * 0.3
+	# Slow down during ranged attack but still keep up with camera
+	var scroll_speed: float = 200.0
+	if controller:
+		scroll_speed = controller.get_scroll_speed()
+	velocity.x = scroll_speed * 0.8
 
 
 func _process_melee(_delta: float) -> void:
-	# Stop during melee
-	velocity.x = 0.0
+	# Slow down during melee but don't stop (camera is still moving!)
+	var scroll_speed: float = 200.0
+	if controller:
+		scroll_speed = controller.get_scroll_speed()
+	velocity.x = scroll_speed * 0.5
 
 
 func _process_vulnerable(_delta: float) -> void:
-	# Stumble / slow movement
-	velocity.x = MOVE_SPEED * 0.2
+	# Stumble / slow movement — but still keep up with camera minimum
+	var scroll_speed: float = 200.0
+	if controller:
+		scroll_speed = controller.get_scroll_speed()
+	velocity.x = scroll_speed * 0.6
 
 
 # ============ VULNERABILITY (Finisher System) ============

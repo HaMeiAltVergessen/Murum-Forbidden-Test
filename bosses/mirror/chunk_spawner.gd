@@ -4,9 +4,9 @@ extends Node
 class_name ChunkSpawner
 
 # ============ CONFIG ============
-const SPAWN_AHEAD_DISTANCE: float = 2500.0  # How far ahead of camera to spawn
-const DESPAWN_BEHIND_DISTANCE: float = 500.0  # How far behind camera left edge to despawn
-const MAX_ACTIVE_CHUNKS: int = 4
+const SPAWN_AHEAD_DISTANCE: float = 1500.0  # How far ahead of camera right edge to spawn
+const DESPAWN_BEHIND_DISTANCE: float = 300.0  # How far behind camera left edge to despawn
+const MAX_ACTIVE_CHUNKS: int = 5  # Allow more active chunks for smoother scrolling
 const GROUND_Y: float = 800.0  # Standard ground level
 
 # ============ CHUNK POOLS (paths to .tscn files) ============
@@ -39,9 +39,11 @@ func _process(delta: float) -> void:
 	if not camera:
 		return
 
-	# Spawn new chunks ahead
+	# Spawn new chunks ahead of camera
 	var spawn_threshold: float = camera.get_right_edge() + SPAWN_AHEAD_DISTANCE
-	while _next_spawn_x < spawn_threshold and active_chunks.size() < MAX_ACTIVE_CHUNKS:
+	while _next_spawn_x < spawn_threshold:
+		if active_chunks.size() >= MAX_ACTIVE_CHUNKS:
+			break
 		_spawn_next_chunk()
 
 	# Despawn chunks behind camera
@@ -68,19 +70,23 @@ func start_spawning(pool_name: String) -> void:
 	_pool_index = 0
 	_is_spawning = true
 
-	# Set initial spawn position based on camera
-	if controller and controller.runner_camera:
-		_next_spawn_x = controller.runner_camera.get_left_edge()
+	# Set initial spawn position: start chunks after the boss room's starting ground
+	# Boss room has ground from 0 to ~1200px, so chunks start at 1200
+	var player: Node2D = GameManager.player if GameManager else null
+	if player and is_instance_valid(player):
+		# Start chunks slightly ahead of where the player is
+		_next_spawn_x = player.global_position.x + 800.0
 	else:
-		var player: Node2D = GameManager.player if GameManager else null
-		if player and is_instance_valid(player):
-			_next_spawn_x = player.global_position.x - 960.0
-		else:
-			_next_spawn_x = 0.0
+		_next_spawn_x = 1200.0
 
-	# Spawn initial chunks
-	for i in range(MAX_ACTIVE_CHUNKS):
+	print("[ChunkSpawner] Starting at X=%.0f, pool='%s'" % [_next_spawn_x, pool_name])
+
+	# Spawn enough initial chunks to fill the visible area + buffer ahead
+	var target_x: float = _next_spawn_x + 4000.0  # Fill well ahead
+	while _next_spawn_x < target_x and active_chunks.size() < MAX_ACTIVE_CHUNKS:
 		_spawn_next_chunk()
+
+	print("[ChunkSpawner] Spawned %d initial chunks, next at X=%.0f" % [active_chunks.size(), _next_spawn_x])
 
 
 func switch_pool(pool_name: String) -> void:

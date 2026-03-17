@@ -27,11 +27,22 @@ func _process(delta: float) -> void:
 	if not is_scrolling:
 		return
 
-	# Auto-scroll X
-	global_position.x += scroll_speed * delta
+	# Auto-scroll X: minimum speed is scroll_speed, but also track the player
+	# so the camera never falls too far behind a fast player
+	var min_x: float = global_position.x + scroll_speed * delta
+
+	var player: Node2D = GameManager.player if GameManager else null
+	if player and is_instance_valid(player):
+		# Camera X: the player should be in the left ~40% of the screen
+		# so camera center = player.x + 20% of viewport (player slightly left of center)
+		var player_target_x: float = player.global_position.x + viewport_size.x * 0.1
+		# Use the larger of scroll-based and player-based position
+		# This means: camera always scrolls at minimum speed, but if player runs ahead, camera follows
+		global_position.x = maxf(min_x, lerpf(global_position.x, player_target_x, 4.0 * delta))
+	else:
+		global_position.x = min_x
 
 	# Track player Y loosely
-	var player: Node2D = GameManager.player if GameManager else null
 	if player and is_instance_valid(player):
 		var target_y: float = player.global_position.y + y_offset
 		global_position.y = lerpf(global_position.y, target_y, y_smoothing * delta)
