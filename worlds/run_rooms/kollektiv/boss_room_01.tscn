@@ -46,7 +46,6 @@ color = Color(0.15, 0.22, 0.35, 1)
 
 [node name="WallLeftVisual" type="ColorRect" parent="."]
 offset_left = -40.0
-offset_right = 0.0
 offset_bottom = 2800.0
 color = Color(0.12, 0.18, 0.3, 1)
 
@@ -60,7 +59,6 @@ color = Color(0.12, 0.18, 0.3, 1)
 offset_left = -40.0
 offset_top = -40.0
 offset_right = 2840.0
-offset_bottom = 0.0
 color = Color(0.12, 0.18, 0.3, 1)
 
 [node name="Ground" type="StaticBody2D" parent="."]
