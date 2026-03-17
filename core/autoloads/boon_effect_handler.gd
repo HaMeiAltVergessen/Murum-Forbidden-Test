@@ -25,7 +25,12 @@ const ELEMENT_VFX := {
 	"lightning": "Explosion_7/4",
 }
 
+# Lightning (electro-shock) frames for Arthra T1
+const LIGHTNING_VFX_PATH := "res://Assets/Placeholder/Legacy Collection/Assets/Misc/Grotto-escape-2-FX/sprites/electro-shock/"
+const LIGHTNING_FRAME_COUNT: int = 9
+
 var _vfx_cache: Dictionary = {}  # folder_key -> SpriteFrames
+var _lightning_frames: SpriteFrames = null
 
 # ============ NORON T1 STATE ============
 var _twilight_blades_active: bool = false
@@ -34,6 +39,7 @@ var _blade_rotation: float = 0.0
 
 # ============ NORON T4 STATE ============
 var _kill_explosion_toggle: bool = false  # Alternates light/dark
+var _kill_explosion_active: bool = false  # Re-entrancy guard to prevent overflow
 
 # ============ MURRUM T2 DOT TRACKING ============
 var _dot_targets: Array = []  # Array of {enemy, timer, dps}
@@ -65,6 +71,7 @@ func _ready() -> void:
 	EventBus.staff_hit_enemy.connect(_on_staff_hit_enemy)
 
 	_preload_vfx()
+	_preload_lightning_vfx()
 	print("[BoonEffectHandler] Initialized")
 
 
@@ -116,7 +123,7 @@ func _on_combo_increased(new_count: int, _multiplier: float) -> void:
 	var total_damage: int = int(base_damage * (1.0 + bonus_pct))
 
 	var nearest: Node = _get_nearest_enemy(player.global_position, 300.0)
-	if nearest:
+	if nearest and nearest.has_method("take_damage"):
 		nearest.take_damage(total_damage, player)
 		_spawn_lightning_vfx(nearest.global_position)
 		print("[BoonEffect] Arthra T1: Lightning strike! %d damage on %s" % [total_damage, nearest.name])
@@ -162,8 +169,8 @@ func _on_enemy_died(enemy: Node, position: Vector2) -> void:
 		if enemy.has_meta("urteil_marked"):
 			_arthra_t5_chain_urteil(position)
 
-	# Noron T4: Kill explosion (alternating light/dark)
-	if BoonManager.has_boon("noron", 4):
+	# Noron T4: Kill explosion (alternating light/dark) — guard against recursion
+	if BoonManager.has_boon("noron", 4) and not _kill_explosion_active:
 		_spawn_kill_explosion(position)
 
 	# Raelear T2: Death clone
@@ -347,7 +354,9 @@ func _noron_t3_blade_heal(player: Node) -> void:
 func _on_enemy_damaged(enemy: Node, _damage: int) -> void:
 	if not _is_in_run():
 		return
-	if not is_instance_valid(enemy):
+	if not is_instance_valid(enemy) or not enemy.has_method("take_damage"):
+		return
+	if enemy.get("is_destroyed") or enemy.get("is_dead"):
 		return
 
 	# Noron T2: Worte des Wahns — 15% confusion
@@ -463,23 +472,28 @@ func _spawn_kill_explosion(position: Vector2) -> void:
 	if not player:
 		return
 
+	_kill_explosion_active = true
+
 	var dmg: int = BoonManager.get_scaled_param("noron", 4, "kill_explosion_damage", 30)
 	var radius: float = BoonManager.get_scaled_param("noron", 4, "kill_explosion_radius", 120)
 
 	var enemies: Array = _get_enemies_in_radius(position, radius)
 	for enemy in enemies:
-		enemy.take_damage(dmg, player)
+		if is_instance_valid(enemy) and enemy.has_method("take_damage"):
+			enemy.take_damage(dmg, player)
 
 	# Alternate light/dark explosion
 	_spawn_noron_vfx(position, radius, _kill_explosion_toggle)
 	_kill_explosion_toggle = not _kill_explosion_toggle
+
+	_kill_explosion_active = false
 	print("[BoonEffect] Noron T4: Kill explosion! %d enemies hit" % enemies.size())
 
 
 # ============ SAIRIAS T3: HIMMEL UND ERDE (Block Launch/Slam) ============
 func _block_launch_slam(enemy: Node) -> void:
 	"""Launches grounded enemies, slams airborne enemies"""
-	if not is_instance_valid(enemy):
+	if not is_instance_valid(enemy) or not enemy.has_method("take_damage"):
 		return
 
 	var launch_force: float = BoonManager.get_scaled_param("sairias", 3, "launch_force", 400)
@@ -565,7 +579,7 @@ func _on_perfect_parry_executed(enemy: Node) -> void:
 	var player = _get_player()
 
 	# Sairias T2: Reflect damage
-	if BoonManager.has_boon("sairias", 2) and is_instance_valid(enemy):
+	if BoonManager.has_boon("sairias", 2) and is_instance_valid(enemy) and enemy.has_method("take_damage"):
 		var reflect_damage: int = 0
 		if "attack_damage" in enemy:
 			reflect_damage = enemy.attack_damage
@@ -791,7 +805,11 @@ func _process_dots(delta: float) -> void:
 
 	for i in range(_dot_targets.size()):
 		var dot: Dictionary = _dot_targets[i]
-		if not is_instance_valid(dot["enemy"]) or dot["enemy"].get("is_dead"):
+		var dot_enemy = dot["enemy"]
+		if not is_instance_valid(dot_enemy) or dot_enemy.get("is_dead") or dot_enemy.get("is_destroyed"):
+			to_remove.append(i)
+			continue
+		if not dot_enemy.has_method("take_damage"):
 			to_remove.append(i)
 			continue
 
@@ -801,7 +819,7 @@ func _process_dots(delta: float) -> void:
 		# Damage every 1 second
 		if dot["tick"] >= 1.0:
 			dot["tick"] -= 1.0
-			dot["enemy"].take_damage(dot["dps"], player)
+			dot_enemy.take_damage(dot["dps"], player)
 
 		if dot["timer"] <= 0.0:
 			to_remove.append(i)
@@ -969,15 +987,54 @@ func _spawn_explosion_vfx(pos: Vector2, folder: String, vfx_scale: float = 1.0, 
 	anim.animation_finished.connect(anim.queue_free)
 
 
+func _preload_lightning_vfx() -> void:
+	"""Preloads electro-shock frames for Arthra T1 lightning"""
+	_lightning_frames = SpriteFrames.new()
+	_lightning_frames.remove_animation("default")
+	_lightning_frames.add_animation("play")
+	_lightning_frames.set_animation_loop("play", false)
+	_lightning_frames.set_animation_speed("play", 18.0)
+
+	var frame_names: Array = [
+		"_0000_Layer-1.png", "_0001_Layer-2.png", "_0002_Layer-3.png",
+		"_0003_Layer-4.png", "_0004_Layer-5.png", "_0005_Layer-6.png",
+		"_0006_Layer-7.png", "_0007_Layer-8.png", "_0008_Layer-9.png",
+	]
+	for fname in frame_names:
+		var path: String = LIGHTNING_VFX_PATH + fname
+		if ResourceLoader.exists(path):
+			_lightning_frames.add_frame("play", load(path))
+
+	if _lightning_frames.get_frame_count("play") > 0:
+		print("[BoonVFX] Lightning: %d frames loaded" % _lightning_frames.get_frame_count("play"))
+
+
 func _spawn_lightning_vfx(pos: Vector2) -> void:
-	"""Arthra: Lightning strike VFX"""
-	_spawn_explosion_vfx(pos, PATH_VFX["arthra"][0], 0.5)
+	"""Arthra: Lightning strike VFX using electro-shock sprites"""
+	if not _lightning_frames or _lightning_frames.get_frame_count("play") == 0:
+		_spawn_explosion_vfx(pos, PATH_VFX["arthra"][0], 0.5)
+		return
+
+	var scene_root = get_tree().current_scene
+	if not scene_root:
+		return
+
+	var anim := AnimatedSprite2D.new()
+	anim.sprite_frames = _lightning_frames
+	anim.global_position = pos + Vector2(0, -40)
+	anim.scale = Vector2(2.5, 2.5)
+	anim.modulate = Color(0.8, 0.95, 1.0, 0.9)
+	anim.z_index = 10
+	scene_root.add_child(anim)
+	anim.play("play")
+	anim.animation_finished.connect(anim.queue_free)
 
 
 func _spawn_element_vfx(pos: Vector2, element: String) -> void:
 	"""Murrum: Elemental finisher VFX (4 elements = 4 explosion variants)"""
 	var folder: String = ELEMENT_VFX.get(element, PATH_VFX["murrum"][0])
-	_spawn_explosion_vfx(pos, folder, 0.8)
+	# Spawn larger and offset from player center so it's visible
+	_spawn_explosion_vfx(pos + Vector2(0, -60), folder, 2.0)
 
 
 func _spawn_block_aoe_vfx(pos: Vector2, radius: float) -> void:
@@ -1023,13 +1080,17 @@ func _is_in_run() -> bool:
 
 
 func _get_nearest_enemy(pos: Vector2, max_range: float) -> Node:
-	"""Returns nearest living enemy within range"""
+	"""Returns nearest living damageable enemy within range"""
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	var nearest: Node = null
 	var nearest_dist: float = max_range
 
 	for enemy in enemies:
-		if not is_instance_valid(enemy) or enemy.get("is_dead"):
+		if not is_instance_valid(enemy):
+			continue
+		if not enemy.has_method("take_damage"):
+			continue
+		if enemy.get("is_dead") or enemy.get("is_destroyed"):
 			continue
 		var dist: float = enemy.global_position.distance_to(pos)
 		if dist < nearest_dist:
