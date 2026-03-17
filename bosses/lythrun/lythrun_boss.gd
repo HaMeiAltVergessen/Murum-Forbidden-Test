@@ -43,6 +43,14 @@ const MIN_DISTANCE: float = 120.0  # NEVER get closer than this
 const MAX_DISTANCE: float = 250.0  # Start approaching if beyond this
 
 # ============================================================================
+# SCYTHE (Sense) STATE
+# ============================================================================
+var scythe_sprite: Sprite2D = null
+var _scythe_base_rotation: float = 0.0
+var _scythe_base_position: Vector2 = Vector2.ZERO
+var _scythe_thrown: bool = false
+
+# ============================================================================
 # INITIALIZATION
 # ============================================================================
 
@@ -63,6 +71,13 @@ func _ready() -> void:
 
 	# Find player
 	_find_player()
+
+	# Get scythe sprite reference
+	scythe_sprite = get_node_or_null("SenseSprite") as Sprite2D
+	if scythe_sprite:
+		_scythe_base_rotation = scythe_sprite.rotation
+		_scythe_base_position = scythe_sprite.position
+		print("[Lythrun] Scythe sprite found")
 
 	# Call parent ready
 	super._ready()
@@ -104,28 +119,36 @@ func _calculate_extra_lives() -> void:
 func _setup_attack_patterns() -> void:
 	"""Sets up attack patterns for each phase"""
 
-	# Phase 1 (100%-75%): Basic attacks
+	# Phase 1 (100%-75%): Sense-Angriffe + Fernkampf
 	phase_1_pattern = [
-		"staff_slam",
-		"shadow_dash",
-		"staff_slam",
-		"void_orbs"
-	]
-
-	# Phase 2 (75%-50%): More aggressive
-	phase_2_pattern = [
-		"staff_slam_combo",
-		"shadow_dash",
-		"void_orbs",
+		"scythe_combo",
 		"teleport_strike",
-		"staff_slam"
+		"void_orbs",
+		"scythe_combo",
+		"scythe_throw",
+		"shadow_dash"
 	]
 
-	# Phase 3 (50%-25%): Desperate
+	# Phase 2 (75%-50%): Mehr Teleport, AoE, aggressiver
+	phase_2_pattern = [
+		"scythe_combo",
+		"teleport_strike",
+		"void_orbs",
+		"ground_aoe",
+		"scythe_throw",
+		"shadow_dash",
+		"teleport_strike",
+		"void_orbs_spread"
+	]
+
+	# Phase 3 (50%-25%): Alles kombiniert, maximaler Druck
 	phase_3_pattern = [
+		"scythe_combo",
+		"ground_aoe",
 		"teleport_barrage",
+		"scythe_throw",
 		"void_orbs_spread",
-		"staff_slam_combo",
+		"ground_aoe",
 		"shadow_dash_multi",
 		"desperation_aoe"
 	]
@@ -532,6 +555,12 @@ func execute_attack(attack_name: String) -> void:
 			await perform_shadow_dash_multi()
 		"desperation_aoe":
 			await perform_desperation_aoe()
+		"scythe_combo":
+			await perform_scythe_combo()
+		"scythe_throw":
+			await perform_scythe_throw()
+		"ground_aoe":
+			await perform_ground_aoe()
 		_:
 			print("[Lythrun] Unknown attack: ", attack_name)
 			await get_tree().create_timer(1.0).timeout
@@ -542,56 +571,42 @@ func execute_attack(attack_name: String) -> void:
 # ============================================================================
 
 func perform_staff_slam() -> void:
-	"""Basic staff slam attack with charge-up visual and AoE damage"""
+	"""Sensen-Slam mit Aufleuchten und AoE"""
 
-	print("[Lythrun] Staff Slam")
+	print("[Lythrun] Scythe Slam")
 
-	# Face player
 	face_player()
 
-	# Move toward player - but stop at MIN_DISTANCE (never stand on player!)
+	# Move toward player
 	if player_target and is_instance_valid(player_target):
 		var target_pos = player_target.global_position
 		var distance = global_position.distance_to(target_pos)
-
-		# Only move if far away, and stop at MIN_DISTANCE
 		if distance > MIN_DISTANCE + 50:
 			var move_direction = (target_pos - global_position).normalized()
-			# Move close but maintain minimum distance
 			var move_distance = min(distance - MIN_DISTANCE, 200.0)
 			global_position = global_position + move_direction * move_distance
 
-	# CHARGE PHASE - Visual feedback (doubled for better readability)
+	# Sense aufleuchten + Charge
+	_glow_scythe(CHARGE_COLOR_SLAM, 0.8)
 	_start_charge_effect(CHARGE_COLOR_SLAM, 0.8)
-
-	# Telegraph animation if available
-	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("staff_slam_windup"):
-		sprite.play("staff_slam_windup")
-
 	await get_tree().create_timer(0.8).timeout
-
-	# END CHARGE - Execute attack
 	_end_charge_effect()
 
-	# Slam animation
-	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("staff_slam"):
-		sprite.play("staff_slam")
+	# Sense schwingen
+	_animate_scythe_swing(1.5, 0.25)
 
-	# Spawn hitbox at impact point
+	# Hitbox + AoE
 	var impact_pos = global_position + Vector2(0, 60)
-	_spawn_slam_hitbox(impact_pos, 80.0, 35.0)
+	_spawn_slam_hitbox(impact_pos, 100.0, 40.0)
+	_spawn_aoe_ring(impact_pos, 140.0, 30.0)
 
-	# ALSO spawn AoE damage ring for area effect
-	_spawn_aoe_ring(impact_pos, 120.0, 25.0)  # 120 radius, 25 damage
-
-	# Camera shake
 	if camera_controller:
 		camera_controller.shake(8.0, 0.3)
 
-	# Shockwave VFX
 	_spawn_shockwave_vfx()
 
 	await get_tree().create_timer(0.3).timeout
+	_reset_scythe()
 
 
 func _spawn_slam_hitbox(pos: Vector2, radius: float, damage: float) -> void:
@@ -801,34 +816,39 @@ func perform_teleport_strike() -> void:
 		await get_tree().create_timer(0.5).timeout
 		return
 
-	# CHARGE PHASE - Brief teleport charge (deep purple, doubled)
+	# Sense leuchtet lila auf
+	_glow_scythe(CHARGE_COLOR_TELEPORT, 0.4)
 	_start_charge_effect(CHARGE_COLOR_TELEPORT, 0.4)
 
 	await get_tree().create_timer(0.4).timeout
 
-	# Vanish (fade out quickly)
+	# Verschwinden (schnelles Ausblenden)
 	_end_charge_effect()
 	if sprite:
 		var tween = create_tween()
 		tween.tween_property(sprite, "modulate:a", 0.0, 0.1)
 		await tween.finished
+	if scythe_sprite:
+		scythe_sprite.modulate.a = 0.0
 
 	await get_tree().create_timer(0.15).timeout
 
-	# Position behind player
+	# Hinter Spieler teleportieren
 	var player_pos = player_target.global_position
 	var behind_offset = Vector2(-100, 0) if player_target.global_position.x > global_position.x else Vector2(100, 0)
 	global_position = player_pos + behind_offset
 
-	# Appear with flash
+	# Erscheinen mit Flash
 	if sprite:
-		sprite.modulate = Color(1.5, 0.5, 1.5, 1.0)  # Purple flash
+		sprite.modulate = Color(1.5, 0.5, 1.5, 1.0)
 		var tween = create_tween()
 		tween.tween_property(sprite, "modulate", Color.WHITE, 0.15)
+	if scythe_sprite:
+		scythe_sprite.modulate = Color(1.0, 0.6, 1.0, 1.0)
 
 	await get_tree().create_timer(0.1).timeout
 
-	# Quick attack (no additional charge)
+	# Sofort Sensen-Schlag
 	await perform_staff_slam()
 
 
@@ -1041,6 +1061,273 @@ func _spawn_aoe_ring(pos: Vector2, radius: float, damage: float) -> void:
 		aoe.damage = damage
 	if aoe.has_method("activate"):
 		aoe.activate()
+
+
+# ============================================================================
+# SCYTHE VISUAL HELPERS
+# ============================================================================
+
+func _glow_scythe(glow_color: Color = Color(1.0, 0.6, 1.0), duration: float = 0.5) -> void:
+	"""Sense leuchtet auf vor einem Angriff"""
+	if not scythe_sprite:
+		return
+	var tween := create_tween()
+	tween.tween_property(scythe_sprite, "modulate", glow_color * 1.8, duration * 0.5)
+	tween.tween_property(scythe_sprite, "modulate", glow_color, duration * 0.5)
+
+
+func _reset_scythe() -> void:
+	"""Setzt Sense auf Ausgangsposition zurueck"""
+	if not scythe_sprite:
+		return
+	scythe_sprite.modulate = Color.WHITE
+	scythe_sprite.rotation = _scythe_base_rotation
+	scythe_sprite.position = _scythe_base_position
+	scythe_sprite.scale = Vector2(0.2, 0.2)
+	scythe_sprite.visible = true
+
+
+func _animate_scythe_swing(swing_angle: float = 1.2, duration: float = 0.2) -> void:
+	"""Schwingt die Sense in einem Bogen (Rotation)"""
+	if not scythe_sprite:
+		return
+	var tween := create_tween()
+	var target_rot: float = _scythe_base_rotation + swing_angle
+	tween.tween_property(scythe_sprite, "rotation", target_rot, duration * 0.4).set_ease(Tween.EASE_OUT)
+	tween.tween_property(scythe_sprite, "rotation", _scythe_base_rotation, duration * 0.6).set_ease(Tween.EASE_IN)
+
+
+func _grow_scythe(scale_mult: float = 3.0, duration: float = 0.3) -> void:
+	"""Sense wird riesig fuer Spezialattacken"""
+	if not scythe_sprite:
+		return
+	var big_scale := Vector2(0.2 * scale_mult, 0.2 * scale_mult)
+	var tween := create_tween()
+	tween.tween_property(scythe_sprite, "scale", big_scale, duration).set_ease(Tween.EASE_OUT)
+
+
+func _shrink_scythe(duration: float = 0.3) -> void:
+	"""Sense kehrt auf Normalgroesse zurueck"""
+	if not scythe_sprite:
+		return
+	var tween := create_tween()
+	tween.tween_property(scythe_sprite, "scale", Vector2(0.2, 0.2), duration).set_ease(Tween.EASE_IN)
+
+
+# ============================================================================
+# NEW ATTACKS: SCYTHE COMBO (3-hit mit riesiger Sense)
+# ============================================================================
+
+func perform_scythe_combo() -> void:
+	"""3-Hit-Combo mit wachsender Sense — jeder Schlag rotiert die Sense"""
+	print("[Lythrun] Scythe Combo!")
+
+	if not player_target or not is_instance_valid(player_target):
+		await get_tree().create_timer(0.5).timeout
+		return
+
+	# Teleport nah zum Spieler
+	face_player()
+	var target_pos: Vector2 = player_target.global_position
+	var approach_dir: float = sign(global_position.x - target_pos.x)
+	if approach_dir == 0:
+		approach_dir = 1.0
+	global_position = target_pos + Vector2(approach_dir * PREFERRED_DISTANCE, 0)
+
+	# Sense aufleuchten lassen
+	_glow_scythe(Color(0.8, 0.2, 1.0), 0.6)
+	_start_charge_effect(CHARGE_COLOR_SLAM, 0.6)
+	await get_tree().create_timer(0.6).timeout
+	_end_charge_effect()
+
+	# Sense wachsen lassen
+	_grow_scythe(3.0, 0.2)
+	await get_tree().create_timer(0.2).timeout
+
+	# 3 Schwuenge mit steigendem Schaden
+	var damages: Array[int] = [35, 45, 65]
+	var swing_angles: Array[float] = [1.0, -1.4, 2.0]
+
+	for i in range(3):
+		face_player()
+
+		# Sense schwingen
+		_animate_scythe_swing(swing_angles[i], 0.25)
+
+		# Hitbox
+		var impact_pos: Vector2 = global_position + Vector2(-approach_dir * 100.0, -30.0)
+		_spawn_slam_hitbox(impact_pos, 130.0, damages[i])
+
+		# Kamera-Shake (staerker pro Hit)
+		if camera_controller:
+			camera_controller.shake(5.0 + i * 3.0, 0.15)
+
+		await get_tree().create_timer(0.35).timeout
+
+	# Sense zuruecksetzen
+	_shrink_scythe(0.3)
+	await get_tree().create_timer(0.3).timeout
+	_reset_scythe()
+
+
+# ============================================================================
+# NEW ATTACKS: SCYTHE THROW (Sensenwurf)
+# ============================================================================
+
+func perform_scythe_throw() -> void:
+	"""Wirft die Sense zum Spieler — sie fliegt hin und zurueck"""
+	print("[Lythrun] Scythe Throw!")
+
+	if not player_target or not is_instance_valid(player_target):
+		await get_tree().create_timer(0.5).timeout
+		return
+
+	if not scythe_sprite:
+		# Fallback: void orbs stattdessen
+		await perform_void_orbs()
+		return
+
+	face_player()
+
+	# Aufladen
+	_glow_scythe(Color(1.0, 0.4, 0.8), 0.5)
+	_start_charge_effect(CHARGE_COLOR_CAST, 0.5)
+	await get_tree().create_timer(0.5).timeout
+	_end_charge_effect()
+
+	_scythe_thrown = true
+
+	# Sense-Projektil visuell fliegen lassen
+	var start_pos: Vector2 = scythe_sprite.global_position
+	var target_pos: Vector2 = player_target.global_position + Vector2(0, -30)
+	var throw_speed: float = 800.0
+	var distance: float = start_pos.distance_to(target_pos)
+	var fly_time: float = distance / throw_speed
+
+	# Reparent scythe to scene root for world-space movement
+	var scene_root: Node = get_tree().current_scene
+	var original_parent: Node = scythe_sprite.get_parent()
+	scythe_sprite.reparent(scene_root, true)
+
+	# Hinflug — Sense rotiert schnell
+	var throw_tween := create_tween()
+	throw_tween.set_parallel(true)
+	throw_tween.tween_property(scythe_sprite, "global_position", target_pos, fly_time)
+	throw_tween.tween_property(scythe_sprite, "rotation", scythe_sprite.rotation + TAU * 4.0, fly_time)
+
+	# Schaden auf dem Weg (Hitbox am Ziel)
+	await throw_tween.finished
+
+	# AoE Schaden am Ziel
+	_spawn_aoe_ring(scythe_sprite.global_position, 120.0, 40.0)
+	if camera_controller:
+		camera_controller.shake(8.0, 0.3)
+
+	await get_tree().create_timer(0.3).timeout
+
+	# Rueckflug
+	var return_pos: Vector2 = global_position + Vector2(_scythe_base_position.x * scale.x, _scythe_base_position.y * scale.y)
+	var return_dist: float = scythe_sprite.global_position.distance_to(return_pos)
+	var return_time: float = return_dist / (throw_speed * 1.2)
+
+	var return_tween := create_tween()
+	return_tween.set_parallel(true)
+	return_tween.tween_property(scythe_sprite, "global_position", return_pos, return_time)
+	return_tween.tween_property(scythe_sprite, "rotation", scythe_sprite.rotation + TAU * 3.0, return_time)
+	await return_tween.finished
+
+	# Sense zurueck zum Boss reparenten
+	scythe_sprite.reparent(original_parent, false)
+	_reset_scythe()
+	_scythe_thrown = false
+
+	await get_tree().create_timer(0.2).timeout
+
+
+# ============================================================================
+# NEW ATTACKS: GROUND AOE (Boden-Flaechenschaden, gesamte Arena)
+# ============================================================================
+
+func perform_ground_aoe() -> void:
+	"""Boden-AoE: Lythrun haemmert Sense in den Boden, Schadenswelle ueber die ganze Arena"""
+	print("[Lythrun] Ground AoE!")
+
+	face_player()
+
+	# Teleport weg vom Spieler (Mitte der Arena)
+	global_position = Vector2(960, global_position.y - 60)
+
+	# Dramatisches Aufladen: Sense leuchtet rot
+	_glow_scythe(Color(1.0, 0.15, 0.0), 1.0)
+	_start_charge_effect(CHARGE_COLOR_AOE, 1.5)
+
+	# Sense nach oben schwingen (Aufladen)
+	if scythe_sprite:
+		var tween := create_tween()
+		tween.tween_property(scythe_sprite, "rotation", _scythe_base_rotation - 1.5, 0.8).set_ease(Tween.EASE_OUT)
+
+	if camera_controller:
+		camera_controller.shake(6.0, 1.5)
+
+	await get_tree().create_timer(1.5).timeout
+	_end_charge_effect()
+
+	# Sense in den Boden rammen
+	if scythe_sprite:
+		var slam_tween := create_tween()
+		slam_tween.tween_property(scythe_sprite, "rotation", _scythe_base_rotation + 0.8, 0.1).set_ease(Tween.EASE_IN)
+
+	# Flash
+	if sprite:
+		sprite.modulate = Color.WHITE * 2.0
+
+	# Massive Kamera-Erschuetterung
+	if camera_controller:
+		camera_controller.shake(20.0, 0.8)
+
+	# Schadenswellen: 3 Ringe die sich ausbreiten (zeitversetzt)
+	var arena_center: Vector2 = Vector2(960, 800)
+	var wave_damage: int = 30 + current_phase * 10  # 40/50/60 je nach Phase
+	var wave_radii: Array[float] = [200.0, 450.0, 800.0]
+
+	for i in range(wave_radii.size()):
+		get_tree().create_timer(0.2 * i).timeout.connect(func():
+			# Visueller Ring (ColorRect als Placeholder)
+			_spawn_ground_wave_visual(arena_center, wave_radii[i])
+			# Schaden an alle Spieler in der Arena
+			var player: Node2D = GameManager.player if GameManager else null
+			if player and is_instance_valid(player):
+				if player.global_position.distance_to(arena_center) < wave_radii[i]:
+					if player.has_node("HealthComponent"):
+						player.get_node("HealthComponent").take_damage(wave_damage)
+		)
+
+	await get_tree().create_timer(0.8).timeout
+
+	# Reset
+	if sprite:
+		sprite.modulate = Color.WHITE
+	_reset_scythe()
+
+	await get_tree().create_timer(0.5).timeout
+
+
+func _spawn_ground_wave_visual(center: Vector2, radius: float) -> void:
+	"""Spawnt eine visuelle Bodenwelle (expandierender Ring)"""
+	var scene_root: Node = get_tree().current_scene
+	if not scene_root:
+		return
+
+	var ring := ColorRect.new()
+	ring.color = Color(1.0, 0.2, 0.0, 0.4)
+	ring.size = Vector2(radius * 2, 10)
+	ring.position = Vector2(center.x - radius, center.y)
+	scene_root.add_child(ring)
+
+	# Kurz anzeigen, dann verblassen
+	var tween := ring.create_tween()
+	tween.tween_property(ring, "modulate:a", 0.0, 0.5)
+	tween.tween_callback(ring.queue_free)
 
 
 # ============================================================================

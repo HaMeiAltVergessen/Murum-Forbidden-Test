@@ -31,9 +31,9 @@ script = ExtResource("2")
 boss_name = "Lythrun, der Vergessene"
 max_health = 2500.0
 movement_speed = 120.0
-phase_1_pattern = Array[String](["staff_slam", "shadow_dash", "staff_slam", "void_orbs"])
-phase_2_pattern = Array[String](["staff_slam_combo", "shadow_dash", "void_orbs", "teleport_strike", "staff_slam"])
-phase_3_pattern = Array[String](["teleport_barrage", "void_orbs_spread", "staff_slam_combo", "shadow_dash_multi", "desperation_aoe"])
+phase_1_pattern = Array[String](["scythe_combo", "teleport_strike", "void_orbs", "scythe_combo", "scythe_throw", "shadow_dash"])
+phase_2_pattern = Array[String](["scythe_combo", "teleport_strike", "void_orbs", "ground_aoe", "scythe_throw", "shadow_dash", "teleport_strike", "void_orbs_spread"])
+phase_3_pattern = Array[String](["scythe_combo", "ground_aoe", "teleport_barrage", "scythe_throw", "void_orbs_spread", "ground_aoe", "shadow_dash_multi", "desperation_aoe"])
 gold_reward = 1500
 unlock_flag = "lythrun_defeated"
 
