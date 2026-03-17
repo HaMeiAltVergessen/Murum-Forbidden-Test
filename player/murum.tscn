@@ -54,6 +54,7 @@ max_health = 1000
 
 [node name="ManaComponent" type="Node" parent="."]
 script = ExtResource("4_mana")
+max_mana = 1000
 regeneration_rate = 100.0
 regen_delay_after_use = 1.0
 
