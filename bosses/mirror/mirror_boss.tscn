@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3 uid="uid://cghk1dd6301yd"]
 
-[ext_resource type="Script" path="res://bosses/mirror/mirror_boss.gd" id="1_script"]
-[ext_resource type="Script" path="res://components/hurtbox_component.gd" id="2_hurtbox"]
+[ext_resource type="Script" uid="uid://bh2wvbwpdv1qu" path="res://bosses/mirror/mirror_boss.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://be8au7dl6rc4k" path="res://components/hurtbox_component.gd" id="2_hurtbox"]
+[ext_resource type="Texture2D" uid="uid://cuydl5cchj7iu" path="res://Assets/AIPlaceholder/Char/Murum_Spiegel/mirrorai1.jpg" id="3_1t85a"]
 
 [sub_resource type="RectangleShape2D" id="body_shape"]
 size = Vector2(96, 240)
@@ -22,7 +23,6 @@ shape = SubResource("body_shape")
 offset_left = -72.0
 offset_top = -288.0
 offset_right = 72.0
-offset_bottom = 0.0
 color = Color(0.4, 0, 0.6, 0.8)
 
 [node name="HurtboxArea" type="Area2D" parent="."]
@@ -33,3 +33,8 @@ script = ExtResource("2_hurtbox")
 [node name="HurtboxShape" type="CollisionShape2D" parent="HurtboxArea"]
 position = Vector2(0, -132)
 shape = SubResource("hurtbox_shape")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(7, -147)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("3_1t85a")
