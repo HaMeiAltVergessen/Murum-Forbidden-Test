@@ -169,9 +169,9 @@ func _play_opening_dialog() -> void:
 		runner_camera.scroll_speed = 0.0
 
 	await get_tree().create_timer(0.8).timeout
-	EventBus.show_notification.emit("Spiegel: Du bist die Frage,", 2.5)
+	_show_dialog_text("Spiegel: Du bist die Frage,", 2.5)
 	await get_tree().create_timer(3.0).timeout
-	EventBus.show_notification.emit("Spiegel: ich die Antwort.", 2.5)
+	_show_dialog_text("Spiegel: ich die Antwort.", 2.5)
 	await get_tree().create_timer(3.0).timeout
 
 	# Kamera wieder starten
@@ -449,7 +449,7 @@ func _play_defeat_dialog() -> void:
 	]
 
 	for line in lines:
-		EventBus.show_notification.emit("%s: %s" % [line["speaker"], line["text"]], line["delay"])
+		_show_dialog_text("%s: %s" % [line["speaker"], line["text"]], line["delay"])
 		await get_tree().create_timer(line["delay"] + 0.5).timeout
 
 	# Final strike + dissolve
@@ -508,7 +508,37 @@ func _exit_tree() -> void:
 
 # ============ UTILITY ============
 func _show_section_title(title: String) -> void:
-	EventBus.show_notification.emit(title, 3.0)
+	_show_dialog_text(title, 3.0)
+
+
+func _show_dialog_text(text: String, duration: float) -> void:
+	"""Zeigt Text direkt als CanvasLayer-Label an (unabhaengig von HUD/EventBus)"""
+	# Auch an EventBus senden falls HUD aktiv
+	EventBus.show_notification.emit(text, duration)
+
+	# Eigenes Label erstellen das immer funktioniert
+	var layer := CanvasLayer.new()
+	layer.layer = 200
+	add_child(layer)
+
+	var label := Label.new()
+	label.text = text
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.anchors_preset = Control.PRESET_CENTER_TOP
+	label.position = Vector2(960.0 - 400.0, 200.0)
+	label.size = Vector2(800.0, 60.0)
+	label.add_theme_font_size_override("font_size", 28)
+	label.add_theme_color_override("font_color", Color.WHITE)
+	label.modulate.a = 0.0
+	layer.add_child(label)
+
+	# Einblenden
+	var tween := label.create_tween()
+	tween.tween_property(label, "modulate:a", 1.0, 0.3)
+	tween.tween_interval(duration - 0.6)
+	tween.tween_property(label, "modulate:a", 0.0, 0.3)
+	tween.tween_callback(layer.queue_free)
 
 
 func _get_p2_player() -> Node2D:
