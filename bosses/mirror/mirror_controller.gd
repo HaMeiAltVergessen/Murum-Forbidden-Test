@@ -335,11 +335,18 @@ func _respawn_at_camera_center(character: Node2D) -> void:
 	if not runner_camera:
 		return
 
-	# Teleport to camera center (slightly above center for safe landing)
-	var respawn_pos := Vector2(
-		runner_camera.global_position.x,
-		runner_camera.global_position.y - 100.0
-	)
+	# Teleport to boss position (slightly behind boss)
+	var respawn_pos: Vector2
+	if mirror_boss and is_instance_valid(mirror_boss):
+		respawn_pos = Vector2(
+			mirror_boss.global_position.x - 150.0,
+			mirror_boss.global_position.y
+		)
+	else:
+		respawn_pos = Vector2(
+			runner_camera.global_position.x,
+			runner_camera.global_position.y - 100.0
+		)
 	character.global_position = respawn_pos
 	if character is CharacterBody2D:
 		character.velocity = Vector2.ZERO

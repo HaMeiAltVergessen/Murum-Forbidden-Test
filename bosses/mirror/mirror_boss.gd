@@ -9,20 +9,16 @@ signal finisher_hit(count: int)
 # ============ STATES ============
 enum State { RUNNING, ATTACKING_RANGED, ATTACKING_MELEE, VULNERABLE, DEFEATED }
 
-# ============ MOVEMENT (mirrors player/movement_controller.gd) ============
-const MOVE_SPEED: float = 300.0
-const JUMP_VELOCITY: float = -1600.0
-const GRAVITY: float = 1800.0
-const WALL_SLIDE_GRAVITY_SCALE: float = 0.15
-const WALL_JUMP_H_VELOCITY: float = 450.0
-const WALL_JUMP_V_VELOCITY: float = -1400.0
+# ============ MOVEMENT ============
+const MOVE_SPEED: float = 300.0  # Fallback only
 
 # ============ AI CONFIG ============
 const PREFERRED_DISTANCE: float = 250.0  # Preferred distance ahead of player
 const MIN_DISTANCE: float = 150.0
 const MAX_DISTANCE: float = 400.0
 const WAYPOINT_REACH_DISTANCE: float = 50.0
-const JUMP_ANTICIPATION: float = 80.0  # How far ahead to check for gaps/platforms
+const HOVER_Y_OFFSET: float = -200.0  # Hover this far above ground level
+const HOVER_Y_SMOOTHING: float = 3.0
 
 # ============ ATTACK CONFIG ============
 const RANGED_ATTACK_COOLDOWN: float = 4.0
@@ -92,11 +88,16 @@ func _physics_process(delta: float) -> void:
 	if current_state == State.DEFEATED:
 		return
 
-	# Apply gravity
-	if not is_on_floor():
-		velocity.y += GRAVITY * delta
-	else:
-		velocity.y = 0.0
+	# No gravity — boss hovers/flies
+	# Track player Y loosely for vertical positioning
+	var target_y: float = global_position.y
+	var player: Node2D = GameManager.player if GameManager else null
+	if player and is_instance_valid(player):
+		target_y = player.global_position.y + HOVER_Y_OFFSET
+	elif controller and controller.runner_camera:
+		target_y = controller.runner_camera.global_position.y + HOVER_Y_OFFSET
+	global_position.y = lerpf(global_position.y, target_y, HOVER_Y_SMOOTHING * delta)
+	velocity.y = 0.0
 
 	# State-specific movement
 	match current_state:
@@ -189,42 +190,13 @@ func _process_running(delta: float) -> void:
 
 	velocity.x = target_speed
 
-	# Jump logic — check for gaps or platforms ahead
-	_ai_jump_logic()
+	# Boss hovers — no jump logic needed
 
 	# Check melee range (only when close enough)
 	if distance_to_player < MELEE_ATTACK_RANGE and distance_to_player > -50.0:
 		if _melee_timer >= MELEE_ATTACK_COOLDOWN:
 			if controller and controller.current_section >= MirrorController.Section.DER_SPIEGELKAMPF:
 				_start_melee_attack()
-
-
-func _ai_jump_logic() -> void:
-	"""Simple AI: jump when near edges or to reach platforms"""
-	if not is_on_floor():
-		return
-
-	# Check for gap ahead (raycast down-forward)
-	var check_pos: Vector2 = global_position + Vector2(JUMP_ANTICIPATION, 0)
-	var space_state: PhysicsDirectSpaceState2D = get_world_2d().direct_space_state
-	var query := PhysicsRayQueryParameters2D.create(
-		check_pos, check_pos + Vector2(0, 200), 1  # World collision mask
-	)
-	var result: Dictionary = space_state.intersect_ray(query)
-
-	if result.is_empty():
-		# No ground ahead — jump
-		velocity.y = JUMP_VELOCITY
-		return
-
-	# Check for wall ahead
-	var wall_query := PhysicsRayQueryParameters2D.create(
-		global_position + Vector2(0, -40), global_position + Vector2(JUMP_ANTICIPATION, -40), 1
-	)
-	var wall_result: Dictionary = space_state.intersect_ray(wall_query)
-	if not wall_result.is_empty():
-		# Wall ahead — jump
-		velocity.y = JUMP_VELOCITY
 
 
 # ============ ATTACK STATES ============

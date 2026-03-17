@@ -10,7 +10,7 @@ size = Vector2(40, 88)
 
 [node name="MirrorBoss" type="CharacterBody2D"]
 collision_layer = 8
-collision_mask = 1
+collision_mask = 0
 script = ExtResource("1_script")
 
 [node name="BodyShape" type="CollisionShape2D" parent="."]
