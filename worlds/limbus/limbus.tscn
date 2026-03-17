@@ -5,8 +5,8 @@
 [ext_resource type="Script" uid="uid://bjksvnjjv0vh8" path="res://environment/spawn_point.gd" id="3_spawn"]
 [ext_resource type="Script" uid="uid://pkbhpy61h44r" path="res://worlds/limbus/siegel_altar.gd" id="4_altar"]
 [ext_resource type="Script" uid="uid://ccnf5ogjvrl2h" path="res://worlds/limbus/limbus_merchant.gd" id="5_merchant"]
-[ext_resource type="Script" path="res://worlds/limbus/boss_test_door.gd" id="6_bossdoor"]
-[ext_resource type="Script" path="res://worlds/limbus/pachron_altar.gd" id="7_pachron"]
+[ext_resource type="Script" uid="uid://b2yyc1ph6ej3n" path="res://worlds/limbus/boss_test_door.gd" id="6_bossdoor"]
+[ext_resource type="Script" uid="uid://bt20halni16as" path="res://worlds/limbus/pachron_altar.gd" id="7_pachron"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1920, 40)
@@ -23,11 +23,11 @@ size = Vector2(120, 160)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_altar"]
 size = Vector2(120, 160)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_interaction"]
-size = Vector2(150, 200)
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pachron"]
 size = Vector2(120, 160)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_interaction"]
+size = Vector2(150, 200)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bossdoor"]
 size = Vector2(150, 200)
