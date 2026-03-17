@@ -280,6 +280,12 @@ func start_arena() -> void:
 	# Build waves from config (positions resolved now, scene fully loaded)
 	_configure_waves()
 
+	# Safety: if no waves were configured (all enemies missing), auto-complete
+	if wave_spawner.waves.is_empty():
+		push_warning("[ArenaController:%s] No valid waves after configuration! Auto-completing." % arena_id)
+		_on_all_waves_completed()
+		return
+
 	# Lock entry doors
 	_set_entry_doors_locked(true)
 
@@ -325,6 +331,11 @@ func _configure_waves() -> void:
 			for i in adjusted_count:
 				var pos = positions[randi() % positions.size()]
 				wave.add_enemy(entry.scene, pos)
+
+		# Only add waves that have enemies
+		if wave.enemies.is_empty():
+			push_warning("[ArenaController:%s] Skipping empty wave (no valid enemies)" % arena_id)
+			continue
 
 		wave_spawner.add_wave(wave)
 

@@ -276,8 +276,8 @@ func _find_spawn_point() -> Marker2D:
 func _setup_combat() -> void:
 	"""Spawn all enemies at once using ArenaController + room's EnemySpawnPoints"""
 	var wave_config = RunRoomPool.build_single_wave_config(world_id, node_type)
-	if not wave_config:
-		push_warning("[RunNodeRoom] No encounter generated!")
+	if not wave_config or wave_config.enemies.is_empty():
+		push_warning("[RunNodeRoom] No encounter generated (world: %d, type: %d)!" % [world_id, node_type])
 		_on_combat_completed()
 		return
 

@@ -36,6 +36,8 @@ var waves: Array[Wave] = []
 var current_wave_index: int = -1
 var is_active: bool = false
 var spawned_enemies: Array[Node] = []
+var _spawning_in_progress: bool = false  # Guard against race condition during stagger
+var _spawn_parent: Node = null  # Parent node for spawned enemies (room, not root)
 
 # ============================================================================
 # SIGNALS
@@ -59,6 +61,19 @@ func _ready() -> void:
 	if auto_start:
 		await get_tree().create_timer(0.5).timeout
 		start_waves()
+
+
+func _exit_tree() -> void:
+	"""Clean up spawned enemies when this spawner is removed from scene"""
+	_cleanup_spawned_enemies()
+
+
+func _cleanup_spawned_enemies() -> void:
+	"""Frees all enemies spawned by this spawner"""
+	for enemy in spawned_enemies:
+		if is_instance_valid(enemy) and not enemy.is_queued_for_deletion():
+			enemy.queue_free()
+	spawned_enemies.clear()
 
 # ============================================================================
 # WAVE MANAGEMENT
@@ -127,6 +142,11 @@ func _spawn_wave(wave: Wave) -> void:
 	"""Spawns all enemies in wave"""
 
 	spawned_enemies.clear()
+	_spawning_in_progress = true
+
+	# Determine spawn parent: use the room (grandparent) instead of root
+	# so enemies are cleaned up when the room is freed
+	_spawn_parent = _find_spawn_parent()
 
 	for enemy_data in wave.enemies:
 		var enemy_scene: PackedScene = enemy_data["scene"]
@@ -135,8 +155,11 @@ func _spawn_wave(wave: Wave) -> void:
 		# Instantiate enemy
 		var enemy = enemy_scene.instantiate()
 
-		# Add to scene
-		get_tree().root.add_child(enemy)
+		# Add to room (not root!) so enemies are freed with the room
+		if is_instance_valid(_spawn_parent):
+			_spawn_parent.add_child(enemy)
+		else:
+			get_tree().root.add_child(enemy)
 		enemy.global_position = spawn_pos
 
 		# Track
@@ -151,10 +174,26 @@ func _spawn_wave(wave: Wave) -> void:
 		# Brief delay between spawns (stagger)
 		await get_tree().create_timer(0.2).timeout
 
+	_spawning_in_progress = false
+
 	print("[WaveSpawner] Spawned %d enemies for wave %d" % [
 		spawned_enemies.size(),
 		current_wave_index + 1
 	])
+
+	# Check completion after all spawns are done (in case enemies died during stagger)
+	_check_wave_completion()
+
+
+func _find_spawn_parent() -> Node:
+	"""Finds the best parent for spawned enemies (the room node)"""
+	# Walk up to find the RunNodeRoom or scene root
+	var node: Node = self
+	while node:
+		if node is Node2D and node.get_parent() == get_tree().root:
+			return node  # This is the room (top-level scene node)
+		node = node.get_parent()
+	return get_tree().root  # Fallback
 
 # ============================================================================
 # WAVE COMPLETION
@@ -163,23 +202,21 @@ func _spawn_wave(wave: Wave) -> void:
 func _on_enemy_died(enemy: Node, _position: Vector2) -> void:
 	"""Called when any enemy dies"""
 
-	print("[WaveSpawner] _on_enemy_died called for: %s (active: %s)" % [enemy.name, is_active])
-
 	if not is_active:
-		print("[WaveSpawner] Ignoring - spawner not active")
 		return
 
 	# Check if enemy was from this spawner
 	if enemy not in spawned_enemies:
-		print("[WaveSpawner] Ignoring - enemy not in spawned_enemies (tracked: %d)" % spawned_enemies.size())
-		for tracked_enemy in spawned_enemies:
-			print("  - Tracked: %s" % tracked_enemy.name)
 		return
 
 	# Remove from tracking
 	spawned_enemies.erase(enemy)
 
 	print("[WaveSpawner] Enemy died, remaining: %d" % spawned_enemies.size())
+
+	# Don't check completion while still spawning (stagger race condition)
+	if _spawning_in_progress:
+		return
 
 	# Check if wave clear (also clean up invalid enemies)
 	_check_wave_completion()

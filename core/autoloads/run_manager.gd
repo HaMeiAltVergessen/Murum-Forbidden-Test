@@ -505,17 +505,26 @@ func load_from_save(data: Dictionary) -> void:
 	max_lives = data.get("max_lives", BASE_LIVES)
 	magicka_changed.emit(magicka)
 
+	# Always clear stale run room states on load to prevent "already cleared" bugs
+	_clear_run_room_states()
+
+	# Reset run state to IDLE — even if save had mid-run data,
+	# the player loads into Limbus and must start a fresh run
+	current_state = RunState.IDLE
+	current_map = null
+	current_node = null
+	run_rooms_completed = 0
+	run_enemies_killed = 0
+	current_lives = max_lives
+
 	if data.has("current_map"):
-		current_map = RunMapData.Map.from_dict(data["current_map"])
-		current_world = data.get("current_world", RunMapData.WorldId.NIEMANDSLAND)
-		current_lives = data.get("current_lives", max_lives)
-		run_rooms_completed = data.get("run_rooms_completed", 0)
-		run_enemies_killed = data.get("run_enemies_killed", 0)
-		current_state = data.get("run_state", RunState.MAP_VIEW)
-		lives_changed.emit(current_lives, max_lives)
-		print("[RunManager] Loaded mid-run save: World=%d, Lives=%d" % [current_world, current_lives])
+		# Mid-run save data exists but we reset to IDLE
+		# (Player will start a new run from Limbus)
+		print("[RunManager] Loaded save (had mid-run data, reset to IDLE): Magicka=%d, MaxLives=%d" % [magicka, max_lives])
 	else:
 		print("[RunManager] Loaded: Magicka=%d, MaxLives=%d" % [magicka, max_lives])
+
+	lives_changed.emit(current_lives, max_lives)
 
 
 func is_run_active() -> bool:
