@@ -70,11 +70,7 @@ func _process(delta: float) -> void:
 	# Behind camera penalty
 	_check_behind_camera(delta)
 
-	# Finisher window countdown
-	if _finisher_window_active:
-		_finisher_window_timer -= delta
-		if _finisher_window_timer <= 0.0:
-			_close_finisher_window()
+	# Finisher window: no time limit — stays open until player lands a finisher
 
 
 # ============ MOMENTUM MODIFICATION ============
@@ -125,9 +121,9 @@ func _open_finisher_window() -> void:
 	if _finisher_window_active:
 		return
 
-	print("[MomentumSystem] FINISHER WINDOW OPEN!")
+	print("[MomentumSystem] FINISHER WINDOW OPEN — kein Zeitlimit!")
 	_finisher_window_active = true
-	_finisher_window_timer = FINISHER_WINDOW_DURATION
+	_finisher_window_timer = 0.0  # Unused — no time limit
 	max_reached.emit()
 	finisher_window_opened.emit()
 

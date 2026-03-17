@@ -123,11 +123,8 @@ func _process(_delta: float) -> void:
 		var speed: float = controller.get_scroll_speed()
 		_section_label.text = "%s (%d/%d) | %.0f px/s" % [section_names[idx], idx + 1, 4, speed]
 
-	# Update countdown during finisher window
-	if momentum_system and momentum_system.is_finisher_window_open() and _countdown_label:
-		_countdown_label.visible = true
-		_countdown_label.text = "%.1fs" % momentum_system._finisher_window_timer
-	elif _countdown_label:
+	# No countdown — finisher window has no time limit
+	if _countdown_label:
 		_countdown_label.visible = false
 
 

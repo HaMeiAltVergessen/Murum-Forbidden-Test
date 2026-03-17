@@ -80,6 +80,16 @@ func _ready() -> void:
 	set_process(false)
 
 
+func _input(event: InputEvent) -> void:
+	if not is_fight_active or is_defeated:
+		return
+	# DEBUG: F9 = Momentum sofort auf 100 (Finisher-Fenster öffnet sich)
+	if event.is_action_pressed("ui_page_down") or (event is InputEventKey and event.keycode == KEY_F9 and event.pressed):
+		if momentum_system:
+			momentum_system.add_momentum(100.0)
+			print("[DEBUG] F9: Momentum auf 100 gesetzt!")
+
+
 func _process(delta: float) -> void:
 	if not is_fight_active or is_defeated:
 		return

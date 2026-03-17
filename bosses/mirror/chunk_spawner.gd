@@ -74,10 +74,10 @@ func start_spawning(pool_name: String) -> void:
 	# Boss room has ground from 0 to ~1200px, so chunks start at 1200
 	var player: Node2D = GameManager.player if GameManager else null
 	if player and is_instance_valid(player):
-		# Start chunks slightly ahead of where the player is
-		_next_spawn_x = player.global_position.x + 800.0
+		# Start chunks right under the player (no gap)
+		_next_spawn_x = player.global_position.x - 200.0
 	else:
-		_next_spawn_x = 1200.0
+		_next_spawn_x = 0.0
 
 	print("[ChunkSpawner] Starting at X=%.0f, pool='%s'" % [_next_spawn_x, pool_name])
 
@@ -134,68 +134,31 @@ func _spawn_next_chunk() -> void:
 
 
 func _create_placeholder_chunk() -> Node2D:
-	"""Creates a simple flat chunk with ground and some platforms"""
+	"""Creates a flat, hole-free testing chunk — no platforms, just solid ground"""
 	var chunk := Node2D.new()
 	chunk.name = "PlaceholderChunk"
 
-	var width: float = 1200.0
+	var width: float = 3000.0  # Wide chunks = fewer seams
 	chunk.set_meta("chunk_width", width)
 
-	# Ground (StaticBody2D)
+	# Solid ground spanning full chunk width
 	var ground := StaticBody2D.new()
 	ground.name = "Ground"
 	ground.position = Vector2(width * 0.5, GROUND_Y)
 
 	var ground_shape := CollisionShape2D.new()
 	var ground_rect := RectangleShape2D.new()
-	ground_rect.size = Vector2(width, 40.0)
+	ground_rect.size = Vector2(width + 20.0, 200.0)  # +20 overlap, thick so player can't fall through
 	ground_shape.shape = ground_rect
 	ground.add_child(ground_shape)
 
-	# Ground visual
 	var ground_visual := ColorRect.new()
-	ground_visual.size = Vector2(width, 40.0)
+	ground_visual.size = Vector2(width, 200.0)
 	ground_visual.position = Vector2(-width * 0.5, -20.0)
-	ground_visual.color = Color(0.15, 0.1, 0.2)
+	ground_visual.color = Color(0.12, 0.08, 0.18)
 	ground.add_child(ground_visual)
 
 	chunk.add_child(ground)
-
-	# Random platforms (1-3)
-	var platform_count: int = randi_range(1, 3)
-	for i in range(platform_count):
-		var plat := StaticBody2D.new()
-		plat.name = "Platform_%d" % i
-		var px: float = randf_range(100.0, width - 100.0)
-		var py: float = randf_range(GROUND_Y - 350.0, GROUND_Y - 120.0)
-		plat.position = Vector2(px, py)
-
-		var plat_shape := CollisionShape2D.new()
-		var plat_rect := RectangleShape2D.new()
-		var plat_width: float = randf_range(120.0, 250.0)
-		plat_rect.size = Vector2(plat_width, 16.0)
-		plat_shape.shape = plat_rect
-		plat.add_child(plat_shape)
-
-		# Platform visual
-		var plat_visual := ColorRect.new()
-		plat_visual.size = Vector2(plat_width, 16.0)
-		plat_visual.position = Vector2(-plat_width * 0.5, -8.0)
-		plat_visual.color = Color(0.25, 0.15, 0.35)
-		plat.add_child(plat_visual)
-
-		chunk.add_child(plat)
-
-	# Boss waypoints (Marker2D for boss AI navigation)
-	var wp_count: int = 3
-	for i in range(wp_count):
-		var wp := Marker2D.new()
-		wp.name = "BossWaypoint_%d" % i
-		var wx: float = (i + 1) * (width / (wp_count + 1))
-		var wy: float = randf_range(GROUND_Y - 300.0, GROUND_Y - 50.0)
-		wp.position = Vector2(wx, wy)
-		wp.add_to_group("boss_waypoints")
-		chunk.add_child(wp)
 
 	return chunk
 

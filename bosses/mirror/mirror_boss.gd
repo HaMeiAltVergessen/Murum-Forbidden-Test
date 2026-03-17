@@ -24,7 +24,8 @@ const HOVER_Y_SMOOTHING: float = 3.0
 const RANGED_ATTACK_COOLDOWN: float = 4.0
 const MELEE_ATTACK_RANGE: float = 120.0
 const MELEE_ATTACK_COOLDOWN: float = 3.0
-const VULNERABLE_DURATION: float = 5.0
+const STUN_DURATION: float = 5.0       # How long boss stays grounded before rising again
+const GROUND_Y: float = 800.0          # Match chunk_spawner GROUND_Y
 const URTEIL_COOLDOWN: float = 12.0
 
 # ============ VISUAL ============
@@ -46,6 +47,8 @@ var _current_waypoint: Marker2D = null
 var _finisher_count: int = 0
 var _facing_right: bool = true
 var _urteil_timer: float = 0.0
+var _stun_timer: float = 0.0
+var _is_grounded: bool = false  # True while boss is stunned on the floor
 
 # ============ NODE REFS ============
 @onready var _sprite: ColorRect = $Sprite
@@ -88,15 +91,20 @@ func _physics_process(delta: float) -> void:
 	if current_state == State.DEFEATED:
 		return
 
-	# No gravity — boss hovers/flies
-	# Track player Y loosely for vertical positioning
+	# Vertical positioning: hover normally, sink to ground when vulnerable
 	var target_y: float = global_position.y
-	var player: Node2D = GameManager.player if GameManager else null
-	if player and is_instance_valid(player):
-		target_y = player.global_position.y + HOVER_Y_OFFSET
-	elif controller and controller.runner_camera:
-		target_y = controller.runner_camera.global_position.y + HOVER_Y_OFFSET
-	global_position.y = lerpf(global_position.y, target_y, HOVER_Y_SMOOTHING * delta)
+	if current_state == State.VULNERABLE:
+		# Sink to ground
+		target_y = GROUND_Y
+		global_position.y = lerpf(global_position.y, target_y, 6.0 * delta)
+	else:
+		# Hover above player
+		var player: Node2D = GameManager.player if GameManager else null
+		if player and is_instance_valid(player):
+			target_y = player.global_position.y + HOVER_Y_OFFSET
+		elif controller and controller.runner_camera:
+			target_y = controller.runner_camera.global_position.y + HOVER_Y_OFFSET
+		global_position.y = lerpf(global_position.y, target_y, HOVER_Y_SMOOTHING * delta)
 	velocity.y = 0.0
 
 	# State-specific movement
@@ -253,37 +261,49 @@ func _process_melee(_delta: float) -> void:
 	velocity.x = scroll_speed * 0.5
 
 
-func _process_vulnerable(_delta: float) -> void:
-	# Stumble / slow movement — but still keep up with camera minimum
+func _process_vulnerable(delta: float) -> void:
+	# Keep up with camera while grounded
 	var scroll_speed: float = 200.0
 	if controller:
 		scroll_speed = controller.get_scroll_speed()
-	velocity.x = scroll_speed * 0.6
+	velocity.x = scroll_speed * 0.8
+
+	# Stun timer — count down once boss has reached the ground
+	var near_ground: bool = abs(global_position.y - GROUND_Y) < 30.0
+	if near_ground:
+		if not _is_grounded:
+			_is_grounded = true
+			print("[MirrorBoss] Grounded! Stun timer started (%.1fs)" % STUN_DURATION)
+		_stun_timer -= delta
+		if _stun_timer <= 0.0:
+			# Stun expired without finisher — notify momentum system to close window
+			if controller and controller.momentum_system:
+				controller.momentum_system._close_finisher_window()
 
 
 # ============ VULNERABILITY (Finisher System) ============
 func enter_vulnerable_state() -> void:
-	"""Called by MomentumSystem when momentum hits MAX"""
-	print("[MirrorBoss] Entering VULNERABLE state!")
+	"""Called by MomentumSystem when momentum hits MAX — boss sinks stunned to ground"""
+	print("[MirrorBoss] Entering VULNERABLE state — sinking to ground!")
 	current_state = State.VULNERABLE
+	_stun_timer = STUN_DURATION
+	_is_grounded = false
 
-	# Visual feedback
+	# Visual: white + pulsing flash
 	if _sprite:
 		_sprite.color = VULNERABLE_COLOR
-
-	# Flash effect
 	var tween := create_tween().set_loops()
-	tween.tween_property(_sprite, "modulate:a", 0.4, 0.2)
-	tween.tween_property(_sprite, "modulate:a", 1.0, 0.2)
+	tween.tween_property(_sprite, "modulate:a", 0.4, 0.25)
+	tween.tween_property(_sprite, "modulate:a", 1.0, 0.25)
 	set_meta("_vulnerable_tween", tween)
 
 
 func exit_vulnerable_state() -> void:
-	"""Called when finisher window closes without landing"""
-	print("[MirrorBoss] Exiting VULNERABLE state")
+	"""Boss rises back up and resumes running after stun"""
+	print("[MirrorBoss] Stun over — returning to RUNNING")
 	current_state = State.RUNNING
+	_is_grounded = false
 
-	# Stop flash
 	var tween = get_meta("_vulnerable_tween") if has_meta("_vulnerable_tween") else null
 	if tween and tween is Tween:
 		tween.kill()
@@ -293,18 +313,19 @@ func exit_vulnerable_state() -> void:
 
 
 func on_finisher_hit(count: int) -> void:
-	"""Called by controller when finisher lands"""
+	"""Called by controller when finisher lands — immediately end stun"""
 	_finisher_count = count
+	_stun_timer = 0.0
+	_is_grounded = false
 	print("[MirrorBoss] Finisher hit! (%d total)" % count)
 
 	# Visual degradation
 	if _sprite:
 		_sprite.color = DAMAGED_COLORS[min(count, DAMAGED_COLORS.size() - 1)]
 
-	# Brief stagger
 	current_state = State.RUNNING
 
-	# Stop any vulnerability tween
+	# Stop vulnerability tween
 	var tween = get_meta("_vulnerable_tween") if has_meta("_vulnerable_tween") else null
 	if tween and tween is Tween:
 		tween.kill()
