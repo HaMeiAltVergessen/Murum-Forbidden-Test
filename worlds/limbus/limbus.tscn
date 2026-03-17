@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://bah2edmcousko"]
+[gd_scene load_steps=16 format=3 uid="uid://bah2edmcousko"]
 
 [ext_resource type="Script" uid="uid://bihmtgwqw80w2" path="res://worlds/limbus/limbus.gd" id="1_limbus"]
 [ext_resource type="Script" uid="uid://cyw8mcann7l1b" path="res://worlds/limbus/run_door.gd" id="2_rundoor"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://pkbhpy61h44r" path="res://worlds/limbus/siegel_altar.gd" id="4_altar"]
 [ext_resource type="Script" uid="uid://ccnf5ogjvrl2h" path="res://worlds/limbus/limbus_merchant.gd" id="5_merchant"]
 [ext_resource type="Script" path="res://worlds/limbus/boss_test_door.gd" id="6_bossdoor"]
+[ext_resource type="Script" path="res://worlds/limbus/pachron_altar.gd" id="7_pachron"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1920, 40)
@@ -24,6 +25,9 @@ size = Vector2(120, 160)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_interaction"]
 size = Vector2(150, 200)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pachron"]
+size = Vector2(120, 160)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bossdoor"]
 size = Vector2(150, 200)
@@ -140,6 +144,42 @@ offset_top = 20.0
 offset_right = 100.0
 offset_bottom = 45.0
 text = "E - Siegel einstellen"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PachronAltar" type="Area2D" parent="."]
+position = Vector2(1230, 658)
+collision_mask = 2
+script = ExtResource("7_pachron")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PachronAltar"]
+position = Vector2(0, -40)
+shape = SubResource("RectangleShape2D_pachron")
+debug_color = Color(0.9, 0.6, 0.2, 0.3)
+
+[node name="AltarVisual" type="ColorRect" parent="PachronAltar"]
+offset_left = -40.0
+offset_top = -120.0
+offset_right = 40.0
+offset_bottom = 10.0
+color = Color(0.8, 0.5, 0.1, 0.9)
+
+[node name="AltarLabel" type="Label" parent="PachronAltar"]
+offset_left = -60.0
+offset_top = -150.0
+offset_right = 60.0
+offset_bottom = -125.0
+text = "Pachron"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PromptLabel" type="Label" parent="PachronAltar"]
+visible = false
+offset_left = -80.0
+offset_top = 20.0
+offset_right = 80.0
+offset_bottom = 45.0
+text = "E - Pachron waehlen"
 horizontal_alignment = 1
 vertical_alignment = 1
 
