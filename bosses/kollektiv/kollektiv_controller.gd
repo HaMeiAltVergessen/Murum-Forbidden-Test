@@ -10,25 +10,17 @@ signal defeated
 signal health_changed(current_hp: float, max_hp: float)
 signal core_destroyed(core: KollektivCore)
 
-# ============ CORE SCENES ============
-const CORE_SCENES: Dictionary = {
-	"energy":     "res://bosses/kollektiv/cores/energy_core.tscn",
-	"defense":    "res://bosses/kollektiv/cores/defense_core.tscn",
-	"mobility":   "res://bosses/kollektiv/cores/mobility_core.tscn",
-	"fabricator": "res://bosses/kollektiv/cores/fabricator_core.tscn",
-	"cognition":  "res://bosses/kollektiv/cores/cognition_core.tscn",
-}
-
-# Core positions (absolute in 2800x2800 arena)
-const CORE_POSITIONS: Dictionary = {
-	"energy":     Vector2(1400, 2500),
-	"defense":    Vector2(200, 1400),
-	"mobility":   Vector2(1400, 200),
-	"fabricator": Vector2(2600, 1400),
-	"cognition":  Vector2(1400, 1400),
-}
-
+# ============ CORE SCENE (for central hub only) ============
 const HUB_SCENE: String = "res://bosses/kollektiv/cores/central_hub.tscn"
+
+# Core ID mapping by node name prefix
+const CORE_ID_MAP: Dictionary = {
+	"EnergyCore": "energy",
+	"DefenseCore": "defense",
+	"MobilityCore": "mobility",
+	"FabricatorCore": "fabricator",
+	"CognitionCore": "cognition",
+}
 
 # ============ ESCALATION ============
 const ESCALATION: Array = [
@@ -76,11 +68,11 @@ func start_fight() -> void:
 
 	print("[KollektivController] Starting boss fight!")
 
-	# Spawn platforms first
-	_spawn_platforms()
+	# Find platforms already placed in scene
+	_find_platforms()
 
-	# Spawn all cores
-	_spawn_cores()
+	# Find cores already placed in scene
+	_find_cores()
 
 	# Create health bar
 	_create_health_bar()
@@ -102,180 +94,45 @@ func start_fight() -> void:
 	print("[KollektivController] Fight started — %d cores, %.0f total HP" % [cores.size(), total_max_hp])
 
 
-func _spawn_cores() -> void:
-	for key in CORE_SCENES.keys():
-		var scene_path: String = CORE_SCENES[key]
-		if not ResourceLoader.exists(scene_path):
-			push_warning("[KollektivController] Scene not found: %s — creating placeholder" % scene_path)
-			_spawn_placeholder_core(key)
+func _find_cores() -> void:
+	"""Find cores already placed in the scene (in 'kollektiv_core' group)"""
+	var found_cores: Array = get_tree().get_nodes_in_group("kollektiv_core")
+
+	for node in found_cores:
+		var core: KollektivCore = node as KollektivCore
+		if not core or core == self:
 			continue
 
-		var scene: PackedScene = load(scene_path)
-		var core: KollektivCore = scene.instantiate() as KollektivCore
-		if not core:
-			push_warning("[KollektivController] Failed to instantiate: %s" % scene_path)
-			_spawn_placeholder_core(key)
+		# Determine core_id from node name
+		var core_id: String = ""
+		for name_prefix in CORE_ID_MAP.keys():
+			if core.name.begins_with(name_prefix):
+				core_id = CORE_ID_MAP[name_prefix]
+				break
+
+		if core_id.is_empty():
+			push_warning("[KollektivController] Unknown core node: %s" % core.name)
 			continue
 
-		core.global_position = CORE_POSITIONS[key]
 		core.controller = self
-		core.set_meta("core_id", key)
+		core.set_meta("core_id", core_id)
 
 		# Connect signals
-		core.destroyed.connect(_on_core_destroyed.bind(key))
+		core.destroyed.connect(_on_core_destroyed.bind(core_id))
 		core.health_changed.connect(_on_core_health_changed)
 
-		get_parent().add_child(core)
 		cores.append(core)
 		alive_cores.append(core)
 		total_max_hp += core.max_hp
 
-	print("[KollektivController] Spawned %d cores" % cores.size())
-
-
-func _spawn_placeholder_core(core_id: String) -> void:
-	"""Creates a minimal placeholder core when scene is missing"""
-	var core := KollektivCore.new()
-	core.core_name = _get_core_display_name(core_id)
-	core.max_hp = _get_core_default_hp(core_id)
-	core.core_color = _get_core_color(core_id)
-	core.global_position = CORE_POSITIONS[core_id]
-	core.controller = self
-	core.set_meta("core_id", core_id)
-
-	# Add minimal collision
-	var col := CollisionShape2D.new()
-	var rect := RectangleShape2D.new()
-	rect.size = Vector2(80, 80)
-	col.shape = rect
-	core.add_child(col)
-	core.collision_layer = 8
-	core.collision_mask = 0
-
-	# Add sprite placeholder
-	var sprite := Sprite2D.new()
-	sprite.name = "Sprite2D"
-	core.add_child(sprite)
-
-	# Add hurtbox
-	var hurtbox := HurtboxComponent.new()
-	hurtbox.name = "HurtboxComponent"
-	hurtbox.collision_layer = 1024
-	hurtbox.collision_mask = 48
-	hurtbox.monitoring = false
-	hurtbox.monitorable = true
-	var hb_shape := CollisionShape2D.new()
-	var hb_rect := RectangleShape2D.new()
-	hb_rect.size = Vector2(100, 100)
-	hb_shape.shape = hb_rect
-	hurtbox.add_child(hb_shape)
-	core.add_child(hurtbox)
-
-	# Visual placeholder
-	var visual := ColorRect.new()
-	visual.size = Vector2(80, 80)
-	visual.position = Vector2(-40, -40)
-	visual.color = _get_core_color(core_id)
-	core.add_child(visual)
-
-	# Label
-	var label := Label.new()
-	label.text = core.core_name
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.position = Vector2(-60, -60)
-	label.size = Vector2(120, 20)
-	label.add_theme_font_size_override("font_size", 12)
-	core.add_child(label)
-
-	core.destroyed.connect(_on_core_destroyed.bind(core_id))
-	core.health_changed.connect(_on_core_health_changed)
-
-	get_parent().add_child(core)
-	cores.append(core)
-	alive_cores.append(core)
-	total_max_hp += core.max_hp
+	print("[KollektivController] Found %d cores in scene" % cores.size())
 
 
 # ============ PLATFORMS ============
-func _spawn_platforms() -> void:
-	"""Spawn the 9 platforms + floor + wall ledges"""
-	var platform_positions: Array = [
-		# Row 1 (y=500)
-		Vector2(400, 500), Vector2(1400, 500), Vector2(2400, 500),
-		# Row 2 (y=1000)
-		Vector2(800, 1000), Vector2(1400, 1000), Vector2(2000, 1000),
-		# Row 3 (y=1900)
-		Vector2(400, 1900), Vector2(1400, 1900), Vector2(2400, 1900),
-	]
-
-	var platform_scene_path: String = "res://bosses/kollektiv/platforms/moving_platform.tscn"
-	var has_scene: bool = ResourceLoader.exists(platform_scene_path)
-
-	for i in range(platform_positions.size()):
-		var pos: Vector2 = platform_positions[i]
-		if has_scene:
-			var scene: PackedScene = load(platform_scene_path)
-			var platform = scene.instantiate()
-			platform.global_position = pos
-			get_parent().add_child(platform)
-			_platforms.append(platform)
-		else:
-			_spawn_placeholder_platform(pos, i)
-
-	# Wall ledges for cores
-	_spawn_wall_ledge(Vector2(200, 1450), 120)   # Defense core ledge
-	_spawn_wall_ledge(Vector2(2600, 1450), 120)  # Fabricator core ledge
-	_spawn_wall_ledge(Vector2(1400, 250), 120)   # Mobility core ledge
-
-	print("[KollektivController] Spawned %d platforms" % _platforms.size())
-
-
-func _spawn_placeholder_platform(pos: Vector2, index: int) -> void:
-	"""Create a simple StaticBody2D platform"""
-	var platform := StaticBody2D.new()
-	platform.name = "Platform_%d" % index
-	platform.global_position = pos
-	platform.collision_layer = 1
-	platform.collision_mask = 0
-
-	var col := CollisionShape2D.new()
-	var rect := RectangleShape2D.new()
-	rect.size = Vector2(200, 20)
-	col.shape = rect
-	platform.add_child(col)
-
-	var visual := ColorRect.new()
-	visual.size = Vector2(200, 20)
-	visual.position = Vector2(-100, -10)
-	visual.color = Color(0.4, 0.4, 0.5)
-	platform.add_child(visual)
-
-	platform.add_to_group("kollektiv_platform")
-	get_parent().add_child(platform)
-	_platforms.append(platform)
-
-
-func _spawn_wall_ledge(pos: Vector2, width: float) -> void:
-	"""Spawn a static ledge near a core"""
-	var ledge := StaticBody2D.new()
-	ledge.name = "WallLedge"
-	ledge.global_position = pos
-	ledge.collision_layer = 1
-	ledge.collision_mask = 0
-
-	var col := CollisionShape2D.new()
-	var rect := RectangleShape2D.new()
-	rect.size = Vector2(width, 16)
-	col.shape = rect
-	ledge.add_child(col)
-
-	var visual := ColorRect.new()
-	visual.size = Vector2(width, 16)
-	visual.position = Vector2(-width * 0.5, -8)
-	visual.color = Color(0.35, 0.35, 0.45)
-	ledge.add_child(visual)
-
-	get_parent().add_child(ledge)
+func _find_platforms() -> void:
+	"""Find platforms already placed in the scene"""
+	_platforms = get_tree().get_nodes_in_group("kollektiv_platform")
+	print("[KollektivController] Found %d platforms in scene" % _platforms.size())
 
 
 # ============ HEALTH BAR ============
@@ -514,31 +371,3 @@ func get_alive_count() -> int:
 	return alive_cores.size()
 
 
-func _get_core_display_name(core_id: String) -> String:
-	match core_id:
-		"energy": return "Energiekern"
-		"defense": return "Verteidigungskern"
-		"mobility": return "Navigationskern"
-		"fabricator": return "Drohnenfabrik"
-		"cognition": return "Kognitionskern"
-	return "Kern"
-
-
-func _get_core_default_hp(core_id: String) -> float:
-	match core_id:
-		"energy": return 200.0
-		"defense": return 150.0
-		"mobility": return 120.0
-		"fabricator": return 150.0
-		"cognition": return 180.0
-	return 100.0
-
-
-func _get_core_color(core_id: String) -> Color:
-	match core_id:
-		"energy": return Color(1.0, 0.6, 0.1)      # Orange
-		"defense": return Color(0.3, 0.5, 0.9)      # Blue
-		"mobility": return Color(0.3, 0.9, 0.4)     # Green
-		"fabricator": return Color(0.7, 0.3, 0.9)   # Purple
-		"cognition": return Color(0.2, 0.8, 0.9)    # Cyan
-	return Color(0.7, 0.7, 0.7)

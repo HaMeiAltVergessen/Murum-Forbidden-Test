@@ -48,7 +48,7 @@ func _ready() -> void:
 func _start_warning() -> void:
 	var visual = get_node_or_null("Visual")
 	if visual:
-		var tween := create_tween()
+		var tween: Tween = create_tween()
 		tween.tween_property(visual, "modulate:a", 0.2, 0.25)
 		tween.tween_property(visual, "modulate:a", 1.0, 0.25)
 		tween.tween_callback(_activate_and_move)
@@ -58,7 +58,7 @@ func _activate_and_move() -> void:
 	_warning_phase = false
 	monitoring = true
 
-	var tween := create_tween()
+	var tween: Tween = create_tween()
 	if is_horizontal:
 		tween.tween_property(self, "global_position:y", 2800.0, 2800.0 / move_speed)
 	else:

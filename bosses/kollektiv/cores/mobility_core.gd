@@ -109,7 +109,7 @@ func _spawn_placeholder_laser_wall(horizontal: bool) -> void:
 	get_parent().add_child(laser)
 
 	# Flash warning
-	var tween := laser.create_tween()
+	var tween: Tween = laser.create_tween()
 	tween.tween_property(visual, "modulate:a", 0.2, 0.3)
 	tween.tween_property(visual, "modulate:a", 1.0, 0.3)
 	tween.tween_callback(func():
@@ -132,7 +132,7 @@ func _spawn_placeholder_laser_wall(horizontal: bool) -> void:
 	if cognition_active:
 		move_speed *= 1.3
 
-	var move_tween := laser.create_tween()
+	var move_tween: Tween = laser.create_tween()
 	if horizontal:
 		move_tween.tween_property(laser, "global_position:y", 2800.0, 2800.0 / move_speed)
 	else:

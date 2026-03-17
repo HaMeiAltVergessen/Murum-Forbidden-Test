@@ -105,7 +105,7 @@ func _fire_wall_laser() -> void:
 	get_parent().add_child(laser)
 
 	# Warning flash
-	var tween := laser.create_tween()
+	var tween: Tween = laser.create_tween()
 	tween.tween_property(visual, "modulate:a", 0.2, 0.3)
 	tween.tween_property(visual, "modulate:a", 1.0, 0.2)
 	tween.tween_callback(func():
@@ -147,7 +147,7 @@ func _trigger_energy_burst() -> void:
 		warning.color = Color(1.0, 0.85, 0.3, 0.15)
 		get_parent().add_child(warning)
 
-		var tween := warning.create_tween()
+		var tween: Tween = warning.create_tween()
 		tween.tween_property(warning, "color:a", 0.4, 0.6)
 
 		# Delay between bursts
@@ -206,7 +206,7 @@ func _collapse_random_platform() -> void:
 	# Flash warning
 	var visual = platform.get_node_or_null("Visual") if platform.has_node("Visual") else null
 	if visual:
-		var tween := platform.create_tween()
+		var tween: Tween = platform.create_tween()
 		tween.tween_property(visual, "modulate", Color(1.0, 0.3, 0.3), 0.3)
 		tween.tween_property(visual, "modulate", Color.WHITE, 0.3)
 		tween.tween_property(visual, "modulate", Color(1.0, 0.3, 0.3), 0.3)

@@ -137,7 +137,7 @@ func _destroy_shield() -> void:
 		# Shatter visual
 		var visual = _shield.get_node_or_null("ShieldVisual")
 		if visual:
-			var tween := _shield.create_tween()
+			var tween: Tween = _shield.create_tween()
 			tween.tween_property(visual, "modulate:a", 0.0, 0.3)
 
 		# Disable shield hurtbox
@@ -189,7 +189,7 @@ func _trigger_overload() -> void:
 	get_parent().add_child(warning)
 
 	# Flash warning
-	var tween := warning.create_tween()
+	var tween: Tween = warning.create_tween()
 	tween.tween_property(warning, "color:a", 0.5, 0.4)
 	tween.tween_property(warning, "color:a", 0.1, 0.2)
 

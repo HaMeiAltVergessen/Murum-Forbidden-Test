@@ -180,7 +180,7 @@ func _spawn_placeholder_laser(y_pos: float) -> void:
 	get_parent().add_child(laser)
 
 	# Warning phase
-	var tween := laser.create_tween()
+	var tween: Tween = laser.create_tween()
 	tween.tween_property(visual, "modulate:a", 0.3, 0.2)
 	tween.tween_property(visual, "modulate:a", 1.0, 0.2)
 	tween.tween_callback(func():
