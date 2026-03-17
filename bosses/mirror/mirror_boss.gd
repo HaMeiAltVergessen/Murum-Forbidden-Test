@@ -13,17 +13,14 @@ enum State { RUNNING, ATTACKING_RANGED, ATTACKING_MELEE, VULNERABLE, DEFEATED }
 const MOVE_SPEED: float = 300.0  # Fallback only
 
 # ============ AI CONFIG ============
-const PREFERRED_DISTANCE: float = 250.0  # Preferred distance ahead of player
-const MIN_DISTANCE: float = 150.0
-const MAX_DISTANCE: float = 400.0
-const WAYPOINT_REACH_DISTANCE: float = 50.0
-const HOVER_Y_OFFSET: float = -200.0  # Hover this far above ground level
-const HOVER_Y_SMOOTHING: float = 3.0
+const PREFERRED_DISTANCE: float = 300.0  # Normal distance ahead of player (x)
+const MELEE_CHARGE_DISTANCE: float = 60.0  # X-distance during melee rush
+const Y_SMOOTHING: float = 6.0            # How fast boss tracks player Y
 
 # ============ ATTACK CONFIG ============
 const RANGED_ATTACK_COOLDOWN: float = 4.0
-const MELEE_ATTACK_RANGE: float = 120.0
-const MELEE_ATTACK_COOLDOWN: float = 3.0
+const MELEE_ATTACK_RANGE: float = 350.0  # Trigger melee when within this X distance
+const MELEE_ATTACK_COOLDOWN: float = 4.0
 const STUN_DURATION: float = 5.0       # How long boss stays grounded before rising again
 const GROUND_Y: float = 800.0          # Match chunk_spawner GROUND_Y
 const URTEIL_COOLDOWN: float = 12.0
@@ -91,20 +88,12 @@ func _physics_process(delta: float) -> void:
 	if current_state == State.DEFEATED:
 		return
 
-	# Vertical positioning: hover normally, sink to ground when vulnerable
-	var target_y: float = global_position.y
+	# Vertical: always track player Y directly (no offset), sink to ground when stunned
+	var player_ref: Node2D = GameManager.player if GameManager else null
 	if current_state == State.VULNERABLE:
-		# Sink to ground
-		target_y = GROUND_Y
-		global_position.y = lerpf(global_position.y, target_y, 6.0 * delta)
-	else:
-		# Hover above player
-		var player: Node2D = GameManager.player if GameManager else null
-		if player and is_instance_valid(player):
-			target_y = player.global_position.y + HOVER_Y_OFFSET
-		elif controller and controller.runner_camera:
-			target_y = controller.runner_camera.global_position.y + HOVER_Y_OFFSET
-		global_position.y = lerpf(global_position.y, target_y, HOVER_Y_SMOOTHING * delta)
+		global_position.y = lerpf(global_position.y, GROUND_Y, 6.0 * delta)
+	elif player_ref and is_instance_valid(player_ref):
+		global_position.y = lerpf(global_position.y, player_ref.global_position.y, Y_SMOOTHING * delta)
 	velocity.y = 0.0
 
 	# State-specific movement
@@ -198,13 +187,11 @@ func _process_running(delta: float) -> void:
 
 	velocity.x = target_speed
 
-	# Boss hovers — no jump logic needed
-
-	# Check melee range (only when close enough)
-	if distance_to_player < MELEE_ATTACK_RANGE and distance_to_player > -50.0:
-		if _melee_timer >= MELEE_ATTACK_COOLDOWN:
-			if controller and controller.current_section >= MirrorController.Section.DER_SPIEGELKAMPF:
-				_start_melee_attack()
+	# Melee trigger: wenn Boss nah genug am Spieler und Cooldown fertig
+	if _melee_timer >= MELEE_ATTACK_COOLDOWN:
+		var dist: float = abs(distance_to_player)
+		if dist < MELEE_ATTACK_RANGE:
+			_start_melee_attack()
 
 
 # ============ ATTACK STATES ============
@@ -229,20 +216,15 @@ func _start_ranged_attack() -> void:
 func _start_melee_attack() -> void:
 	_melee_timer = 0.0
 	current_state = State.ATTACKING_MELEE
+	_melee_phase = MeleePhase.RUSH
+	print("[MirrorBoss] Melee attack — rushing player!")
 
-	# Turn toward player
-	var player: Node2D = GameManager.player if GameManager else null
-	if player and is_instance_valid(player):
-		_facing_right = player.global_position.x > global_position.x
-
-	# Melee hitbox activation (placeholder — Commit 6)
 	_do_melee_combo()
 
-	# Return to running after combo
-	get_tree().create_timer(1.2).timeout.connect(func():
-		if current_state == State.ATTACKING_MELEE:
-			current_state = State.RUNNING
-	)
+
+enum MeleePhase { RUSH, RETREAT }
+var _melee_phase: int = MeleePhase.RUSH
+var _melee_phase_timer: float = 0.0
 
 
 func _process_attacking(_delta: float) -> void:
@@ -253,12 +235,38 @@ func _process_attacking(_delta: float) -> void:
 	velocity.x = scroll_speed * 0.8
 
 
-func _process_melee(_delta: float) -> void:
-	# Slow down during melee but don't stop (camera is still moving!)
+func _process_melee(delta: float) -> void:
 	var scroll_speed: float = 200.0
 	if controller:
 		scroll_speed = controller.get_scroll_speed()
-	velocity.x = scroll_speed * 0.5
+
+	var player: Node2D = GameManager.player if GameManager else null
+	_melee_phase_timer += delta
+
+	match _melee_phase:
+		MeleePhase.RUSH:
+			# Rush toward player X
+			if player and is_instance_valid(player):
+				var target_x: float = player.global_position.x + MELEE_CHARGE_DISTANCE
+				var diff: float = target_x - global_position.x
+				velocity.x = clampf(diff * 8.0, scroll_speed * 0.5, scroll_speed + 300.0)
+				# Switch to retreat once close enough or after 0.8s
+				if abs(diff) < 40.0 or _melee_phase_timer > 0.8:
+					_melee_phase = MeleePhase.RETREAT
+					_melee_phase_timer = 0.0
+			else:
+				velocity.x = scroll_speed
+		MeleePhase.RETREAT:
+			# Pull back to PREFERRED_DISTANCE ahead of player
+			if player and is_instance_valid(player):
+				var target_x: float = player.global_position.x + PREFERRED_DISTANCE
+				var diff: float = target_x - global_position.x
+				velocity.x = clampf(diff * 5.0 + scroll_speed, scroll_speed * 0.6, scroll_speed + 200.0)
+				# Done retreating after 1s or when back at preferred distance
+				if _melee_phase_timer > 1.0:
+					current_state = State.RUNNING
+			else:
+				velocity.x = scroll_speed
 
 
 func _process_vulnerable(delta: float) -> void:
