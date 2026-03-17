@@ -43,5 +43,13 @@ func _start_boss_run() -> void:
 	if RunManager.is_run_active():
 		return
 
+	# Save boons before run start (run_started signal clears them)
+	var saved_boons: Dictionary = BoonManager.get_save_data()
+
 	print("[BossTestDoor] Starting Abgrund boss test run")
 	RunManager.start_run(RunMapData.WorldId.ABGRUND)
+
+	# Restore boons after run start cleared them
+	if not saved_boons.get("active_boons", {}).is_empty():
+		BoonManager.load_from_save(saved_boons)
+		print("[BossTestDoor] Restored %d boons" % BoonManager.get_active_boon_count())
