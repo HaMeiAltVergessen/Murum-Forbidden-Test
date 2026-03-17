@@ -1,8 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://bkollektiv_hub"]
+[gd_scene load_steps=6 format=3 uid="uid://bobr3ukrhm4ne"]
 
-[ext_resource type="Script" path="res://bosses/kollektiv/cores/central_hub.gd" id="1"]
-[ext_resource type="Texture2D" path="res://Assets/Placeholder/Legacy Collection/Assets/Packs/SpaceShipShooter/Sprites/EnemyBig/enemy-big2.png" id="2"]
-[ext_resource type="Script" path="res://components/hurtbox_component.gd" id="3"]
+[ext_resource type="Script" uid="uid://qh2iafd583up" path="res://bosses/kollektiv/cores/central_hub.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://udxqpr4hibnb" path="res://Assets/Placeholder/Legacy Collection/Assets/Packs/SpaceShipShooter/Sprites/EnemyBig/enemy-big2.png" id="2"]
+[ext_resource type="Script" uid="uid://be8au7dl6rc4k" path="res://components/hurtbox_component.gd" id="3"]
 
 [sub_resource type="RectangleShape2D" id="body_shape"]
 size = Vector2(100, 100)
@@ -19,14 +19,13 @@ script = ExtResource("1")
 shape = SubResource("body_shape")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(3.0, 3.0)
+scale = Vector2(3, 3)
 texture = ExtResource("2")
 
 [node name="HurtboxComponent" type="Area2D" parent="."]
 collision_layer = 1024
 collision_mask = 48
 monitoring = false
-monitorable = true
 script = ExtResource("3")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]

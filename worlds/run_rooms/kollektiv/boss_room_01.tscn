@@ -1,12 +1,12 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=15 format=3 uid="uid://p1t1ds07fh4m"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
-[ext_resource type="PackedScene" uid="uid://bkollektiv_energy" path="res://bosses/kollektiv/cores/energy_core.tscn" id="2_energy"]
-[ext_resource type="PackedScene" uid="uid://bkollektiv_defense" path="res://bosses/kollektiv/cores/defense_core.tscn" id="3_defense"]
-[ext_resource type="PackedScene" uid="uid://bkollektiv_mobility" path="res://bosses/kollektiv/cores/mobility_core.tscn" id="4_mobility"]
-[ext_resource type="PackedScene" uid="uid://bkollektiv_fab" path="res://bosses/kollektiv/cores/fabricator_core.tscn" id="5_fab"]
-[ext_resource type="PackedScene" uid="uid://bkollektiv_cognition" path="res://bosses/kollektiv/cores/cognition_core.tscn" id="6_cognition"]
-[ext_resource type="PackedScene" uid="uid://bkollektiv_platform" path="res://bosses/kollektiv/platforms/moving_platform.tscn" id="7_platform"]
+[ext_resource type="PackedScene" path="res://bosses/kollektiv/cores/energy_core.tscn" id="2_energy"]
+[ext_resource type="PackedScene" path="res://bosses/kollektiv/cores/defense_core.tscn" id="3_defense"]
+[ext_resource type="PackedScene" path="res://bosses/kollektiv/cores/mobility_core.tscn" id="4_mobility"]
+[ext_resource type="PackedScene" path="res://bosses/kollektiv/cores/fabricator_core.tscn" id="5_fab"]
+[ext_resource type="PackedScene" path="res://bosses/kollektiv/cores/cognition_core.tscn" id="6_cognition"]
+[ext_resource type="PackedScene" path="res://bosses/kollektiv/platforms/moving_platform.tscn" id="7_platform"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(2800, 40)
@@ -153,7 +153,6 @@ position = Vector2(2400, 1900)
 
 [node name="LedgeDefense" type="StaticBody2D" parent="WallLedges"]
 position = Vector2(200, 1450)
-collision_layer = 1
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallLedges/LedgeDefense"]
@@ -168,7 +167,6 @@ color = Color(0.35, 0.35, 0.45, 1)
 
 [node name="LedgeFabricator" type="StaticBody2D" parent="WallLedges"]
 position = Vector2(2600, 1450)
-collision_layer = 1
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallLedges/LedgeFabricator"]
@@ -183,7 +181,6 @@ color = Color(0.35, 0.35, 0.45, 1)
 
 [node name="LedgeMobility" type="StaticBody2D" parent="WallLedges"]
 position = Vector2(1400, 250)
-collision_layer = 1
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallLedges/LedgeMobility"]
