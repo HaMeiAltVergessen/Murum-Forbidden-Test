@@ -2,9 +2,9 @@
 
 [ext_resource type="PackedScene" path="res://bosses/boss_base.tscn" id="1"]
 [ext_resource type="Script" uid="uid://d1tc2iiuirt7y" path="res://bosses/lythrun/lythrun_boss.gd" id="2"]
-[ext_resource type="Script" uid="uid://c2uwuysk62sea" path="res://bosses/lythrun/adaptive_ai.gd" id="3"]
+[ext_resource type="Script" uid="uid://de137800ptgq0" path="res://bosses/lythrun/adaptive_ai.gd" id="3"]
 [ext_resource type="Texture2D" uid="uid://bonq3b4yahq23" path="res://Assets/AIPlaceholder/Char/Lythrun/lythrunVBossSprite.png" id="4_boss"]
-[ext_resource type="Texture2D" uid="uid://n81uslyacfp8" path="res://Assets/AIPlaceholder/lythrunSense.png" id="7_sense"]
+[ext_resource type="Texture2D" uid="uid://dj8lkckf7rqf3" path="res://Assets/AIPlaceholder/Char/Lythrun/lythrunSense2.png" id="4_kerb8"]
 
 [sub_resource type="SpriteFrames" id="lythrun_sprite_frames"]
 animations = [{
@@ -44,8 +44,11 @@ animation = &"idle"
 autoplay = "idle"
 
 [node name="SenseSprite" type="Sprite2D" parent="." index="1"]
-position = Vector2(30, -10)
-texture = ExtResource("7_sense")
+position = Vector2(3, -33)
+rotation = 0.995203
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("4_kerb8")
+flip_h = true
 
 [node name="AdaptiveAI" type="Node" parent="." index="7"]
 script = ExtResource("3")
