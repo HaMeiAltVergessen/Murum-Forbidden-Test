@@ -1,18 +1,16 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="PackedScene" path="res://bosses/boss_base.tscn" id="1"]
 [ext_resource type="Script" uid="uid://d1tc2iiuirt7y" path="res://bosses/lythrun/lythrun_boss.gd" id="2"]
 [ext_resource type="Script" uid="uid://c2uwuysk62sea" path="res://bosses/lythrun/adaptive_ai.gd" id="3"]
-[ext_resource type="Texture2D" uid="uid://cwhncwin6s3rl" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/death/Sprites/No-lamp-walk/death-walk1.png" id="4"]
-[ext_resource type="Texture2D" uid="uid://cx0c7fd26p0sn" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/death/Sprites/No-lamp-walk/death-walk2.png" id="5"]
-[ext_resource type="Texture2D" uid="uid://cm0ml4ayo4c6q" path="res://Assets/Placeholder/Legacy Collection/Assets/Characters/death/Sprites/No-lamp-walk/death-walk3.png" id="6"]
+[ext_resource type="Texture2D" uid="uid://bonq3b4yahq23" path="res://Assets/AIPlaceholder/Char/Lythrun/lythrunVBossSprite.png" id="4_boss"]
 [ext_resource type="Texture2D" uid="uid://n81uslyacfp8" path="res://Assets/AIPlaceholder/lythrunSense.png" id="7_sense"]
 
 [sub_resource type="SpriteFrames" id="lythrun_sprite_frames"]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("4")
+"texture": ExtResource("4_boss")
 }],
 "loop": true,
 "name": &"idle",
@@ -20,13 +18,7 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("4")
-}, {
-"duration": 1.0,
-"texture": ExtResource("5")
-}, {
-"duration": 1.0,
-"texture": ExtResource("6")
+"texture": ExtResource("4_boss")
 }],
 "loop": true,
 "name": &"walk",
