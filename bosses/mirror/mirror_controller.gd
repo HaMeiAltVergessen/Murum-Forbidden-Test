@@ -143,6 +143,9 @@ func start_fight() -> void:
 	_setup_momentum_bar()
 	_setup_mirror_boss()
 
+	# Opening dialog before fight begins
+	await _play_opening_dialog()
+
 	# Start
 	is_fight_active = true
 	current_section = Section.DER_FALL
@@ -157,6 +160,23 @@ func start_fight() -> void:
 	_show_section_title("Der Fall")
 
 	print("[MirrorController] Fight started — Section 1: Der Fall")
+
+
+func _play_opening_dialog() -> void:
+	"""Zeigt den Eröffnungsdialog bevor der Kampf beginnt"""
+	# Kamera einfrieren während Dialog
+	if runner_camera:
+		runner_camera.scroll_speed = 0.0
+
+	await get_tree().create_timer(0.8).timeout
+	EventBus.show_notification.emit("Spiegel: Du bist die Frage,", 2.5)
+	await get_tree().create_timer(3.0).timeout
+	EventBus.show_notification.emit("Spiegel: ich die Antwort.", 2.5)
+	await get_tree().create_timer(3.0).timeout
+
+	# Kamera wieder starten
+	if runner_camera:
+		runner_camera.scroll_speed = SECTION_CONFIG[Section.DER_FALL]["scroll_speed"]
 
 
 # ============ SUBSYSTEM SETUP ============
@@ -424,6 +444,7 @@ func _play_defeat_dialog() -> void:
 	var lines: Array[Dictionary] = [
 		{"speaker": "Spiegel", "text": "Du suchst Antworten.", "delay": 2.5},
 		{"speaker": "Spiegel", "text": "Doch du bist nur die Frage.", "delay": 3.0},
+		{"speaker": "Spiegel", "text": "Ich gebe dir deine Antworten.", "delay": 2.5},
 		{"speaker": "Murum", "text": "Ich brauche keine Antworten.", "delay": 2.5},
 	]
 
