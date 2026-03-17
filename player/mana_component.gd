@@ -4,7 +4,7 @@ class_name ManaComponent
 
 # ============ CONFIGURATION ============
 @export var max_mana: int = 100
-@export var regeneration_rate: float = 1  # Mana per second
+@export var regeneration_rate: float = 10  # Mana per second (10 fürs Testen)
 @export var regen_delay_after_use: float = 0.2  # Delay before regen starts
 
 # ============ STATE ============

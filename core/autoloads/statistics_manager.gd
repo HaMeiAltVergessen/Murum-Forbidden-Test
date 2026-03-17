@@ -53,6 +53,10 @@ func _ready() -> void:
 	EventBus.damage_dealt.connect(_on_damage_dealt)
 	EventBus.damage_taken.connect(_on_damage_taken)
 
+	# Also track run time when a run starts via RunManager
+	if RunManager:
+		RunManager.run_started.connect(_on_game_started)
+
 	# Track room visits via WorldManager
 	if WorldManager:
 		WorldManager.room_changed.connect(_on_room_changed)
