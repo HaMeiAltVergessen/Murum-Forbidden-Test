@@ -71,6 +71,10 @@ const DEATH_ZONE_DAMAGE: int = 50
 const DEATH_ZONE_TICK: float = 0.5
 var _death_zone_timer: float = 0.0
 
+# ============ FALL-OFF RESPAWN ============
+const FALL_OFF_Y_OFFSET: float = 600.0  # Below camera center = fall-off
+const FALL_OFF_DAMAGE: int = 20
+
 
 func _ready() -> void:
 	set_process(false)
@@ -105,6 +109,9 @@ func _process(delta: float) -> void:
 
 	# Death zone check
 	_check_death_zone(delta)
+
+	# Fall-off respawn check
+	_check_fall_off()
 
 	# Emit health_changed as momentum (for compatibility)
 	if momentum_system:
@@ -285,17 +292,9 @@ func _check_death_zone(delta: float) -> void:
 	var death_x: float = cam_left + DEATH_ZONE_OFFSET
 
 	if player.global_position.x < death_x:
-		_death_zone_timer += delta
-		if _death_zone_timer >= DEATH_ZONE_TICK:
-			_death_zone_timer = 0.0
-			# Deal damage
-			if player.has_node("HealthComponent"):
-				var health = player.get_node("HealthComponent")
-				if health.has_method("take_damage"):
-					health.take_damage(DEATH_ZONE_DAMAGE)
-			# Reduce momentum
-			if momentum_system:
-				momentum_system.reduce_momentum(3.0)
+		# Respawn at camera center with damage
+		_respawn_at_camera_center(player)
+		_death_zone_timer = 0.0
 	else:
 		_death_zone_timer = 0.0
 
@@ -309,6 +308,55 @@ func _check_death_zone(delta: float) -> void:
 				if p2_health.has_method("take_damage"):
 					p2_health.take_damage(9999)
 			ending_modifiers["p2_died_in_mirror"] = true
+
+
+# ============ FALL-OFF RESPAWN ============
+func _check_fall_off() -> void:
+	if not runner_camera:
+		return
+
+	var cam_y: float = runner_camera.global_position.y
+	var fall_threshold: float = cam_y + FALL_OFF_Y_OFFSET
+
+	# P1 fall-off check
+	var player: Node2D = GameManager.player if GameManager else null
+	if player and is_instance_valid(player):
+		if player.global_position.y > fall_threshold:
+			_respawn_at_camera_center(player)
+
+	# P2 fall-off check
+	var p2: Node2D = _get_p2_player()
+	if p2 and is_instance_valid(p2):
+		if p2.global_position.y > fall_threshold:
+			_respawn_at_camera_center(p2)
+
+
+func _respawn_at_camera_center(character: Node2D) -> void:
+	if not runner_camera:
+		return
+
+	# Teleport to camera center (slightly above center for safe landing)
+	var respawn_pos := Vector2(
+		runner_camera.global_position.x,
+		runner_camera.global_position.y - 100.0
+	)
+	character.global_position = respawn_pos
+	if character is CharacterBody2D:
+		character.velocity = Vector2.ZERO
+
+	# Deal fall damage
+	if character.has_node("HealthComponent"):
+		var health = character.get_node("HealthComponent")
+		if health.has_method("take_damage"):
+			health.take_damage(FALL_OFF_DAMAGE)
+
+	# Reduce momentum
+	if momentum_system:
+		momentum_system.reduce_momentum(5.0)
+
+	# Camera shake feedback
+	if runner_camera and runner_camera.has_method("shake"):
+		runner_camera.shake(4.0, 5.0)
 
 
 # ============ FINISHER SYSTEM ============

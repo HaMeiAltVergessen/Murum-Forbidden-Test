@@ -1,10 +1,11 @@
-[gd_scene load_steps=12 format=3 uid="uid://bah2edmcousko"]
+[gd_scene load_steps=14 format=3 uid="uid://bah2edmcousko"]
 
 [ext_resource type="Script" uid="uid://bihmtgwqw80w2" path="res://worlds/limbus/limbus.gd" id="1_limbus"]
 [ext_resource type="Script" uid="uid://cyw8mcann7l1b" path="res://worlds/limbus/run_door.gd" id="2_rundoor"]
 [ext_resource type="Script" uid="uid://bjksvnjjv0vh8" path="res://environment/spawn_point.gd" id="3_spawn"]
 [ext_resource type="Script" uid="uid://pkbhpy61h44r" path="res://worlds/limbus/siegel_altar.gd" id="4_altar"]
 [ext_resource type="Script" uid="uid://ccnf5ogjvrl2h" path="res://worlds/limbus/limbus_merchant.gd" id="5_merchant"]
+[ext_resource type="Script" path="res://worlds/limbus/boss_test_door.gd" id="6_bossdoor"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1920, 40)
@@ -22,6 +23,9 @@ size = Vector2(120, 160)
 size = Vector2(120, 160)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_interaction"]
+size = Vector2(150, 200)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bossdoor"]
 size = Vector2(150, 200)
 
 [node name="Limbus" type="Node2D"]
@@ -172,6 +176,42 @@ offset_top = 40.0
 offset_right = 80.0
 offset_bottom = 65.0
 text = "E - Run starten"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BossTestDoor" type="Area2D" parent="."]
+position = Vector2(1750, 646)
+collision_mask = 2
+script = ExtResource("6_bossdoor")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BossTestDoor"]
+position = Vector2(0, -60)
+shape = SubResource("RectangleShape2D_bossdoor")
+debug_color = Color(0.8, 0.2, 0.2, 0.3)
+
+[node name="DoorVisual" type="ColorRect" parent="BossTestDoor"]
+offset_left = -60.0
+offset_top = -150.0
+offset_right = 60.0
+offset_bottom = 30.0
+color = Color(0.4, 0.1, 0.15, 0.8)
+
+[node name="DoorLabel" type="Label" parent="BossTestDoor"]
+offset_left = -80.0
+offset_top = -180.0
+offset_right = 80.0
+offset_bottom = -155.0
+text = "Abgrund-Boss"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PromptLabel" type="Label" parent="BossTestDoor"]
+visible = false
+offset_left = -80.0
+offset_top = 40.0
+offset_right = 80.0
+offset_bottom = 65.0
+text = "E - Boss testen"
 horizontal_alignment = 1
 vertical_alignment = 1
 
