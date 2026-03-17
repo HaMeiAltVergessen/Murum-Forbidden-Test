@@ -364,7 +364,7 @@ func enter_defeated_state() -> void:
 
 # ============ DAMAGE HANDLING ============
 func _on_damage_received(_damage: int, _knockback: Vector2, _hitstun: float) -> void:
-	"""Called by HurtboxComponent when a hit lands — show visual feedback"""
+	"""Called by HurtboxComponent when a hit lands"""
 	if current_state == State.DEFEATED:
 		return
 
@@ -374,11 +374,27 @@ func _on_damage_received(_damage: int, _knockback: Vector2, _hitstun: float) -> 
 		tween.tween_property(_sprite, "modulate", Color(2.0, 2.0, 2.0, 1.0), 0.05)
 		tween.tween_property(_sprite, "modulate", Color.WHITE, 0.15)
 
+	# Jeder Treffer im Vulnerable-State zählt als Finisher
+	if current_state == State.VULNERABLE:
+		if controller and controller.momentum_system:
+			controller.momentum_system.on_finisher_landed()
+
 
 func take_damage(amount: float, _attacker: Node = null) -> void:
-	"""Called by Wolkenbruch and other systems — route through hurtbox for consistent feedback"""
-	if _hurtbox and not _hurtbox.is_invulnerable:
-		_on_damage_received(int(amount), Vector2.ZERO, 0.0)
+	"""Called by Wolkenbruch and other direct-damage systems"""
+	if current_state == State.DEFEATED:
+		return
+
+	# Flash feedback
+	if _sprite:
+		var tween := create_tween()
+		tween.tween_property(_sprite, "modulate", Color(2.0, 2.0, 2.0, 1.0), 0.05)
+		tween.tween_property(_sprite, "modulate", Color.WHITE, 0.15)
+
+	# Jeder Treffer im Vulnerable-State zählt als Finisher
+	if current_state == State.VULNERABLE:
+		if controller and controller.momentum_system:
+			controller.momentum_system.on_finisher_landed()
 
 
 # ============ ATTACKS ============
