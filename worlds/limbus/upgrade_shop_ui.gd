@@ -389,7 +389,8 @@ func _update_mana_entry() -> void:
 	var max_level = RunManager.MAX_MANA_LEVELS
 	var is_max = level >= max_level
 
-	_mana_entry["level_label"].text = "Stufe %d / %d  (+%d Mana)" % [level, max_level, RunManager.get_perma_mana_bonus()]
+	var percent = int(RunManager.perma_mana_level * RunManager.MANA_PERCENT_PER_LEVEL * 100)
+	_mana_entry["level_label"].text = "Stufe %d / %d  (+%d%%)" % [level, max_level, percent]
 
 	if is_max:
 		_mana_entry["level_label"].add_theme_color_override("font_color", COLOR_MAXED)
@@ -487,13 +488,13 @@ func _show_mana_detail() -> void:
 
 	var text = ""
 	for i in range(1, max_level + 1):
-		var bonus = i * RunManager.MANA_BONUS_PER_LEVEL
+		var percent_val = int(i * RunManager.MANA_PERCENT_PER_LEVEL * 100)
 		if i <= level:
-			text += "[Aktiv] Stufe %d: +%d Max-Mana\n\n" % [i, bonus]
+			text += "[Aktiv] Stufe %d: +%d%% Max-Mana\n\n" % [i, percent_val]
 		elif i == level + 1:
-			text += "[Naechste] Stufe %d: +%d Max-Mana (%d Magicka)\n\n" % [i, bonus, RunManager.PERMA_MANA_COST]
+			text += "[Naechste] Stufe %d: +%d%% Max-Mana (%d Magicka)\n\n" % [i, percent_val, RunManager.PERMA_MANA_COST]
 		else:
-			text += "[Stufe %d] +%d Max-Mana (%d Magicka)\n\n" % [i, bonus, RunManager.PERMA_MANA_COST]
+			text += "[Stufe %d] +%d%% Max-Mana (%d Magicka)\n\n" % [i, percent_val, RunManager.PERMA_MANA_COST]
 
 	_detail_panel["effects"].text = text
 
@@ -502,8 +503,9 @@ func _on_buy_mana_pressed() -> void:
 	if not RunManager.upgrade_perma_mana():
 		return
 
+	var percent = int(RunManager.perma_mana_level * RunManager.MANA_PERCENT_PER_LEVEL * 100)
 	EventBus.show_notification.emit(
-		"Mana-Reservoir Stufe %d! (+%d Max-Mana)" % [RunManager.perma_mana_level, RunManager.get_perma_mana_bonus()], 3.0
+		"Mana-Reservoir Stufe %d! (+%d%% Max-Mana)" % [RunManager.perma_mana_level, percent], 3.0
 	)
 	_update_all_entries()
 	_update_magicka_display()

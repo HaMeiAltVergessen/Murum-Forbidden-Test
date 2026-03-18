@@ -23,7 +23,7 @@ var max_lives: int = BASE_LIVES  # Increased by perma upgrades
 
 # ============ PERMANENT MANA UPGRADE ============
 const MAX_MANA_LEVELS: int = 4
-const MANA_BONUS_PER_LEVEL: int = 15  # +15 max mana per level
+const MANA_PERCENT_PER_LEVEL: float = 0.10  # +10% max mana per level
 const PERMA_MANA_COST: int = 2  # Magicka cost per level
 
 var perma_mana_level: int = 0  # 0-4, persistent across runs
@@ -442,8 +442,9 @@ func set_max_lives(new_max: int) -> void:
 
 
 # ============ PERMANENT MANA ============
-func get_perma_mana_bonus() -> int:
-	return perma_mana_level * MANA_BONUS_PER_LEVEL
+func get_perma_mana_multiplier() -> float:
+	"""Returns mana multiplier (e.g. 1.0, 1.1, 1.2, 1.3, 1.4)"""
+	return 1.0 + perma_mana_level * MANA_PERCENT_PER_LEVEL
 
 
 func upgrade_perma_mana() -> bool:
@@ -454,7 +455,7 @@ func upgrade_perma_mana() -> bool:
 		return false
 	perma_mana_level += 1
 	perma_mana_changed.emit(perma_mana_level)
-	print("[RunManager] Perma mana upgraded to level %d (+%d mana)" % [perma_mana_level, get_perma_mana_bonus()])
+	print("[RunManager] Perma mana upgraded to level %d (x%.2f)" % [perma_mana_level, get_perma_mana_multiplier()])
 	return true
 
 

@@ -21,11 +21,12 @@ signal mana_depleted()
 
 
 func _ready() -> void:
-	# Apply permanent mana bonus (player only)
+	# Apply permanent mana multiplier (player only)
 	if (owner is Murum or owner is Lythrun) and RunManager:
-		var perma_bonus: int = RunManager.get_perma_mana_bonus()
-		if perma_bonus > 0:
-			max_mana += perma_bonus
+		var mana_mult: float = RunManager.get_perma_mana_multiplier()
+		if mana_mult > 1.0:
+			max_mana = int(max_mana * mana_mult)
+			print("[ManaComponent] Mana-Reservoir: max_mana = %d (x%.2f)" % [max_mana, mana_mult])
 
 	_base_max_mana = max_mana
 	current_mana = max_mana
