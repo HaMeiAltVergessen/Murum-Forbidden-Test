@@ -1078,7 +1078,7 @@ func _spawn_element_burst_vfx(pos: Vector2, element: String, vfx_scale: float = 
 		return
 
 	var color: Color = ELEMENT_COLORS.get(element, MURRUM_COLOR)
-	var size: float = 60.0 * vfx_scale
+	var size: float = 90.0 * vfx_scale
 
 	# Outer ring
 	var ring := Node2D.new()
@@ -1090,14 +1090,14 @@ func _spawn_element_burst_vfx(pos: Vector2, element: String, vfx_scale: float = 
 	circle.color = color
 	circle.size = Vector2(size, size)
 	circle.position = Vector2(-size / 2.0, -size / 2.0)
-	circle.modulate.a = 0.8
+	circle.modulate.a = 0.9
 	ring.add_child(circle)
 
 	# Animate: expand + fade
 	var tween := ring.create_tween()
 	tween.set_parallel(true)
-	tween.tween_property(ring, "scale", Vector2(2.0, 2.0), 0.4).from(Vector2(0.3, 0.3))
-	tween.tween_property(circle, "modulate:a", 0.0, 0.4).from(0.8)
+	tween.tween_property(ring, "scale", Vector2(2.5, 2.5), 0.6).from(Vector2(0.3, 0.3))
+	tween.tween_property(circle, "modulate:a", 0.0, 0.6).from(0.9)
 	tween.set_parallel(false)
 	tween.tween_callback(ring.queue_free)
 
@@ -1116,29 +1116,29 @@ func _spawn_element_hit_vfx(pos: Vector2, vfx_scale: float = 0.5) -> void:
 	var folder: String = ELEMENT_VFX.get(element, PATH_VFX["murrum"][0])
 	var frames: SpriteFrames = _vfx_cache.get(folder)
 	if frames:
-		_spawn_explosion_vfx(pos + Vector2(randf_range(-15, 15), -40 + randf_range(-15, 15)), folder, vfx_scale)
+		_spawn_explosion_vfx(pos + Vector2(randf_range(-20, 20), -40 + randf_range(-20, 20)), folder, vfx_scale * 1.5)
 		return
 
-	# Fallback: small colored flash
+	# Fallback: colored flash
 	var color: Color = ELEMENT_COLORS.get(element, MURRUM_COLOR)
 	var flash := ColorRect.new()
 	flash.color = color
-	var s: float = 24.0 * vfx_scale
+	var s: float = 40.0 * vfx_scale
 	flash.size = Vector2(s, s)
-	flash.position = pos + Vector2(-s / 2.0 + randf_range(-10, 10), -40 - s / 2.0 + randf_range(-10, 10))
+	flash.position = pos + Vector2(-s / 2.0 + randf_range(-15, 15), -40 - s / 2.0 + randf_range(-15, 15))
 	flash.z_index = 10
 	scene_root.add_child(flash)
 
 	var tween := flash.create_tween()
-	tween.tween_property(flash, "modulate:a", 0.0, 0.3).from(0.9)
+	tween.tween_property(flash, "modulate:a", 0.0, 0.5).from(0.9)
 	tween.tween_callback(flash.queue_free)
 
 
 func _spawn_multi_element_vfx(pos: Vector2) -> void:
 	"""T4: Burst of all 4 element flashes around enemy"""
 	var offsets: Array = [
-		Vector2(-20, -50), Vector2(20, -50),
-		Vector2(-20, -30), Vector2(20, -30)
+		Vector2(-30, -60), Vector2(30, -60),
+		Vector2(-30, -25), Vector2(30, -25)
 	]
 	var elements: Array = ["fire", "water", "earth", "lightning"]
 
@@ -1148,13 +1148,12 @@ func _spawn_multi_element_vfx(pos: Vector2) -> void:
 		var folder: String = ELEMENT_VFX.get(element, PATH_VFX["murrum"][0])
 		var frames: SpriteFrames = _vfx_cache.get(folder)
 		if frames:
-			# Delayed spawn for cascade effect
-			get_tree().create_timer(i * 0.05).timeout.connect(func():
-				_spawn_explosion_vfx(pos + offset, folder, 0.4)
+			get_tree().create_timer(i * 0.07).timeout.connect(func():
+				_spawn_explosion_vfx(pos + offset, folder, 0.7)
 			)
 		else:
-			get_tree().create_timer(i * 0.05).timeout.connect(func():
-				_spawn_element_burst_vfx(pos + offset, element, 0.4)
+			get_tree().create_timer(i * 0.07).timeout.connect(func():
+				_spawn_element_burst_vfx(pos + offset, element, 0.7)
 			)
 
 
@@ -1166,7 +1165,7 @@ func _spawn_lifesteal_vfx(pos: Vector2) -> void:
 
 	var glow := ColorRect.new()
 	glow.color = MURRUM_COLOR
-	var s: float = 50.0
+	var s: float = 70.0
 	glow.size = Vector2(s, s)
 	glow.position = pos + Vector2(-s / 2.0, -60 - s / 2.0)
 	glow.z_index = 9
@@ -1174,8 +1173,8 @@ func _spawn_lifesteal_vfx(pos: Vector2) -> void:
 
 	var tween := glow.create_tween()
 	tween.set_parallel(true)
-	tween.tween_property(glow, "scale", Vector2(1.8, 1.8), 0.3).from(Vector2(0.5, 0.5))
-	tween.tween_property(glow, "modulate:a", 0.0, 0.3).from(0.6)
+	tween.tween_property(glow, "scale", Vector2(2.2, 2.2), 0.5).from(Vector2(0.4, 0.4))
+	tween.tween_property(glow, "modulate:a", 0.0, 0.5).from(0.7)
 	tween.set_parallel(false)
 	tween.tween_callback(glow.queue_free)
 

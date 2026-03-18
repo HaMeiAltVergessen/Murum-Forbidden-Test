@@ -19,8 +19,8 @@ const STAFF_POS_RIGHT: Vector2 = Vector2(30, -5)
 const STAFF_POS_LEFT: Vector2 = Vector2(-30, -5)
 const STAFF_BASE_SCALE: float = 0.142  # Original scale from murum.tscn
 
-# Attack stretch
-var _attack_stretch_tween: Tween = null
+# Attack rotation
+var _attack_rotation_tween: Tween = null
 
 # Resonance glow (orb at staff tip)
 var _orb_glow: Sprite2D = null
@@ -137,45 +137,52 @@ func _update_staff_position() -> void:
 		staff_sprite.position = STAFF_POS_LEFT
 		staff_sprite.scale = Vector2(-STAFF_BASE_SCALE, STAFF_BASE_SCALE)
 
-# ============ ATTACK STRETCH ============
+# ============ ATTACK ROTATION ============
 func _on_player_attacked(attack_number: int) -> void:
 	# NICHT play_animation("attack") — die "attack"-Animation auf dem AnimatedSprite2D
 	# hat Frames mit anderen Offsets, die den ganzen Charakter visuell verschieben.
 	# CombatSystem handhabt seine eigenen Angriffsvisuals (Stab-Rotation, Tip-Farbe).
-	_play_attack_stretch()
+	_play_attack_rotation(attack_number)
 
-func _play_attack_stretch() -> void:
+func _play_attack_rotation(attack_number: int) -> void:
 	if not staff_sprite or not staff_sprite.get_parent() == player:
 		return  # Staff is thrown
 
-	if _attack_stretch_tween and _attack_stretch_tween.is_valid():
-		_attack_stretch_tween.kill()
+	if _attack_rotation_tween and _attack_rotation_tween.is_valid():
+		_attack_rotation_tween.kill()
 
-	var sign_x: float = 1.0 if facing_right else -1.0
+	var dir: float = 1.0 if facing_right else -1.0
 
-	# Subtiler Stretch: nur 8% in Y (Laenge), 5% squash in X
-	var stretch_y: float = STAFF_BASE_SCALE * 1.08
-	var squash_x: float = STAFF_BASE_SCALE * 0.95
+	_attack_rotation_tween = create_tween()
+	match attack_number:
+		1:  # Overhead swing
+			_attack_rotation_tween.tween_property(staff_sprite, "rotation",
+				-PI / 3.0 * dir, 0.06)
+			_attack_rotation_tween.tween_property(staff_sprite, "rotation",
+				PI / 6.0 * dir, 0.12)
+		2:  # Side swing
+			_attack_rotation_tween.tween_property(staff_sprite, "rotation",
+				PI / 4.0 * dir, 0.06)
+			_attack_rotation_tween.tween_property(staff_sprite, "rotation",
+				-PI / 6.0 * dir, 0.12)
+		_:  # Upward thrust / finisher
+			_attack_rotation_tween.tween_property(staff_sprite, "rotation",
+				-PI / 4.0 * dir, 0.05)
+			_attack_rotation_tween.tween_property(staff_sprite, "rotation",
+				PI / 3.0 * dir, 0.10)
+	# Return to idle
+	_attack_rotation_tween.tween_property(staff_sprite, "rotation", 0.0, 0.08)
+	_attack_rotation_tween.tween_callback(func(): is_attacking = false)
 
-	_attack_stretch_tween = create_tween()
-	# Schnell strecken (Stab wird laenger)
-	_attack_stretch_tween.tween_property(staff_sprite, "scale",
-		Vector2(squash_x * sign_x, stretch_y), 0.05)
-	# Sanft zurueck (kein Elastic — das verursacht Bounce auf dem ganzen Player)
-	_attack_stretch_tween.tween_property(staff_sprite, "scale",
-		Vector2(STAFF_BASE_SCALE * sign_x, STAFF_BASE_SCALE), 0.1)
-	_attack_stretch_tween.tween_callback(func(): is_attacking = false)
-
-func _reset_staff_stretch() -> void:
-	if _attack_stretch_tween and _attack_stretch_tween.is_valid():
-		_attack_stretch_tween.kill()
-		_attack_stretch_tween = null
+func _reset_staff_rotation() -> void:
+	if _attack_rotation_tween and _attack_rotation_tween.is_valid():
+		_attack_rotation_tween.kill()
+		_attack_rotation_tween = null
 
 	if not staff_sprite or not staff_sprite.get_parent() == player:
 		return
 
-	var sign_x: float = 1.0 if facing_right else -1.0
-	staff_sprite.scale = Vector2(STAFF_BASE_SCALE * sign_x, STAFF_BASE_SCALE)
+	staff_sprite.rotation = 0.0
 
 # ============ RESONANCE ORB GLOW ============
 func _create_orb_glow() -> void:

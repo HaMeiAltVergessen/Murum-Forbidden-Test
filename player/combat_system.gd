@@ -155,8 +155,7 @@ func _perform_attack() -> void:
 	# Animate player
 	_animate_player_attack(current_combo)
 
-	# Animate staff
-	_animate_staff_attack(current_combo)
+	# Staff rotation is handled by MurumAnimator via player_attacked signal
 
 	print("[CombatSystem] Attack ", current_combo, " - Damage: ", final_attack_damage)
 
