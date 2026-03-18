@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://d23uehsuqkrsa"
+path="res://.godot/imported/WELT 2 – DAS KOLLEKTIV (Schatzräume).mp3-a25be3ad64909db0dbd2ab1bff7472ae.mp3str"
+
+[deps]
+
+source_file="res://Music/welt2/WELT 2 – DAS KOLLEKTIV (Schatzräume).mp3"
+dest_files=["res://.godot/imported/WELT 2 – DAS KOLLEKTIV (Schatzräume).mp3-a25be3ad64909db0dbd2ab1bff7472ae.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

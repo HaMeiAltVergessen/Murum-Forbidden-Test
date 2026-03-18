@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://iyij2qjwximr"
+path="res://.godot/imported/WELT 2 – „Das Kollektiv der Einen Stimme“ 01 – One Voice (1).mp3-6a9974b2f60bab0ae0a6dc821512e1fb.mp3str"
+
+[deps]
+
+source_file="res://Music/welt2/WELT 2 – „Das Kollektiv der Einen Stimme“ 01 – One Voice (1).mp3"
+dest_files=["res://.godot/imported/WELT 2 – „Das Kollektiv der Einen Stimme“ 01 – One Voice (1).mp3-6a9974b2f60bab0ae0a6dc821512e1fb.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

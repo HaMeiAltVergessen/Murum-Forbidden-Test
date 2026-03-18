@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://shumlh3f8buc"
+path="res://.godot/imported/WELT 1 – „Die 5“ 02 – Temple of a Thousand Prayers.mp3-5b19b1192153426ac6df126161380e0a.mp3str"
+
+[deps]
+
+source_file="res://Music/welt1/WELT 1 – „Die 5“ 02 – Temple of a Thousand Prayers.mp3"
+dest_files=["res://.godot/imported/WELT 1 – „Die 5“ 02 – Temple of a Thousand Prayers.mp3-5b19b1192153426ac6df126161380e0a.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

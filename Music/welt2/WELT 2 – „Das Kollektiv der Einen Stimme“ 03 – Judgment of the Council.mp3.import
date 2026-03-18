@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bhnn5o0u7pp00"
+path="res://.godot/imported/WELT 2 – „Das Kollektiv der Einen Stimme“ 03 – Judgment of the Council.mp3-e51ae02a625ba8e6c16de6fa63213b40.mp3str"
+
+[deps]
+
+source_file="res://Music/welt2/WELT 2 – „Das Kollektiv der Einen Stimme“ 03 – Judgment of the Council.mp3"
+dest_files=["res://.godot/imported/WELT 2 – „Das Kollektiv der Einen Stimme“ 03 – Judgment of the Council.mp3-e51ae02a625ba8e6c16de6fa63213b40.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
