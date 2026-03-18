@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://pnnax46vnesf"
+path="res://.godot/imported/WELT 1 – DAS NIEMANDSLAND (Elitekampf) (1).mp3-55d845475eafd5ce950db56ccef418f0.mp3str"
+
+[deps]
+
+source_file="res://Music/welt1/WELT 1 – DAS NIEMANDSLAND (Elitekampf) (1).mp3"
+dest_files=["res://.godot/imported/WELT 1 – DAS NIEMANDSLAND (Elitekampf) (1).mp3-55d845475eafd5ce950db56ccef418f0.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

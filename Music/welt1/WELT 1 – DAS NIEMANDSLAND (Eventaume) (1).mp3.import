@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://chy0j82d1o5fx"
+path="res://.godot/imported/WELT 1 – DAS NIEMANDSLAND (Eventaume) (1).mp3-12faef937413220111c60db683c3e7b3.mp3str"
+
+[deps]
+
+source_file="res://Music/welt1/WELT 1 – DAS NIEMANDSLAND (Eventaume) (1).mp3"
+dest_files=["res://.godot/imported/WELT 1 – DAS NIEMANDSLAND (Eventaume) (1).mp3-12faef937413220111c60db683c3e7b3.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

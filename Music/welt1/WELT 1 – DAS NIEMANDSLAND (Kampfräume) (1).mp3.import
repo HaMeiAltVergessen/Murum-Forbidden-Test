@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dsymqp4etl481"
+path="res://.godot/imported/WELT 1 – DAS NIEMANDSLAND (Kampfräume) (1).mp3-2d933d09bf92b65a97bea77ce5bb3276.mp3str"
+
+[deps]
+
+source_file="res://Music/welt1/WELT 1 – DAS NIEMANDSLAND (Kampfräume) (1).mp3"
+dest_files=["res://.godot/imported/WELT 1 – DAS NIEMANDSLAND (Kampfräume) (1).mp3-2d933d09bf92b65a97bea77ce5bb3276.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

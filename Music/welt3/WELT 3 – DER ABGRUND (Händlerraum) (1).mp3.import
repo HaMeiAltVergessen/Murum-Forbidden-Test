@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://tbxwjjdi8njv"
+path="res://.godot/imported/WELT 3 – DER ABGRUND (Händlerraum) (1).mp3-0d47416da24e2464fcb1240ba53bd9f5.mp3str"
+
+[deps]
+
+source_file="res://Music/welt3/WELT 3 – DER ABGRUND (Händlerraum) (1).mp3"
+dest_files=["res://.godot/imported/WELT 3 – DER ABGRUND (Händlerraum) (1).mp3-0d47416da24e2464fcb1240ba53bd9f5.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
