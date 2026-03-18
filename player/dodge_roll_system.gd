@@ -6,15 +6,15 @@ class_name DodgeRollSystem
 # CONSTANTS
 # ============================================================================
 
-const ROLL_DURATION: float = 0.4
-const ROLL_DISTANCE: float = 225.0  # Reduced by 50% (from 450.0)
-const ROLL_SPEED: float = 562.5  # 225 / 0.4 (50% reduction)
+const ROLL_DURATION: float = 0.35
+const ROLL_DISTANCE: float = 675.0  # 3x original (225 * 3)
+const ROLL_SPEED: float = 1928.6  # 675 / 0.35
 
-const STARTUP_DURATION: float = 0.05
-const ACTIVE_DURATION: float = 0.25   # I-frames window
-const RECOVERY_DURATION: float = 0.1
+const STARTUP_DURATION: float = 0.03
+const ACTIVE_DURATION: float = 0.3   # I-frames window (buffed from 0.25)
+const RECOVERY_DURATION: float = 0.05
 
-const COOLDOWN_DURATION: float = 1.0  # Only limitation (FREE dodge!)
+const COOLDOWN_DURATION: float = 0.7  # Reduced cooldown (from 1.0)
 
 # ============================================================================
 # STATE
