@@ -13,7 +13,7 @@
 [ext_resource type="Script" uid="uid://coip6pcvj3sba" path="res://player/combat_system/staff_controller.gd" id="10_staff"]
 [ext_resource type="Script" uid="uid://dew3k3qr3vpue" path="res://player/combat_system/launcher_system.gd" id="11_launcher"]
 [ext_resource type="Script" uid="uid://f68832icw4vd" path="res://player/combat_system/air_combo_system.gd" id="12_air_combo"]
-[ext_resource type="Script" uid="uid://c3nvdm7ojfh40" path="res://player/dodge_roll_system.gd" id="13_dodge"]
+[ext_resource type="Script" uid="uid://dmtdbn2wfc2ol" path="res://player/dodge_roll_system.gd" id="13_dodge"]
 [ext_resource type="Script" uid="uid://prebuojr3yhi" path="res://player/combat_system/ende_schwerkraft.gd" id="14_ende_schwerkraft"]
 [ext_resource type="Script" uid="uid://bq5nogex4jsmg" path="res://player/abilities/wolkenbruch.gd" id="15_wolkenbruch"]
 [ext_resource type="Script" uid="uid://b2dxi0i5oqthf" path="res://player/abilities/echo_von_urgathon.gd" id="16_echo"]
