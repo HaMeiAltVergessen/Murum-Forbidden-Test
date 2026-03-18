@@ -7,6 +7,10 @@ class_name BossCameraController
 @export var focus_lerp_speed: float = 3.0
 @export var enable_dynamic_focus: bool = true  # Follow midpoint between boss and player
 
+# Maximum distance the camera midpoint can deviate from the player
+# Prevents camera jumping to nowhere when boss teleports far away
+const MAX_MIDPOINT_OFFSET: float = 400.0
+
 var camera: Camera2D
 var original_zoom: Vector2
 var original_position_smoothing: bool
@@ -40,6 +44,10 @@ func activate() -> void:
 	if not camera:
 		find_camera()
 
+	# Re-find player on activation (may not have been in group during _ready)
+	if not player or not is_instance_valid(player):
+		find_player()
+
 	is_active = true
 
 	# Smooth zoom to boss fight level
@@ -47,7 +55,10 @@ func activate() -> void:
 		var tween = create_tween()
 		tween.tween_property(camera, "zoom", Vector2(zoom_level, zoom_level), 1.0).set_trans(Tween.TRANS_CUBIC)
 
-	print("[BossCameraController] Activated")
+	print("[BossCameraController] Activated (player: %s, camera: %s)" % [
+		player.name if player else "NULL",
+		camera.name if camera else "NULL"
+	])
 
 
 func deactivate() -> void:
@@ -66,12 +77,39 @@ func _process(delta: float) -> void:
 	if not is_active or not camera or not enable_dynamic_focus:
 		return
 
-	if not boss or not player:
+	# Re-find player if reference lost
+	if not player or not is_instance_valid(player):
+		find_player()
+		if not player:
+			return
+
+	if not boss or not is_instance_valid(boss):
 		return
 
-	# Focus camera on midpoint between boss and player
-	var midpoint = (boss.global_position + player.global_position) / 2.0
-	camera.global_position = camera.global_position.lerp(midpoint, focus_lerp_speed * delta)
+	var boss_pos: Vector2 = boss.global_position
+	var player_pos: Vector2 = player.global_position
+
+	# Validate positions — skip if NaN or clearly corrupt
+	if is_nan(boss_pos.x) or is_nan(boss_pos.y) or is_nan(player_pos.x) or is_nan(player_pos.y):
+		return
+
+	# Calculate midpoint between boss and player
+	var midpoint: Vector2 = (boss_pos + player_pos) / 2.0
+
+	# Clamp midpoint: never move camera further than MAX_MIDPOINT_OFFSET from player
+	# This prevents camera jumping when boss teleports far away
+	var offset: Vector2 = midpoint - player_pos
+	if offset.length() > MAX_MIDPOINT_OFFSET:
+		midpoint = player_pos + offset.normalized() * MAX_MIDPOINT_OFFSET
+
+	# Smooth lerp to target
+	var target_pos: Vector2 = camera.global_position.lerp(midpoint, focus_lerp_speed * delta)
+
+	# Final NaN guard
+	if is_nan(target_pos.x) or is_nan(target_pos.y):
+		return
+
+	camera.global_position = target_pos
 
 
 func focus_on_boss(duration: float = 0.5) -> void:
