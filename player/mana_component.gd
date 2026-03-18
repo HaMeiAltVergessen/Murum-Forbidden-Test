@@ -11,6 +11,8 @@ class_name ManaComponent
 var current_mana: int
 var is_in_combat: bool = false
 var regen_delay_timer: Timer
+var _base_max_mana: int = 0  # max_mana before run bonuses
+var _run_bonus_mana: int = 0
 
 # ============ SIGNALS ============
 signal mana_changed(new_mana: int, max_mana: int)
@@ -19,6 +21,7 @@ signal mana_depleted()
 
 
 func _ready() -> void:
+	_base_max_mana = max_mana
 	current_mana = max_mana
 
 	# Create regen delay timer
@@ -70,6 +73,18 @@ func restore_mana(amount: int) -> void:
 		return
 
 	current_mana = min(max_mana, current_mana + amount)
+	mana_changed.emit(current_mana, max_mana)
+
+
+func apply_run_bonus_mana(bonus: int) -> void:
+	"""Applies run-volatile bonus mana (increases max_mana, restores the difference)"""
+	var old_max: int = max_mana
+	_run_bonus_mana = bonus
+	max_mana = _base_max_mana + _run_bonus_mana
+	if max_mana > old_max:
+		current_mana += (max_mana - old_max)
+	else:
+		current_mana = mini(current_mana, max_mana)
 	mana_changed.emit(current_mana, max_mana)
 
 

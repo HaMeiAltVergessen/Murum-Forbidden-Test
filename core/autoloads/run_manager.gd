@@ -28,6 +28,10 @@ var magicka: int = 0
 var run_rooms_completed: int = 0
 var run_enemies_killed: int = 0
 
+# ============ RUN-VOLATILE STAT BONUSES ============
+var run_bonus_hp: int = 0    # Extra max HP from pickups (lost on death/run end)
+var run_bonus_mana: int = 0  # Extra max mana from pickups (lost on death/run end)
+
 # ============ RUN MAP ============
 var current_map: RunMapData.Map = null       # Generated map for current run
 var current_world: RunMapData.WorldId = RunMapData.WorldId.NIEMANDSLAND
@@ -59,6 +63,8 @@ func start_run(world_id: RunMapData.WorldId = RunMapData.WorldId.NIEMANDSLAND) -
 	current_lives = max_lives
 	run_rooms_completed = 0
 	run_enemies_killed = 0
+	run_bonus_hp = 0
+	run_bonus_mana = 0
 	current_node = null
 
 	# Clear run-specific room states from WorldManager (prevents "already cleared" bug)
@@ -385,6 +391,9 @@ func _return_to_limbus() -> void:
 	# Clear run-specific room states
 	_clear_run_room_states()
 
+	# Clear run-volatile stat bonuses
+	_clear_run_stat_bonuses()
+
 	# Clear run-volatile boons
 	if BoonManager:
 		BoonManager.clear_boons()
@@ -558,6 +567,47 @@ func _clear_run_room_states() -> void:
 
 	if keys_to_remove.size() > 0:
 		print("[RunManager] Cleared %d stale run room states" % keys_to_remove.size())
+
+
+# ============ RUN STAT BONUSES ============
+func add_run_bonus_hp(amount: int) -> void:
+	run_bonus_hp += amount
+	_apply_run_stat_bonuses()
+	print("[RunManager] Run HP bonus: +%d (total: +%d)" % [amount, run_bonus_hp])
+
+
+func add_run_bonus_mana(amount: int) -> void:
+	run_bonus_mana += amount
+	_apply_run_stat_bonuses()
+	print("[RunManager] Run Mana bonus: +%d (total: +%d)" % [amount, run_bonus_mana])
+
+
+func _apply_run_stat_bonuses() -> void:
+	"""Applies run-volatile stat bonuses to all players"""
+	for p in get_tree().get_nodes_in_group("player"):
+		if not p or not is_instance_valid(p):
+			continue
+		var health_comp: HealthComponent = p.get_node_or_null("HealthComponent")
+		if health_comp:
+			health_comp.apply_run_bonus_hp(run_bonus_hp)
+		var mana_comp: ManaComponent = p.get_node_or_null("ManaComponent")
+		if mana_comp:
+			mana_comp.apply_run_bonus_mana(run_bonus_mana)
+
+
+func _clear_run_stat_bonuses() -> void:
+	"""Removes run-volatile stat bonuses from all players"""
+	run_bonus_hp = 0
+	run_bonus_mana = 0
+	for p in get_tree().get_nodes_in_group("player"):
+		if not p or not is_instance_valid(p):
+			continue
+		var health_comp: HealthComponent = p.get_node_or_null("HealthComponent")
+		if health_comp:
+			health_comp.apply_run_bonus_hp(0)
+		var mana_comp: ManaComponent = p.get_node_or_null("ManaComponent")
+		if mana_comp:
+			mana_comp.apply_run_bonus_mana(0)
 
 
 func _get_world_name(world_id: RunMapData.WorldId) -> String:

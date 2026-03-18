@@ -332,9 +332,10 @@ func _on_combat_completed() -> void:
 	GameManager.add_coins(gold)
 
 	if node_type == RunMapData.NodeType.ELITE:
-		# Elite: gold + boon selection
+		# Elite: gold + boon selection + guaranteed stat pickup
 		_show_completion_ui("Elite besiegt! +%d Gold" % gold)
 		EventBus.show_notification.emit("+%d Gold" % gold, 2.0)
+		_try_spawn_stat_pickup(1.0)  # Guaranteed drop from elites
 		get_tree().create_timer(1.5).timeout.connect(_setup_boon_selection)
 		return
 
@@ -347,6 +348,9 @@ func _on_combat_completed() -> void:
 		var item_name: String = RewardManager.get_item_name(consumable_id)
 		EventBus.show_notification.emit("Item gefunden: %s" % item_name, 3.0)
 		print("[RunNodeRoom] Consumable drop: %s" % consumable_id)
+
+	# 25% chance: spawn stat pickup (HP or Mana)
+	_try_spawn_stat_pickup()
 
 	get_tree().create_timer(2.0).timeout.connect(_on_node_cleared)
 
@@ -1527,6 +1531,26 @@ func _get_next_world() -> int:
 
 
 # ============ UI HELPERS ============
+func _try_spawn_stat_pickup(chance: float = 0.25) -> void:
+	"""Spawns a random stat pickup (HP or Mana) near the player"""
+	if randf() > chance:
+		return
+
+	var spawn_pos := Vector2(600, 400)  # Fallback
+	if GameManager.player and is_instance_valid(GameManager.player):
+		spawn_pos = GameManager.player.global_position + Vector2(randi_range(-80, 80), -40)
+
+	var pickup := StatPickup.new()
+	pickup.stat_type = StatPickup.StatType.HP if randf() < 0.5 else StatPickup.StatType.MANA
+	pickup.bonus_amount = randi_range(10, 20)
+	pickup.global_position = spawn_pos
+	add_child(pickup)
+	print("[RunNodeRoom] Stat pickup spawned: %s +%d" % [
+		"HP" if pickup.stat_type == StatPickup.StatType.HP else "Mana",
+		pickup.bonus_amount
+	])
+
+
 func _show_completion_ui(message: String) -> void:
 	var label = Label.new()
 	label.text = message

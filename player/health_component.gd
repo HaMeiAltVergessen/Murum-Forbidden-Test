@@ -11,6 +11,10 @@ var current_health: int
 var is_invulnerable: bool = false
 var invulnerability_timer: Timer
 
+# Run-volatile bonus HP
+var _base_max_health: int = 0  # max_health before run bonuses
+var _run_bonus_hp: int = 0
+
 # Block mitigation state
 var block_active: bool = false
 var block_reduction: float = 0.0
@@ -31,6 +35,7 @@ func _ready() -> void:
 			max_health = int(max_health * hp_mult)
 			print("[HealthComponent] Erwachende Essenz: max_health = %d (x%.2f)" % [max_health, hp_mult])
 
+	_base_max_health = max_health
 	current_health = max_health
 
 	# Create invulnerability timer
@@ -103,6 +108,18 @@ func heal(amount: int) -> void:
 		return
 
 	current_health = min(max_health, current_health + amount)
+	health_changed.emit(current_health, max_health)
+
+
+func apply_run_bonus_hp(bonus: int) -> void:
+	"""Applies run-volatile bonus HP (increases max_health, heals the difference)"""
+	var old_max: int = max_health
+	_run_bonus_hp = bonus
+	max_health = _base_max_health + _run_bonus_hp
+	if max_health > old_max:
+		current_health += (max_health - old_max)
+	else:
+		current_health = mini(current_health, max_health)
 	health_changed.emit(current_health, max_health)
 
 
