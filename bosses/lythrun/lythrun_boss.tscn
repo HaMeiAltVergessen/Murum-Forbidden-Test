@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" path="res://bosses/boss_base.tscn" id="1"]
 [ext_resource type="Script" uid="uid://d1tc2iiuirt7y" path="res://bosses/lythrun/lythrun_boss.gd" id="2"]
-[ext_resource type="Script" uid="uid://c2uwuysk62sea" path="res://bosses/lythrun/adaptive_ai.gd" id="3"]
+[ext_resource type="Script" uid="uid://de137800ptgq0" path="res://bosses/lythrun/adaptive_ai.gd" id="3"]
 [ext_resource type="Texture2D" uid="uid://bonq3b4yahq23" path="res://Assets/AIPlaceholder/Char/Lythrun/lythrunVBossSprite.png" id="4_boss"]
 [ext_resource type="Texture2D" uid="uid://dj8lkckf7rqf3" path="res://Assets/AIPlaceholder/Char/Lythrun/lythrunSense2.png" id="4_kerb8"]
 

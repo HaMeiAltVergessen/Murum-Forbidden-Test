@@ -1,5 +1,6 @@
-[gd_scene load_steps=7 format=3 uid="uid://c4x721hpfcui4"]
+[gd_scene load_steps=8 format=3 uid="uid://c4x721hpfcui4"]
 
+[ext_resource type="Texture2D" uid="uid://dg2j7sphue6ht" path="res://Assets/AIAssets/tempel01.jpg" id="1_1umlh"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 [ext_resource type="PackedScene" uid="uid://6kwthd3m82gc" path="res://environment/pickups/testpickup.tscn" id="2_c32y6"]
 
@@ -28,6 +29,10 @@ offset_top = 800.0
 offset_right = 2600.0
 offset_bottom = 1080.0
 color = Color(0.2, 0.05, 0.05, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(1274, 158)
+texture = ExtResource("1_1umlh")
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(1300, 820)

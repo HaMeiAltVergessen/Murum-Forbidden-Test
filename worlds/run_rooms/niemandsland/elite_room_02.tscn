@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=7 format=3 uid="uid://c6g7gkrnw1f72"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 
@@ -56,7 +56,7 @@ position = Vector2(1000, -20)
 shape = SubResource("ceiling_shape")
 
 [node name="Pillar1" type="StaticBody2D" parent="."]
-position = Vector2(650, 650)
+position = Vector2(98, 643)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Pillar1"]
 shape = SubResource("pillar_shape")
@@ -69,25 +69,12 @@ offset_bottom = 150.0
 color = Color(0.22, 0.15, 0.12, 1)
 
 [node name="Pillar2" type="StaticBody2D" parent="."]
-position = Vector2(1000, 650)
+position = Vector2(1898, 652)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Pillar2"]
 shape = SubResource("pillar_shape")
 
 [node name="Visual" type="ColorRect" parent="Pillar2"]
-offset_left = -25.0
-offset_top = -150.0
-offset_right = 25.0
-offset_bottom = 150.0
-color = Color(0.22, 0.15, 0.12, 1)
-
-[node name="Pillar3" type="StaticBody2D" parent="."]
-position = Vector2(1350, 650)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Pillar3"]
-shape = SubResource("pillar_shape")
-
-[node name="Visual" type="ColorRect" parent="Pillar3"]
 offset_left = -25.0
 offset_top = -150.0
 offset_right = 25.0

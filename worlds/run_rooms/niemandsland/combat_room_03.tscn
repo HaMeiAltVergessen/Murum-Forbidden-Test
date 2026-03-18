@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=6 format=3 uid="uid://b0dxt136ulgax"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 
@@ -13,9 +13,6 @@ size = Vector2(40, 1080)
 
 [sub_resource type="RectangleShape2D" id="ceiling_shape"]
 size = Vector2(1920, 40)
-
-[sub_resource type="RectangleShape2D" id="pillar_shape"]
-size = Vector2(60, 200)
 
 [node name="CombatRoom03" type="Node2D"]
 
@@ -54,32 +51,6 @@ position = Vector2(960, -20)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling"]
 shape = SubResource("ceiling_shape")
-
-[node name="PillarLeft" type="StaticBody2D" parent="."]
-position = Vector2(500, 700)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="PillarLeft"]
-shape = SubResource("pillar_shape")
-
-[node name="PillarVisual" type="ColorRect" parent="PillarLeft"]
-offset_left = -30.0
-offset_top = -100.0
-offset_right = 30.0
-offset_bottom = 100.0
-color = Color(0.25, 0.22, 0.18, 1)
-
-[node name="PillarRight" type="StaticBody2D" parent="."]
-position = Vector2(1420, 700)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="PillarRight"]
-shape = SubResource("pillar_shape")
-
-[node name="PillarVisual" type="ColorRect" parent="PillarRight"]
-offset_left = -30.0
-offset_top = -100.0
-offset_right = 30.0
-offset_bottom = 100.0
-color = Color(0.25, 0.22, 0.18, 1)
 
 [node name="SpawnPoints" type="Node2D" parent="."]
 

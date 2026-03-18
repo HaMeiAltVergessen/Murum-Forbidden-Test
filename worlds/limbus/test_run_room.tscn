@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://dbkrncv56bf1p"]
 
 [ext_resource type="Script" uid="uid://cv86o7mwkmtpo" path="res://worlds/limbus/test_run_room.gd" id="1_room"]
-[ext_resource type="Script" uid="uid://bjksvnjjv0vh8" path="res://environment/spawn_point.gd" id="2_spawn"]
+[ext_resource type="Script" uid="uid://dxfm70m4nm4tf" path="res://environment/spawn_point.gd" id="2_spawn"]
 [ext_resource type="Script" uid="uid://crb4hgbdarrc0" path="res://worlds/limbus/run_death_zone.gd" id="3_deathzone"]
 [ext_resource type="Script" uid="uid://ptu70s0aqgtu" path="res://environment/pickups/magicka_pickup.gd" id="4_magicka"]
 

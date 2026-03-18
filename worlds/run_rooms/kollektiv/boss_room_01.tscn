@@ -1,5 +1,6 @@
-[gd_scene load_steps=16 format=3 uid="uid://p1t1ds07fh4m"]
+[gd_scene load_steps=17 format=3 uid="uid://p1t1ds07fh4m"]
 
+[ext_resource type="Texture2D" uid="uid://b1j8eoi65ng2g" path="res://Assets/AIPlaceholder/AlbtraumWelten/Welt2_Kollektiv/2D_pixel_art_massive_sci-fi_bo_GPT_Image_15_83056.jpg" id="1_q0f1w"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 [ext_resource type="PackedScene" path="res://bosses/kollektiv/cores/energy_core.tscn" id="2_energy"]
 [ext_resource type="PackedScene" path="res://bosses/kollektiv/cores/defense_core.tscn" id="3_defense"]
@@ -31,6 +32,11 @@ size = Vector2(120, 16)
 size = Vector2(120, 16)
 
 [node name="BossRoom01" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(1419.75, 1402)
+scale = Vector2(1.80957, 2.71094)
+texture = ExtResource("1_q0f1w")
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
@@ -159,7 +165,7 @@ position = Vector2(1400, 200)
 position = Vector2(2600, 1400)
 
 [node name="CognitionCore" parent="Cores" instance=ExtResource("6_cognition")]
-position = Vector2(1400, 1400)
+position = Vector2(1387, 907)
 
 [node name="Platforms" type="Node2D" parent="."]
 

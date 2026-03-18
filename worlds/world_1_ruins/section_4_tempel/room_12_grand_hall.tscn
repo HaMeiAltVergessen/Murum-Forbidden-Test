@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="6_quvsr"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="6_wvoon"]
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="7_3qdk6"]
-[ext_resource type="AudioStream" path="res://Music/w1_temple.mp3" id="8_7a5pg"]
+[ext_resource type="AudioStream" uid="uid://ds3xuun4lfkn0" path="res://Music/w1_temple.mp3" id="8_7a5pg"]
 [ext_resource type="PackedScene" uid="uid://c6yvx6iyh6jgj" path="res://puzzles/scenes/controllers/sequence_puzzle_controller.tscn" id="8_qmv21"]
 [ext_resource type="PackedScene" uid="uid://blta5m8ixhcu8" path="res://puzzles/scenes/components/puzzle_switch.tscn" id="9_kty7y"]
 [ext_resource type="PackedScene" uid="uid://o8xo6q6qbdiv" path="res://puzzles/scenes/controllers/dual_plate_puzzle_controller.tscn" id="10_t80gm"]

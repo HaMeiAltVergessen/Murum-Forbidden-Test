@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://bfwkbrixqj4m2"]
+[gd_scene load_steps=7 format=3 uid="uid://bfwkbrixqj4m2"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="Texture2D" uid="uid://c7jg42u2uhrkh" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_Dorf/Transformiere_dieses_Bild_zu_e_GPT_Image_15_30590.jpg" id="1_w77aw"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(1400, 40)
@@ -15,6 +16,10 @@ size = Vector2(40, 1080)
 size = Vector2(1400, 40)
 
 [node name="TreasureRoom01" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(798, 526)
+texture = ExtResource("1_w77aw")
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
