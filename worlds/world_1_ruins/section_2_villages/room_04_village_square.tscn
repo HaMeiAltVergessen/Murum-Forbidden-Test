@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://c2nx5q8v4kmpr" path="res://environment/checkpoint.tscn" id="2_checkpoint"]
 [ext_resource type="Texture2D" uid="uid://cotqw6ypcpuhh" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_TempelUnten/prebossroombackground.png" id="2_vymgf"]
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="3_door"]
-[ext_resource type="AudioStream" uid="uid://dxuqv3ffmx07a" path="res://Music/Welt 01 Boss Build Up.mp3" id="4_ccilu"]
+[ext_resource type="AudioStream" path="res://Music/w1_boss_buildup_v1.mp3" id="4_ccilu"]
 [ext_resource type="PackedScene" uid="uid://b1w31ir4mmx8m" path="res://environment/npcs/world1_merchant.tscn" id="4_merchant"]
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="5_deathbox"]
 [ext_resource type="PackedScene" uid="uid://da6c5l414ki8w" path="res://environment/pickups/gold_coin.tscn" id="6_goldcoin"]

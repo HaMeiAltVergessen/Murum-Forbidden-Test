@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b1gh80biwnswd" path="res://ui/menus/main_menu.gd" id="1_main_menu"]
 [ext_resource type="Texture2D" uid="uid://exe3rc543r73" path="res://Assets/AIAssets/mainscreen.jpg" id="2_background"]
-[ext_resource type="AudioStream" uid="uid://c6nj6qe6g54" path="res://Music/Murum FT Main Theme 3.mp3" id="3_music"]
+[ext_resource type="AudioStream" path="res://Music/main_theme.mp3" id="3_music"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3

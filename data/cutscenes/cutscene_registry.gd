@@ -87,7 +87,7 @@ static func _register_all_cutscenes() -> void:
 		"Doch eine Prophezeiung sprach von einem Wanderer, der das Gleichgewicht wiederherstellen würde.",
 		"Und so beginnt deine Reise... im Schatten der verbotenen Mauern."
 	]
-	#intro.audio_path = "res://Music/Welt 01 Ruins.mp3"
+	#intro.audio_path = "res://Music/w1_ruins_v1.mp3"
 	intro.image_duration = 9.0  # 9 Sekunden pro Bild (+ 3s Fade = ~72 Sek total)
 	intro.skippable = true
 	intro.show_skip_warning = false

@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://38pu77ayck84" path="res://worlds/world_1_ruins/section_4_tempel/room_15_boss_urgathon.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://d15iwhwrydlul" path="res://Assets/AIAssets/08da38bd-1f75-4691-9f5e-2be8815ccd2b.jpg" id="2_s1gk5"]
 [ext_resource type="PackedScene" path="res://camera/coop_camera.tscn" id="4_coop_camera"]
-[ext_resource type="AudioStream" uid="uid://doiktxoxnyirb" path="res://Music/Lythrun Boss Theme 4 (1).mp3" id="5_s1gk5"]
+[ext_resource type="AudioStream" path="res://Music/lythrun_boss_4_v2.mp3" id="5_s1gk5"]
 [ext_resource type="PackedScene" path="res://camera/split_screen_manager.tscn" id="5_split_screen"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]

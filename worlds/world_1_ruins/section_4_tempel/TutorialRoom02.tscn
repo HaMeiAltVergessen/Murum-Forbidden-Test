@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="5_yd04g"]
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="6_jckox"]
 [ext_resource type="PackedScene" uid="uid://dkc8y7x0ij6nw" path="res://enemies/untote.tscn" id="8_atm8n"]
-[ext_resource type="AudioStream" uid="uid://l06dl0uy336p" path="res://Music/Welt 01 temple.mp3" id="8_vwkpd"]
+[ext_resource type="AudioStream" path="res://Music/w1_temple.mp3" id="8_vwkpd"]
 [ext_resource type="PackedScene" uid="uid://bx7k2qn8nav4p" path="res://enemies/world_1_ruins/geist.tscn" id="9_m3i01"]
 [ext_resource type="PackedScene" uid="uid://dfrjdwjipd0ex" path="res://environment/Wegweise1.tscn" id="10_m3i01"]
 [ext_resource type="PackedScene" uid="uid://dsq3e2nuqwslq" path="res://environment/interactables/dialog_trigger.tscn" id="11_dialog"]

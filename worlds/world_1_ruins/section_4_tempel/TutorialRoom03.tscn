@@ -6,7 +6,7 @@
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="4_xkw74"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="5_ouhmh"]
 [ext_resource type="PackedScene" uid="uid://brmqwmhp0lbtt" path="res://environment/door.tscn" id="6_op0p3"]
-[ext_resource type="AudioStream" uid="uid://l06dl0uy336p" path="res://Music/Welt 01 temple.mp3" id="8_jenod"]
+[ext_resource type="AudioStream" path="res://Music/w1_temple.mp3" id="8_jenod"]
 [ext_resource type="PackedScene" uid="uid://c6yvx6iyh6jgj" path="res://puzzles/scenes/controllers/sequence_puzzle_controller.tscn" id="9_nsgjo"]
 [ext_resource type="PackedScene" uid="uid://blta5m8ixhcu8" path="res://puzzles/scenes/components/puzzle_switch.tscn" id="10_27a7v"]
 [ext_resource type="PackedScene" uid="uid://o8xo6q6qbdiv" path="res://puzzles/scenes/controllers/dual_plate_puzzle_controller.tscn" id="11_btyk0"]
