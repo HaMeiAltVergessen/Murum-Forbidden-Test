@@ -33,27 +33,27 @@ var _forced: bool = false  # Blockiert auto-detection wenn force_play_scene akti
 const RUN_MUSIC_MAP: Dictionary = {
 	# Welt 1: Niemandsland
 	"w0_combat": "W1Combat",
-	"w0_elite": "Elite",
+	"w0_elite": "W1Elite",
 	"w0_treasure": "W1Calm",
 	"w0_rest": "W1Calm",
 	"w0_shop": "W1Calm",
-	"w0_event": "EventNormal",
+	"w0_event": "W1Event",
 	"w0_boss": "W1Boss",
 	# Welt 2: Kollektiv
 	"w1_combat": "W2Combat",
-	"w1_elite": "Elite",
+	"w1_elite": "W2Elite",
 	"w1_treasure": "W2Calm",
 	"w1_rest": "W2Calm",
 	"w1_shop": "W2Calm",
-	"w1_event": "EventNormal",
+	"w1_event": "W2Event",
 	"w1_boss": "W2Boss",
 	# Welt 3: Abgrund
 	"w2_combat": "W3Combat",
-	"w2_elite": "Elite",
+	"w2_elite": "W3Elite",
 	"w2_treasure": "W3Calm",
 	"w2_rest": "W3Calm",
 	"w2_shop": "W3Calm",
-	"w2_event": "EventNormal",
+	"w2_event": "W3Event",
 	"w2_boss": "W3Boss",
 }
 

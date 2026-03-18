@@ -1,10 +1,14 @@
-[gd_resource type="Resource" script_class="MusicScene" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="MusicScene" load_steps=7 format=3]
 
 [ext_resource type="Script" uid="uid://dolt5e1qrwg51" path="res://resources/audio/music_scene.gd" id="1_script"]
-[ext_resource type="AudioStream" path="res://Music/w3_spiegel.mp3" id="2_track"]
+[ext_resource type="AudioStream" path="res://Music/welt3/w3_boss_v1.mp3" id="2_t1"]
+[ext_resource type="AudioStream" path="res://Music/welt3/w3_boss_v2.mp3" id="3_t2"]
+[ext_resource type="AudioStream" path="res://Music/welt3/w3_boss_endless_chase_v1.mp3" id="4_t3"]
+[ext_resource type="AudioStream" path="res://Music/welt3/w3_boss_endless_chase_v2.mp3" id="5_t4"]
+[ext_resource type="AudioStream" path="res://Music/welt3/w3_boss_finale.mp3" id="6_t5"]
 
 [resource]
 script = ExtResource("1_script")
 scene_name = "W3Boss"
 level_paths = Array[String]([])
-tracks = Array[AudioStream]([ExtResource("2_track")])
+tracks = Array[AudioStream]([ExtResource("2_t1"), ExtResource("3_t2"), ExtResource("4_t3"), ExtResource("5_t4"), ExtResource("6_t5")])

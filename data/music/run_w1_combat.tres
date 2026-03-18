@@ -1,11 +1,11 @@
 [gd_resource type="Resource" script_class="MusicScene" load_steps=4 format=3]
 
 [ext_resource type="Script" uid="uid://dolt5e1qrwg51" path="res://resources/audio/music_scene.gd" id="1_script"]
-[ext_resource type="AudioStream" path="res://Music/w1_ruins_v1.mp3" id="2_track1"]
-[ext_resource type="AudioStream" path="res://Music/w1_ruins_v2.mp3" id="3_track2"]
+[ext_resource type="AudioStream" path="res://Music/welt1/w1_kampf_v1.mp3" id="2_t1"]
+[ext_resource type="AudioStream" path="res://Music/welt1/w1_kampf_v2.mp3" id="3_t2"]
 
 [resource]
 script = ExtResource("1_script")
 scene_name = "W1Combat"
 level_paths = Array[String]([])
-tracks = Array[AudioStream]([ExtResource("2_track1"), ExtResource("3_track2")])
+tracks = Array[AudioStream]([ExtResource("2_t1"), ExtResource("3_t2")])

@@ -1,10 +1,10 @@
 [gd_resource type="Resource" script_class="MusicScene" load_steps=3 format=3]
 
 [ext_resource type="Script" uid="uid://dolt5e1qrwg51" path="res://resources/audio/music_scene.gd" id="1_script"]
-[ext_resource type="AudioStream" path="res://Music/w1_temple.mp3" id="2_t1"]
+[ext_resource type="AudioStream" path="res://Music/welt2/w2_event.mp3" id="2_t1"]
 
 [resource]
 script = ExtResource("1_script")
-scene_name = "World1Temple"
-level_paths = Array[String](["res://worlds/world_1_ruins/section_4_tempel/room_12_grand_hall.tscn", "res://worlds/world_1_ruins/section_4_tempel/room_13_sanctum.tscn"])
+scene_name = "W2Event"
+level_paths = Array[String]([])
 tracks = Array[AudioStream]([ExtResource("2_t1")])

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MusicScene" load_steps=8 format=3]
+
+[ext_resource type="Script" uid="uid://dolt5e1qrwg51" path="res://resources/audio/music_scene.gd" id="1_script"]
+[ext_resource type="AudioStream" path="res://Music/lythrun_boss_4_v1.mp3" id="2_t1"]
+[ext_resource type="AudioStream" path="res://Music/lythrun_boss_4_v2.mp3" id="3_t2"]
+[ext_resource type="AudioStream" path="res://Music/lythrun_boss_4_v3.mp3" id="4_t3"]
+[ext_resource type="AudioStream" path="res://Music/lythrun_boss_4_v4.mp3" id="5_t4"]
+[ext_resource type="AudioStream" path="res://Music/lythrun_boss_5_v1.mp3" id="6_t5"]
+[ext_resource type="AudioStream" path="res://Music/lythrun_boss_5_v2.mp3" id="7_t6"]
+
+[resource]
+script = ExtResource("1_script")
+scene_name = "LythrunBoss"
+level_paths = Array[String]([])
+tracks = Array[AudioStream]([ExtResource("2_t1"), ExtResource("3_t2"), ExtResource("4_t3"), ExtResource("5_t4"), ExtResource("6_t5"), ExtResource("7_t6")])
