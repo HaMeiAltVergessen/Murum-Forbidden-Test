@@ -25,6 +25,15 @@ const ELEMENT_VFX := {
 	"lightning": "Explosion_7/4",
 }
 
+# Element colors for fallback VFX when sprites not cached
+const ELEMENT_COLORS := {
+	"fire": Color(1.0, 0.4, 0.1, 0.9),
+	"water": Color(0.2, 0.5, 1.0, 0.9),
+	"earth": Color(0.6, 0.4, 0.15, 0.9),
+	"lightning": Color(0.8, 0.9, 1.0, 0.9),
+}
+const MURRUM_COLOR := Color(0.2, 0.7, 0.9, 0.8)  # Mur|rum path color
+
 # Lightning (electro-shock) frames for Arthra T1
 const LIGHTNING_VFX_PATH := "res://Assets/Placeholder/Legacy Collection/Assets/Misc/Grotto-escape-2-FX/sprites/electro-shock/"
 const LIGHTNING_FRAME_COUNT: int = 9
@@ -234,7 +243,7 @@ func _on_combo_finisher_executed(_combo_count: int) -> void:
 	if BoonManager.has_boon("murrum", 5) and total_elemental_damage > 0:
 		_murrum_t5_lifesteal(player, total_elemental_damage)
 
-	_spawn_element_vfx(player.global_position, element)
+	_spawn_element_vfx(player.global_position, element, 2.0)
 	print("[BoonEffect] Murrum T1: %s finisher! %d enemies hit" % [element, enemies.size()])
 
 
@@ -378,6 +387,8 @@ func _on_enemy_damaged(enemy: Node, _damage: int) -> void:
 		if extra_dmg > 0:
 			enemy.take_damage(extra_dmg, _get_player())
 			elemental_damage_dealt += extra_dmg
+			# VFX: small element flash on enemy
+			_spawn_element_hit_vfx(enemy.global_position, 0.5)
 			# Murrum T2: DoT from elemental damage
 			if BoonManager.has_boon("murrum", 2):
 				_apply_dot(enemy)
@@ -388,12 +399,16 @@ func _on_enemy_damaged(enemy: Node, _damage: int) -> void:
 		var total: int = per_element * 4
 		enemy.take_damage(total, _get_player())
 		elemental_damage_dealt += total
+		# VFX: 4-element burst around enemy
+		_spawn_multi_element_vfx(enemy.global_position)
 
 	# Murrum T5: Elemental lifesteal from T3/T4 damage
 	if BoonManager.has_boon("murrum", 5) and elemental_damage_dealt > 0:
 		var player = _get_player()
 		if player:
 			_murrum_t5_lifesteal(player, elemental_damage_dealt)
+			# VFX: heal glow on player
+			_spawn_lifesteal_vfx(player.global_position)
 
 	# Noron T4: enemies 20% slower (applied once via meta)
 	if BoonManager.has_boon("noron", 4):
@@ -757,8 +772,7 @@ func _process_staff_boons(delta: float) -> void:
 					_apply_dot(enemy)
 
 			# Element VFX at trail point
-			var folder: String = ELEMENT_VFX.get(element, PATH_VFX["murrum"][0])
-			_spawn_explosion_vfx(trail_pos, folder, 0.3)
+			_spawn_element_vfx(trail_pos, element, 0.3)
 
 	# Noron T4: Light/dark AoE pulses during staff rotation
 	if BoonManager.has_boon("noron", 4) and _staff_projectile.current_state == 1:  # 1 = ROTATING_AT_END
@@ -794,6 +808,15 @@ func _apply_dot(enemy: Node) -> void:
 
 	_dot_targets.append({"enemy": enemy, "timer": dot_duration, "dps": dot_dps, "tick": 0.0})
 
+	# VFX: tint enemy with elemental color
+	var sprite = enemy.get_node_or_null("Sprite2D")
+	if not sprite:
+		sprite = enemy.get_node_or_null("AnimatedSprite2D")
+	if sprite and not enemy.has_meta("dot_original_modulate"):
+		enemy.set_meta("dot_original_modulate", sprite.modulate)
+		sprite.modulate = MURRUM_COLOR.lerp(sprite.modulate, 0.4)
+	_spawn_element_hit_vfx(enemy.global_position, 0.4)
+
 
 func _process_dots(delta: float) -> void:
 	"""Processes active DoTs"""
@@ -807,9 +830,12 @@ func _process_dots(delta: float) -> void:
 		var dot: Dictionary = _dot_targets[i]
 		var dot_enemy = dot["enemy"]
 		if not is_instance_valid(dot_enemy) or dot_enemy.get("is_dead") or dot_enemy.get("is_destroyed"):
+			if is_instance_valid(dot_enemy):
+				_restore_dot_tint(dot_enemy)
 			to_remove.append(i)
 			continue
 		if not dot_enemy.has_method("take_damage"):
+			_restore_dot_tint(dot_enemy)
 			to_remove.append(i)
 			continue
 
@@ -820,8 +846,12 @@ func _process_dots(delta: float) -> void:
 		if dot["tick"] >= 1.0:
 			dot["tick"] -= 1.0
 			dot_enemy.take_damage(dot["dps"], player)
+			# VFX: small element flash on DoT tick
+			_spawn_element_hit_vfx(dot_enemy.global_position, 0.3)
 
 		if dot["timer"] <= 0.0:
+			# VFX: restore original tint
+			_restore_dot_tint(dot_enemy)
 			to_remove.append(i)
 
 	# Remove expired/dead DoTs (reverse order)
@@ -1030,11 +1060,136 @@ func _spawn_lightning_vfx(pos: Vector2) -> void:
 	anim.animation_finished.connect(anim.queue_free)
 
 
-func _spawn_element_vfx(pos: Vector2, element: String) -> void:
+func _spawn_element_vfx(pos: Vector2, element: String, vfx_scale: float = 2.0) -> void:
 	"""Murrum: Elemental finisher VFX (4 elements = 4 explosion variants)"""
 	var folder: String = ELEMENT_VFX.get(element, PATH_VFX["murrum"][0])
-	# Spawn larger and offset from player center so it's visible
-	_spawn_explosion_vfx(pos + Vector2(0, -60), folder, 2.0)
+	var frames: SpriteFrames = _vfx_cache.get(folder)
+	if frames:
+		_spawn_explosion_vfx(pos + Vector2(0, -60), folder, vfx_scale)
+	else:
+		# Fallback: colored circle burst
+		_spawn_element_burst_vfx(pos + Vector2(0, -60), element, vfx_scale)
+
+
+func _spawn_element_burst_vfx(pos: Vector2, element: String, vfx_scale: float = 1.0) -> void:
+	"""Fallback VFX: expanding colored ring for element effects"""
+	var scene_root = get_tree().current_scene
+	if not scene_root:
+		return
+
+	var color: Color = ELEMENT_COLORS.get(element, MURRUM_COLOR)
+	var size: float = 60.0 * vfx_scale
+
+	# Outer ring
+	var ring := Node2D.new()
+	ring.global_position = pos
+	ring.z_index = 10
+	scene_root.add_child(ring)
+
+	var circle := ColorRect.new()
+	circle.color = color
+	circle.size = Vector2(size, size)
+	circle.position = Vector2(-size / 2.0, -size / 2.0)
+	circle.modulate.a = 0.8
+	ring.add_child(circle)
+
+	# Animate: expand + fade
+	var tween := ring.create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(ring, "scale", Vector2(2.0, 2.0), 0.4).from(Vector2(0.3, 0.3))
+	tween.tween_property(circle, "modulate:a", 0.0, 0.4).from(0.8)
+	tween.set_parallel(false)
+	tween.tween_callback(ring.queue_free)
+
+
+func _spawn_element_hit_vfx(pos: Vector2, vfx_scale: float = 0.5) -> void:
+	"""Small element flash on enemy hit (T2 DoT tick, T3 bonus damage)"""
+	var scene_root = get_tree().current_scene
+	if not scene_root:
+		return
+
+	# Pick random element color
+	var elements: Array = ELEMENT_COLORS.keys()
+	var element: String = elements[randi() % elements.size()]
+
+	# Try sprite-based VFX first
+	var folder: String = ELEMENT_VFX.get(element, PATH_VFX["murrum"][0])
+	var frames: SpriteFrames = _vfx_cache.get(folder)
+	if frames:
+		_spawn_explosion_vfx(pos + Vector2(randf_range(-15, 15), -40 + randf_range(-15, 15)), folder, vfx_scale)
+		return
+
+	# Fallback: small colored flash
+	var color: Color = ELEMENT_COLORS.get(element, MURRUM_COLOR)
+	var flash := ColorRect.new()
+	flash.color = color
+	var s: float = 24.0 * vfx_scale
+	flash.size = Vector2(s, s)
+	flash.position = pos + Vector2(-s / 2.0 + randf_range(-10, 10), -40 - s / 2.0 + randf_range(-10, 10))
+	flash.z_index = 10
+	scene_root.add_child(flash)
+
+	var tween := flash.create_tween()
+	tween.tween_property(flash, "modulate:a", 0.0, 0.3).from(0.9)
+	tween.tween_callback(flash.queue_free)
+
+
+func _spawn_multi_element_vfx(pos: Vector2) -> void:
+	"""T4: Burst of all 4 element flashes around enemy"""
+	var offsets: Array = [
+		Vector2(-20, -50), Vector2(20, -50),
+		Vector2(-20, -30), Vector2(20, -30)
+	]
+	var elements: Array = ["fire", "water", "earth", "lightning"]
+
+	for i in range(4):
+		var element: String = elements[i]
+		var offset: Vector2 = offsets[i]
+		var folder: String = ELEMENT_VFX.get(element, PATH_VFX["murrum"][0])
+		var frames: SpriteFrames = _vfx_cache.get(folder)
+		if frames:
+			# Delayed spawn for cascade effect
+			get_tree().create_timer(i * 0.05).timeout.connect(func():
+				_spawn_explosion_vfx(pos + offset, folder, 0.4)
+			)
+		else:
+			get_tree().create_timer(i * 0.05).timeout.connect(func():
+				_spawn_element_burst_vfx(pos + offset, element, 0.4)
+			)
+
+
+func _spawn_lifesteal_vfx(pos: Vector2) -> void:
+	"""T5: Heal/mana restore glow on player"""
+	var scene_root = get_tree().current_scene
+	if not scene_root:
+		return
+
+	var glow := ColorRect.new()
+	glow.color = MURRUM_COLOR
+	var s: float = 50.0
+	glow.size = Vector2(s, s)
+	glow.position = pos + Vector2(-s / 2.0, -60 - s / 2.0)
+	glow.z_index = 9
+	scene_root.add_child(glow)
+
+	var tween := glow.create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(glow, "scale", Vector2(1.8, 1.8), 0.3).from(Vector2(0.5, 0.5))
+	tween.tween_property(glow, "modulate:a", 0.0, 0.3).from(0.6)
+	tween.set_parallel(false)
+	tween.tween_callback(glow.queue_free)
+
+
+func _restore_dot_tint(enemy: Node) -> void:
+	"""Restores enemy sprite color after DoT expires"""
+	if not is_instance_valid(enemy):
+		return
+	var sprite = enemy.get_node_or_null("Sprite2D")
+	if not sprite:
+		sprite = enemy.get_node_or_null("AnimatedSprite2D")
+	if sprite and enemy.has_meta("dot_original_modulate"):
+		sprite.modulate = enemy.get_meta("dot_original_modulate")
+		enemy.remove_meta("dot_original_modulate")
 
 
 func _spawn_block_aoe_vfx(pos: Vector2, radius: float) -> void:
