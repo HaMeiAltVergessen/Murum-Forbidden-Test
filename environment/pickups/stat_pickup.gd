@@ -56,26 +56,34 @@ func _ready() -> void:
 
 
 func _create_visual() -> void:
-	"""Creates placeholder visual (colored rect + label)"""
-	_rect = ColorRect.new()
-	_rect.size = Vector2(28, 28)
-	_rect.position = Vector2(-14, -14)
+	"""Creates placeholder visual if not already present from .tscn"""
+	_rect = get_node_or_null("ColorRect") as ColorRect
+	_label = get_node_or_null("Label") as Label
 
+	if not _rect:
+		_rect = ColorRect.new()
+		_rect.name = "ColorRect"
+		_rect.size = Vector2(28, 28)
+		_rect.position = Vector2(-14, -14)
+		add_child(_rect)
+
+	if not _label:
+		_label = Label.new()
+		_label.name = "Label"
+		_label.add_theme_font_size_override("font_size", 12)
+		_label.add_theme_color_override("font_color", Color.WHITE)
+		_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_label.size = Vector2(40, 20)
+		_label.position = Vector2(-20, -30)
+		add_child(_label)
+
+	# Apply color and text based on stat_type
 	if stat_type == StatType.HP:
-		_rect.color = Color(0.9, 0.2, 0.2, 0.9)  # Red for HP
+		_rect.color = Color(0.9, 0.2, 0.2, 0.9)
+		_label.text = "+HP"
 	else:
-		_rect.color = Color(0.2, 0.4, 0.9, 0.9)  # Blue for Mana
-
-	add_child(_rect)
-
-	_label = Label.new()
-	_label.add_theme_font_size_override("font_size", 12)
-	_label.add_theme_color_override("font_color", Color.WHITE)
-	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_label.size = Vector2(40, 20)
-	_label.position = Vector2(-20, -30)
-	_label.text = "+HP" if stat_type == StatType.HP else "+MP"
-	add_child(_label)
+		_rect.color = Color(0.2, 0.4, 0.9, 0.9)
+		_label.text = "+MP"
 
 
 # ============================================================================
