@@ -103,13 +103,71 @@ func _load_audio_library() -> void:
 		"projectile_fire": load(sewers_sfx + "shot.wav"),
 	}
 
-	# Music Library
+	# Music Library — values are AudioStream or Array[AudioStream] for random selection
+	var m: String = "res://Music/"
+	var w1: String = "res://Music/welt1/"
+	var w2: String = "res://Music/welt2/"
+	var w3: String = "res://Music/welt3/"
+
 	music_library = {
+		# === GLOBAL ===
+		"main_theme": load(m + "main_theme.mp3"),
+		"bossfight": [load(m + "bossfight_v1.mp3"), load(m + "bossfight_v2.mp3")],
+		"lythrun": [load(m + "lythrun_v1.mp3"), load(m + "lythrun_v2.mp3")],
+		"lythrun_boss_4": [load(m + "lythrun_boss_4_v1.mp3"), load(m + "lythrun_boss_4_v2.mp3"), load(m + "lythrun_boss_4_v3.mp3"), load(m + "lythrun_boss_4_v4.mp3")],
+		"lythrun_boss_5": [load(m + "lythrun_boss_5_v1.mp3"), load(m + "lythrun_boss_5_v2.mp3")],
+
+		# === WELT 1 — DAS NIEMANDSLAND ===
+		"w1_ruins": [load(m + "w1_ruins_v1.mp3"), load(m + "w1_ruins_v2.mp3")],
+		"w1_temple": load(m + "w1_temple.mp3"),
+		"w1_boss_buildup": [load(m + "w1_boss_buildup_v1.mp3"), load(m + "w1_boss_buildup_v2.mp3")],
+		"w1_kampf": [load(w1 + "w1_kampf_v1.mp3"), load(w1 + "w1_kampf_v2.mp3")],
+		"w1_elite": [load(w1 + "w1_elite_v1.mp3"), load(w1 + "w1_elite_v2.mp3")],
+		"w1_event": [load(w1 + "w1_event_v1.mp3"), load(w1 + "w1_event_v2.mp3")],
+		"w1_haendler": load(w1 + "w1_haendler.mp3"),
+		"w1_schatz": load(w1 + "w1_schatz.mp3"),
+		"w1_boss_oathbound_heroes": [load(w1 + "w1_boss_oathbound_heroes_v1.mp3"), load(w1 + "w1_boss_oathbound_heroes_v2.mp3")],
+		"w1_boss_temple_prayers": [load(w1 + "w1_boss_temple_prayers_v1.mp3"), load(w1 + "w1_boss_temple_prayers_v2.mp3")],
+		"w1_boss_broken_oaths": [load(w1 + "w1_boss_broken_oaths_v1.mp3"), load(w1 + "w1_boss_broken_oaths_v2.mp3"), load(w1 + "w1_boss_broken_oaths_v3.mp3")],
+
+		# === WELT 2 — DAS KOLLEKTIV ===
+		"w2_ambient": load(m + "w2_ambient.mp3"),
+		"w2_rise": [load(m + "w2_rise_v1.mp3"), load(m + "w2_rise_v2.mp3")],
+		"w2_kampf": load(w2 + "w2_kampf.mp3"),
+		"w2_elite": load(w2 + "w2_elite.mp3"),
+		"w2_event": load(w2 + "w2_event.mp3"),
+		"w2_haendler": load(w2 + "w2_haendler.mp3"),
+		"w2_schatz": [load(w2 + "w2_schatz_v1.mp3"), load(w2 + "w2_schatz_v2.mp3")],
+		"w2_boss_one_voice": [load(w2 + "w2_boss_one_voice_v1.mp3"), load(w2 + "w2_boss_one_voice_v2.mp3")],
+		"w2_boss_living_armada": [load(w2 + "w2_boss_living_armada_v1.mp3"), load(w2 + "w2_boss_living_armada_v2.mp3")],
+		"w2_boss_judgment": load(w2 + "w2_boss_judgment.mp3"),
+
+		# === WELT 3 — DER ABGRUND ===
+		"w3_leere": [load(m + "w3_leere_v1.mp3"), load(m + "w3_leere_v2.mp3")],
+		"w3_run": [load(m + "w3_run_v1.mp3"), load(m + "w3_run_v2.mp3")],
+		"w3_spiegel": load(m + "w3_spiegel.mp3"),
+		"w3_kampf": [load(w3 + "w3_kampf_v1.mp3"), load(w3 + "w3_kampf_v2.mp3"), load(w3 + "w3_kampf_v3.mp3")],
+		"w3_elite": [load(w3 + "w3_elite_v1.mp3"), load(w3 + "w3_elite_v2.mp3")],
+		"w3_event": [load(w3 + "w3_event_v1.mp3"), load(w3 + "w3_event_v2.mp3")],
+		"w3_haendler": [load(w3 + "w3_haendler_v1.mp3"), load(w3 + "w3_haendler_v2.mp3")],
+		"w3_schatz": [load(w3 + "w3_schatz_v1.mp3"), load(w3 + "w3_schatz_v2.mp3")],
+		"w3_boss": [load(w3 + "w3_boss_v1.mp3"), load(w3 + "w3_boss_v2.mp3")],
+		"w3_boss_endless_chase": [load(w3 + "w3_boss_endless_chase_v1.mp3"), load(w3 + "w3_boss_endless_chase_v2.mp3")],
+		"w3_boss_finale": load(w3 + "w3_boss_finale.mp3"),
+
+		# === LEGACY (Placeholder) ===
 		"test_music": load("res://Assets/Placeholder/Legacy Collection/Assets/Packs/Meta data assets files/sounds/music/determination.ogg"),
 		"combat_music": load("res://Assets/Placeholder/Legacy Collection/Assets/Packs/Meta data assets files/sounds/music/ghost-town.ogg"),
 	}
 
-	print("[AudioManager] Audio library loaded with ", sfx_library.size(), " SFX and ", music_library.size(), " music tracks")
+	var track_count: int = 0
+	for key in music_library:
+		var val = music_library[key]
+		if val is Array:
+			track_count += val.size()
+		else:
+			track_count += 1
+	print("[AudioManager] Audio library loaded with ", sfx_library.size(), " SFX and ", track_count, " music tracks (", music_library.size(), " keys)")
 
 
 # ============ SFX PLAYBACK ============
@@ -157,7 +215,7 @@ func play_sfx_at_position(sfx_name: String, _position: Vector2, pitch_variation:
 
 # ============ MUSIC PLAYBACK ============
 func play_music(track_name: String, fade_in: bool = true) -> void:
-	"""Plays a music track with optional fade-in"""
+	"""Plays a music track with optional fade-in. If multiple variants exist, picks one randomly."""
 	if current_music == track_name and music_player.playing:
 		return  # Already playing this track
 
@@ -165,7 +223,16 @@ func play_music(track_name: String, fade_in: bool = true) -> void:
 		push_warning("[AudioManager] Music track not found: ", track_name)
 		return
 
-	var audio_stream: AudioStream = music_library[track_name]
+	var entry = music_library[track_name]
+	var audio_stream: AudioStream = null
+
+	if entry is Array:
+		var tracks: Array = entry
+		if tracks.is_empty():
+			return
+		audio_stream = tracks[randi() % tracks.size()]
+	else:
+		audio_stream = entry
 
 	# Skip if no audio loaded (placeholder mode)
 	if audio_stream == null:
