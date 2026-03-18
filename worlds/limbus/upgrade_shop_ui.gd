@@ -12,6 +12,7 @@ const COLOR_MAXED := Color(0.4, 0.8, 0.3, 1.0)
 const COLOR_LOCKED := Color(0.5, 0.4, 0.4, 0.6)
 const COLOR_LORE := Color(0.6, 0.5, 0.7, 0.7)
 const COLOR_LIVES := Color(1.0, 0.4, 0.4, 1.0)
+const COLOR_MANA := Color(0.3, 0.5, 1.0, 1.0)
 
 # ============ LIVES SHOP ============
 const EXTRA_LIFE_COST: int = 2
@@ -19,6 +20,7 @@ const EXTRA_LIFE_COST: int = 2
 # ============ STATE ============
 var _upgrade_entries: Dictionary = {}
 var _lives_entry: Dictionary = {}
+var _mana_entry: Dictionary = {}
 var _magicka_label: Label = null
 var _detail_panel: Dictionary = {}
 
@@ -90,6 +92,9 @@ func _build_ui() -> void:
 
 	# Extra Lives entry
 	_build_lives_entry(list)
+
+	# Permanent Mana entry
+	_build_mana_entry(list)
 
 	# Detail panel (right side)
 	_build_detail_panel(main)
@@ -213,6 +218,54 @@ func _build_lives_entry(parent: Control) -> void:
 	_update_lives_entry()
 
 
+func _build_mana_entry(parent: Control) -> void:
+	var entry = PanelContainer.new()
+	var style = StyleBoxFlat.new()
+	style.bg_color = COLOR_PANEL
+	style.border_color = COLOR_MANA.lerp(COLOR_BORDER, 0.5)
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(6)
+	style.set_content_margin_all(12)
+	entry.add_theme_stylebox_override("panel", style)
+	parent.add_child(entry)
+
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 16)
+	entry.add_child(hbox)
+
+	var info_vbox = VBoxContainer.new()
+	info_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hbox.add_child(info_vbox)
+
+	var name_label = Label.new()
+	name_label.text = "Mana-Reservoir"
+	name_label.add_theme_font_size_override("font_size", 18)
+	name_label.add_theme_color_override("font_color", COLOR_MANA)
+	info_vbox.add_child(name_label)
+
+	var level_label = Label.new()
+	level_label.add_theme_font_size_override("font_size", 14)
+	info_vbox.add_child(level_label)
+
+	var buy_btn = Button.new()
+	buy_btn.custom_minimum_size = Vector2(160, 40)
+	hbox.add_child(buy_btn)
+	buy_btn.pressed.connect(_on_buy_mana_pressed)
+
+	entry.mouse_entered.connect(_show_mana_detail)
+	buy_btn.focus_entered.connect(_show_mana_detail)
+
+	_mana_entry = {
+		"entry": entry,
+		"name_label": name_label,
+		"level_label": level_label,
+		"buy_btn": buy_btn,
+		"style": style
+	}
+
+	_update_mana_entry()
+
+
 func _build_detail_panel(parent: Control) -> void:
 	var panel = PanelContainer.new()
 	panel.position = Vector2(1000, 110)
@@ -328,10 +381,38 @@ func _update_lives_entry() -> void:
 			_lives_entry["buy_btn"].add_theme_color_override("font_color", COLOR_LOCKED)
 
 
+func _update_mana_entry() -> void:
+	if _mana_entry.is_empty():
+		return
+
+	var level = RunManager.perma_mana_level
+	var max_level = RunManager.MAX_MANA_LEVELS
+	var is_max = level >= max_level
+
+	_mana_entry["level_label"].text = "Stufe %d / %d  (+%d Mana)" % [level, max_level, RunManager.get_perma_mana_bonus()]
+
+	if is_max:
+		_mana_entry["level_label"].add_theme_color_override("font_color", COLOR_MAXED)
+		_mana_entry["name_label"].add_theme_color_override("font_color", COLOR_MAXED)
+		_mana_entry["buy_btn"].text = "MAX"
+		_mana_entry["buy_btn"].disabled = true
+		_mana_entry["style"].border_color = COLOR_MAXED.lerp(COLOR_BORDER, 0.5)
+	else:
+		_mana_entry["level_label"].add_theme_color_override("font_color", Color(0.6, 0.6, 0.7, 1.0))
+		var can_afford = RunManager.get_magicka() >= RunManager.PERMA_MANA_COST
+		_mana_entry["buy_btn"].text = "%d Magicka" % RunManager.PERMA_MANA_COST
+		_mana_entry["buy_btn"].disabled = not can_afford
+		if can_afford:
+			_mana_entry["buy_btn"].add_theme_color_override("font_color", COLOR_MAGICKA)
+		else:
+			_mana_entry["buy_btn"].add_theme_color_override("font_color", COLOR_LOCKED)
+
+
 func _update_all_entries() -> void:
 	for upgrade_id in _upgrade_entries:
 		_update_entry(upgrade_id)
 	_update_lives_entry()
+	_update_mana_entry()
 
 
 func _update_magicka_display() -> void:
@@ -396,6 +477,37 @@ func _show_lives_detail() -> void:
 			text += "[Leben %d] (%d Magicka)\n\n" % [i, EXTRA_LIFE_COST]
 
 	_detail_panel["effects"].text = text
+
+
+func _show_mana_detail() -> void:
+	var level = RunManager.perma_mana_level
+	var max_level = RunManager.MAX_MANA_LEVELS
+	_detail_panel["name"].text = "Mana-Reservoir"
+	_detail_panel["lore"].text = "Erweitere dein Mana-Reservoir permanent. Mehr Mana bedeutet mehr Faehigkeiten im Kampf."
+
+	var text = ""
+	for i in range(1, max_level + 1):
+		var bonus = i * RunManager.MANA_BONUS_PER_LEVEL
+		if i <= level:
+			text += "[Aktiv] Stufe %d: +%d Max-Mana\n\n" % [i, bonus]
+		elif i == level + 1:
+			text += "[Naechste] Stufe %d: +%d Max-Mana (%d Magicka)\n\n" % [i, bonus, RunManager.PERMA_MANA_COST]
+		else:
+			text += "[Stufe %d] +%d Max-Mana (%d Magicka)\n\n" % [i, bonus, RunManager.PERMA_MANA_COST]
+
+	_detail_panel["effects"].text = text
+
+
+func _on_buy_mana_pressed() -> void:
+	if not RunManager.upgrade_perma_mana():
+		return
+
+	EventBus.show_notification.emit(
+		"Mana-Reservoir Stufe %d! (+%d Max-Mana)" % [RunManager.perma_mana_level, RunManager.get_perma_mana_bonus()], 3.0
+	)
+	_update_all_entries()
+	_update_magicka_display()
+	_show_mana_detail()
 
 
 func _on_buy_life_pressed() -> void:

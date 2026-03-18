@@ -21,6 +21,13 @@ const MAX_LIVES: int = 3
 var current_lives: int = BASE_LIVES
 var max_lives: int = BASE_LIVES  # Increased by perma upgrades
 
+# ============ PERMANENT MANA UPGRADE ============
+const MAX_MANA_LEVELS: int = 4
+const MANA_BONUS_PER_LEVEL: int = 15  # +15 max mana per level
+const PERMA_MANA_COST: int = 2  # Magicka cost per level
+
+var perma_mana_level: int = 0  # 0-4, persistent across runs
+
 # ============ MAGICKA (PERSISTENT CURRENCY) ============
 var magicka: int = 0
 
@@ -45,6 +52,7 @@ signal magicka_changed(new_amount: int)
 signal player_run_death()  # Player died during run, loses a life
 signal map_updated()       # Map state changed (node completed, etc.)
 signal node_selected(node: RefCounted)  # Player selected a node
+signal perma_mana_changed(new_level: int)  # Permanent mana upgrade changed
 
 
 func _ready() -> void:
@@ -433,6 +441,23 @@ func set_max_lives(new_max: int) -> void:
 	print("[RunManager] Max lives set to %d" % max_lives)
 
 
+# ============ PERMANENT MANA ============
+func get_perma_mana_bonus() -> int:
+	return perma_mana_level * MANA_BONUS_PER_LEVEL
+
+
+func upgrade_perma_mana() -> bool:
+	"""Purchases one level of permanent mana. Returns true on success."""
+	if perma_mana_level >= MAX_MANA_LEVELS:
+		return false
+	if not spend_magicka(PERMA_MANA_COST):
+		return false
+	perma_mana_level += 1
+	perma_mana_changed.emit(perma_mana_level)
+	print("[RunManager] Perma mana upgraded to level %d (+%d mana)" % [perma_mana_level, get_perma_mana_bonus()])
+	return true
+
+
 # ============ MAGICKA ============
 func add_magicka(amount: int) -> void:
 	magicka += amount
@@ -497,7 +522,8 @@ func _respawn_in_room() -> void:
 func get_save_data() -> Dictionary:
 	var data: Dictionary = {
 		"magicka": magicka,
-		"max_lives": max_lives
+		"max_lives": max_lives,
+		"perma_mana_level": perma_mana_level
 	}
 	if current_map and is_run_active():
 		data["current_map"] = current_map.to_dict()
@@ -512,6 +538,7 @@ func get_save_data() -> Dictionary:
 func load_from_save(data: Dictionary) -> void:
 	magicka = data.get("magicka", 0)
 	max_lives = data.get("max_lives", BASE_LIVES)
+	perma_mana_level = clampi(data.get("perma_mana_level", 0), 0, MAX_MANA_LEVELS)
 	magicka_changed.emit(magicka)
 
 	# Always clear stale run room states on load to prevent "already cleared" bugs
