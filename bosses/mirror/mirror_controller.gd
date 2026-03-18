@@ -57,7 +57,7 @@ var momentum_system: Node = null
 var momentum_bar: CanvasLayer = null
 
 # ============ DIALOG SPEAKER IMAGES ============
-const SPIEGEL_PORTRAIT: String = "res://Assets/AIPlaceholder/AlbtraumWelten/Welt3_Abgrund/2D_pixel_art_cosmic_horror_bos_GPT_Image_15_15505.jpg"
+const SPIEGEL_PORTRAIT: String = "res://Assets/AIPlaceholder/Char/Murum_Spiegel/mirrorai1.jpg"
 const MURUM_PORTRAIT: String = "res://Assets/AIPlaceholder/Char/Murum/Murum.png"
 
 # ============ BACKGROUND IMAGES (per section) ============
