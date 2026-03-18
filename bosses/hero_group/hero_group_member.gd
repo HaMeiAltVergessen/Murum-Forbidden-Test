@@ -19,6 +19,8 @@ enum State {
 	DEAD,
 	LAST_STANDING_TRANSITION,
 	RESURRECTING,
+	FLEEING,
+	HEALING,
 }
 
 # ============ EXPORTS ============
@@ -44,6 +46,17 @@ var pattern_index: int = 0
 
 # Stun
 var stun_timer: float = 0.0
+
+# Healing potions
+const POTION_COUNT: int = 2
+const POTION_HEAL_PERCENT: float = 0.5
+const HEAL_TIME: float = 3.0
+const FLEE_HP_THRESHOLD: float = 0.3  # Start fleeing at 30% HP
+const FLEE_DISTANCE: float = 350.0  # How far to run from player
+
+var potions_remaining: int = POTION_COUNT
+var heal_timer: float = 0.0
+var _heal_vfx: Node2D = null
 
 # AI targeting
 var target: Node2D = null
@@ -120,6 +133,23 @@ func _physics_process(delta: float) -> void:
 				velocity.y += gravity * delta
 			move_and_slide()
 			return
+		State.FLEEING:
+			_process_fleeing(delta)
+			if not is_on_floor():
+				velocity.y += gravity * delta
+			move_and_slide()
+			_update_sprite_animation(delta)
+			return
+		State.HEALING:
+			_process_healing(delta)
+			if not is_on_floor():
+				velocity.y += gravity * delta
+			else:
+				velocity.y = 0
+			velocity.x = 0
+			move_and_slide()
+			_update_sprite_animation(delta)
+			return
 
 	# Mana regen
 	current_mana = min(current_mana + mana_regen_rate * delta, max_mana)
@@ -166,6 +196,11 @@ func _ai_update(_delta: float) -> void:
 			current_state = State.IDLE
 			velocity.x = 0
 			return
+
+	# Check if should flee to heal
+	if _should_flee_to_heal():
+		_start_fleeing()
+		return
 
 	# Face target
 	var dir: float = sign(target.global_position.x - global_position.x)
@@ -272,6 +307,12 @@ func take_damage(amount: float, _attacker: Node = null) -> void:
 	if current_hp <= 0:
 		return
 
+	# Interrupt healing if currently healing or fleeing
+	if current_state == State.HEALING:
+		_interrupt_healing()
+	elif current_state == State.FLEEING:
+		current_state = State.IDLE
+
 	current_hp = max(0, current_hp - amount)
 	health_changed.emit(current_hp, max_hp)
 	_flash_damage()
@@ -296,6 +337,11 @@ func _flash_damage() -> void:
 func stun(duration: float) -> void:
 	if current_state == State.DEAD:
 		return
+
+	# Interrupt healing
+	if current_state == State.HEALING:
+		_interrupt_healing()
+
 	current_state = State.STUNNED
 	stun_timer = duration
 
@@ -424,6 +470,153 @@ func activate_last_standing() -> void:
 func _on_last_standing() -> void:
 	# Override in subclass
 	pass
+
+
+# ============ HEALING POTIONS ============
+func _should_flee_to_heal() -> bool:
+	if potions_remaining <= 0:
+		return false
+	if get_hp_percent() > FLEE_HP_THRESHOLD:
+		return false
+	if is_last_standing:
+		return false  # No fleeing in last stand
+	return true
+
+
+func _start_fleeing() -> void:
+	current_state = State.FLEEING
+	current_attack = ""
+	print("[%s] Fleeing to heal! (HP: %.0f%%, Potions: %d)" % [hero_name, get_hp_percent() * 100, potions_remaining])
+
+
+func _process_fleeing(delta: float) -> void:
+	if not target or not is_instance_valid(target):
+		_start_healing()
+		return
+
+	var dist: float = global_position.distance_to(target.global_position)
+
+	# Far enough — start healing
+	if dist >= FLEE_DISTANCE:
+		_start_healing()
+		return
+
+	# Run away from player
+	var flee_dir: float = sign(global_position.x - target.global_position.x)
+	if flee_dir == 0:
+		flee_dir = 1.0
+	facing_direction = flee_dir
+	velocity.x = flee_dir * move_speed * 1.5  # Run faster when fleeing
+
+	if animated_sprite:
+		animated_sprite.flip_h = facing_direction < 0
+	_play_anim("run")
+
+
+func _start_healing() -> void:
+	current_state = State.HEALING
+	heal_timer = HEAL_TIME
+	velocity.x = 0
+	_play_anim("idle")
+
+	# VFX: green glow during healing
+	_spawn_heal_vfx()
+
+	print("[%s] Healing... (%.1fs)" % [hero_name, HEAL_TIME])
+
+
+func _process_healing(delta: float) -> void:
+	heal_timer -= delta
+
+	# Pulsing green tint while healing
+	if animated_sprite:
+		var pulse: float = 0.5 + 0.5 * sin(heal_timer * 4.0)
+		animated_sprite.modulate = Color(1.0 - pulse * 0.3, 1.0, 1.0 - pulse * 0.3, 1.0)
+
+	if heal_timer <= 0.0:
+		_complete_healing()
+
+
+func _complete_healing() -> void:
+	potions_remaining -= 1
+	var heal_amount: float = max_hp * POTION_HEAL_PERCENT
+	current_hp = min(current_hp + heal_amount, max_hp)
+	health_changed.emit(current_hp, max_hp)
+
+	print("[%s] Healed +%.0f HP! (%.0f/%.0f, Potions left: %d)" % [
+		hero_name, heal_amount, current_hp, max_hp, potions_remaining
+	])
+
+	# VFX: green flash
+	if animated_sprite:
+		animated_sprite.modulate = Color(0.5, 2.0, 0.5, 1.0)
+		var tween = create_tween()
+		tween.tween_property(animated_sprite, "modulate", Color.WHITE, 0.4)
+
+	_remove_heal_vfx()
+	current_state = State.IDLE
+
+
+func _interrupt_healing() -> void:
+	"""Called when healing is interrupted by damage"""
+	print("[%s] Healing interrupted!" % hero_name)
+	heal_timer = 0.0
+	_remove_heal_vfx()
+
+	if animated_sprite:
+		animated_sprite.modulate = Color.WHITE
+
+	current_state = State.IDLE
+
+
+func _spawn_heal_vfx() -> void:
+	_remove_heal_vfx()
+	_heal_vfx = Node2D.new()
+	_heal_vfx.name = "HealVFX"
+	add_child(_heal_vfx)
+
+	# Green potion circle
+	var circle := ColorRect.new()
+	circle.color = Color(0.2, 0.8, 0.2, 0.5)
+	circle.size = Vector2(50, 50)
+	circle.position = Vector2(-25, -70)
+	_heal_vfx.add_child(circle)
+
+	# "Healing" label
+	var label := Label.new()
+	label.text = "Heiltrank..."
+	label.add_theme_font_size_override("font_size", 12)
+	label.add_theme_color_override("font_color", Color(0.3, 1.0, 0.3))
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.size = Vector2(100, 20)
+	label.position = Vector2(-50, -85)
+	_heal_vfx.add_child(label)
+
+	# Progress bar background
+	var bar_bg := ColorRect.new()
+	bar_bg.name = "BarBG"
+	bar_bg.color = Color(0.2, 0.2, 0.2, 0.7)
+	bar_bg.size = Vector2(40, 6)
+	bar_bg.position = Vector2(-20, -55)
+	_heal_vfx.add_child(bar_bg)
+
+	# Progress bar fill
+	var bar_fill := ColorRect.new()
+	bar_fill.name = "BarFill"
+	bar_fill.color = Color(0.3, 1.0, 0.3, 0.9)
+	bar_fill.size = Vector2(0, 6)
+	bar_fill.position = Vector2(-20, -55)
+	_heal_vfx.add_child(bar_fill)
+
+	# Animate progress bar over HEAL_TIME
+	var tween := create_tween()
+	tween.tween_property(bar_fill, "size:x", 40.0, HEAL_TIME)
+
+
+func _remove_heal_vfx() -> void:
+	if _heal_vfx and is_instance_valid(_heal_vfx):
+		_heal_vfx.queue_free()
+		_heal_vfx = null
 
 
 # ============ UTILITY ============
