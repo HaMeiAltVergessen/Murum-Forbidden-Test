@@ -19,6 +19,9 @@ func _ready() -> void:
 
 
 func _activate() -> void:
+	# Vorherige Musik stoppen (kein Auto-Match fuer diesen Raum)
+	if MusicScenePlayer:
+		MusicScenePlayer.stop_music()
 	_spawn_player()
 	_connect_doors()
 
@@ -124,6 +127,10 @@ func start_lythrun_fight() -> void:
 		_lythrun_boss.global_position = Vector2(960, 760)
 
 	add_child(_lythrun_boss)
+
+	# Lythrun Boss-Musik starten
+	if MusicScenePlayer:
+		MusicScenePlayer.force_play_scene("LythrunBoss")
 
 	get_tree().create_timer(1.0).timeout.connect(func():
 		if _lythrun_boss and is_instance_valid(_lythrun_boss) and _lythrun_boss.has_method("start_fight"):
