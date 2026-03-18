@@ -254,6 +254,16 @@ func get_upgradeable_boons(path_id: String) -> Array:
 	return result
 
 
+func get_mana_regen_multiplier() -> float:
+	"""Returns combined mana regen multiplier from all active boons (additive)."""
+	var bonus: float = 0.0
+	for path_id in active_boons:
+		for tier in active_boons[path_id]:
+			var regen_pct: float = get_scaled_param(path_id, tier, "mana_regen_percent", 0.0)
+			bonus += regen_pct
+	return 1.0 + bonus
+
+
 func get_damage_multiplier() -> float:
 	"""Returns combined damage multiplier from all active boons."""
 	var multiplier: float = 1.0

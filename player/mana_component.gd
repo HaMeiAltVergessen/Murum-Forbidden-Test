@@ -112,6 +112,10 @@ func _regenerate_mana(delta: float) -> void:
 	if (owner is Murum or owner is Lythrun) and UpgradeManager:
 		effective_regen *= UpgradeManager.get_mana_regen_multiplier()
 
+	# Apply Pachron boon mana regen bonus
+	if (owner is Murum or owner is Lythrun) and BoonManager:
+		effective_regen *= BoonManager.get_mana_regen_multiplier()
+
 	var regen_amount: float = effective_regen * delta
 	current_mana = min(max_mana, current_mana + int(regen_amount))
 	mana_changed.emit(current_mana, max_mana)
