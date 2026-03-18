@@ -56,6 +56,10 @@ var mirror_boss: CharacterBody2D = null
 var momentum_system: Node = null
 var momentum_bar: CanvasLayer = null
 
+# ============ DIALOG SPEAKER IMAGES ============
+const SPIEGEL_PORTRAIT: String = "res://Assets/AIPlaceholder/AlbtraumWelten/Welt3_Abgrund/2D_pixel_art_cosmic_horror_bos_GPT_Image_15_15505.jpg"
+const MURUM_PORTRAIT: String = "res://Assets/AIPlaceholder/Char/Murum/Murum.png"
+
 # ============ BACKGROUND IMAGES (per section) ============
 const BG_PATHS: Dictionary = {
 	Section.DER_FALL: "res://Assets/AIPlaceholder/AlbtraumWelten/Welt3_Abgrund/2D_pixel_art_cosmic_horror_bac_GPT_Image_15_29025.jpg",
@@ -143,6 +147,10 @@ func start_fight() -> void:
 	_setup_momentum_bar()
 	_setup_mirror_boss()
 
+	# Start boss music
+	if MusicScenePlayer:
+		MusicScenePlayer.force_play_scene("W3Boss")
+
 	# Opening dialog before fight begins
 	await _play_opening_dialog()
 
@@ -163,16 +171,19 @@ func start_fight() -> void:
 
 
 func _play_opening_dialog() -> void:
-	"""Zeigt den Eröffnungsdialog bevor der Kampf beginnt"""
+	"""Zeigt den Eröffnungsdialog via DialogManager bevor der Kampf beginnt"""
 	# Kamera einfrieren während Dialog
 	if runner_camera:
 		runner_camera.scroll_speed = 0.0
 
 	await get_tree().create_timer(0.8).timeout
-	_show_dialog_text("Spiegel: Du bist die Frage,", 2.5)
-	await get_tree().create_timer(3.0).timeout
-	_show_dialog_text("Spiegel: ich die Antwort.", 2.5)
-	await get_tree().create_timer(3.0).timeout
+
+	# Build dialog entries
+	var entries: Array[DialogEntry] = [
+		_make_dialog_entry("Spiegel", SPIEGEL_PORTRAIT, "Du bist die Frage, ich die Antwort."),
+	]
+
+	await _play_dialog(entries, "mirror_opening")
 
 	# Kamera wieder starten
 	if runner_camera:
@@ -432,7 +443,7 @@ func _start_defeat_sequence() -> void:
 
 
 func _play_defeat_dialog() -> void:
-	"""Finale dialog + defeat"""
+	"""Finale dialog via DialogManager + defeat"""
 	# Silence music
 	if AudioManager:
 		AudioManager.stop_music()
@@ -440,17 +451,14 @@ func _play_defeat_dialog() -> void:
 	# Brief pause before dialog
 	await get_tree().create_timer(1.5).timeout
 
-	# Dialog lines (shown via notifications for now)
-	var lines: Array[Dictionary] = [
-		{"speaker": "Spiegel", "text": "Du suchst Antworten.", "delay": 2.5},
-		{"speaker": "Spiegel", "text": "Doch du bist nur die Frage.", "delay": 3.0},
-		{"speaker": "Spiegel", "text": "Ich gebe dir deine Antworten.", "delay": 2.5},
-		{"speaker": "Murum", "text": "Ich brauche keine Antworten.", "delay": 2.5},
+	# Build dialog entries
+	var entries: Array[DialogEntry] = [
+		_make_dialog_entry("Spiegel", SPIEGEL_PORTRAIT, "Du suchst Antworten. Doch du bist nur die Frage."),
+		_make_dialog_entry("Spiegel", SPIEGEL_PORTRAIT, "Ich gebe dir deine Antworten."),
+		_make_dialog_entry("Murum", MURUM_PORTRAIT, "Ich brauche keine Antworten."),
 	]
 
-	for line in lines:
-		_show_dialog_text("%s: %s" % [line["speaker"], line["text"]], line["delay"])
-		await get_tree().create_timer(line["delay"] + 0.5).timeout
+	await _play_dialog(entries, "mirror_defeat")
 
 	# Final strike + dissolve
 	await get_tree().create_timer(1.0).timeout
@@ -504,6 +512,42 @@ func _exit_tree() -> void:
 	_restore_player_camera()
 	if mirror_boss and is_instance_valid(mirror_boss):
 		mirror_boss.queue_free()
+
+
+# ============ DIALOG HELPERS ============
+func _make_dialog_entry(speaker_name: String, portrait_path: String, text: String) -> DialogEntry:
+	"""Creates a DialogEntry with speaker portrait."""
+	var entry := DialogEntry.new()
+	entry.speaker_name = speaker_name
+	entry.text = text
+	entry.text_speed = 35.0
+
+	if portrait_path != "" and ResourceLoader.exists(portrait_path):
+		entry.speaker_sprite = load(portrait_path)
+
+	return entry
+
+
+func _play_dialog(entries: Array[DialogEntry], dialog_id: String) -> void:
+	"""Plays dialog entries via DialogManager and awaits completion."""
+	var dialog := DialogData.new()
+	dialog.dialog_id = dialog_id
+	dialog.entries = entries
+
+	if EventBus:
+		EventBus.dialog_finished.connect(_on_mirror_dialog_finished, CONNECT_ONE_SHOT)
+
+	DialogManager.play_dialog_resource(dialog)
+
+	# Wait for dialog to finish
+	await dialog_sequence_finished
+
+
+signal dialog_sequence_finished
+
+
+func _on_mirror_dialog_finished(_dialog_id: String) -> void:
+	dialog_sequence_finished.emit()
 
 
 # ============ UTILITY ============
