@@ -3,6 +3,7 @@ extends Node
 ## Keeps BoonManager clean (data-only) and centralizes gameplay hooks here.
 
 # ============ CONSTANTS ============
+const CLONE_SCENE: PackedScene = preload("res://player/abilities/raelear_clone.tscn")
 const CLONE_SCENE_COLOR := Color(0.5, 0.3, 0.8, 0.6)  # Raelear purple
 
 # ============ EXPLOSION VFX ============
@@ -74,6 +75,14 @@ func _ready() -> void:
 	# T3/T4 signals
 	EventBus.wolkenbruch_impact.connect(_on_wolkenbruch_impact)
 
+	# Raelear T4: every attack spawns clone
+	EventBus.player_attacked.connect(_on_player_attacked_raelear)
+
+	# Raelear T3: mirror abilities
+	EventBus.wolkenbruch_impact.connect(_on_wolkenbruch_for_mirror)
+	EventBus.machtbruch_released.connect(_on_machtbruch_for_mirror)
+	EventBus.machtstoss_activated.connect(_on_machtstoss_for_mirror)
+
 	# Staff signals
 	EventBus.staff_thrown.connect(_on_staff_thrown)
 	EventBus.staff_caught.connect(_on_staff_caught)
@@ -138,10 +147,36 @@ func _on_combo_increased(new_count: int, _multiplier: float) -> void:
 		print("[BoonEffect] Arthra T1: Lightning strike! %d damage on %s" % [total_damage, nearest.name])
 
 
-# ============ RAELEAR T1: SCHATTENBILD (Dodge Clone) ============
+# ============ RAELEAR T1: SCHATTENBILD (Combo Clone) ============
 func _on_dodge_completed() -> void:
+	# Dodge no longer spawns clones — T1 is now combo-based
+	pass
+
+
+func _on_combo_finisher_raelear(combo_count: int) -> void:
+	"""T1: After 3-hit combo, spawn a chase clone."""
 	if not BoonManager.has_boon("raelear", 1):
 		return
+	if not _is_in_run():
+		return
+	# T4 handles spawning on every attack — skip combo trigger
+	if BoonManager.has_boon("raelear", 4):
+		return
+
+	var player = _get_player()
+	if not player:
+		return
+
+	_spawn_raelear_clone(player.global_position)
+
+
+# ============ RAELEAR T4: ARMEE DER VERZWEIFLUNG (Every Attack Clone) ============
+func _on_player_attacked_raelear(_attack_number: int) -> void:
+	"""T4: Every attack spawns a clone."""
+	if not BoonManager.has_boon("raelear", 4):
+		return
+	if not BoonManager.has_boon("raelear", 1):
+		return  # Need at least T1
 	if not _is_in_run():
 		return
 
@@ -149,23 +184,7 @@ func _on_dodge_completed() -> void:
 	if not player:
 		return
 
-	# Check max clones (default 2, Raelear T4: 5)
-	_cleanup_dead_clones()
-	var max_clones: int = 2
-	if BoonManager.has_boon("raelear", 4):
-		max_clones = BoonManager.get_scaled_param("raelear", 4, "max_clones", 5)
-	if _active_clones.size() >= max_clones:
-		return
-
-	var duration: float = BoonManager.get_scaled_param("raelear", 1, "clone_duration", 3.0)
-	var clone_dmg: int = BoonManager.get_scaled_param("raelear", 1, "clone_damage", 10)
-
-	# Raelear T4: duration override
-	if BoonManager.has_boon("raelear", 4):
-		duration = BoonManager.get_scaled_param("raelear", 4, "duration_override", 8.0)
-
-	_spawn_clone(player.global_position, duration, clone_dmg, "DodgeClone")
-	print("[BoonEffect] Raelear T1: Dodge clone (%.1fs, %d/%d)" % [duration, _active_clones.size(), max_clones])
+	_spawn_raelear_clone(player.global_position)
 
 
 # ============ RAELEAR T2: SCHATTEN DER FINSTERNIS (Death Clone) ============
@@ -186,37 +205,46 @@ func _on_enemy_died(enemy: Node, position: Vector2) -> void:
 	if not BoonManager.has_boon("raelear", 2):
 		return
 
-	# Check max clones (default 2, Raelear T4: 5)
-	_cleanup_dead_clones()
-	var max_clones: int = 2
-	if BoonManager.has_boon("raelear", 4):
-		max_clones = BoonManager.get_scaled_param("raelear", 4, "max_clones", 5)
-	if _active_clones.size() >= max_clones:
+	_spawn_raelear_clone(position)
+	_spawn_raelear_vfx(position, 60.0)
+	print("[BoonEffect] Raelear T2: Death clone at %v" % position)
+
+
+# ============ RAELEAR T3: SPIEGELUNG (Mirror Abilities) ============
+func _on_ability_used_raelear(ability_name: String) -> void:
+	if not BoonManager.has_boon("raelear", 3):
+		return
+	if not _is_in_run():
 		return
 
-	var duration: float = BoonManager.get_scaled_param("raelear", 2, "clone_duration", 5.0)
-	var dmg_pct: float = BoonManager.get_scaled_param("raelear", 2, "damage_percent", 0.5)
-	var clone_dmg: int = int(20 * dmg_pct)  # Base 20 * 50% = 10
+	_cleanup_dead_clones()
+	var dmg_pct: float = BoonManager.get_scaled_param("raelear", 3, "damage_percent", 0.5)
+	for clone in _active_clones:
+		if is_instance_valid(clone) and clone.has_method("mirror_ability"):
+			clone.mirror_ability(ability_name, dmg_pct)
 
-	# Raelear T4: duration override
-	if BoonManager.has_boon("raelear", 4):
-		duration = BoonManager.get_scaled_param("raelear", 4, "duration_override", 8.0)
 
-	# Raelear T2 + Staff: clone spawns at staff position instead of death position
-	var clone_pos: Vector2 = position
-	if _staff_projectile and is_instance_valid(_staff_projectile):
-		clone_pos = _staff_projectile.global_position
+func _on_wolkenbruch_for_mirror(_powered: bool) -> void:
+	_on_ability_used_raelear("wolkenbruch")
 
-	_spawn_clone(clone_pos, duration, clone_dmg, "DeathClone")
-	_spawn_raelear_vfx(clone_pos, 60.0)
-	print("[BoonEffect] Raelear T2: Death clone at %v (%.1fs, %d/%d)" % [clone_pos, duration, _active_clones.size(), max_clones])
+
+func _on_machtbruch_for_mirror(_tier: int, _damage: int, _radius: float) -> void:
+	_on_ability_used_raelear("machtbruch")
+
+
+func _on_machtstoss_for_mirror(_position: Vector2) -> void:
+	_on_ability_used_raelear("machtstoss")
 
 
 # ============ MURRUM T1: ELEMENT-FINISHER ============
 func _on_combo_finisher_executed(_combo_count: int) -> void:
-	if not BoonManager.has_boon("murrum", 1):
-		return
 	if not _is_in_run():
+		return
+
+	# Raelear T1: Combo clone
+	_on_combo_finisher_raelear(_combo_count)
+
+	if not BoonManager.has_boon("murrum", 1):
 		return
 
 	var player = _get_player()
@@ -642,7 +670,6 @@ func consume_clone_for_death_save(player_pos: Vector2) -> void:
 	"""Called from Murum when death save triggers — destroys nearest clone"""
 	_cleanup_dead_clones()
 	if _active_clones.is_empty():
-		# No clone to destroy, but death save still works
 		_spawn_raelear_vfx(player_pos, 60.0)
 		return
 
@@ -658,6 +685,8 @@ func consume_clone_for_death_save(player_pos: Vector2) -> void:
 
 	if nearest_clone:
 		_spawn_raelear_vfx(nearest_clone.global_position, 80.0)
+		if nearest_clone is RaelearClone:
+			nearest_clone.is_dead = true
 		nearest_clone.queue_free()
 		_active_clones.erase(nearest_clone)
 		print("[BoonEffect] Raelear T5: Clone sacrificed!")
@@ -883,70 +912,62 @@ func _apply_confusion(enemy: Node, duration: float) -> void:
 	print("[BoonEffect] Noron T2: %s confused for %.1fs" % [enemy.name, duration])
 
 
-# ============ CLONE SPAWNING ============
+# ============ RAELEAR CLONE SPAWNING ============
 func _cleanup_dead_clones() -> void:
 	"""Removes freed clones from tracking array"""
 	_active_clones = _active_clones.filter(func(c): return is_instance_valid(c))
 
 
-func _spawn_clone(pos: Vector2, duration: float, damage: int, clone_name: String) -> void:
-	"""Spawns a Raelear shadow clone at position"""
+func _get_raelear_max_clones() -> int:
+	"""Returns current max clone limit based on active boons."""
+	if BoonManager.has_boon("raelear", 4):
+		return BoonManager.get_scaled_param("raelear", 4, "max_clones", 3)
+	if BoonManager.has_boon("raelear", 2):
+		return BoonManager.get_scaled_param("raelear", 2, "max_clones", 2)
+	return BoonManager.get_scaled_param("raelear", 1, "max_clones", 1)
+
+
+func _get_raelear_clone_mode() -> int:
+	"""Returns clone mode: 0=CHASE, 1=MIRROR."""
+	if BoonManager.has_boon("raelear", 3):
+		return 1  # RaelearClone.Mode.MIRROR
+	return 0  # RaelearClone.Mode.CHASE
+
+
+func _spawn_raelear_clone(pos: Vector2) -> void:
+	"""Spawns a Raelear shadow clone (scene-based) at position."""
+	_cleanup_dead_clones()
+	var max_clones: int = _get_raelear_max_clones()
+	if _active_clones.size() >= max_clones:
+		return
+
 	var scene_root = get_tree().current_scene
 	if not scene_root:
 		return
 
-	var clone := Node2D.new()
-	clone.name = clone_name
+	var clone: RaelearClone = CLONE_SCENE.instantiate()
 	clone.global_position = pos
+
+	# Set params from boon data
+	if BoonManager.has_boon("raelear", 4):
+		clone.clone_damage = BoonManager.get_scaled_param("raelear", 4, "clone_damage", 20)
+		clone.duration = BoonManager.get_scaled_param("raelear", 4, "clone_duration", 8.0)
+	elif BoonManager.has_boon("raelear", 2):
+		clone.clone_damage = BoonManager.get_scaled_param("raelear", 2, "clone_damage", 20)
+		clone.duration = BoonManager.get_scaled_param("raelear", 2, "clone_duration", 8.0)
+	else:
+		clone.clone_damage = BoonManager.get_scaled_param("raelear", 1, "clone_damage", 15)
+		clone.duration = BoonManager.get_scaled_param("raelear", 1, "clone_duration", 6.0)
+
+	clone.mode = _get_raelear_clone_mode()
+
 	scene_root.add_child(clone)
 	_active_clones.append(clone)
 
-	# Clone body visual (purple silhouette)
-	var body := ColorRect.new()
-	body.color = CLONE_SCENE_COLOR
-	body.size = Vector2(30, 60)
-	body.position = Vector2(-15, -60)
-	clone.add_child(body)
-
-	# Clone hitbox (damages enemies on contact)
-	var area := Area2D.new()
-	area.collision_layer = 0
-	area.collision_mask = 0
-	area.set_collision_mask_value(4, true)  # Enemy bodies (layer 4)
-	area.monitoring = true
-
-	var col := CollisionShape2D.new()
-	var shape := CircleShape2D.new()
-	shape.radius = 30.0
-	col.shape = shape
-	area.add_child(col)
-	clone.add_child(area)
-
-	# Damage on contact (with cooldown via meta)
-	area.body_entered.connect(func(body_node):
-		if not is_instance_valid(clone):
-			return
-		if body_node.is_in_group("enemies") and not body_node.get("is_dead"):
-			var last_hit: float = clone.get_meta("last_hit", 0.0)
-			var now: float = Time.get_ticks_msec() / 1000.0
-			if now - last_hit > 1.0:  # 1s cooldown per hit
-				clone.set_meta("last_hit", now)
-				body_node.take_damage(damage, null)
-				print("[BoonEffect] Clone hit %s for %d" % [body_node.name, damage])
-	)
-
-	# Fade-in
-	body.modulate.a = 0.0
-	var tween := clone.create_tween()
-	tween.tween_property(body, "modulate:a", 1.0, 0.3)
-
-	# Auto-destroy after duration
-	get_tree().create_timer(duration).timeout.connect(func():
-		if is_instance_valid(clone):
-			var fade := clone.create_tween()
-			fade.tween_property(body, "modulate:a", 0.0, 0.5)
-			fade.tween_callback(clone.queue_free)
-	)
+	print("[BoonEffect] Raelear clone spawned (%s) at %v (%d/%d)" % [
+		"MIRROR" if clone.mode == 1 else "CHASE",
+		pos, _active_clones.size(), max_clones
+	])
 
 
 # ============ VFX SYSTEM (Animated Explosion Sprites) ============

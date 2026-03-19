@@ -87,58 +87,59 @@
           "id": "raelear_1",
           "tier": 1,
           "name": "Schattenbild",
-          "description": "Nach jedem Dodge Roll hinterlaesst Murum einen Klon (6s), der Gegner ablenkt und bei Beruehrung Schaden macht. +10% Mana-Regeneration.",
-          "effect_type": "dodge_clone",
+          "description": "Nach jeder 3er-Combo spawnt ein Schattenklon, der zum naechsten Gegner rennt und explodiert. Max 1 Klon gleichzeitig.",
+          "effect_type": "combo_clone",
           "params": {
             "clone_duration": 6.0,
-            "clone_damage": 10,
-            "mana_regen_percent": 0.1
+            "clone_damage": 15,
+            "max_clones": 1
           },
           "level_scaling": {
-            "clone_duration": 5.0,
-            "clone_damage": 20
+            "clone_damage": 25
           }
         },
         {
           "id": "raelear_2",
           "tier": 2,
           "name": "Schatten der Finsternis",
-          "description": "Getoetete Gegner spawnen einen Schattenklon (10s), der Gegner angreift (50% Schaden).",
+          "description": "Getoetete Gegner spawnen einen Schattenklon, der zum naechsten Gegner rennt und explodiert. Max 2 Klone gleichzeitig.",
           "effect_type": "death_clone",
           "params": {
-            "clone_duration": 10.0,
-            "damage_percent": 0.5
+            "clone_duration": 8.0,
+            "clone_damage": 20,
+            "max_clones": 2
           },
           "level_scaling": {
-            "clone_duration": 5.0,
-            "damage_percent": 0.5
+            "clone_damage": 30
           }
         },
         {
           "id": "raelear_3",
           "tier": 3,
           "name": "Spiegelung",
-          "description": "Klone kopieren Murums naechste Faehigkeit einmal (halber Schaden).",
-          "effect_type": "clone_skill_copy",
+          "description": "Klone rennen nicht mehr auf Gegner zu. Stattdessen spiegeln sie Murums naechste Faehigkeit (halber Schaden).",
+          "effect_type": "clone_mirror",
           "params": {
             "damage_percent": 0.5
           },
           "level_scaling": {
-            "damage_percent": 0.5
+            "damage_percent": 0.75
           }
         },
         {
           "id": "raelear_4",
           "tier": 4,
           "name": "Armee der Verzweiflung",
-          "description": "Max gleichzeitige Klone: 5 statt 2. Klone leben 16s statt 6-10s.",
-          "effect_type": "clone_upgrade",
+          "description": "Klone spawnen nach jedem Angriff statt nur nach 3er-Combos. Max 3 Klone gleichzeitig.",
+          "effect_type": "clone_every_attack",
           "params": {
-            "max_clones": 5,
-            "duration_override": 16.0
+            "max_clones": 3,
+            "clone_duration": 8.0,
+            "clone_damage": 20
           },
           "level_scaling": {
-            "duration_override": 10.0
+            "max_clones": 5,
+            "clone_damage": 30
           }
         },
         {

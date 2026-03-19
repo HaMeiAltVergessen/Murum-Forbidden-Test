@@ -1,0 +1,32 @@
+[gd_scene load_steps=5 format=3 uid="uid://raelear_clone_scene"]
+
+[ext_resource type="Script" uid="uid://raelear_clone_gd" path="res://player/abilities/raelear_clone.gd" id="1_script"]
+[ext_resource type="SpriteFrames" path="res://Assets/AIPlaceholder/Char/Murum/murum_frames.tres" id="2_frames"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
+radius = 12.0
+height = 40.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_detection"]
+radius = 600.0
+
+[node name="RaelearClone" type="CharacterBody2D"]
+collision_layer = 0
+collision_mask = 1
+script = ExtResource("1_script")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(-7, 0)
+scale = Vector2(0.451389, 0.451389)
+sprite_frames = ExtResource("2_frames")
+animation = &"idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_body")
+
+[node name="DetectionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource("CircleShape2D_detection")
