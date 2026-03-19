@@ -254,8 +254,9 @@ func _update_p2_join_button() -> void:
 	var p2_active = CoopManager and CoopManager.is_p2_active
 
 	if p2_active:
-		p2_join_button.text = "Spieler 2 aktiv"
-		p2_join_button.disabled = true
+		p2_join_button.text = "Spieler 2 entfernen"
+		p2_join_button.disabled = false
+		p2_join_button.tooltip_text = "Spieler 2 aus dem Spiel entfernen"
 	else:
 		p2_join_button.text = "Spieler 2 beitreten"
 		# Check if join is blocked
@@ -267,22 +268,23 @@ func _update_p2_join_button() -> void:
 			p2_join_button.tooltip_text = "Controller verbinden und Spieler 2 starten"
 
 func _on_p2_join_pressed() -> void:
-	"""Handles P2 join button press"""
-	print("[PauseMenu] P2 Join pressed")
-
+	"""Handles P2 join/leave button press"""
 	if not CoopManager:
 		push_warning("[PauseMenu] CoopManager not available")
-		return
-
-	if CoopManager.is_p2_active:
-		print("[PauseMenu] P2 already active")
 		return
 
 	# Play sound
 	if AudioManager:
 		AudioManager.play_sfx("ui/menu_accept")
 
-	# Close pause menu first
+	if CoopManager.is_p2_active:
+		# Remove P2
+		print("[PauseMenu] Removing P2")
+		CoopManager.despawn_p2()
+		_update_p2_join_button()
+		return
+
+	# Close pause menu first, then spawn P2
 	unpause()
 
 	# Spawn P2 (small delay to ensure unpause is complete)

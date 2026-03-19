@@ -181,12 +181,20 @@ func _load_arena_room(node: RunMapData.MapNode) -> void:
 
 
 func _preserve_player() -> void:
-	"""Reparent player to root so it survives scene transitions"""
+	"""Reparent player(s) to root so they survive scene transitions"""
 	if GameManager.player and is_instance_valid(GameManager.player):
 		var player = GameManager.player
 		if player.get_parent():
 			player.get_parent().remove_child(player)
 		get_tree().root.add_child(player)
+
+	# Also preserve P2
+	if CoopManager and CoopManager.is_p2_active:
+		var p2 = CoopManager.get_p2_instance()
+		if p2 and is_instance_valid(p2):
+			if p2.get_parent():
+				p2.get_parent().remove_child(p2)
+			get_tree().root.add_child(p2)
 
 
 func _load_room_scene(scene_path: String) -> RunNodeRoom:
@@ -300,12 +308,12 @@ func _spawn_arena_exit_doors(room: Node2D, next_nodes: Array) -> void:
 
 		var node_id = node.id
 		area.body_entered.connect(func(body):
-			if body is Murum or body.name == "Murum":
+			if body is Murum or body is Lythrun:
 				prompt.visible = true
 				door.set_meta("player_inside", true)
 		)
 		area.body_exited.connect(func(body):
-			if body is Murum or body.name == "Murum":
+			if body is Murum or body is Lythrun:
 				prompt.visible = false
 				door.set_meta("player_inside", false)
 		)
@@ -323,7 +331,7 @@ func _start_arena_door_listener() -> void:
 		await get_tree().process_frame
 		var interact_pressed = false
 		if InputManager:
-			interact_pressed = InputManager.is_p1_action_just_pressed("interact")
+			interact_pressed = InputManager.is_p1_action_just_pressed("interact") or InputManager.is_p2_action_just_pressed("interact")
 		else:
 			interact_pressed = Input.is_action_just_pressed("interact")
 

@@ -116,6 +116,11 @@ var arena_controller: ArenaController = null
 var doors_spawned: bool = false
 
 
+func _is_any_player(body: Node) -> bool:
+	"""Returns true if body is P1 (Murum) or P2 (Lythrun)"""
+	return body is Murum or body is Lythrun
+
+
 func _ready() -> void:
 	print("[RunNodeRoom] Initialized (type: %s)" % RunMapData.NodeType.keys()[node_type])
 	call_deferred("_activate")
@@ -243,6 +248,9 @@ func _setup_player() -> void:
 
 	print("[RunNodeRoom] Player repositioned at %s" % spawn_marker.global_position)
 
+	# Also reposition P2 if active
+	_setup_p2(spawn_marker)
+
 
 func _spawn_new_player(spawn_marker: Marker2D) -> void:
 	var player_scene = preload("res://player/murum.tscn")
@@ -270,6 +278,40 @@ func _find_spawn_point() -> Marker2D:
 	fallback.position = Vector2(960, 760)
 	add_child(fallback)
 	return fallback
+
+
+func _setup_p2(spawn_marker: Marker2D) -> void:
+	"""Reposition P2 alongside P1 if active"""
+	if not CoopManager or not CoopManager.is_p2_active:
+		return
+
+	var p2 = CoopManager.get_p2_instance()
+	if not p2 or not is_instance_valid(p2):
+		return
+
+	if p2.get_parent() != self:
+		if p2.get_parent():
+			p2.get_parent().remove_child(p2)
+		add_child(p2)
+
+	p2.global_position = spawn_marker.global_position + Vector2(50, 0)
+	p2.z_index = 100
+	p2.z_as_relative = false
+	if p2 is CharacterBody2D:
+		p2.velocity = Vector2.ZERO
+
+	print("[RunNodeRoom] P2 repositioned at %s" % p2.global_position)
+
+
+func _heal_all_players() -> void:
+	"""Full heal P1 and P2"""
+	for p in get_tree().get_nodes_in_group("player"):
+		if not p or not is_instance_valid(p):
+			continue
+		if p.has_node("HealthComponent"):
+			p.get_node("HealthComponent").reset_health()
+		if p.has_node("ManaComponent"):
+			p.get_node("ManaComponent").reset_mana()
 
 
 # ============ COMBAT SETUP ============
@@ -423,11 +465,11 @@ func _setup_treasure() -> void:
 		# Connect body signals
 		var captured_key := key
 		zone.body_entered.connect(func(body):
-			if body is Murum or body.name == "Murum":
+			if _is_any_player(body):
 				_player_in_treasure = captured_key
 		)
 		zone.body_exited.connect(func(body):
-			if body is Murum or body.name == "Murum":
+			if _is_any_player(body):
 				if _player_in_treasure == captured_key:
 					_player_in_treasure = ""
 		)
@@ -573,12 +615,12 @@ func _setup_boon_selection() -> void:
 	altar.add_child(prompt)
 
 	altar.body_entered.connect(func(body):
-		if body is Murum or body.name == "Murum":
+		if _is_any_player(body):
 			_player_in_altar = true
 			prompt.visible = true
 	)
 	altar.body_exited.connect(func(body):
-		if body is Murum or body.name == "Murum":
+		if _is_any_player(body):
 			_player_in_altar = false
 			prompt.visible = false
 	)
@@ -636,14 +678,8 @@ func _on_pachron_cancelled() -> void:
 
 # ============ REST SETUP ============
 func _setup_rest() -> void:
-	print("[RunNodeRoom] Rest room — healing player")
-
-	if GameManager.player and is_instance_valid(GameManager.player):
-		var player = GameManager.player
-		if player.has_node("HealthComponent"):
-			player.get_node("HealthComponent").reset_health()
-		if player.has_node("ManaComponent"):
-			player.get_node("ManaComponent").reset_mana()
+	print("[RunNodeRoom] Rest room — healing all players")
+	_heal_all_players()
 
 	var container = VBoxContainer.new()
 	container.position = Vector2(400, 200)
@@ -805,12 +841,12 @@ func _spawn_event_npc() -> void:
 	_event_npc_visual.add_child(area)
 
 	area.body_entered.connect(func(body):
-		if body is Murum or body.name == "Murum":
+		if _is_any_player(body):
 			_event_npc_in_range = true
 			prompt.visible = true
 	)
 	area.body_exited.connect(func(body):
-		if body is Murum or body.name == "Murum":
+		if _is_any_player(body):
 			_event_npc_in_range = false
 			prompt.visible = false
 	)
@@ -976,11 +1012,12 @@ func _event_combat_reward() -> void:
 	var reward: Dictionary = RewardManager.get_event_combat_reward()
 	GameManager.add_coins(reward["gold"])
 
-	# Small heal
-	if GameManager.player and is_instance_valid(GameManager.player):
-		var player = GameManager.player
-		if player.has_node("HealthComponent"):
-			var health_comp = player.get_node("HealthComponent")
+	# Small heal all players
+	for p in get_tree().get_nodes_in_group("player"):
+		if not p or not is_instance_valid(p):
+			continue
+		if p.has_node("HealthComponent"):
+			var health_comp = p.get_node("HealthComponent")
 			var heal_amount: float = health_comp.max_health * reward["heal_percent"]
 			health_comp.heal(heal_amount)
 
@@ -1002,11 +1039,11 @@ func _setup_shop() -> void:
 		return
 
 	merchant_area.body_entered.connect(func(body):
-		if body is Murum or body.name == "Murum":
+		if _is_any_player(body):
 			_player_in_shop_area = true
 	)
 	merchant_area.body_exited.connect(func(body):
-		if body is Murum or body.name == "Murum":
+		if _is_any_player(body):
 			_player_in_shop_area = false
 	)
 
@@ -1172,13 +1209,8 @@ func _on_boss_defeated(is_final_boss: bool) -> void:
 	"""Called when a boss is defeated"""
 	print("[RunNodeRoom] Boss defeated!")
 
-	# Full heal
-	if GameManager.player and is_instance_valid(GameManager.player):
-		var player = GameManager.player
-		if player.has_node("HealthComponent"):
-			player.get_node("HealthComponent").reset_health()
-		if player.has_node("ManaComponent"):
-			player.get_node("ManaComponent").reset_mana()
+	# Full heal all players
+	_heal_all_players()
 
 	# Grant boss rewards: Magicka
 	var w: int = RewardManager.get_world_id_int(world_id)
@@ -1198,13 +1230,8 @@ func _setup_boss_placeholder(boss_name: String, is_final_boss: bool) -> void:
 	"""Placeholder for unimplemented bosses — auto-skip"""
 	print("[RunNodeRoom] Boss placeholder — %s (auto-skip)" % boss_name)
 
-	# Full heal
-	if GameManager.player and is_instance_valid(GameManager.player):
-		var player = GameManager.player
-		if player.has_node("HealthComponent"):
-			player.get_node("HealthComponent").reset_health()
-		if player.has_node("ManaComponent"):
-			player.get_node("ManaComponent").reset_mana()
+	# Full heal all players
+	_heal_all_players()
 
 	var w: int = RewardManager.get_world_id_int(world_id)
 	var magicka_amount: int = RewardManager.get_boss_magicka(w)
@@ -1366,12 +1393,12 @@ func _create_world_transition_door(pos: Vector2) -> void:
 
 	# Signals
 	area.body_entered.connect(func(body):
-		if body is Murum or body.name == "Murum":
+		if _is_any_player(body):
 			prompt.visible = true
 			door_container.set_meta("player_inside", true)
 	)
 	area.body_exited.connect(func(body):
-		if body is Murum or body.name == "Murum":
+		if _is_any_player(body):
 			prompt.visible = false
 			door_container.set_meta("player_inside", false)
 	)
@@ -1463,12 +1490,12 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 	# Connect signals
 	var node_id = node.id
 	area.body_entered.connect(func(body):
-		if body is Murum or body.name == "Murum":
+		if _is_any_player(body):
 			prompt.visible = true
 			door_container.set_meta("player_inside", true)
 	)
 	area.body_exited.connect(func(body):
-		if body is Murum or body.name == "Murum":
+		if _is_any_player(body):
 			prompt.visible = false
 			door_container.set_meta("player_inside", false)
 	)
@@ -1480,7 +1507,7 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 func _process(_delta: float) -> void:
 	var interact_pressed = false
 	if InputManager:
-		interact_pressed = InputManager.is_p1_action_just_pressed("interact")
+		interact_pressed = InputManager.is_p1_action_just_pressed("interact") or InputManager.is_p2_action_just_pressed("interact")
 	else:
 		interact_pressed = Input.is_action_just_pressed("interact")
 
