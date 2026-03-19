@@ -44,6 +44,18 @@
       "icon": "res://assets/items/fragmentierte_krone.png",
       "lore": "Krone eines gefallenen Königs. Jeder Splitter schreit nach Rache.",
       "description": "Story-Item: Symbol der verlorenen Herrschaft"
+    },
+    {
+      "id": "weltkarte",
+      "name": "Weltkarte",
+      "type": "key_item",
+      "world": 0,
+      "icon": "res://assets/items/weltkarte.png",
+      "lore": "Eine Karte, die sich mit jedem Schritt neu zeichnet. Zeigt die Pfade durch das Delirium.",
+      "description": "Zeigt die Run-Map als Overlay. Unendlich nutzbar.",
+      "usable": true,
+      "use_effect": "show_run_map",
+      "price": 3
     }
   ]
 }

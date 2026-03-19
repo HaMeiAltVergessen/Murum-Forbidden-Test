@@ -348,6 +348,9 @@ func transition_to_next_world(next_world_id: RunMapData.WorldId) -> void:
 	current_world = next_world_id
 	current_node = null
 
+	# Clear stale room states from previous world
+	_clear_run_room_states()
+
 	# Generate new map for the next world
 	current_map = RunMapGenerator.generate_map(next_world_id)
 	RunMapGenerator.print_map(current_map)
@@ -581,13 +584,14 @@ func get_accessible_nodes() -> Array:
 
 # ============ HELPERS ============
 func _clear_run_room_states() -> void:
-	"""Clears run-specific room states from WorldManager to prevent stale 'already cleared' flags"""
+	"""Clears ALL run-specific room states from WorldManager to prevent stale 'already cleared' flags.
+	Matches: run_node_, event_npc_, run_boss_, run_arena_, and any other run-prefixed keys."""
 	if not WorldManager:
 		return
 
 	var keys_to_remove: Array = []
 	for key in WorldManager.cleared_rooms.keys():
-		if key.begins_with("run_node_") or key.begins_with("event_npc_"):
+		if key.begins_with("run_") or key.begins_with("event_npc_"):
 			keys_to_remove.append(key)
 
 	for key in keys_to_remove:

@@ -274,6 +274,9 @@ signal menu_closed()
 ## Emitted to show notification message
 signal show_notification(message: String, duration: float)
 
+## Emitted to toggle the run-map overlay
+signal toggle_run_map()
+
 ## Emitted when enemy is killed
 signal enemy_killed(enemy: Node, killer: Node)
 

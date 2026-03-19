@@ -274,12 +274,32 @@ func _find_spawn_point() -> Marker2D:
 
 # ============ COMBAT SETUP ============
 func _setup_combat() -> void:
-	"""Spawn all enemies at once using ArenaController + room's EnemySpawnPoints"""
-	var wave_config = RunRoomPool.build_single_wave_config(world_id, node_type)
-	if not wave_config or wave_config.enemies.is_empty():
-		push_warning("[RunNodeRoom] No encounter generated (world: %d, type: %d)!" % [world_id, node_type])
-		_on_combat_completed()
-		return
+	"""Spawn enemies using ArenaController. Prefers Inspector-configured waves (CombatWaveHolder),
+	falls back to auto-generated single wave from RunRoomPool."""
+
+	# Check for Inspector-configured waves (CombatWaveHolder node in scene)
+	var wave_holder: CombatWaveHolder = null
+	for child in get_children():
+		if child is CombatWaveHolder:
+			wave_holder = child
+			break
+
+	var wave_configs: Array[ArenaWaveConfig] = []
+	if wave_holder:
+		wave_configs = wave_holder.get_wave_configs()
+		if not wave_configs.is_empty():
+			print("[RunNodeRoom] Using Inspector-configured waves (%d waves)" % wave_configs.size())
+
+	# Fallback: auto-generate single wave from RunRoomPool
+	if wave_configs.is_empty():
+		var fallback_config = RunRoomPool.build_single_wave_config(world_id, node_type)
+		if fallback_config and not fallback_config.enemies.is_empty():
+			wave_configs.append(fallback_config)
+			print("[RunNodeRoom] Using auto-generated fallback wave")
+		else:
+			push_warning("[RunNodeRoom] No encounter generated (world: %d, type: %d)!" % [world_id, node_type])
+			_on_combat_completed()
+			return
 
 	# Collect enemy spawn points from the .tscn
 	var enemy_spawn_markers: Array[Marker2D] = []
@@ -298,7 +318,7 @@ func _setup_combat() -> void:
 	arena_controller = ArenaController.new()
 	arena_controller.name = "ArenaController"
 	arena_controller.arena_id = "run_node_%d" % (node_data.id if node_data else 0)
-	arena_controller.wave_configs = [wave_config]
+	arena_controller.wave_configs = wave_configs
 	arena_controller.start_mode = ArenaController.StartMode.MANUAL
 	arena_controller.lock_doors_during_waves = false
 	arena_controller.spawn_coins_on_clear = false
@@ -317,10 +337,11 @@ func _setup_combat() -> void:
 			print("[RunNodeRoom] Combat started!")
 	)
 
-	var total_enemies = 0
-	for entry in wave_config.enemies:
-		total_enemies += entry.count
-	print("[RunNodeRoom] Combat: %d enemies to defeat" % total_enemies)
+	var total_enemies: int = 0
+	for config in wave_configs:
+		for entry in config.enemies:
+			total_enemies += entry.count
+	print("[RunNodeRoom] Combat: %d waves, %d total enemies" % [wave_configs.size(), total_enemies])
 
 
 func _on_combat_completed() -> void:

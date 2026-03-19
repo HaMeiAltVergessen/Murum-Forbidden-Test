@@ -432,11 +432,14 @@ func _on_item_selected(item_data: Dictionary) -> void:
 	"""Handles item selection"""
 	var item_type = item_data.get("type", "")
 
-	# Only consumables can be used
+	# Consumables can be used
 	if item_type == "consumable":
 		_show_use_confirmation(item_data)
+	# Usable key items (e.g. Weltkarte) can be used without consuming
+	elif item_type == "key_item" and item_data.get("usable", false):
+		_show_use_confirmation(item_data)
 	else:
-		# For relics and key items, just inspect (already shown in detail panel)
+		# For relics and non-usable key items, just inspect
 		print("[Inventory] Inspecting: ", item_data.get("name", ""))
 
 
@@ -450,8 +453,9 @@ func _use_selected_consumable() -> void:
 		return
 
 	var item_type = selected_item.get("type", "")
-	if item_type != "consumable":
-		print("[Inventory] Cannot use non-consumable item")
+	var is_usable_key_item: bool = item_type == "key_item" and selected_item.get("usable", false)
+	if item_type != "consumable" and not is_usable_key_item:
+		print("[Inventory] Cannot use this item")
 		return
 
 	# Show confirmation dialog before using

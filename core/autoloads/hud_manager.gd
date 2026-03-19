@@ -13,6 +13,7 @@ var p2_tutorial: CanvasLayer = null
 var death_screen: CanvasLayer = null
 var challenge_timer_hud: CanvasLayer = null
 var schwellensicht_overlay: CanvasLayer = null
+var run_map_overlay: CanvasLayer = null
 
 # ============ STATE ============
 var huds_loaded: bool = false
@@ -127,6 +128,15 @@ func load_huds() -> void:
 		print("[HUDManager] Schwellensicht Overlay loaded (persistent)")
 	else:
 		print("[HUDManager] WARNING: Schwellensicht Overlay scene not found")
+
+	# Run Map Overlay (toggled via Weltkarte key item)
+	var map_overlay_scene = load("res://ui/run_map/run_map_overlay.tscn")
+	if map_overlay_scene:
+		run_map_overlay = map_overlay_scene.instantiate()
+		add_child(run_map_overlay)
+		print("[HUDManager] Run Map Overlay loaded (persistent)")
+	else:
+		print("[HUDManager] WARNING: Run Map Overlay scene not found")
 
 	# Connect challenge run signals for timer visibility
 	if EventBus:

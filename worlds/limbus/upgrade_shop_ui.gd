@@ -17,10 +17,15 @@ const COLOR_MANA := Color(0.3, 0.5, 1.0, 1.0)
 # ============ LIVES SHOP ============
 const EXTRA_LIFE_COST: int = 2
 
+# ============ MAP SHOP ============
+const MAP_COST: int = 3
+const COLOR_MAP := Color(0.5, 0.7, 0.9, 1.0)
+
 # ============ STATE ============
 var _upgrade_entries: Dictionary = {}
 var _lives_entry: Dictionary = {}
 var _mana_entry: Dictionary = {}
+var _map_entry: Dictionary = {}
 var _magicka_label: Label = null
 var _detail_panel: Dictionary = {}
 
@@ -95,6 +100,9 @@ func _build_ui() -> void:
 
 	# Permanent Mana entry
 	_build_mana_entry(list)
+
+	# Weltkarte entry (one-time purchase)
+	_build_map_entry(list)
 
 	# Detail panel (right side)
 	_build_detail_panel(main)
@@ -266,6 +274,95 @@ func _build_mana_entry(parent: Control) -> void:
 	_update_mana_entry()
 
 
+func _build_map_entry(parent: Control) -> void:
+	var has_map: bool = InventoryManager.has_item("weltkarte")
+
+	var entry = PanelContainer.new()
+	var style = StyleBoxFlat.new()
+	style.bg_color = COLOR_PANEL
+	style.border_color = COLOR_MAP.lerp(COLOR_BORDER, 0.5)
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(6)
+	style.set_content_margin_all(12)
+	entry.add_theme_stylebox_override("panel", style)
+	parent.add_child(entry)
+
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 16)
+	entry.add_child(hbox)
+
+	var info_vbox = VBoxContainer.new()
+	info_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hbox.add_child(info_vbox)
+
+	var name_label = Label.new()
+	name_label.text = "Weltkarte"
+	name_label.add_theme_font_size_override("font_size", 18)
+	name_label.add_theme_color_override("font_color", COLOR_MAP)
+	info_vbox.add_child(name_label)
+
+	var desc_label = Label.new()
+	desc_label.add_theme_font_size_override("font_size", 14)
+	info_vbox.add_child(desc_label)
+
+	var buy_btn = Button.new()
+	buy_btn.custom_minimum_size = Vector2(160, 40)
+	hbox.add_child(buy_btn)
+	buy_btn.pressed.connect(_on_buy_map_pressed)
+
+	entry.mouse_entered.connect(_show_map_detail)
+	buy_btn.focus_entered.connect(_show_map_detail)
+
+	_map_entry = {
+		"entry": entry,
+		"name_label": name_label,
+		"desc_label": desc_label,
+		"buy_btn": buy_btn,
+		"style": style
+	}
+
+	_update_map_entry()
+
+
+func _update_map_entry() -> void:
+	if _map_entry.is_empty():
+		return
+	var has_map: bool = InventoryManager.has_item("weltkarte")
+	if has_map:
+		_map_entry["desc_label"].text = "Bereits erworben"
+		_map_entry["desc_label"].add_theme_color_override("font_color", COLOR_MAXED)
+		_map_entry["buy_btn"].text = "Erworben"
+		_map_entry["buy_btn"].disabled = true
+		_map_entry["name_label"].add_theme_color_override("font_color", COLOR_MAXED)
+	else:
+		_map_entry["desc_label"].text = "Zeigt die Run-Map waehrend eines Runs"
+		_map_entry["desc_label"].add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+		var can_afford: bool = RunManager.magicka >= MAP_COST
+		_map_entry["buy_btn"].text = "%d Magicka" % MAP_COST
+		_map_entry["buy_btn"].disabled = not can_afford
+
+
+func _on_buy_map_pressed() -> void:
+	var has_map: bool = InventoryManager.has_item("weltkarte")
+	if has_map:
+		return
+	if RunManager.magicka < MAP_COST:
+		return
+	RunManager.spend_magicka(MAP_COST)
+	InventoryManager.add_item("weltkarte")
+	EventBus.show_notification.emit("Weltkarte erworben!", 2.0)
+	_update_map_entry()
+	print("[UpgradeShopUI] Weltkarte purchased!")
+
+
+func _show_map_detail() -> void:
+	if _detail_panel.is_empty():
+		return
+	_detail_panel["name"].text = "Weltkarte"
+	_detail_panel["lore"].text = "Eine Karte, die sich mit jedem Schritt neu zeichnet. Zeigt die Pfade durch das Delirium."
+	_detail_panel["effects"].text = "Effekt: Oeffnet die Run-Map als Overlay.\nNutzbar ueber das Inventar.\nZeigt alle Knoten, Verbindungen und deinen Fortschritt.\n\nKosten: %d Magicka (einmalig)" % MAP_COST
+
+
 func _build_detail_panel(parent: Control) -> void:
 	var panel = PanelContainer.new()
 	panel.position = Vector2(1000, 110)
@@ -414,6 +511,7 @@ func _update_all_entries() -> void:
 		_update_entry(upgrade_id)
 	_update_lives_entry()
 	_update_mana_entry()
+	_update_map_entry()
 
 
 func _update_magicka_display() -> void:

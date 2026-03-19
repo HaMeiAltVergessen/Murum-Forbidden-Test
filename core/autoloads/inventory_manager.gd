@@ -41,6 +41,9 @@ func _load_item_database() -> void:
 	# Load shadow items database
 	_load_database_file("res://data/items/shadow_items.json")
 
+	# Load key items database
+	_load_database_file("res://data/items/key_items.json")
+
 	print("[InventoryManager] Loaded ", item_database["consumables"].size(), " consumables")
 	print("[InventoryManager] Loaded ", item_database["relics"].size(), " relics")
 	print("[InventoryManager] Loaded ", item_database["key_items"].size(), " key items")
@@ -212,15 +215,21 @@ func _remove_key_item(item_id: String) -> bool:
 
 # ============ ITEM USAGE ============
 func use_item(item_id: String) -> bool:
-	"""Uses a consumable item. Returns true if successful."""
-	# Only consumables can be used
-	if not _is_consumable(item_id):
-		print("[InventoryManager] Cannot use non-consumable: ", item_id)
-		return false
-
-	# Get item data
+	"""Uses a consumable or usable key item. Returns true if successful."""
 	var item_data = get_item_data(item_id)
 	if not item_data:
+		return false
+
+	# Usable key items (e.g. Weltkarte) — don't consume
+	if item_data.get("type") == "key_item" and item_data.get("usable", false):
+		_apply_key_item_effect(item_data)
+		item_used.emit(item_id)
+		print("[InventoryManager] Used key item: ", item_id)
+		return true
+
+	# Only consumables can be used (and consumed)
+	if not _is_consumable(item_id):
+		print("[InventoryManager] Cannot use non-consumable: ", item_id)
 		return false
 
 	# Apply effect
@@ -232,6 +241,17 @@ func use_item(item_id: String) -> bool:
 	item_used.emit(item_id)
 	print("[InventoryManager] Used item: ", item_id)
 	return true
+
+
+func _apply_key_item_effect(item_data: Dictionary) -> void:
+	"""Applies the effect of a usable key item (not consumed)."""
+	var effect: String = item_data.get("use_effect", "")
+	match effect:
+		"show_run_map":
+			EventBus.toggle_run_map.emit()
+			print("[InventoryManager] Toggled run map overlay")
+		_:
+			print("[InventoryManager] Unknown key item effect: ", effect)
 
 
 func _apply_consumable_effect(item_data: Dictionary) -> void:

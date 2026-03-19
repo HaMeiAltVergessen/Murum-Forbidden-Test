@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://run_map_overlay_scene"]
+
+[ext_resource type="Script" path="res://ui/run_map/run_map_overlay.gd" id="1_script"]
+
+[node name="RunMapOverlay" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_script")
