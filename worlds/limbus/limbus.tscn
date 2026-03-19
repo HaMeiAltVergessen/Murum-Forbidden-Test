@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://bah2edmcousko"]
+[gd_scene load_steps=19 format=3 uid="uid://bah2edmcousko"]
 
 [ext_resource type="Script" uid="uid://bihmtgwqw80w2" path="res://worlds/limbus/limbus.gd" id="1_limbus"]
 [ext_resource type="Texture2D" uid="uid://b28e1fqtmgdbm" path="res://Assets/AIPlaceholder/AlbtraumWelten/world0limbus/2D_pixel_art_minimal_cosmic_ho_GPT_Image_15_88414.jpg" id="2_0nfhy"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://ccnf5ogjvrl2h" path="res://worlds/limbus/limbus_merchant.gd" id="5_merchant"]
 [ext_resource type="Script" uid="uid://b2yyc1ph6ej3n" path="res://worlds/limbus/boss_test_door.gd" id="6_bossdoor"]
 [ext_resource type="Script" uid="uid://bt20halni16as" path="res://worlds/limbus/pachron_altar.gd" id="7_pachron"]
+[ext_resource type="Script" path="res://worlds/limbus/debug_magicka_pickup.gd" id="8_debug_magicka"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1920, 40)
@@ -32,6 +33,9 @@ size = Vector2(150, 200)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bossdoor"]
 size = Vector2(150, 200)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_debug_magicka"]
+size = Vector2(80, 80)
 
 [node name="Limbus" type="Node2D"]
 script = ExtResource("1_limbus")
@@ -260,5 +264,42 @@ offset_top = 100.0
 offset_right = 1120.0
 offset_bottom = 140.0
 text = "L I M B U S"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugMagickaPickup" type="Area2D" parent="."]
+position = Vector2(350, 661)
+collision_mask = 2
+script = ExtResource("8_debug_magicka")
+amount = 5
+respawn_time = 3.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DebugMagickaPickup"]
+shape = SubResource("RectangleShape2D_debug_magicka")
+debug_color = Color(0.6, 0.2, 0.9, 0.3)
+
+[node name="Visual" type="ColorRect" parent="DebugMagickaPickup"]
+offset_left = -20.0
+offset_top = -50.0
+offset_right = 20.0
+offset_bottom = -10.0
+color = Color(0.6, 0.2, 0.9, 0.9)
+
+[node name="Label" type="Label" parent="DebugMagickaPickup"]
+offset_left = -40.0
+offset_top = -70.0
+offset_right = 40.0
+offset_bottom = -50.0
+text = "Magicka"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PromptLabel" type="Label" parent="DebugMagickaPickup"]
+visible = false
+offset_left = -60.0
+offset_top = 0.0
+offset_right = 60.0
+offset_bottom = 25.0
+text = "E - Magicka +5"
 horizontal_alignment = 1
 vertical_alignment = 1

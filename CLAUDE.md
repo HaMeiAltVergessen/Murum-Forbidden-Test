@@ -154,6 +154,8 @@ worlds/world_1_ruins/
 **Checkpoints**: `environment/checkpoint.gd` — Speicherpunkte in Raeumen
 **Tueren**: `environment/door.gd`, `environment/doors/boss_door.gd`
 **Arena-System**: `worlds/arena_controller.gd` + `worlds/wave_spawner.gd` fuer Wellen-Kaempfe
+**Wave-Config**: `worlds/run_rooms/combat_wave_holder.gd` — Inspector-konfigurierbare ArenaWaveConfig pro Raum (bis 3 Wellen)
+**Run-Map-Overlay**: `ui/run_map/run_map_overlay.gd` — Weltkarte-Item oeffnet Karten-Overlay (CanvasLayer, Toggle via EventBus)
 
 ## Gegner & Bosse
 
@@ -238,23 +240,29 @@ worlds/world_1_ruins/
 - [x] **P2 Ability-Damage-Bonus** — Urgathons Erbe gilt fuer alle 4 P2-Abilities (Void Orbs, Void Parry, Void Rift, Shadow Scythe)
 - [x] **P2 Kill-Heal** (Blut der Schlacht) — Mana/HP bei Kills
 - [x] **P2 Echo der Macht** — Echo-Chance bei Angriffen in LythrunCombatSystem
-
-### Noch zu implementieren
-- [ ] Run-Map-Generator (Knoten-Netz pro Welt)
-- [ ] Run-Map-UI (Knoten-Auswahl, Belohnungs-Vorschau)
-- [ ] Raum-Pools fuer Welt 1 (K+R, E+R, S, RAST Raeume)
-- [ ] Wellen-Configs fuer Kampf-Knoten (ArenaController + WaveSpawner)
-- [ ] Run-Ende-Screen (Belohnungen, Statistiken)
-- [ ] Limbus-Hub-Szene (dunkler Raum + Siegel + Licht-Tuer)
-- [ ] Welt-2- und Welt-3-Gegner
+- [x] **Run-Map-Generator** (`core/autoloads/run_manager.gd`) — Knoten-Netz pro Welt via RunMapData
+- [x] **Run-Map-UI** — Weltkarte als kaufbares Key-Item (3 Magicka), CanvasLayer-Overlay (`ui/run_map/run_map_overlay.gd`)
+- [x] **Raum-Pools** (`worlds/run_rooms/run_room_pool.gd`) — 11 handcrafted Raeume fuer Welt 1
+- [x] **Wellen-Configs** (`worlds/run_rooms/combat_wave_holder.gd`) — Inspector-konfigurierbare ArenaWaveConfig pro Raum
+- [x] **Run-Ende-Screen** — Belohnungen, Statistiken, Gegner-Zaehler, Zeit
+- [x] **Limbus-Hub-Szene** — Dunkler Raum + Siegel-Altar + Licht-Tuer + Haendler
+- [x] **Raelear-Boons ueberarbeitet** — Eigene .tscn (`player/abilities/raelear_clone.tscn`), Glimmerseed-AI, Chase+Explode/Mirror
+- [x] **Raum-Reset** — `_clear_run_room_states()` bei neuem Run und Weltwechsel
 - [x] Welt-1-Boss: "Die Heldengruppe" (5-Helden-Gruppenkampf)
 - [x] Welt-2-Boss: "Das Kollektiv der Einen Stimme" (5-Core-Modulkampf + Central Hub)
 - [x] Welt-3-Boss: "Murum (Spiegel)" (Auto-Scrolling Runner, 4 Abschnitte, Momentum-System)
+
+### Noch zu implementieren
+- [ ] Welt-2- und Welt-3-Gegner (Sci-Fi/Horror, aktuell Placeholder)
+- [ ] VFX-Polish (Placeholder-ColorRects durch echte Partikeleffekte ersetzen)
+- [ ] Boss-Polish (Intro-Cutscene, Victory-Sequence, SFX, Balancing)
+- [ ] Mirror-Boss-Polish (Despawning Platforms, mehr Chunk-Varianten)
+- [ ] CC-Reduktion Upgrade-Effekt (einziger nicht-implementierter Upgrade-Effekt)
 
 ## Bekannte TODOs
 
 - Gameplay-Effekte der meisten Siegel-Modifikatoren sind data-only (nicht implementiert)
 - Nur World 1 (Ruins) existiert mit handcrafted Raeumen
-- Gegner sind teilweise Placeholder
-- Run-Map und Knoten-Netz noch nicht implementiert
+- Gegner sind teilweise Placeholder (Ashworm, Dark Fantasy, Monster Creature)
 - Welt 2 (Sci-Fi) und Welt 3 (Kosmischer Horror) Gegner noch nicht definiert
+- Raelear-Klone nutzen Murums Sprite aber noch ohne VFX-Polish
