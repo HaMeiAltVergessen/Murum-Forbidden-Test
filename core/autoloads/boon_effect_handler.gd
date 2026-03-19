@@ -115,7 +115,7 @@ func _process(delta: float) -> void:
 	_process_dots(delta)
 
 
-# ============ ARTHRA T1: BLITZE DER MACHT ============
+# ============ COMBO INCREASED HANDLER (Arthra T1 + Raelear T1) ============
 func _on_combo_increased(new_count: int, _multiplier: float) -> void:
 	if not _is_in_run():
 		return
@@ -124,50 +124,33 @@ func _on_combo_increased(new_count: int, _multiplier: float) -> void:
 	if BoonManager.has_boon("noron", 1) and not _twilight_blades_active:
 		_activate_twilight_blades()
 
-	if not BoonManager.has_boon("arthra", 1):
-		return
+	# Arthra T1: Lightning every 3rd hit
+	if BoonManager.has_boon("arthra", 1):
+		var every_n: int = BoonManager.get_scaled_param("arthra", 1, "every_n_hits", 3)
+		if new_count % every_n == 0:
+			var player = _get_player()
+			if player:
+				var bonus_pct: float = BoonManager.get_scaled_param("arthra", 1, "bonus_damage_percent", 0.3)
+				var base_damage: int = 20
+				var total_damage: int = int(base_damage * (1.0 + bonus_pct))
+				var nearest: Node = _get_nearest_enemy(player.global_position, 300.0)
+				if nearest and nearest.has_method("take_damage"):
+					nearest.take_damage(total_damage, player)
+					_spawn_lightning_vfx(nearest.global_position)
+					print("[BoonEffect] Arthra T1: Lightning strike! %d damage on %s" % [total_damage, nearest.name])
 
-	var every_n: int = BoonManager.get_scaled_param("arthra", 1, "every_n_hits", 3)
-	if new_count % every_n != 0:
-		return
-
-	# Lightning strike on nearest enemy
-	var player = _get_player()
-	if not player:
-		return
-
-	var bonus_pct: float = BoonManager.get_scaled_param("arthra", 1, "bonus_damage_percent", 0.3)
-	var base_damage: int = 20  # Base lightning damage
-	var total_damage: int = int(base_damage * (1.0 + bonus_pct))
-
-	var nearest: Node = _get_nearest_enemy(player.global_position, 300.0)
-	if nearest and nearest.has_method("take_damage"):
-		nearest.take_damage(total_damage, player)
-		_spawn_lightning_vfx(nearest.global_position)
-		print("[BoonEffect] Arthra T1: Lightning strike! %d damage on %s" % [total_damage, nearest.name])
+	# Raelear T1: Clone every 3rd hit (skip if T4 active — T4 spawns on every attack)
+	if BoonManager.has_boon("raelear", 1) and not BoonManager.has_boon("raelear", 4):
+		if new_count % 3 == 0:
+			var player = _get_player()
+			if player:
+				_spawn_raelear_clone(player.global_position)
+				print("[BoonEffect] Raelear T1: Combo clone at hit %d" % new_count)
 
 
-# ============ RAELEAR T1: SCHATTENBILD (Combo Clone) ============
+# ============ RAELEAR T1 (legacy dodge handler — no longer spawns clones) ============
 func _on_dodge_completed() -> void:
-	# Dodge no longer spawns clones — T1 is now combo-based
 	pass
-
-
-func _on_combo_finisher_raelear(combo_count: int) -> void:
-	"""T1: After 3-hit combo, spawn a chase clone."""
-	if not BoonManager.has_boon("raelear", 1):
-		return
-	if not _is_in_run():
-		return
-	# T4 handles spawning on every attack — skip combo trigger
-	if BoonManager.has_boon("raelear", 4):
-		return
-
-	var player = _get_player()
-	if not player:
-		return
-
-	_spawn_raelear_clone(player.global_position)
 
 
 # ============ RAELEAR T4: ARMEE DER VERZWEIFLUNG (Every Attack Clone) ============
@@ -240,9 +223,6 @@ func _on_machtstoss_for_mirror(_position: Vector2) -> void:
 func _on_combo_finisher_executed(_combo_count: int) -> void:
 	if not _is_in_run():
 		return
-
-	# Raelear T1: Combo clone
-	_on_combo_finisher_raelear(_combo_count)
 
 	if not BoonManager.has_boon("murrum", 1):
 		return

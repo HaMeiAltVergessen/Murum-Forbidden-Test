@@ -2,9 +2,9 @@ extends CharacterBody2D
 class_name RaelearClone
 
 ## Raelear Shadow Clone — spawns from boon effects
-## Two modes:
-##   CHASE: Runs toward nearest enemy (Glimmerseed-style), explodes on contact/timeout
-##   MIRROR: Stands still, mirrors Murum's next ability (half damage)
+## Two modes (both chase enemies):
+##   CHASE: Runs toward nearest enemy, explodes on contact for AoE damage
+##   MIRROR: Runs toward nearest enemy, stops near them, mirrors Murum's next ability
 
 # ============================================================================
 # CONSTANTS
@@ -17,6 +17,7 @@ const EXPLOSION_RADIUS: float = 120.0
 const FUSE_DURATION: float = 0.5
 const DETECTION_RANGE: float = 600.0
 const CLONE_ALPHA: float = 0.45
+const ARRIVE_DISTANCE: float = 50.0
 
 # ============================================================================
 # ENUMS
@@ -42,6 +43,7 @@ var target_enemy: Node2D = null
 var is_exploding: bool = false
 var is_dead: bool = false
 var _mirror_used: bool = false
+var _arrived_at_enemy: bool = false
 
 # ============================================================================
 # REFERENCES
@@ -65,7 +67,7 @@ func _ready() -> void:
 	add_to_group("raelear_clones")
 	zigzag_offset = randf() * TAU
 
-	# Make sprite transparent
+	# Make sprite transparent purple
 	if sprite:
 		sprite.modulate = Color(0.6, 0.3, 1.0, CLONE_ALPHA)
 		sprite.play("idle")
@@ -83,11 +85,11 @@ func _ready() -> void:
 	# Auto-destroy timer
 	get_tree().create_timer(duration).timeout.connect(_on_duration_expired)
 
-	print("[RaelearClone] Spawned (%s) at %v, %ds" % [Mode.keys()[mode], global_position, duration])
+	print("[RaelearClone] Spawned (%s) at %v, %.1fs" % [Mode.keys()[mode], global_position, duration])
 
 
 # ============================================================================
-# PHYSICS
+# PHYSICS — both modes chase enemies
 # ============================================================================
 
 func _physics_process(delta: float) -> void:
@@ -98,8 +100,11 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y += 980.0 * delta
 
-	if mode == Mode.CHASE:
+	# Both CHASE and MIRROR run toward enemies
+	if not _arrived_at_enemy:
 		_chase_movement(delta)
+	else:
+		velocity.x = 0.0
 
 	move_and_slide()
 
@@ -112,7 +117,6 @@ func _chase_movement(delta: float) -> void:
 		target_enemy = _find_nearest_enemy()
 
 	if not target_enemy:
-		# Idle — no enemy in range
 		velocity.x = 0.0
 		return
 
@@ -131,10 +135,14 @@ func _chase_movement(delta: float) -> void:
 	if sprite:
 		sprite.flip_h = direction.x < 0
 
-	# Check if close enough to explode
+	# Check if close enough to enemy
 	var dist: float = global_position.distance_to(target_enemy.global_position)
-	if dist < 50.0:
-		_start_explode()
+	if dist < ARRIVE_DISTANCE:
+		if mode == Mode.CHASE:
+			_start_explode()
+		elif mode == Mode.MIRROR:
+			_arrived_at_enemy = true
+			velocity = Vector2.ZERO
 
 
 # ============================================================================
@@ -145,7 +153,6 @@ func _process(_delta: float) -> void:
 	if is_dead or is_exploding:
 		return
 
-	# Animate sprite based on movement
 	if sprite:
 		if abs(velocity.x) > 10.0:
 			if sprite.animation != "walk":
@@ -154,9 +161,16 @@ func _process(_delta: float) -> void:
 			if sprite.animation != "idle":
 				sprite.play("idle")
 
+	# MIRROR mode: keep tracking enemy even when arrived
+	if mode == Mode.MIRROR and _arrived_at_enemy:
+		if not target_enemy or not is_instance_valid(target_enemy) or target_enemy.get("is_dead"):
+			# Enemy died, find new target and chase again
+			_arrived_at_enemy = false
+			target_enemy = _find_nearest_enemy()
+
 
 # ============================================================================
-# EXPLOSION (CHASE mode)
+# EXPLOSION (CHASE mode — explodes on enemy contact)
 # ============================================================================
 
 func _start_explode() -> void:
@@ -214,7 +228,6 @@ func _explode() -> void:
 
 	# VFX: explosion flash
 	_play_explosion_visual()
-
 	AudioManager.play_sfx("enemy_death")
 
 	await get_tree().create_timer(0.3).timeout
@@ -232,12 +245,12 @@ func _play_explosion_visual() -> void:
 
 
 # ============================================================================
-# MIRROR MODE (T3)
+# MIRROR MODE (T3 — clone arrived at enemy, waits for ability)
 # ============================================================================
 
 func mirror_ability(ability_name: String, damage_mult: float = 0.5) -> void:
 	"""Called by BoonEffectHandler when Murum uses an ability and T3 is active."""
-	if mode != Mode.MIRROR or _mirror_used or is_dead:
+	if mode != Mode.MIRROR or _mirror_used or is_dead or is_exploding:
 		return
 	_mirror_used = true
 
@@ -245,8 +258,8 @@ func mirror_ability(ability_name: String, damage_mult: float = 0.5) -> void:
 	if sprite:
 		sprite.modulate = Color(1.0, 0.6, 1.5, 0.7)
 
-	# Spawn AoE damage at clone position (simplified ability mirror)
-	var mirror_damage: int = int(clone_damage * damage_mult / 0.5)  # Normalize to base, then apply mult
+	# AoE damage at clone position (simplified ability mirror)
+	var mirror_damage: int = 0
 	var radius: float = 100.0
 
 	match ability_name:
@@ -272,6 +285,12 @@ func mirror_ability(ability_name: String, damage_mult: float = 0.5) -> void:
 	BoonEffectHandler._spawn_raelear_vfx(global_position, radius)
 	print("[RaelearClone] Mirrored %s for %d damage (x%d enemies)" % [ability_name, mirror_damage, enemies.size()])
 
+	# Clone dies after mirroring
+	is_dead = true
+	var tween := create_tween()
+	tween.tween_property(self, "modulate:a", 0.0, 0.3)
+	tween.tween_callback(queue_free)
+
 
 # ============================================================================
 # DURATION / CLEANUP
@@ -281,7 +300,7 @@ func _on_duration_expired() -> void:
 	if is_dead or is_exploding:
 		return
 
-	# In CHASE mode: explode at current pos if enemies nearby, otherwise fade
+	# CHASE mode: explode at current pos if enemies nearby
 	if mode == Mode.CHASE:
 		var nearest := _find_nearest_enemy()
 		if nearest and global_position.distance_to(nearest.global_position) < EXPLOSION_RADIUS:
