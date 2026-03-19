@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://bihmtgwqw80w2" path="res://worlds/limbus/limbus.gd" id="1_limbus"]
 [ext_resource type="Texture2D" uid="uid://b28e1fqtmgdbm" path="res://Assets/AIPlaceholder/AlbtraumWelten/world0limbus/2D_pixel_art_minimal_cosmic_ho_GPT_Image_15_88414.jpg" id="2_0nfhy"]
 [ext_resource type="Script" uid="uid://cyw8mcann7l1b" path="res://worlds/limbus/run_door.gd" id="2_rundoor"]
-[ext_resource type="Script" uid="uid://dxfm70m4nm4tf" path="res://environment/spawn_point.gd" id="3_spawn"]
+[ext_resource type="Script" uid="uid://bjksvnjjv0vh8" path="res://environment/spawn_point.gd" id="3_spawn"]
 [ext_resource type="Script" uid="uid://pkbhpy61h44r" path="res://worlds/limbus/siegel_altar.gd" id="4_altar"]
 [ext_resource type="Script" uid="uid://ccnf5ogjvrl2h" path="res://worlds/limbus/limbus_merchant.gd" id="5_merchant"]
 [ext_resource type="Script" uid="uid://b2yyc1ph6ej3n" path="res://worlds/limbus/boss_test_door.gd" id="6_bossdoor"]
