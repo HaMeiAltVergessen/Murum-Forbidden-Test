@@ -8,7 +8,7 @@
 [ext_resource type="Script" uid="uid://ccnf5ogjvrl2h" path="res://worlds/limbus/limbus_merchant.gd" id="5_merchant"]
 [ext_resource type="Script" uid="uid://b2yyc1ph6ej3n" path="res://worlds/limbus/boss_test_door.gd" id="6_bossdoor"]
 [ext_resource type="Script" uid="uid://bt20halni16as" path="res://worlds/limbus/pachron_altar.gd" id="7_pachron"]
-[ext_resource type="Script" path="res://worlds/limbus/debug_magicka_pickup.gd" id="8_debug_magicka"]
+[ext_resource type="Script" uid="uid://bq7hhl3ogs6wm" path="res://worlds/limbus/debug_magicka_pickup.gd" id="8_debug_magicka"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
 size = Vector2(1920, 40)
@@ -271,8 +271,6 @@ vertical_alignment = 1
 position = Vector2(350, 661)
 collision_mask = 2
 script = ExtResource("8_debug_magicka")
-amount = 5
-respawn_time = 3.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DebugMagickaPickup"]
 shape = SubResource("RectangleShape2D_debug_magicka")
@@ -297,7 +295,6 @@ vertical_alignment = 1
 [node name="PromptLabel" type="Label" parent="DebugMagickaPickup"]
 visible = false
 offset_left = -60.0
-offset_top = 0.0
 offset_right = 60.0
 offset_bottom = 25.0
 text = "E - Magicka +5"
