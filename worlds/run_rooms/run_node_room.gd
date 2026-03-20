@@ -587,22 +587,11 @@ func _setup_boon_selection() -> void:
 	col.shape = shape
 	altar.add_child(col)
 
-	# Altar visual (placeholder)
-	var rect := ColorRect.new()
-	rect.color = Color(0.6, 0.4, 0.8, 0.7)
-	rect.size = Vector2(120, 100)
-	rect.position = Vector2(-60, -50)
-	altar.add_child(rect)
-
-	# Symbol on altar
-	var symbol := Label.new()
-	symbol.text = "☽"
-	symbol.add_theme_font_size_override("font_size", 40)
-	symbol.add_theme_color_override("font_color", Color(1.0, 0.9, 0.6))
-	symbol.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	symbol.size = Vector2(120, 50)
-	symbol.position = Vector2(-60, -45)
-	altar.add_child(symbol)
+	# Altar sprite
+	var altar_sprite := Sprite2D.new()
+	altar_sprite.texture = preload("res://Assets/AIAssets/AIStuff/pachronaltar01.png")
+	altar_sprite.scale = Vector2(0.15, 0.15)
+	altar.add_child(altar_sprite)
 
 	# Prompt
 	var prompt := Label.new()
