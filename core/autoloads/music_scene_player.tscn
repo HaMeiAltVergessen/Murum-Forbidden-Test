@@ -2,10 +2,10 @@
 
 [ext_resource type="Script" uid="uid://da24g0xx1gj5a" path="res://core/autoloads/music_scene_player.gd" id="1_script"]
 [ext_resource type="Script" uid="uid://dolt5e1qrwg51" path="res://resources/audio/music_scene.gd" id="2_am636"]
-[ext_resource type="Resource" path="res://data/music/world1_section1_3.tres" id="3_story_s13"]
+[ext_resource type="Resource" uid="uid://7n7e84mtv5hp" path="res://data/music/world1_section1_3.tres" id="3_story_s13"]
 [ext_resource type="Resource" path="res://data/music/world1_temple.tres" id="4_story_temple"]
 [ext_resource type="Resource" path="res://data/music/world1_boss.tres" id="5_story_boss"]
-[ext_resource type="Resource" path="res://data/music/world1_Dorf.tres" id="6_story_dorf"]
+[ext_resource type="Resource" uid="uid://7muf0njr1ihb" path="res://data/music/world1_Dorf.tres" id="6_story_dorf"]
 [ext_resource type="Resource" path="res://data/music/run_weg_zum_limbus.tres" id="7_wegzl"]
 [ext_resource type="Resource" path="res://data/music/run_limbus.tres" id="8_limbus"]
 [ext_resource type="Resource" path="res://data/music/run_w1_combat.tres" id="9_w1c"]

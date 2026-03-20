@@ -193,7 +193,7 @@ func _start_charge() -> void:
 	machtbruch_charge_started.emit()
 	EventBus.machtbruch_charge_started.emit()
 
-func _process(delta: float) -> void:
+func d_process(delta: float) -> void:
 	"""Updates charge timer"""
 	if not is_charging:
 		return
