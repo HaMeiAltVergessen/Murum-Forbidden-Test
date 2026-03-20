@@ -1,81 +1,126 @@
-[gd_resource type="SpriteFrames" load_steps=20 format=3 uid="uid://q7syvpvkpd0"]
-
-[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/Char/Murum/murum_spritesheet_new.png" id="1_sheet"]
-
-[sub_resource type="AtlasTexture" id="idle_0"]
-atlas = ExtResource("1_sheet")
-region = Rect2(0, 0, 355, 370)
-
-[sub_resource type="AtlasTexture" id="idle_1"]
-atlas = ExtResource("1_sheet")
-region = Rect2(355, 0, 355, 370)
-
-[sub_resource type="AtlasTexture" id="walk_0"]
-atlas = ExtResource("1_sheet")
-region = Rect2(710, 0, 355, 370)
-
-[sub_resource type="AtlasTexture" id="walk_1"]
-atlas = ExtResource("1_sheet")
-region = Rect2(1065, 0, 355, 370)
-
-[sub_resource type="AtlasTexture" id="walk_2"]
-atlas = ExtResource("1_sheet")
-region = Rect2(1420, 0, 355, 370)
-
-[sub_resource type="AtlasTexture" id="walk_3"]
-atlas = ExtResource("1_sheet")
-region = Rect2(1775, 0, 355, 370)
-
-[sub_resource type="AtlasTexture" id="attack_0"]
-atlas = ExtResource("1_sheet")
-region = Rect2(0, 370, 355, 370)
-
-[sub_resource type="AtlasTexture" id="attack_1"]
-atlas = ExtResource("1_sheet")
-region = Rect2(355, 370, 355, 370)
-
-[sub_resource type="AtlasTexture" id="attack_2"]
-atlas = ExtResource("1_sheet")
-region = Rect2(710, 370, 355, 370)
-
-[sub_resource type="AtlasTexture" id="finisher_0"]
-atlas = ExtResource("1_sheet")
-region = Rect2(1065, 370, 355, 370)
+[gd_resource type="SpriteFrames" load_steps=19 format=3 uid="uid://q7syvpvkpd0"]
 
 [sub_resource type="AtlasTexture" id="air_combo_0"]
-atlas = ExtResource("1_sheet")
 region = Rect2(1420, 370, 355, 370)
 
 [sub_resource type="AtlasTexture" id="air_combo_1"]
-atlas = ExtResource("1_sheet")
 region = Rect2(1775, 370, 355, 370)
 
+[sub_resource type="AtlasTexture" id="attack_0"]
+region = Rect2(0, 370, 355, 370)
+
+[sub_resource type="AtlasTexture" id="attack_1"]
+region = Rect2(355, 370, 355, 370)
+
+[sub_resource type="AtlasTexture" id="attack_2"]
+region = Rect2(710, 370, 355, 370)
+
+[sub_resource type="AtlasTexture" id="idle_0"]
+region = Rect2(0, 0, 355, 370)
+
+[sub_resource type="AtlasTexture" id="dash_0"]
+region = Rect2(1065, 740, 355, 370)
+
+[sub_resource type="AtlasTexture" id="fall_0"]
+region = Rect2(710, 740, 355, 370)
+
+[sub_resource type="AtlasTexture" id="finisher_0"]
+region = Rect2(1065, 370, 355, 370)
+
+[sub_resource type="AtlasTexture" id="idle_1"]
+region = Rect2(355, 0, 355, 370)
+
 [sub_resource type="AtlasTexture" id="jump_0"]
-atlas = ExtResource("1_sheet")
 region = Rect2(0, 740, 355, 370)
 
 [sub_resource type="AtlasTexture" id="jump_1"]
-atlas = ExtResource("1_sheet")
 region = Rect2(355, 740, 355, 370)
 
-[sub_resource type="AtlasTexture" id="fall_0"]
-atlas = ExtResource("1_sheet")
-region = Rect2(710, 740, 355, 370)
-
-[sub_resource type="AtlasTexture" id="dash_0"]
-atlas = ExtResource("1_sheet")
-region = Rect2(1065, 740, 355, 370)
-
 [sub_resource type="AtlasTexture" id="launcher_0"]
-atlas = ExtResource("1_sheet")
 region = Rect2(1420, 740, 355, 370)
 
 [sub_resource type="AtlasTexture" id="recovery_0"]
-atlas = ExtResource("1_sheet")
 region = Rect2(1775, 740, 355, 370)
+
+[sub_resource type="AtlasTexture" id="walk_0"]
+region = Rect2(710, 0, 355, 370)
+
+[sub_resource type="AtlasTexture" id="walk_1"]
+region = Rect2(1065, 0, 355, 370)
+
+[sub_resource type="AtlasTexture" id="walk_2"]
+region = Rect2(1420, 0, 355, 370)
+
+[sub_resource type="AtlasTexture" id="walk_3"]
+region = Rect2(1775, 0, 355, 370)
 
 [resource]
 animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("air_combo_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("air_combo_1")
+}],
+"loop": false,
+"name": &"air_combo",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("attack_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_2")
+}],
+"loop": false,
+"name": &"attack",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("idle_0")
+}],
+"loop": false,
+"name": &"climb",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("dash_0")
+}],
+"loop": false,
+"name": &"dash",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("fall_0")
+}],
+"loop": false,
+"name": &"fall",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("finisher_0")
+}],
+"loop": false,
+"name": &"finisher",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("idle_0")
+}],
+"loop": false,
+"name": &"hurt",
+"speed": 5.0
+}, {
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("idle_0")
@@ -86,6 +131,41 @@ animations = [{
 "loop": true,
 "name": &"idle",
 "speed": 3.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("jump_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("jump_1")
+}],
+"loop": false,
+"name": &"jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("launcher_0")
+}],
+"loop": false,
+"name": &"launcher",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("recovery_0")
+}],
+"loop": false,
+"name": &"recovery",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("idle_0")
+}],
+"loop": false,
+"name": &"special",
+"speed": 5.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -106,109 +186,9 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("attack_0")
-}, {
-"duration": 1.0,
-"texture": SubResource("attack_1")
-}, {
-"duration": 1.0,
-"texture": SubResource("attack_2")
-}],
-"loop": false,
-"name": &"attack",
-"speed": 10.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("jump_0")
-}, {
-"duration": 1.0,
-"texture": SubResource("jump_1")
-}],
-"loop": false,
-"name": &"jump",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("fall_0")
-}],
-"loop": false,
-"name": &"fall",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("dash_0")
-}],
-"loop": false,
-"name": &"dash",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("idle_0")
-}],
-"loop": false,
-"name": &"hurt",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("idle_0")
-}],
-"loop": false,
-"name": &"special",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("idle_0")
-}],
-"loop": false,
-"name": &"climb",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
 "texture": SubResource("fall_0")
 }],
 "loop": false,
 "name": &"wall_slide",
 "speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("finisher_0")
-}],
-"loop": false,
-"name": &"finisher",
-"speed": 10.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("air_combo_0")
-}, {
-"duration": 1.0,
-"texture": SubResource("air_combo_1")
-}],
-"loop": false,
-"name": &"air_combo",
-"speed": 10.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("launcher_0")
-}],
-"loop": false,
-"name": &"launcher",
-"speed": 10.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("recovery_0")
-}],
-"loop": false,
-"name": &"recovery",
-"speed": 10.0
 }]
