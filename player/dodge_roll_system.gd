@@ -144,16 +144,14 @@ func _get_dodge_direction() -> Vector2:
 		# Use input direction
 		return input_dir.normalized()
 
-	# No input: Dodge backward (away from facing)
-	# Use MovementController to get consistent facing direction
+	# No input: Dodge forward (same as facing direction)
 	var movement_controller = player.get_node_or_null("MovementController")
 	if movement_controller and movement_controller.has_method("get_facing_direction"):
 		var facing = movement_controller.get_facing_direction()
-		print("[DodgeRollSystem] No input - dodging backward from facing: ", facing)
-		return Vector2(-facing, 0)  # Opposite of facing
+		return Vector2(facing, 0)
 
-	# Fallback: Dodge left
-	return Vector2(-1, 0)
+	# Fallback: Dodge right
+	return Vector2(1, 0)
 
 
 # ============================================================================

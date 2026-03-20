@@ -355,10 +355,8 @@ func _start_fight() -> void:
 			boss_instance.start_fight()
 
 	# Change music
-	if has_node("/root/AudioManager"):
-		var audio_manager = get_node("/root/AudioManager")
-		if audio_manager.has_method("play_boss_music"):
-			audio_manager.play_boss_music("lythrun_theme")
+	if has_node("/root/MusicScenePlayer"):
+		MusicScenePlayer.force_play_scene("LythrunBoss")
 
 	print("[Room15_BossUrgathon] Fight started!")
 
@@ -575,11 +573,9 @@ func _start_pvp_sequence() -> void:
 		player2.enable_movement()
 		print("[Room15_BossUrgathon] P2 movement unlocked")
 
-	# Change music to PvP theme
-	if has_node("/root/AudioManager"):
-		var audio_manager = get_node("/root/AudioManager")
-		if audio_manager.has_method("play_boss_music"):
-			audio_manager.play_boss_music("pvp_theme")  # TODO: Create PvP music track
+	# Change music to PvP/Lythrun boss theme
+	if has_node("/root/MusicScenePlayer"):
+		MusicScenePlayer.force_play_scene("LythrunBoss")
 
 	# Close arena barrier (prevent escape)
 	_close_arena_barrier()
