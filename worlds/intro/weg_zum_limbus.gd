@@ -162,12 +162,24 @@ func _disable_combat_for_intro() -> void:
 	if not player:
 		return
 
-	# Disable normal attacks/combos (Machtstoss is unaffected — it doesn't check combat_enabled)
+	# Disable normal attacks/combos — block _input so dodge-complete can't re-enable
+	# Machtstoss is a child of CombatSystem but handles its own _input independently
 	var combat = player.get_node_or_null("CombatSystem")
-	if combat and combat.has_method("set_combat_enabled"):
-		combat.set_combat_enabled(false)
+	if combat:
+		if combat.has_method("set_combat_enabled"):
+			combat.set_combat_enabled(false)
+		combat.set_process_input(false)
 
-	# Disable all other combat systems
+		# Disable CombatSystem sub-systems (except Machtstoss)
+		for child in combat.get_children():
+			if child is Machtstoss:
+				continue  # Keep Machtstoss active
+			if child.has_method("set_process"):
+				child.set_process(false)
+				child.set_process_input(false)
+				child.set_physics_process(false)
+
+	# Disable combat systems on player root (not under CombatSystem)
 	var systems_to_disable: Array[String] = [
 		"LauncherSystem",
 		"AirComboSystem",

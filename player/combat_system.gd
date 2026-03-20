@@ -149,6 +149,11 @@ func _perform_attack() -> void:
 	# Emit signal
 	EventBus.player_attacked.emit(current_combo)
 
+	# Combo finisher on 3rd hit — triggers Murrum elemental effects etc.
+	if current_combo == 3:
+		EventBus.combo_finisher_executed.emit(current_combo)
+		print("[CombatSystem] Combo Finisher! (hit %d)" % current_combo)
+
 	# Update staff tip color (Black → White progression)
 	_update_staff_tip_color(current_combo)
 

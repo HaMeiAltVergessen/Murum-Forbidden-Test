@@ -10,7 +10,8 @@
       "Bash(find \"/c/Users/Sebastian/GodotProjects/Murum-Forbidden-Test\" -name \"*.gd\" | xargs grep -l \"class_name DialogChoice\" 2>/dev/null)",
       "Bash(ls -la \"/c/Users/Sebastian/GodotProjects/Murum-Forbidden-Test/systems/dialog/\" 2>/dev/null | grep -E \"\\\\.tscn$\")",
       "Bash(file:*)",
-      "Bash(grep -E '\\\\.png$')"
+      "Bash(grep -E '\\\\.png$')",
+      "Bash(grep -r \"burn\\\\|freeze\\\\|poison\\\\|stun\\\\|status\" C:UsersSebastianGodotProjectsMurum-Forbidden-Testenemies --include=*.gd)"
     ]
   }
 }
