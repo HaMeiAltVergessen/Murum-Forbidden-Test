@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://bm2un8jakbwo4"]
+[gd_scene load_steps=7 format=3 uid="uid://bm2un8jakbwo4"]
 
 [ext_resource type="Script" uid="uid://dyrur52n181la" path="res://worlds/intro/weg_zum_limbus.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://c1cgiwqc3syar" path="res://Assets/AIPlaceholder/AlbtraumWelten/world0limbus/2D_dark_fantasy_background_for_GPT_Image_10_Mini__00511.jpg" id="2_pv34p"]
@@ -9,6 +9,12 @@ size = Vector2(6000, 40)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_portal"]
 size = Vector2(100, 300)
+
+[sub_resource type="Curve2D" id="Curve2D_stab"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 1500, 1200, 0, 0, 0, 0, 2200, 900, 0, 0, 0, 0, 3000, 600, 0, 0, 0, 0, 3800, 450, 0, 0, 0, 0, 4646, 250)
+}
+point_count = 5
 
 [node name="WegZumLimbus" type="Node2D"]
 script = ExtResource("1_script")
@@ -73,6 +79,9 @@ horizontal_alignment = 1
 position = Vector2(38, 352)
 scale = Vector2(1.87221, 1.87221)
 texture = ExtResource("3_xl4w6")
+
+[node name="StabPath" type="Path2D" parent="."]
+curve = SubResource("Curve2D_stab")
 
 [node name="UI" type="CanvasLayer" parent="."]
 layer = 5

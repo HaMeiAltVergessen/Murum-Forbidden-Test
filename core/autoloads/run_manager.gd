@@ -425,6 +425,11 @@ func _return_to_limbus() -> void:
 		InventoryManager.inventory["consumables"].clear()
 		InventoryManager.inventory_changed.emit()
 
+	# Despawn P2 before returning to Limbus (P2 only allowed during runs)
+	if CoopManager and CoopManager.is_p2_active:
+		CoopManager.despawn_p2()
+		print("[RunManager] P2 despawned (run ended)")
+
 	# Load Limbus scene
 	get_tree().change_scene_to_file("res://worlds/limbus/limbus.tscn")
 	print("[RunManager] Returned to Limbus")

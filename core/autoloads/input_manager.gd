@@ -316,6 +316,11 @@ func _update_p1_input_vector() -> void:
 
 func can_p2_join() -> bool:
 	"""Check if P2 can join"""
+	# Block join until a run is active (P2 joins when leaving Limbus, not in menus/hub)
+	if RunManager and not RunManager.is_run_active():
+		print("[InputManager] Join blocked: No active run (P2 joins at run start)")
+		return false
+
 	# Block join during cutscenes
 	if GameManager and GameManager.has_method("is_in_cutscene") and GameManager.is_in_cutscene():
 		print("[InputManager] Join blocked: Cutscene active")
