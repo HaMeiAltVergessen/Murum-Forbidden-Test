@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" load_steps=27 format=3 uid="uid://q7syvpvkpd0"]
+[gd_resource type="SpriteFrames" load_steps=26 format=3 uid="uid://q7syvpvkpd0"]
 
 [ext_resource type="Texture2D" uid="uid://7ih7smb01dio" path="res://Assets/AIPlaceholder/Char/Murum/murum_spritesheet_new.png" id="1_sheet"]
 
@@ -97,10 +97,6 @@ region = Rect2(1720, 0, 430, 370)
 [sub_resource type="AtlasTexture" id="walk_1"]
 atlas = ExtResource("1_sheet")
 region = Rect2(1290, 0, 430, 370)
-
-[sub_resource type="AtlasTexture" id="walk_3"]
-atlas = ExtResource("1_sheet")
-region = Rect2(2150, 0, 430, 370)
 
 [resource]
 animations = [{
@@ -247,9 +243,6 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("walk_1")
-}, {
-"duration": 1.0,
-"texture": SubResource("walk_3")
 }],
 "loop": true,
 "name": &"walk",

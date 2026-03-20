@@ -62,7 +62,7 @@ regen_delay_after_use = 1.0
 script = ExtResource("5_combat")
 
 [node name="HitboxComponent" parent="CombatSystem" instance=ExtResource("6_hitbox")]
-position = Vector2(50, 0)
+position = Vector2(2.02067, -4.04134)
 collision_layer = 16
 collision_mask = 1024
 
@@ -71,8 +71,9 @@ collision_layer = 1024
 collision_mask = 128
 
 [node name="StaffSprite" type="Sprite2D" parent="."]
-position = Vector2(30, -5)
-scale = Vector2(0.142, 0.142)
+position = Vector2(7.57752, -8.08269)
+rotation = 0.0552027
+scale = Vector2(0.112933, 0.112933)
 texture = ExtResource("9_pqydx")
 
 [node name="WeaponGlow" type="Node" parent="."]
