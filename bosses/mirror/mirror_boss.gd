@@ -88,12 +88,20 @@ func _physics_process(delta: float) -> void:
 	if current_state == State.DEFEATED:
 		return
 
-	# Vertical: always track player Y directly (no offset), sink to ground when stunned
+	# Vertical: stay near ground level, only loosely track player Y
+	# Boss should be ON the ground, not floating above platforms
+	var target_y: float = GROUND_Y - 120.0  # Default: stand on ground (half body above surface)
 	var player_ref: Node2D = GameManager.player if GameManager else null
 	if current_state == State.VULNERABLE:
-		global_position.y = lerpf(global_position.y, GROUND_Y, 6.0 * delta)
+		target_y = GROUND_Y  # Sink TO ground when stunned
+	elif current_state == State.ATTACKING_MELEE and player_ref and is_instance_valid(player_ref):
+		# Only during melee: track player Y to reach them on platforms
+		target_y = player_ref.global_position.y
 	elif player_ref and is_instance_valid(player_ref):
-		global_position.y = lerpf(global_position.y, player_ref.global_position.y, Y_SMOOTHING * delta)
+		# Running: stay near ground, but loosely follow player if they're on platforms
+		var player_y: float = player_ref.global_position.y
+		target_y = clampf(player_y, GROUND_Y - 300.0, GROUND_Y - 40.0)
+	global_position.y = lerpf(global_position.y, target_y, Y_SMOOTHING * delta)
 	velocity.y = 0.0
 
 	# State-specific movement

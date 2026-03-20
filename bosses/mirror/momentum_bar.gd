@@ -12,9 +12,9 @@ const COLOR_BG := Color(0.1, 0.1, 0.1, 0.8)
 const COLOR_BORDER := Color(0.5, 0.5, 0.5, 0.6)
 
 # ============ LAYOUT ============
-const BAR_WIDTH: float = 600.0
-const BAR_HEIGHT: float = 20.0
-const BAR_Y: float = 40.0
+const BAR_WIDTH: float = 800.0
+const BAR_HEIGHT: float = 30.0
+const BAR_Y: float = 50.0
 
 # ============ STATE ============
 var momentum_system: MomentumSystem = null
@@ -39,11 +39,22 @@ func _ready() -> void:
 		momentum_system.finisher_window_opened.connect(_on_finisher_window_opened)
 		momentum_system.finisher_window_closed.connect(_on_finisher_window_closed)
 
+	# Force initial visual state (bar starts at 0 = Rueckstand)
+	_on_momentum_changed(0.0, MomentumSystem.State.RUECKSTAND)
+	print("[MomentumBar] Initialized - Layer: %d, Visible: true" % layer)
+
 
 func _create_ui() -> void:
 	_bar_container = Control.new()
 	_bar_container.name = "MomentumBarContainer"
 	add_child(_bar_container)
+
+	# Border (slightly larger than bar for outline effect)
+	var border = ColorRect.new()
+	border.position = Vector2((1920.0 - BAR_WIDTH) * 0.5 - 2.0, BAR_Y - 2.0)
+	border.size = Vector2(BAR_WIDTH + 4.0, BAR_HEIGHT + 4.0)
+	border.color = COLOR_BORDER
+	_bar_container.add_child(border)
 
 	# Background
 	_bar_bg = ColorRect.new()
@@ -65,7 +76,7 @@ func _create_ui() -> void:
 	_label.size = Vector2(BAR_WIDTH, 24.0)
 	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_label.text = "Momentum"
-	_label.add_theme_font_size_override("font_size", 16)
+	_label.add_theme_font_size_override("font_size", 20)
 	_label.add_theme_color_override("font_color", Color.WHITE)
 	_bar_container.add_child(_label)
 

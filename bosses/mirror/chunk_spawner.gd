@@ -144,6 +144,8 @@ func _create_placeholder_chunk() -> Node2D:
 	# Solid ground spanning full chunk width
 	var ground := StaticBody2D.new()
 	ground.name = "Ground"
+	ground.collision_layer = 1  # World layer (explicit)
+	ground.collision_mask = 0
 	ground.position = Vector2(width * 0.5, GROUND_Y)
 
 	var ground_shape := CollisionShape2D.new()

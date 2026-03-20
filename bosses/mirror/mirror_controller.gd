@@ -139,6 +139,16 @@ func start_fight() -> void:
 
 	print("[MirrorController] Starting boss fight — Murum (Spiegel)!")
 
+	# CRITICAL: Teleport player to GROUND_Y before setting up chunks
+	# This ensures chunks spawn at the correct position relative to the player
+	var player: Node2D = GameManager.player if GameManager else null
+	if player and is_instance_valid(player):
+		var ground_surface_y: float = ChunkSpawner.GROUND_Y - 40.0  # Stand ON ground, not in it
+		player.global_position.y = ground_surface_y
+		if player is CharacterBody2D:
+			player.velocity = Vector2.ZERO
+		print("[MirrorController] Player teleported to ground level Y=%.0f" % ground_surface_y)
+
 	# Setup subsystems
 	_setup_runner_camera()
 	_setup_background()
@@ -265,12 +275,13 @@ func _setup_mirror_boss() -> void:
 	mirror_boss = boss_scene.instantiate()
 	mirror_boss.controller = self
 
-	# Position boss ahead of player
+	# CRITICAL: Place boss on GROUND_Y (not floating in air)
 	var player: Node2D = GameManager.player if GameManager else null
+	var boss_x: float = global_position.x + 400.0
 	if player and is_instance_valid(player):
-		mirror_boss.global_position = player.global_position + Vector2(400, 0)
-	else:
-		mirror_boss.global_position = global_position + Vector2(400, 0)
+		boss_x = player.global_position.x + 400.0
+	var boss_ground_y: float = ChunkSpawner.GROUND_Y - 120.0  # Half body height above ground
+	mirror_boss.global_position = Vector2(boss_x, boss_ground_y)
 
 	get_parent().add_child(mirror_boss)
 
@@ -376,18 +387,13 @@ func _respawn_at_camera_center(character: Node2D) -> void:
 	if not runner_camera:
 		return
 
-	# Teleport to boss position (slightly behind boss)
-	var respawn_pos: Vector2
+	# Teleport to camera center on GROUND level (not boss position — boss may be floating)
+	var ground_surface_y: float = ChunkSpawner.GROUND_Y - 40.0
+	var respawn_x: float = runner_camera.global_position.x
 	if mirror_boss and is_instance_valid(mirror_boss):
-		respawn_pos = Vector2(
-			mirror_boss.global_position.x - 150.0,
-			mirror_boss.global_position.y
-		)
-	else:
-		respawn_pos = Vector2(
-			runner_camera.global_position.x,
-			runner_camera.global_position.y - 100.0
-		)
+		# Slightly behind boss so player can see the boss
+		respawn_x = mirror_boss.global_position.x - 150.0
+	var respawn_pos := Vector2(respawn_x, ground_surface_y)
 	character.global_position = respawn_pos
 	if character is CharacterBody2D:
 		character.velocity = Vector2.ZERO
