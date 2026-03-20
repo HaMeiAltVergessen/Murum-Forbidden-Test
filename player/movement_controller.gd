@@ -40,7 +40,7 @@ class_name MovementController
 @export var dash_distance: float = 1350.0  # Doubled from 675.0 (originally 375.0)
 @export var dash_duration: float = 0.2
 @export var dash_mana_cost: int = 20
-@export var dash_cooldown: float = 1.0
+@export var dash_cooldown: float = 4.0
 
 # ============ STATE ============
 var coyote_timer: float = 0.0
@@ -936,6 +936,8 @@ func _dash_end_explosion() -> void:
 
 	if hit_count > 0:
 		print("[MovementController] Dash explosion hit %d enemies" % hit_count)
+		# Count as combo finisher for boon interactions
+		EventBus.combo_finisher_executed.emit(3)
 
 
 # ============ SFX SETUP ============
