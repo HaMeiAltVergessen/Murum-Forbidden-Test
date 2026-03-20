@@ -886,6 +886,9 @@ func _dash_end_explosion() -> void:
 
 	print("[MovementController] Dash end explosion!")
 
+	# VFX: Expanding shockwave ring + center flash
+	_spawn_dash_explosion_vfx(EXPLOSION_RADIUS)
+
 	# Find enemies in radius
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	var hit_count: int = 0
@@ -958,6 +961,95 @@ func _setup_sfx() -> void:
 	dash_sfx.volume_db = -13.0
 	dash_sfx.pitch_scale = 0.75  # Match dark fantasy pitch
 	add_child(dash_sfx)
+
+
+# ============ DASH EXPLOSION VFX ============
+func _spawn_dash_explosion_vfx(radius: float) -> void:
+	"""Spawns a visible AoE explosion effect at player position"""
+	var pos = player.global_position
+	var scene_root = player.get_parent()
+	if not scene_root:
+		return
+
+	# --- Shockwave ring (expanding circle) ---
+	var ring = Sprite2D.new()
+	ring.name = "DashExplosionRing"
+	ring.global_position = pos
+	ring.z_index = 10
+	ring.modulate = Color(0.3, 0.6, 1.0, 0.8)  # Blue energy color
+
+	# Ring texture (hollow circle via radial gradient)
+	var ring_tex = GradientTexture2D.new()
+	ring_tex.width = 256
+	ring_tex.height = 256
+	ring_tex.fill = GradientTexture2D.FILL_RADIAL
+	ring_tex.fill_from = Vector2(0.5, 0.5)
+	ring_tex.fill_to = Vector2(0.5, 0.0)
+	var ring_grad = Gradient.new()
+	ring_grad.set_color(0, Color(1, 1, 1, 0))
+	ring_grad.add_point(0.6, Color(1, 1, 1, 0))
+	ring_grad.add_point(0.75, Color(1, 1, 1, 1))
+	ring_grad.add_point(0.85, Color(0.5, 0.8, 1.0, 1))
+	ring_grad.set_color(1, Color(0.3, 0.5, 1.0, 0))
+	ring_tex.gradient = ring_grad
+	ring.texture = ring_tex
+	ring.scale = Vector2(0.3, 0.3)
+	scene_root.add_child(ring)
+
+	# Animate: expand + fade
+	var ring_tween = ring.create_tween()
+	var target_scale = radius / 128.0  # 128 = half of 256px texture
+	ring_tween.set_parallel(true)
+	ring_tween.tween_property(ring, "scale", Vector2(target_scale, target_scale), 0.3).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	ring_tween.tween_property(ring, "modulate:a", 0.0, 0.35).set_ease(Tween.EASE_IN)
+	ring_tween.set_parallel(false)
+	ring_tween.tween_callback(ring.queue_free)
+
+	# --- Center flash (bright burst) ---
+	var flash = Sprite2D.new()
+	flash.name = "DashExplosionFlash"
+	flash.global_position = pos
+	flash.z_index = 11
+	flash.modulate = Color(0.6, 0.85, 1.0, 0.9)
+
+	var flash_tex = GradientTexture2D.new()
+	flash_tex.width = 128
+	flash_tex.height = 128
+	flash_tex.fill = GradientTexture2D.FILL_RADIAL
+	flash_tex.fill_from = Vector2(0.5, 0.5)
+	flash_tex.fill_to = Vector2(0.5, 0.0)
+	var flash_grad = Gradient.new()
+	flash_grad.set_color(0, Color.WHITE)
+	flash_grad.set_color(1, Color(1, 1, 1, 0))
+	flash_tex.gradient = flash_grad
+	flash.texture = flash_tex
+	flash.scale = Vector2(0.5, 0.5)
+	scene_root.add_child(flash)
+
+	# Animate: quick burst then fade
+	var flash_tween = flash.create_tween()
+	flash_tween.tween_property(flash, "scale", Vector2(2.5, 2.5), 0.08).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_EXPO)
+	flash_tween.tween_property(flash, "modulate:a", 0.0, 0.2).set_ease(Tween.EASE_IN)
+	flash_tween.tween_callback(flash.queue_free)
+
+	# --- Ground cracks (radial lines) ---
+	for i in range(8):
+		var crack = ColorRect.new()
+		crack.name = "DashCrack_%d" % i
+		crack.color = Color(0.4, 0.7, 1.0, 0.7)
+		crack.size = Vector2(radius * 0.8, 3)
+		crack.pivot_offset = Vector2(0, 1.5)
+		crack.position = pos - Vector2(0, 1.5)
+		crack.rotation = i * PI / 4.0
+		crack.z_index = 9
+		scene_root.add_child(crack)
+
+		var crack_tween = crack.create_tween()
+		crack_tween.set_parallel(true)
+		crack_tween.tween_property(crack, "size:x", radius * 0.8, 0.15).from(0.0).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+		crack_tween.tween_property(crack, "modulate:a", 0.0, 0.4).set_delay(0.1)
+		crack_tween.set_parallel(false)
+		crack_tween.tween_callback(crack.queue_free)
 
 	print("[MovementController] SFX initialized")
 
