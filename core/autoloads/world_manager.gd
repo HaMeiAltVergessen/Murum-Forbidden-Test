@@ -302,6 +302,11 @@ func _spawn_player_at_point(spawn_point_name: String) -> void:
 
 		print("[WorldManager] Player camera activated and limits cleared")
 
+	# Re-setup coop camera if P2 is active
+	if CoopManager and CoopManager.is_p2_active:
+		CoopManager.setup_coop_camera()
+		print("[WorldManager] CoopCamera re-setup after room transition")
+
 	# Find spawn point in the new scene
 	var spawn_points = current_scene.find_children("*", "Node2D", true, false)
 	var spawn_position = Vector2(200, 600)  # Default position

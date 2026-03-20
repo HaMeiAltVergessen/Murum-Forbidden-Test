@@ -141,12 +141,12 @@ func spawn_p2() -> void:
 	p2_joined.emit()
 
 	# Setup co-op camera
-	_setup_coop_camera()
+	setup_coop_camera()
 
 	print("[CoopManager] Player 2 joined!")
 
-func _setup_coop_camera() -> void:
-	"""Setup or activate co-op camera when P2 joins"""
+func setup_coop_camera() -> void:
+	"""Setup or activate co-op camera when P2 joins or after room transition"""
 	# Check if CoopCamera already exists in scene
 	var existing_coop_cam = get_tree().get_first_node_in_group("coop_camera")
 	if existing_coop_cam:

@@ -375,8 +375,8 @@ func _reposition_p2_in_scene(scene: Node) -> void:
 
 	# CRITICAL: Re-setup CoopCamera after level transition
 	# The camera from the previous scene is destroyed, so we need to create/activate a new one
-	if CoopManager and CoopManager.has_method("_setup_coop_camera"):
-		CoopManager._setup_coop_camera()
+	if CoopManager and CoopManager.has_method("setup_coop_camera"):
+		CoopManager.setup_coop_camera()
 		print("[GameManager] CoopCamera re-setup after level transition")
 
 	print("[GameManager] P2 repositioned in scene: ", scene.name)
