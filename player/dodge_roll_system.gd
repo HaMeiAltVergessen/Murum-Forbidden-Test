@@ -134,11 +134,12 @@ func _start_dodge() -> void:
 func _get_dodge_direction() -> Vector2:
 	"""Determines dodge direction based on input"""
 
-	# Get movement input (WASD)
-	var input_dir = Vector2(
-		Input.get_axis("move_left", "move_right"),
-		Input.get_axis("jump", "crouch")  # W/S for vertical
-	)
+	# Get movement input via InputManager (proper P1/P2 separation)
+	var input_dir: Vector2
+	if player.is_in_group("player2") or player.get("is_player_2"):
+		input_dir = InputManager.get_p2_input_vector()
+	else:
+		input_dir = InputManager.get_p1_input_vector()
 
 	if input_dir.length() > 0.1:
 		# Use input direction

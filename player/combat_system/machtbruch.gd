@@ -114,22 +114,22 @@ func _ready() -> void:
 # INPUT
 # ============================================================================
 
-func _input(event: InputEvent) -> void:
-	# COMMIT 023.5.1: Null check - _input can be called before _ready
-	if not player:
+var _attack_held_last_frame: bool = false
+
+func _process(_delta: float) -> void:
+	if not player or not InputManager:
 		return
 
-	# COMMIT 023: Use InputManager for proper P1/P2 distinction
-	var attack_pressed = false
-	var attack_released = false
+	# Poll attack state via InputManager (reliable for keyboard + gamepad)
+	var attack_held: bool = false
+	if is_player_2:
+		attack_held = InputManager.is_p2_action_pressed("attack")
+	else:
+		attack_held = InputManager.is_p1_action_pressed("attack")
 
-	if InputManager:
-		if is_player_2:
-			attack_pressed = event.is_action_pressed("p2_attack")
-			attack_released = event.is_action_released("p2_attack")
-		else:
-			attack_pressed = event.is_action_pressed("p1_attack")
-			attack_released = event.is_action_released("p1_attack")
+	var attack_pressed = attack_held and not _attack_held_last_frame
+	var attack_released = not attack_held and _attack_held_last_frame
+	_attack_held_last_frame = attack_held
 
 	# Start charging when attack button pressed (if available)
 	if attack_pressed:

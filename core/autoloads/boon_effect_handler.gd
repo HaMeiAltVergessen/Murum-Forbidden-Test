@@ -1237,11 +1237,15 @@ func _is_in_run() -> bool:
 func _get_nearest_enemy(pos: Vector2, max_range: float) -> Node:
 	"""Returns nearest living damageable enemy within range"""
 	var enemies = get_tree().get_nodes_in_group("enemies")
+	var player = _get_player()
 	var nearest: Node = null
 	var nearest_dist: float = max_range
 
 	for enemy in enemies:
 		if not is_instance_valid(enemy):
+			continue
+		# In PvP: don't target the boon owner (P1)
+		if enemy == player:
 			continue
 		if not enemy.has_method("take_damage"):
 			continue
@@ -1258,10 +1262,14 @@ func _get_nearest_enemy(pos: Vector2, max_range: float) -> Node:
 func _get_enemies_in_radius(center: Vector2, radius: float) -> Array:
 	"""Returns all living enemies within radius that can take damage"""
 	var enemies = get_tree().get_nodes_in_group("enemies")
+	var player = _get_player()
 	var result: Array = []
 
 	for enemy in enemies:
 		if not is_instance_valid(enemy):
+			continue
+		# In PvP: don't target the boon owner (P1)
+		if enemy == player:
 			continue
 		if not enemy.has_method("take_damage"):
 			continue

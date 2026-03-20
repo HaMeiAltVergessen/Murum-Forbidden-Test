@@ -55,6 +55,7 @@ var base_damage: float = 10.0
 # ============ PHASE SHIFT (state kept here for take_damage override) ============
 var phase_shift_active: bool = false
 var phase_shift_armor: bool = false
+var movement_disabled_by_orb: bool = false
 
 
 func _ready() -> void:
