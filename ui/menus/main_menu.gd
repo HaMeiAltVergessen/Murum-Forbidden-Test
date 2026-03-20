@@ -227,15 +227,30 @@ func _start_new_game_in_slot(slot_index: int) -> void:
 	if UpgradeManager:
 		UpgradeManager.reset_all()
 
-	_show_hud()
-
 	# Fade music
 	if music_player and music_player.playing:
 		var tween = create_tween()
 		tween.tween_property(music_player, "volume_db", -80, MUSIC_FADE_DURATION)
 		tween.tween_callback(music_player.stop)
 
-	# Load intro sequence (Weg zum Limbus)
+	# Play intro cutscene first, then load Weg zum Limbus
+	if CutsceneManager and CutsceneManager.has_cutscene("intro"):
+		print("[MainMenu] Playing intro cutscene...")
+		CutsceneManager.play_cutscene("intro", _on_intro_cutscene_finished)
+	else:
+		print("[MainMenu] No intro cutscene found, skipping to gameplay")
+		_load_weg_zum_limbus()
+
+
+func _on_intro_cutscene_finished(_cutscene_id: String, _was_skipped: bool) -> void:
+	"""Called when intro cutscene finishes (or is skipped)"""
+	print("[MainMenu] Intro cutscene finished (skipped: %s)" % _was_skipped)
+	_load_weg_zum_limbus()
+
+
+func _load_weg_zum_limbus() -> void:
+	"""Loads the Weg zum Limbus intro sequence"""
+	_show_hud()
 	GameManager.current_state = GameManager.GameState.PLAYING
 	get_tree().change_scene_to_file(INTRO_PATH)
 

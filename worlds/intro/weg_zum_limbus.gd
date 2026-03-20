@@ -135,8 +135,9 @@ func _spawn_player() -> void:
 	# Hide staff — will be manifested in Limbus
 	await get_tree().process_frame
 	_disable_staff()
+	_disable_combat_for_intro()
 
-	print("[Intro] Player spawned without staff")
+	print("[Intro] Player spawned without staff (combat restricted)")
 
 
 func _disable_staff() -> void:
@@ -154,6 +155,35 @@ func _disable_staff() -> void:
 		staff_controller.set_process(false)
 		staff_controller.set_process_input(false)
 		staff_controller.set_physics_process(false)
+
+
+func _disable_combat_for_intro() -> void:
+	"""Disables all combat except Machtstoss, dash, dodge, and jump"""
+	if not player:
+		return
+
+	# Disable normal attacks/combos (Machtstoss is unaffected — it doesn't check combat_enabled)
+	var combat = player.get_node_or_null("CombatSystem")
+	if combat and combat.has_method("set_combat_enabled"):
+		combat.set_combat_enabled(false)
+
+	# Disable all other combat systems
+	var systems_to_disable: Array[String] = [
+		"LauncherSystem",
+		"AirComboSystem",
+		"Wolkenbruch",
+		"EchoVonUrgathon",
+		"LuftgottSystem",
+		"EndeSchwerkraft",
+	]
+	for system_name in systems_to_disable:
+		var node = player.get_node_or_null(system_name)
+		if node:
+			node.set_process(false)
+			node.set_process_input(false)
+			node.set_physics_process(false)
+
+	print("[Intro] Combat disabled (Machtstoss/Dash/Dodge/Jump still active)")
 
 # ============================================================================
 # GAME LOOP
