@@ -1,7 +1,8 @@
-[gd_scene load_steps=19 format=3 uid="uid://bah2edmcousko"]
+[gd_scene load_steps=20 format=3 uid="uid://bah2edmcousko"]
 
 [ext_resource type="Script" uid="uid://bihmtgwqw80w2" path="res://worlds/limbus/limbus.gd" id="1_limbus"]
 [ext_resource type="Texture2D" uid="uid://b28e1fqtmgdbm" path="res://Assets/AIPlaceholder/AlbtraumWelten/world0limbus/2D_pixel_art_minimal_cosmic_ho_GPT_Image_15_88414.jpg" id="2_0nfhy"]
+[ext_resource type="Texture2D" uid="uid://c8dlms4dlbvr" path="res://Assets/AIAssets/AIStuff/pachronaltar01.png" id="9_pachron_tex"]
 [ext_resource type="Script" uid="uid://cyw8mcann7l1b" path="res://worlds/limbus/run_door.gd" id="2_rundoor"]
 [ext_resource type="Script" uid="uid://bjksvnjjv0vh8" path="res://environment/spawn_point.gd" id="3_spawn"]
 [ext_resource type="Script" uid="uid://pkbhpy61h44r" path="res://worlds/limbus/siegel_altar.gd" id="4_altar"]
@@ -160,12 +161,10 @@ position = Vector2(0, -40)
 shape = SubResource("RectangleShape2D_pachron")
 debug_color = Color(0.9, 0.6, 0.2, 0.3)
 
-[node name="AltarVisual" type="ColorRect" parent="PachronAltar"]
-offset_left = -40.0
-offset_top = -120.0
-offset_right = 40.0
-offset_bottom = 10.0
-color = Color(0.8, 0.5, 0.1, 0.9)
+[node name="AltarVisual" type="Sprite2D" parent="PachronAltar"]
+position = Vector2(0, -55)
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("9_pachron_tex")
 
 [node name="AltarLabel" type="Label" parent="PachronAltar"]
 offset_left = -60.0

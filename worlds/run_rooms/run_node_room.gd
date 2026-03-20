@@ -95,6 +95,8 @@ const BG_POOL_W3: Dictionary = {
 	],
 }
 
+const DOOR_TEXTURE: Texture2D = preload("res://Assets/AIAssets/AIStuff/Interact_Dialog.png")
+
 const DOOR_COLORS: Dictionary = {
 	RunMapData.NodeType.COMBAT: Color(0.8, 0.3, 0.2),
 	RunMapData.NodeType.ELITE: Color(0.9, 0.6, 0.1),
@@ -1339,20 +1341,13 @@ func _create_world_transition_door(pos: Vector2) -> void:
 	var door_height: float = 140.0
 	var door_color := Color(1.0, 0.85, 0.2)
 
-	# Border
-	var border = ColorRect.new()
-	border.color = door_color * 0.6
-	border.size = Vector2(door_width + 6, door_height + 6)
-	border.position = Vector2(-door_width / 2.0 - 3, -door_height - 3)
-	border.z_index = -1
-	door_container.add_child(border)
-
-	# Door visual
-	var door_rect = ColorRect.new()
-	door_rect.color = door_color
-	door_rect.size = Vector2(door_width, door_height)
-	door_rect.position = Vector2(-door_width / 2.0, -door_height)
-	door_container.add_child(door_rect)
+	# Door sprite
+	var door_sprite = Sprite2D.new()
+	door_sprite.texture = DOOR_TEXTURE
+	door_sprite.position = Vector2(0, -door_height / 2.0)
+	door_sprite.scale = Vector2(door_width / 442.0, door_height / 258.0)
+	door_sprite.modulate = door_color
+	door_container.add_child(door_sprite)
 
 	# Label
 	var type_label = Label.new()
@@ -1425,20 +1420,13 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 	var door_height: float = 120.0
 	var door_color: Color = DOOR_COLORS.get(node.type, Color.WHITE)
 
-	# Door border
-	var border = ColorRect.new()
-	border.color = door_color * 0.6
-	border.size = Vector2(door_width + 6, door_height + 6)
-	border.position = Vector2(-door_width / 2.0 - 3, -door_height - 3)
-	border.z_index = -1
-	door_container.add_child(border)
-
-	# Door visual
-	var door_rect = ColorRect.new()
-	door_rect.color = door_color
-	door_rect.size = Vector2(door_width, door_height)
-	door_rect.position = Vector2(-door_width / 2.0, -door_height)
-	door_container.add_child(door_rect)
+	# Door sprite
+	var door_sprite = Sprite2D.new()
+	door_sprite.texture = DOOR_TEXTURE
+	door_sprite.position = Vector2(0, -door_height / 2.0)
+	door_sprite.scale = Vector2(door_width / 442.0, door_height / 258.0)
+	door_sprite.modulate = door_color
+	door_container.add_child(door_sprite)
 
 	# Node type label
 	var type_label = Label.new()
