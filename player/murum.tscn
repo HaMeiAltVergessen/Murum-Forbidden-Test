@@ -33,7 +33,7 @@ script = ExtResource("1_murum")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(-7, -1.90735e-06)
-scale = Vector2(0.451389, 0.451389)
+scale = Vector2(0.268, 0.268)
 sprite_frames = ExtResource("9_murum_sprite")
 animation = &"idle"
 autoplay = "idle"
