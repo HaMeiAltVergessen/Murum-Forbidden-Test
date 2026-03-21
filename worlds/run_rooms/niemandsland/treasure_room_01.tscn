@@ -74,7 +74,7 @@ position = Vector2(200, 760)
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(350, 700)
+position = Vector2(60, 752)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
 position = Vector2(700, 700)

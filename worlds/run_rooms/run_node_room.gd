@@ -590,7 +590,7 @@ func _setup_boon_selection() -> void:
 	# Altar sprite
 	var altar_sprite := Sprite2D.new()
 	altar_sprite.texture = preload("res://Assets/AIAssets/AIStuff/pachronaltar01.png")
-	altar_sprite.scale = Vector2(0.15, 0.15)
+	altar_sprite.scale = Vector2(0.8, 0.8)
 	altar.add_child(altar_sprite)
 
 	# Prompt
@@ -1326,15 +1326,15 @@ func _create_world_transition_door(pos: Vector2) -> void:
 	door_container.global_position = pos
 	add_child(door_container)
 
-	var door_width: float = 100.0
-	var door_height: float = 140.0
+	var door_width: float = 800.0
+	var door_height: float = 800.0
 	var door_color := Color(1.0, 0.85, 0.2)
 
 	# Door sprite
 	var door_sprite = Sprite2D.new()
 	door_sprite.texture = DOOR_TEXTURE
 	door_sprite.position = Vector2(0, -door_height / 2.0)
-	door_sprite.scale = Vector2(door_width / 442.0, door_height / 258.0)
+	door_sprite.scale = Vector2(door_width / 800.0, door_height / 800.0)
 	door_sprite.modulate = door_color
 	door_container.add_child(door_sprite)
 
@@ -1405,15 +1405,15 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 	door_container.global_position = pos
 	add_child(door_container)
 
-	var door_width: float = 80.0
-	var door_height: float = 120.0
+	var door_width: float = 800.0
+	var door_height: float = 800.0
 	var door_color: Color = DOOR_COLORS.get(node.type, Color.WHITE)
 
 	# Door sprite
 	var door_sprite = Sprite2D.new()
 	door_sprite.texture = DOOR_TEXTURE
-	door_sprite.position = Vector2(0, -door_height / 2.0)
-	door_sprite.scale = Vector2(door_width / 442.0, door_height / 258.0)
+	door_sprite.position = Vector2(0, -door_height / 5.0)
+	door_sprite.scale = Vector2(door_width / 400.0, door_height / 400.0)
 	door_sprite.modulate = door_color
 	door_container.add_child(door_sprite)
 

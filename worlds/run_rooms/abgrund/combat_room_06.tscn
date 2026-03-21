@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=6 format=3 uid="uid://bnfjqipp6cnmo"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 
@@ -58,7 +58,7 @@ offset_left = 1100.0
 offset_top = 780.0
 offset_right = 1500.0
 offset_bottom = 800.0
-color = Color(0.01, 0.0, 0.01, 1)
+color = Color(0.01, 0, 0.01, 1)
 
 [node name="SpawnPoints" type="Node2D" parent="."]
 

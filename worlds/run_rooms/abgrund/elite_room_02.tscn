@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=7 format=3 uid="uid://bogiv30iwepl0"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 
@@ -56,7 +56,7 @@ position = Vector2(1300, -20)
 shape = SubResource("ceiling_shape")
 
 [node name="Column1" type="StaticBody2D" parent="."]
-position = Vector2(650, 675)
+position = Vector2(14, 669)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Column1"]
 shape = SubResource("column_shape")
@@ -69,7 +69,7 @@ offset_bottom = 125.0
 color = Color(0.2, 0.1, 0.18, 1)
 
 [node name="Column2" type="StaticBody2D" parent="."]
-position = Vector2(1300, 675)
+position = Vector2(2590, 663)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Column2"]
 shape = SubResource("column_shape")
@@ -82,7 +82,7 @@ offset_bottom = 125.0
 color = Color(0.2, 0.1, 0.18, 1)
 
 [node name="Column3" type="StaticBody2D" parent="."]
-position = Vector2(1950, 675)
+position = Vector2(2562, 320)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Column3"]
 shape = SubResource("column_shape")

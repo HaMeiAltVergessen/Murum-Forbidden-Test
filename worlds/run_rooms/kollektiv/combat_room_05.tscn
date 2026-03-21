@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=7 format=3 uid="uid://y6do0v4l1wii"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 
@@ -56,7 +56,7 @@ position = Vector2(1200, -20)
 shape = SubResource("ceiling_shape")
 
 [node name="Barrier1" type="StaticBody2D" parent="."]
-position = Vector2(800, 725)
+position = Vector2(12, 722)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Barrier1"]
 shape = SubResource("barrier_shape")
@@ -69,7 +69,7 @@ offset_bottom = 75.0
 color = Color(0.15, 0.25, 0.35, 1)
 
 [node name="Barrier2" type="StaticBody2D" parent="."]
-position = Vector2(1600, 725)
+position = Vector2(2388, 743)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Barrier2"]
 shape = SubResource("barrier_shape")

@@ -166,10 +166,10 @@ func _setup_symbol_phase() -> void:
 
 		# Focus (no Pachron name — only gameplay hint)
 		var focus_label := Label.new()
-		focus_label.text = path_data.get("focus", "")
+		focus_label.text = path_data.get("Pachron", "")
 		focus_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		focus_label.add_theme_font_size_override("font_size", 20)
-		focus_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+		focus_label.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8))
 		focus_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		vbox.add_child(focus_label)
 
@@ -234,7 +234,7 @@ func _setup_boon_phase() -> void:
 	var header := Label.new()
 	var path_data: Dictionary = BoonManager.get_path_data(_selected_path_id)
 	var path_color: Color = BoonManager.get_path_color(_selected_path_id)
-	header.text = "Waehle einen Segen"
+	header.text = "Waehle eine Erinnerung"
 	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	header.add_theme_font_size_override("font_size", 28)
 	header.add_theme_color_override("font_color", path_color)

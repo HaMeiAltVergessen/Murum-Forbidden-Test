@@ -111,9 +111,9 @@ func _load_audio_library() -> void:
 
 	music_library = {
 		# === GLOBAL ===
-		"main_theme": load(m + "main_theme.mp3"),
+		"main_theme": load(m + "MainTheme001.mp3"),
 		"bossfight": [load(m + "bossfight_v1.mp3"), load(m + "bossfight_v2.mp3")],
-		"lythrun": [load(m + "lythrun_v1.mp3"), load(m + "lythrun_v2.mp3")],
+		"lythrun": [load(m + "lythrun_v1.mp3"), load(m + "lythrun_v2.mp3"), load(m + "lythrun_boss_4_v2.mp3")],
 		"lythrun_boss_4": [load(m + "lythrun_boss_4_v1.mp3"), load(m + "lythrun_boss_4_v2.mp3"), load(m + "lythrun_boss_4_v3.mp3"), load(m + "lythrun_boss_4_v4.mp3")],
 		"lythrun_boss_5": [load(m + "lythrun_boss_5_v1.mp3"), load(m + "lythrun_boss_5_v2.mp3")],
 

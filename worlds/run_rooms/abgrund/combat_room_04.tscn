@@ -56,7 +56,7 @@ position = Vector2(1100, -20)
 shape = SubResource("ceiling_shape")
 
 [node name="FleshWall" type="StaticBody2D" parent="."]
-position = Vector2(1100, 670)
+position = Vector2(34, 670)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="FleshWall"]
 shape = SubResource("flesh_wall_shape")
