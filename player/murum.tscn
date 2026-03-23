@@ -46,7 +46,7 @@ script = ExtResource("2_movement")
 move_speed = 800.0
 jump_velocity = -1200.0
 gravity = 1600.0
-max_fall_speed = 444.0
+max_fall_speed = 530.0
 dash_distance = 800.0
 
 [node name="HealthComponent" type="Node" parent="."]
