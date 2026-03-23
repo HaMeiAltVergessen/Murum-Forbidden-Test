@@ -34,6 +34,7 @@ var current_phase: int = 1     # Track current phase for movement logic
 var hover_height: float = 0.0  # Oscillation for hover effect
 var hover_time: float = 0.0    # Timer for hover oscillation
 var gap_closer_cooldown: float = 0.0  # Cooldown for gap-closer dashes
+var _wave_spawner: BossWaveSpawner = null
 const GAP_CLOSER_DISTANCE: float = 350.0  # Distance to trigger gap closer
 const GAP_CLOSER_COOLDOWN_TIME: float = 3.0  # Cooldown between gap closes
 
@@ -364,6 +365,12 @@ func start_fight() -> void:
 	# Call parent implementation
 	super.start_fight()
 
+	# Start enemy wave spawner
+	_wave_spawner = BossWaveSpawner.new()
+	_wave_spawner.name = "BossWaveSpawner"
+	add_child(_wave_spawner)
+	_wave_spawner.start_spawning()
+
 	print("[Lythrun] Fight started with attack_cooldown: ", attack_manager.attack_cooldown if attack_manager else "N/A")
 
 
@@ -415,6 +422,9 @@ func _on_defeated() -> void:
 		# Revive instead of defeat
 		_perform_revive()
 	else:
+		# Stop wave spawner
+		if _wave_spawner:
+			_wave_spawner.stop_and_clear()
 		# True defeat
 		super._on_defeated()
 

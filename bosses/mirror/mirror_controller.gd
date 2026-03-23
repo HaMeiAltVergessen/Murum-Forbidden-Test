@@ -59,6 +59,7 @@ var chunk_spawner: Node = null
 var mirror_boss: CharacterBody2D = null
 var momentum_system: Node = null
 var momentum_bar: CanvasLayer = null
+var _wave_spawner: BossWaveSpawner = null
 
 # ============ DIALOG SPEAKER IMAGES ============
 const SPIEGEL_PORTRAIT: String = "res://Assets/AIPlaceholder/Char/Murum_Spiegel/mirrorai1.jpg"
@@ -599,6 +600,12 @@ func _start_transition_to_phase_3() -> void:
 	# Re-enable Wolkenbruch for Phase 3
 	_set_wolkenbruch_disabled(false)
 
+	# Start wave spawner (enemies every 9s)
+	_wave_spawner = BossWaveSpawner.new()
+	_wave_spawner.name = "WaveSpawner"
+	add_child(_wave_spawner)
+	_wave_spawner.start_spawning()
+
 	print("[MirrorController] Phase 3 active — finaler Kampf!")
 
 
@@ -608,12 +615,16 @@ func _start_defeat_sequence() -> void:
 	is_fight_active = false
 	set_process(false)
 
-	# 1. Stop camera scrolling
+	# 1. Stop wave spawner
+	if _wave_spawner:
+		_wave_spawner.stop_and_clear()
+
+	# 2. Stop camera scrolling
 	if runner_camera:
 		runner_camera.scroll_speed = 0.0
 		runner_camera.pause_scrolling()
 
-	# 2. Boss → DEFEATED
+	# 3. Boss → DEFEATED
 	if mirror_boss and mirror_boss.has_method("enter_defeated_state"):
 		mirror_boss.enter_defeated_state()
 
@@ -737,6 +748,8 @@ func _restore_player_camera() -> void:
 
 func _exit_tree() -> void:
 	_restore_player_camera()
+	if _wave_spawner:
+		_wave_spawner.stop_and_clear()
 	if mirror_boss and is_instance_valid(mirror_boss):
 		mirror_boss.queue_free()
 
