@@ -94,6 +94,9 @@ func _try_start_charge() -> void:
 
 	print("[Wolkenbruch] Try start charge")
 
+	if ability_disabled:
+		return
+
 	if current_state != State.IDLE:
 		print("[Wolkenbruch] Not in IDLE state")
 		return

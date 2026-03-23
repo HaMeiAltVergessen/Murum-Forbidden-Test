@@ -210,10 +210,13 @@ func _process_falling(delta: float, player: Node2D) -> void:
 
 
 func _process_knockdown(delta: float) -> void:
-	"""Phase 2+3: Boss is stunned, no movement"""
-	velocity = Vector2.ZERO
-	if not is_on_floor():
-		velocity.y = GRAVITY * delta
+	"""Phase 2+3: Boss is stunned but keeps falling with gravity"""
+	velocity.x = 0.0
+	velocity.y += GRAVITY * delta
+	if is_on_floor():
+		velocity.y = 0.0
+	# Clamp fall speed same as falling state
+	velocity.y = clampf(velocity.y, -200.0, 600.0)
 
 	_knockdown_timer -= delta
 	if _knockdown_timer <= 0.0:
