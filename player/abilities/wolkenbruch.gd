@@ -43,6 +43,7 @@ enum State { IDLE, CHARGING, SLAMMING, RECOVERY }
 
 var current_state: State = State.IDLE
 var state_timer: float = 0.0
+var ability_disabled: bool = false  # Set by MirrorController during Phase 2
 
 # Charging
 var charge_time: float = 0.0
@@ -837,4 +838,4 @@ func get_charge_progress() -> float:
 
 func can_activate() -> bool:
 	"""Returns true if can activate"""
-	return current_state == State.IDLE and not player.is_on_floor()
+	return current_state == State.IDLE and not player.is_on_floor() and not ability_disabled

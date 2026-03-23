@@ -558,6 +558,9 @@ func _start_transition_to_phase_2() -> void:
 	if momentum_bar and momentum_bar.has_method("switch_to_phase_2_hud"):
 		momentum_bar.switch_to_phase_2_hud()
 
+	# 11. Disable Wolkenbruch (breaks free fall gameplay)
+	_set_wolkenbruch_disabled(true)
+
 	print("[MirrorController] Phase 2 active — vertical free fall!")
 
 
@@ -592,6 +595,9 @@ func _start_transition_to_phase_3() -> void:
 	# Update HUD
 	if momentum_bar and momentum_bar.has_method("switch_to_phase_3_hud"):
 		momentum_bar.switch_to_phase_3_hud()
+
+	# Re-enable Wolkenbruch for Phase 3
+	_set_wolkenbruch_disabled(false)
 
 	print("[MirrorController] Phase 3 active — finaler Kampf!")
 
@@ -701,6 +707,9 @@ func _on_boss_defeated() -> void:
 	print("[MirrorController] MURUM (SPIEGEL) DEFEATED!")
 	is_defeated = true
 	is_fight_active = false
+
+	# Re-enable abilities that were disabled during fight
+	_set_wolkenbruch_disabled(false)
 
 	# Restore player camera
 	_restore_player_camera()
@@ -842,6 +851,22 @@ func on_boss_hp_depleted() -> void:
 
 func get_mirror_boss() -> CharacterBody2D:
 	return mirror_boss
+
+
+func _set_wolkenbruch_disabled(disabled: bool) -> void:
+	"""Enable/disable Wolkenbruch on the player (and P2 if present)"""
+	var player: Node2D = GameManager.player if GameManager else null
+	if player and is_instance_valid(player):
+		var wb: Node = player.get_node_or_null("Wolkenbruch")
+		if wb and "ability_disabled" in wb:
+			wb.ability_disabled = disabled
+			print("[MirrorController] Wolkenbruch %s" % ("disabled" if disabled else "enabled"))
+
+	var p2: Node2D = _get_p2_player()
+	if p2 and is_instance_valid(p2):
+		var wb2: Node = p2.get_node_or_null("Wolkenbruch")
+		if wb2 and "ability_disabled" in wb2:
+			wb2.ability_disabled = disabled
 
 
 func get_current_section() -> int:
