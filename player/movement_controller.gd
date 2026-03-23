@@ -17,6 +17,7 @@ class_name MovementController
 @export var move_speed: float = 300.0
 @export var jump_velocity: float = -1600.0  # Doubled from -800.0
 @export var gravity: float = 1800.0  # High gravity for snappy, impactful feel
+@export var max_fall_speed: float = 900.0  # Terminal velocity cap
 
 # ============ JUMP CONFIGURATION ============
 @export var coyote_time: float = 0.1
@@ -357,6 +358,7 @@ func _process_gravity(delta: float) -> void:
 
 	if not player.is_on_floor():
 		player.velocity.y += gravity * delta
+		player.velocity.y = minf(player.velocity.y, max_fall_speed)
 
 
 # ============ JUMP SYSTEM ============
