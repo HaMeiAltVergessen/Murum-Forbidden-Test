@@ -38,7 +38,7 @@ const RUN_MUSIC_MAP: Dictionary = {
 	"w0_rest": "W1Calm",
 	"w0_shop": "W1Calm",
 	"w0_event": "W1Event",
-	"w0_boss": "W1Boss",
+	"w0_boss": "W1BossP1",
 	# Welt 2: Kollektiv
 	"w1_combat": "W2Combat",
 	"w1_elite": "W2Elite",
@@ -46,7 +46,7 @@ const RUN_MUSIC_MAP: Dictionary = {
 	"w1_rest": "W2Calm",
 	"w1_shop": "W2Calm",
 	"w1_event": "W2Event",
-	"w1_boss": "W2Boss",
+	"w1_boss": "W2BossP1",
 	# Welt 3: Abgrund
 	"w2_combat": "W3Combat",
 	"w2_elite": "W3Elite",
@@ -54,7 +54,7 @@ const RUN_MUSIC_MAP: Dictionary = {
 	"w2_rest": "W3Calm",
 	"w2_shop": "W3Calm",
 	"w2_event": "W3Event",
-	"w2_boss": "W3Boss",
+	"w2_boss": "W3BossP1",
 }
 
 const NODE_TYPE_KEYS: Dictionary = {

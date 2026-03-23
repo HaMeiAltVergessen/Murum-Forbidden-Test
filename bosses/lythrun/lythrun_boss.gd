@@ -162,6 +162,12 @@ func _on_phase_changed(old_phase: int, new_phase: int) -> void:
 
 	current_phase = new_phase
 
+	# Phase-specific music
+	if new_phase == 2 and MusicScenePlayer:
+		MusicScenePlayer.force_play_scene("LythrunBossP2")
+	elif new_phase == 3 and MusicScenePlayer:
+		MusicScenePlayer.force_play_scene("LythrunBossP3")
+
 	# Phase 2+: Activate hover mode (boss floats like ghost enemy)
 	if new_phase >= 2 and not is_hovering:
 		is_hovering = true
@@ -364,6 +370,10 @@ func start_fight() -> void:
 
 	# Call parent implementation
 	super.start_fight()
+
+	# Phase 1 music
+	if MusicScenePlayer:
+		MusicScenePlayer.force_play_scene("LythrunBossP1")
 
 	# Start enemy wave spawner
 	_wave_spawner = BossWaveSpawner.new()

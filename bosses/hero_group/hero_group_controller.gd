@@ -78,6 +78,10 @@ func start_fight() -> void:
 	# Signal boss fight started for music etc.
 	EventBus.boss_fight_started.emit("hero_group")
 
+	# Phase 1 music
+	if MusicScenePlayer:
+		MusicScenePlayer.force_play_scene("W1BossP1")
+
 	print("[HeroGroupController] Fight started — %d heroes, %.0f total HP" % [heroes.size(), total_max_hp])
 
 
@@ -158,6 +162,9 @@ func _on_hero_died(hero: HeroGroupMember) -> void:
 		if not last.is_last_standing:
 			last.activate_last_standing()
 			last_standing_triggered.emit(last)
+			# Phase 2 music — last hero standing
+			if MusicScenePlayer:
+				MusicScenePlayer.force_play_scene("W1BossP2")
 
 
 func _on_hero_resurrected(hero: HeroGroupMember) -> void:

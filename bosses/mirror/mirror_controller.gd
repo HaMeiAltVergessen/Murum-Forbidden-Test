@@ -167,9 +167,9 @@ func start_fight() -> void:
 	_setup_momentum_bar()
 	_setup_mirror_boss()
 
-	# Start boss music
+	# Start boss music (Phase 1)
 	if MusicScenePlayer:
-		MusicScenePlayer.force_play_scene("W3Boss")
+		MusicScenePlayer.force_play_scene("W3BossP1")
 
 	# Opening dialog before fight begins
 	await _play_opening_dialog()
@@ -548,6 +548,10 @@ func _start_transition_to_phase_2() -> void:
 	current_phase = Phase.DER_FALL
 	finisher_count = 0  # Reset for knockdown tracking
 
+	# Phase 2 music
+	if MusicScenePlayer:
+		MusicScenePlayer.force_play_scene("W3BossP2")
+
 	# 8. Switch boss AI to phase 2
 	if mirror_boss and mirror_boss.has_method("switch_to_phase_2"):
 		mirror_boss.switch_to_phase_2()
@@ -631,6 +635,10 @@ func _start_transition_to_phase_3() -> void:
 
 	# 8. Update phase
 	current_phase = Phase.FINALER_KAMPF
+
+	# Phase 3 music
+	if MusicScenePlayer:
+		MusicScenePlayer.force_play_scene("W3BossP3")
 
 	# 9. Boss heals and becomes aggressive
 	if mirror_boss and mirror_boss.has_method("switch_to_phase_3"):

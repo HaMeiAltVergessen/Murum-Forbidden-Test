@@ -85,6 +85,10 @@ func start_fight() -> void:
 	# Signal boss fight started for music etc.
 	EventBus.boss_fight_started.emit("kollektiv")
 
+	# Phase 1 music
+	if MusicScenePlayer:
+		MusicScenePlayer.force_play_scene("W2BossP1")
+
 	# Activate all core systems after delay
 	get_tree().create_timer(1.0).timeout.connect(func():
 		for core in cores:
@@ -244,6 +248,10 @@ func _apply_destruction_effect(core_id: String) -> void:
 func _start_final_phase() -> void:
 	_in_final_phase = true
 	print("[KollektivController] ALL CORES DESTROYED — FINAL PHASE!")
+
+	# Phase 2 music — final phase
+	if MusicScenePlayer:
+		MusicScenePlayer.force_play_scene("W2BossP2")
 
 	# Brief pause for dramatic effect
 	await get_tree().create_timer(2.0).timeout
