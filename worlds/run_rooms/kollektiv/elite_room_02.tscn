@@ -1,6 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://chevnq2148ut0"]
+[gd_scene load_steps=9 format=3 uid="uid://chevnq2148ut0"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="Script" path="res://puzzles/controllers/sequence_puzzle_controller.gd" id="2_seq_controller"]
+[ext_resource type="PackedScene" uid="uid://blta5m8ixhcu8" path="res://puzzles/scenes/components/puzzle_switch.tscn" id="3_switch"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(2200, 40)
@@ -113,6 +115,22 @@ position = Vector2(1100, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
 position = Vector2(1650, 700)
+
+[node name="PuzzleGate" type="Node" parent="." groups=["puzzle_gate"]]
+script = ExtResource("2_seq_controller")
+correct_sequence = PackedInt32Array(1, 2, 3)
+
+[node name="Switch1" parent="PuzzleGate" instance=ExtResource("3_switch")]
+position = Vector2(500, 700)
+switch_id = 1
+
+[node name="Switch2" parent="PuzzleGate" instance=ExtResource("3_switch")]
+position = Vector2(1100, 700)
+switch_id = 2
+
+[node name="Switch3" parent="PuzzleGate" instance=ExtResource("3_switch")]
+position = Vector2(1700, 700)
+switch_id = 3
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

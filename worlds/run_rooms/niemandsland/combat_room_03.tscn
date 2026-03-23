@@ -1,6 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://b0dxt136ulgax"]
+[gd_scene load_steps=8 format=3 uid="uid://b0dxt136ulgax"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="2_platform"]
+[ext_resource type="PackedScene" uid="uid://falling_rock_001" path="res://traps/scenes/falling_rock.tscn" id="3_falling_rock"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(1920, 40)
@@ -71,6 +73,9 @@ position = Vector2(1220, 760)
 [node name="EnemySpawn4" type="Marker2D" parent="EnemySpawnPoints"]
 position = Vector2(1650, 760)
 
+[node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(960, 510)
+
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
@@ -81,6 +86,12 @@ position = Vector2(960, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
 position = Vector2(1440, 700)
+
+[node name="Platform1" parent="." instance=ExtResource("2_platform")]
+position = Vector2(960, 550)
+
+[node name="FallingRock1" parent="." instance=ExtResource("3_falling_rock")]
+position = Vector2(500, 100)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

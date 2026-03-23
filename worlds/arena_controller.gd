@@ -114,6 +114,7 @@ var is_started: bool = false
 var player_in_trigger: bool = false
 var wave_spawner: WaveSpawner = null
 var _interact_prompt: Label = null
+var pause_between_waves: bool = false  ## When true, pauses after each wave until resume_waves() is called
 
 
 # ============================================================================
@@ -369,6 +370,10 @@ func _on_wave_started(wave_index: int, total_waves: int) -> void:
 
 func _on_wave_completed(wave_index: int, total_waves: int) -> void:
 	arena_wave_completed.emit(wave_index, total_waves)
+	# Pause wave spawner if puzzle gate is active (not on last wave)
+	if pause_between_waves and wave_index < total_waves - 1 and wave_spawner:
+		wave_spawner.pause_waves()
+		print("[ArenaController:%s] Paused — waiting for puzzle gate" % arena_id)
 
 
 func _on_all_waves_completed() -> void:
@@ -535,3 +540,9 @@ func is_arena_active() -> bool:
 
 func is_arena_cleared() -> bool:
 	return is_cleared
+
+
+func resume_waves() -> void:
+	"""Resumes wave progression after a puzzle gate pause."""
+	if wave_spawner:
+		wave_spawner.resume_waves()

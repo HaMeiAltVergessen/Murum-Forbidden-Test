@@ -1,6 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://y6do0v4l1wii"]
+[gd_scene load_steps=10 format=3 uid="uid://y6do0v4l1wii"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="PackedScene" uid="uid://falling_rock_001" path="res://traps/scenes/falling_rock.tscn" id="2_falling_rock"]
+[ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="3_platform"]
+[ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="4_spike_trap"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(2400, 40)
@@ -113,6 +116,18 @@ position = Vector2(1200, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
 position = Vector2(1800, 700)
+
+[node name="FallingRock1" parent="." instance=ExtResource("2_falling_rock")]
+position = Vector2(800, 100)
+
+[node name="FallingRock2" parent="." instance=ExtResource("2_falling_rock")]
+position = Vector2(1600, 100)
+
+[node name="Platform1" parent="." instance=ExtResource("3_platform")]
+position = Vector2(1200, 550)
+
+[node name="SpikeTrap1" parent="." instance=ExtResource("4_spike_trap")]
+position = Vector2(1000, 790)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

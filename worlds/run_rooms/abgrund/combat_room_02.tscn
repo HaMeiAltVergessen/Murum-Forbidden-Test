@@ -1,6 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://c84j2nwugq88b"]
+[gd_scene load_steps=10 format=3 uid="uid://c84j2nwugq88b"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="PackedScene" uid="uid://quicksand_pit_001" path="res://traps/scenes/quicksand_pit.tscn" id="2_quicksand"]
+[ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="3_spike_trap"]
+[ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="4_climbable"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(2400, 40)
@@ -100,6 +103,18 @@ position = Vector2(1200, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
 position = Vector2(1800, 700)
+
+[node name="QuicksandPit1" parent="." instance=ExtResource("2_quicksand")]
+position = Vector2(1200, 790)
+
+[node name="SpikeTrap1" parent="." instance=ExtResource("3_spike_trap")]
+position = Vector2(700, 790)
+
+[node name="SpikeTrap2" parent="." instance=ExtResource("3_spike_trap")]
+position = Vector2(1800, 790)
+
+[node name="ClimbableArea1" parent="." instance=ExtResource("4_climbable")]
+position = Vector2(50, 400)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

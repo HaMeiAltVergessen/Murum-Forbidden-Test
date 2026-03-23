@@ -1,6 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://t00dle8a5dkv"]
+[gd_scene load_steps=11 format=3 uid="uid://t00dle8a5dkv"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="PackedScene" uid="uid://arrow_trap_001" path="res://traps/scenes/arrow_trap.tscn" id="2_arrow_trap"]
+[ext_resource type="PackedScene" uid="uid://falling_rock_001" path="res://traps/scenes/falling_rock.tscn" id="3_falling_rock"]
+[ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="4_spike_trap"]
+[ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="5_platform"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(2400, 40)
@@ -116,6 +120,34 @@ position = Vector2(1200, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
 position = Vector2(1800, 700)
+
+[node name="ArrowTrap1" parent="." instance=ExtResource("2_arrow_trap")]
+position = Vector2(50, 450)
+
+[node name="ArrowTrap2" parent="." instance=ExtResource("2_arrow_trap")]
+position = Vector2(2350, 450)
+arrow_direction = Vector2(-1, 0)
+
+[node name="FallingRock1" parent="." instance=ExtResource("3_falling_rock")]
+position = Vector2(800, 100)
+
+[node name="FallingRock2" parent="." instance=ExtResource("3_falling_rock")]
+position = Vector2(1600, 100)
+
+[node name="SpikeTrap1" parent="." instance=ExtResource("4_spike_trap")]
+position = Vector2(1200, 790)
+
+[node name="Platform3" parent="." instance=ExtResource("5_platform")]
+position = Vector2(1200, 400)
+
+[node name="EnemySpawn7" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(600, 580)
+
+[node name="EnemySpawn8" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(1800, 580)
+
+[node name="EnemySpawn9" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(1200, 360)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

@@ -1,6 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="PackedScene" uid="uid://quicksand_pit_001" path="res://traps/scenes/quicksand_pit.tscn" id="2_quicksand"]
+[ext_resource type="PackedScene" uid="uid://arrow_trap_001" path="res://traps/scenes/arrow_trap.tscn" id="3_arrow_trap"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(1600, 40)
@@ -81,6 +83,16 @@ position = Vector2(800, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
 position = Vector2(1200, 700)
+
+[node name="QuicksandPit1" parent="." instance=ExtResource("2_quicksand")]
+position = Vector2(800, 790)
+
+[node name="ArrowTrap1" parent="." instance=ExtResource("3_arrow_trap")]
+position = Vector2(50, 500)
+
+[node name="ArrowTrap2" parent="." instance=ExtResource("3_arrow_trap")]
+position = Vector2(1550, 500)
+arrow_direction = Vector2(-1, 0)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

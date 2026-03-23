@@ -8,6 +8,9 @@ const ENEMY_SCENES_W1: Dictionary = {
 	"geist": "res://enemies/world_1_ruins/geist.tscn",
 	"untote": "res://enemies/untote.tscn",
 	"hermit": "res://enemies/world_1_ruins/hermit.tscn",
+	"guardian_statue": "res://enemies/world_1_ruins/guardian_statue.tscn",
+	"glimmerseed": "res://enemies/world_1_ruins/glimmerseed.tscn",
+	"corpse_trap": "res://enemies/world_1_ruins/corpse_trap.tscn",
 }
 
 const ENEMY_SCENES_W2: Dictionary = {
@@ -23,6 +26,8 @@ const ENEMY_SCENES_W3: Dictionary = {
 	"geist": "res://enemies/world_1_ruins/geist.tscn",
 	"monster_creature": "res://enemies/placeholder/monster_creature.tscn",
 	"cthulu": "res://enemies/placeholder/cthulu.tscn",
+	"corpse_trap": "res://enemies/world_1_ruins/corpse_trap.tscn",
+	"glimmerseed": "res://enemies/world_1_ruins/glimmerseed.tscn",
 }
 
 # ============ ENCOUNTER TEMPLATES ============
@@ -34,11 +39,16 @@ const COMBAT_ENCOUNTERS_W1: Array = [
 	[{"key": "geist", "count": 3}],
 	[{"key": "untote", "count": 2}, {"key": "geist", "count": 1}],
 	[{"key": "untote", "count": 3}],
+	[{"key": "untote", "count": 2}, {"key": "corpse_trap", "count": 2}],
+	[{"key": "geist", "count": 2}, {"key": "glimmerseed", "count": 3}],
+	[{"key": "guardian_statue", "count": 1}, {"key": "geist", "count": 1}],
 ]
 
 const ELITE_ENCOUNTERS_W1: Array = [
 	[{"key": "hermit", "count": 1}, {"key": "geist", "count": 2}],
 	[{"key": "hermit", "count": 1}, {"key": "untote", "count": 2}],
+	[{"key": "guardian_statue", "count": 1}, {"key": "untote", "count": 3}],
+	[{"key": "guardian_statue", "count": 1}, {"key": "geist", "count": 2}],
 ]
 
 # === WELT 2: Kollektiv (Monster Creature + Fire Worm, Elite: Golem x2) ===
@@ -61,6 +71,8 @@ const COMBAT_ENCOUNTERS_W3: Array = [
 	[{"key": "monster_creature", "count": 2}, {"key": "dark_fantasy", "count": 1}],
 	[{"key": "geist", "count": 2}, {"key": "fire_worm", "count": 1}, {"key": "untote", "count": 1}],
 	[{"key": "dark_fantasy", "count": 3}, {"key": "monster_creature", "count": 1}],
+	[{"key": "corpse_trap", "count": 3}, {"key": "dark_fantasy", "count": 1}],
+	[{"key": "glimmerseed", "count": 3}, {"key": "geist", "count": 2}],
 ]
 
 const ELITE_ENCOUNTERS_W3: Array = [

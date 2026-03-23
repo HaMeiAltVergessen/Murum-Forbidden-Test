@@ -1,6 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="2_platform"]
+[ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="3_climbable"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(1800, 40)
@@ -81,6 +83,21 @@ position = Vector2(900, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
 position = Vector2(1350, 700)
+
+[node name="Platform1" parent="." instance=ExtResource("2_platform")]
+position = Vector2(500, 550)
+
+[node name="Platform2" parent="." instance=ExtResource("2_platform")]
+position = Vector2(1300, 450)
+
+[node name="ClimbableArea1" parent="." instance=ExtResource("3_climbable")]
+position = Vector2(50, 350)
+
+[node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(500, 510)
+
+[node name="EnemySpawn6" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(1300, 410)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

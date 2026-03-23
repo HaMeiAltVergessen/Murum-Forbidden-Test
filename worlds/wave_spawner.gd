@@ -38,6 +38,7 @@ var is_active: bool = false
 var spawned_enemies: Array[Node] = []
 var _spawning_in_progress: bool = false  # Guard against race condition during stagger
 var _spawn_parent: Node = null  # Parent node for spawned enemies (room, not root)
+var _paused: bool = false  # When true, wave progression halts after current wave clears
 
 # ============================================================================
 # SIGNALS
@@ -257,6 +258,11 @@ func _on_wave_cleared() -> void:
 	print("[WaveSpawner] Waiting %.1fs before next wave..." % wave.delay_after)
 	await get_tree().create_timer(wave.delay_after).timeout
 
+	# Check if paused (puzzle gate or external pause)
+	if _paused:
+		print("[WaveSpawner] Paused — waiting for resume_waves()")
+		return
+
 	# Start next wave
 	print("[WaveSpawner] Delay complete, starting next wave...")
 	_start_next_wave()
@@ -278,6 +284,22 @@ func _on_all_waves_completed() -> void:
 
 	# Visual feedback
 	_play_completion_effect()
+
+# ============================================================================
+# PAUSE / RESUME
+# ============================================================================
+
+func pause_waves() -> void:
+	"""Pauses wave progression after the current wave clears."""
+	_paused = true
+
+func resume_waves() -> void:
+	"""Resumes wave progression after a pause (e.g. puzzle gate solved)."""
+	if not _paused:
+		return
+	_paused = false
+	print("[WaveSpawner] Resumed — starting next wave")
+	_start_next_wave()
 
 # ============================================================================
 # DOOR MANAGEMENT

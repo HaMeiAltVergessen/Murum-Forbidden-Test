@@ -1,6 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="2_spike_trap"]
+[ext_resource type="PackedScene" uid="uid://arrow_trap_001" path="res://traps/scenes/arrow_trap.tscn" id="3_arrow_trap"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(2400, 40)
@@ -119,6 +121,21 @@ position = Vector2(1200, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
 position = Vector2(1800, 700)
+
+[node name="SpikeTrap1" parent="." instance=ExtResource("2_spike_trap")]
+position = Vector2(900, 790)
+
+[node name="SpikeTrap2" parent="." instance=ExtResource("2_spike_trap")]
+position = Vector2(1500, 790)
+
+[node name="ArrowTrap1" parent="." instance=ExtResource("3_arrow_trap")]
+position = Vector2(50, 450)
+
+[node name="EnemySpawn7" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(500, 580)
+
+[node name="EnemySpawn8" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(1900, 580)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

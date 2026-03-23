@@ -374,6 +374,17 @@ func _setup_combat() -> void:
 
 	arena_controller.arena_completed.connect(_on_combat_completed)
 
+	# Puzzle gate: pause waves after wave 1, resume when puzzle is solved
+	var puzzle_gate = _find_puzzle_gate()
+	if puzzle_gate and puzzle_gate is PuzzleController:
+		arena_controller.pause_between_waves = true
+		puzzle_gate.puzzle_solved.connect(func():
+			if arena_controller:
+				arena_controller.resume_waves()
+				print("[RunNodeRoom] Puzzle gate solved — resuming waves")
+		)
+		print("[RunNodeRoom] Puzzle gate detected: %s" % puzzle_gate.name)
+
 	# Start combat after short delay
 	get_tree().create_timer(1.5).timeout.connect(func():
 		if arena_controller and not arena_controller.is_cleared:
@@ -386,6 +397,17 @@ func _setup_combat() -> void:
 		for entry in config.enemies:
 			total_enemies += entry.count
 	print("[RunNodeRoom] Combat: %d waves, %d total enemies" % [wave_configs.size(), total_enemies])
+
+
+func _find_puzzle_gate() -> Node:
+	"""Finds a PuzzleController in the 'puzzle_gate' group within this room."""
+	for child in get_children():
+		if child.is_in_group("puzzle_gate"):
+			return child
+		for grandchild in child.get_children():
+			if grandchild.is_in_group("puzzle_gate"):
+				return grandchild
+	return null
 
 
 func _on_combat_completed() -> void:
