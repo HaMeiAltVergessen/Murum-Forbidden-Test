@@ -372,6 +372,15 @@ func play_death_animation() -> void:
 		await tween.finished
 
 
+# ============ DAMAGE API ============
+func take_damage(damage: int, attacker: Node = null) -> void:
+	"""Public API for taking damage (matches BaseEnemy signature)"""
+	if is_defeated:
+		return
+	if health_component and health_component.has_method("take_damage"):
+		health_component.take_damage(damage)
+
+
 # ============ UTILITY METHODS ============
 func set_invulnerable(value: bool) -> void:
 	"""Sets invulnerability state"""

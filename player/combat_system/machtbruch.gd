@@ -346,11 +346,24 @@ func _execute_explosion(tier: BurstTier) -> void:
 		var distance = player.global_position.distance_to(enemy.global_position)
 
 		if distance <= radius:
-			# Apply damage
-			if enemy.has_method("take_damage"):
+			# Apply damage — prefer HurtboxComponent (respects invulnerability)
+			if enemy.has_node("HurtboxComponent"):
+				var hurtbox = enemy.get_node("HurtboxComponent")
+				if hurtbox and hurtbox.has_method("take_damage"):
+					var success = hurtbox.take_damage(damage, Vector2.ZERO, 0.1, player)
+					if success:
+						hit_count += 1
+						print("[Machtbruch] Hit %s for %d damage via HurtboxComponent (dist: %.1f)" % [enemy.name, damage, distance])
+			elif enemy.has_method("take_damage"):
 				enemy.take_damage(damage, player)
 				hit_count += 1
 				print("[Machtbruch] Hit %s for %d damage (dist: %.1f)" % [enemy.name, damage, distance])
+			elif enemy.has_node("HealthComponent"):
+				var health = enemy.get_node("HealthComponent")
+				if health.has_method("take_damage"):
+					health.take_damage(damage)
+					hit_count += 1
+					print("[Machtbruch] Hit %s for %d damage via HealthComponent (dist: %.1f)" % [enemy.name, damage, distance])
 
 	print("[Machtbruch] Hit %d enemies" % hit_count)
 
