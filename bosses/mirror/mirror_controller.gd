@@ -8,7 +8,10 @@ signal fight_started
 signal defeated
 signal health_changed(current_hp: float, max_hp: float)
 
-# ============ SECTION CONFIG ============
+# ============ PHASE CONFIG (3 Boss Phases) ============
+enum Phase { RUNNER, DER_FALL, FINALER_KAMPF }
+
+# ============ SECTION CONFIG (Phase 1 sub-sections) ============
 enum Section { DER_FALL, DER_SPIEGELKAMPF, DER_GEBROCHENE_ABGRUND, FINALE_VERFOLGUNG }
 
 const SECTION_CONFIG: Dictionary = {
@@ -43,6 +46,7 @@ const FINALE_MAX_SPEED: float = 500.0
 # ============ STATE ============
 var is_fight_active: bool = false
 var is_defeated: bool = false
+var current_phase: int = Phase.RUNNER
 var current_section: int = Section.DER_FALL
 var section_timer: float = 0.0
 var finisher_count: int = 0
@@ -98,38 +102,42 @@ func _process(delta: float) -> void:
 	if not is_fight_active or is_defeated:
 		return
 
-	# Update section timer
-	section_timer += delta
-	var config: Dictionary = SECTION_CONFIG[current_section]
+	# Phase 1: section-based progression
+	if current_phase == Phase.RUNNER:
+		section_timer += delta
+		var config: Dictionary = SECTION_CONFIG[current_section]
 
-	# Check section transition
-	if section_timer >= config["duration"]:
-		_advance_section()
+		if section_timer >= config["duration"]:
+			_advance_section()
 
-	# Update scroll speed (finale ramps up)
-	var scroll_speed: float = _get_current_scroll_speed()
-	if runner_camera:
-		runner_camera.scroll_speed = scroll_speed
+		var scroll_speed: float = _get_current_scroll_speed()
+		if runner_camera:
+			runner_camera.scroll_speed = scroll_speed
 
-	# Debug: log section/speed every 5 seconds
-	if int(section_timer) % 5 == 0 and section_timer - delta < float(int(section_timer)):
-		print("[MirrorController] Section %d (%s) | Timer: %.1fs/%.1fs | Speed: %.0f" % [
-			current_section,
-			SECTION_CONFIG[current_section]["name"],
-			section_timer,
-			config["duration"],
-			scroll_speed
-		])
+		if int(section_timer) % 5 == 0 and section_timer - delta < float(int(section_timer)):
+			print("[MirrorController] Section %d (%s) | Timer: %.1fs/%.1fs | Speed: %.0f" % [
+				current_section,
+				SECTION_CONFIG[current_section]["name"],
+				section_timer,
+				config["duration"],
+				scroll_speed
+			])
 
-	# Death zone check
-	_check_death_zone(delta)
+	# Death zone + fall-off (phase-dependent)
+	if current_phase == Phase.RUNNER:
+		_check_death_zone(delta)
+		_check_fall_off()
+	else:
+		_check_vertical_death_zone()
+		_check_vertical_side_bounds()
 
-	# Fall-off respawn check
-	_check_fall_off()
-
-	# Emit health_changed as momentum (for compatibility)
+	# Emit health_changed (momentum in Phase 1, HP in Phase 2+3)
 	if momentum_system:
-		health_changed.emit(momentum_system.momentum, 100.0)
+		if current_phase == Phase.RUNNER:
+			health_changed.emit(momentum_system.momentum, 100.0)
+		elif mirror_boss and mirror_boss.has_node("HealthComponent"):
+			var hc: HealthComponentGeneric = mirror_boss.get_node("HealthComponent")
+			health_changed.emit(hc.current_hp, hc.max_hp)
 
 
 # ============ FIGHT LIFECYCLE ============
@@ -166,6 +174,7 @@ func start_fight() -> void:
 
 	# Start
 	is_fight_active = true
+	current_phase = Phase.RUNNER
 	current_section = Section.DER_FALL
 	section_timer = 0.0
 	finisher_count = 0
@@ -383,6 +392,70 @@ func _check_fall_off() -> void:
 			_respawn_at_camera_center(p2)
 
 
+# ============ VERTICAL DEATH ZONE (Phase 2+3) ============
+func _check_vertical_death_zone() -> void:
+	"""Death zone = top edge of camera (player scrolled off screen above)"""
+	if not runner_camera:
+		return
+
+	var cam_top: float = runner_camera.get_top_edge()
+	var death_y: float = cam_top + DEATH_ZONE_OFFSET
+
+	var player: Node2D = GameManager.player if GameManager else null
+	if player and is_instance_valid(player):
+		if player.global_position.y < death_y:
+			_respawn_at_camera_center_vertical(player)
+
+	# P2 check
+	var p2: Node2D = _get_p2_player()
+	if p2 and is_instance_valid(p2):
+		if p2.global_position.y < death_y - 100.0:
+			if p2.has_node("HealthComponent"):
+				var p2_health = p2.get_node("HealthComponent")
+				if p2_health.has_method("take_damage"):
+					p2_health.take_damage(9999)
+			ending_modifiers["p2_died_in_mirror"] = true
+
+
+func _check_vertical_side_bounds() -> void:
+	"""Clamp player X within viewport bounds during vertical fall"""
+	if not runner_camera:
+		return
+
+	var cam_left: float = runner_camera.get_left_edge() + 32.0
+	var cam_right: float = runner_camera.get_right_edge() - 32.0
+
+	var player: Node2D = GameManager.player if GameManager else null
+	if player and is_instance_valid(player):
+		player.global_position.x = clampf(player.global_position.x, cam_left, cam_right)
+
+	var p2: Node2D = _get_p2_player()
+	if p2 and is_instance_valid(p2):
+		p2.global_position.x = clampf(p2.global_position.x, cam_left, cam_right)
+
+
+func _respawn_at_camera_center_vertical(character: Node2D) -> void:
+	"""Respawn character at camera center during vertical fall"""
+	if not runner_camera:
+		return
+
+	var respawn_pos := Vector2(runner_camera.global_position.x, runner_camera.global_position.y)
+	character.global_position = respawn_pos
+	if character is CharacterBody2D:
+		character.velocity = Vector2.ZERO
+
+	if character.has_node("HealthComponent"):
+		var health = character.get_node("HealthComponent")
+		if health.has_method("take_damage"):
+			health.take_damage(FALL_OFF_DAMAGE)
+
+	if momentum_system and momentum_system.has_method("add_knockdown_meter"):
+		momentum_system.add_knockdown_meter(-5.0)
+
+	if runner_camera:
+		runner_camera.shake(4.0, 5.0)
+
+
 func _respawn_at_camera_center(character: Node2D) -> void:
 	if not runner_camera:
 		return
@@ -427,24 +500,157 @@ func on_finisher_landed() -> void:
 		mirror_boss.on_finisher_hit(finisher_count)
 
 	if finisher_count >= finishers_required:
-		_start_defeat_sequence()
+		_start_transition_to_phase_2()
+
+
+# ============ PHASE TRANSITIONS ============
+func _start_transition_to_phase_2() -> void:
+	"""4 finishers in Phase 1 → transition to Phase 2 (Der Fall / Free Fall)"""
+	print("[MirrorController] Phase 1 complete — transitioning to Phase 2: Der Fall!")
+
+	# 1. Stop camera scrolling
+	if runner_camera:
+		runner_camera.pause_scrolling()
+
+	# 2. Screen shake + pause
+	if runner_camera:
+		runner_camera.shake(15.0, 3.0)
+	_show_section_title("Der Fall")
+	await get_tree().create_timer(1.5).timeout
+
+	# 3. Clear all horizontal chunks
+	if chunk_spawner:
+		chunk_spawner.clear_all_chunks()
+
+	# 4. Switch camera to vertical
+	if runner_camera:
+		runner_camera.switch_to_vertical()
+		runner_camera.scroll_speed = 150.0  # Slower initial fall speed
+
+	# 5. Switch chunk spawner to vertical
+	if chunk_spawner:
+		chunk_spawner.switch_to_vertical()
+		chunk_spawner.switch_pool("fall_vertical")
+
+	# 6. Resume scrolling (now vertical)
+	if runner_camera:
+		runner_camera.resume_scrolling()
+
+	# 7. Update phase
+	current_phase = Phase.DER_FALL
+	finisher_count = 0  # Reset for knockdown tracking
+
+	# 8. Switch boss AI to phase 2
+	if mirror_boss and mirror_boss.has_method("switch_to_phase_2"):
+		mirror_boss.switch_to_phase_2()
+
+	# 9. Switch momentum system to knockdown mode
+	if momentum_system and momentum_system.has_method("switch_to_knockdown_mode"):
+		momentum_system.switch_to_knockdown_mode()
+
+	# 10. Update HUD
+	if momentum_bar and momentum_bar.has_method("switch_to_phase_2_hud"):
+		momentum_bar.switch_to_phase_2_hud()
+
+	print("[MirrorController] Phase 2 active — vertical free fall!")
+
+
+func _start_transition_to_phase_3() -> void:
+	"""4 knockdowns in Phase 2 → transition to Phase 3 (Finaler Kampf)"""
+	print("[MirrorController] Phase 2 complete — transitioning to Phase 3: Finaler Kampf!")
+
+	# Brief invulnerability + visual
+	if mirror_boss and mirror_boss.has_method("set_temp_invulnerable"):
+		mirror_boss.set_temp_invulnerable(2.0)
+	if runner_camera:
+		runner_camera.shake(20.0, 3.0)
+
+	_show_section_title("Finaler Kampf")
+	await get_tree().create_timer(1.5).timeout
+
+	# Update phase
+	current_phase = Phase.FINALER_KAMPF
+
+	# Boss heals and becomes aggressive
+	if mirror_boss and mirror_boss.has_method("switch_to_phase_3"):
+		mirror_boss.switch_to_phase_3()
+
+	# Switch chunk pool to finale
+	if chunk_spawner:
+		chunk_spawner.switch_pool("finale_vertical")
+
+	# Increase camera speed
+	if runner_camera:
+		runner_camera.scroll_speed = 200.0
+
+	# Update HUD
+	if momentum_bar and momentum_bar.has_method("switch_to_phase_3_hud"):
+		momentum_bar.switch_to_phase_3_hud()
+
+	print("[MirrorController] Phase 3 active — finaler Kampf!")
 
 
 func _start_defeat_sequence() -> void:
-	"""4th finisher landed — begin finale"""
-	print("[MirrorController] All finishers landed — starting defeat sequence!")
+	"""Boss HP = 0 in Phase 3 — begin finale"""
+	print("[MirrorController] Boss defeated — starting end sequence!")
 	is_fight_active = false
 	set_process(false)
 
-	# Stop camera scrolling
+	# 1. Stop camera scrolling
 	if runner_camera:
 		runner_camera.scroll_speed = 0.0
+		runner_camera.pause_scrolling()
 
-	# Stop boss
+	# 2. Boss → DEFEATED
 	if mirror_boss and mirror_boss.has_method("enter_defeated_state"):
 		mirror_boss.enter_defeated_state()
 
-	# Defeat dialog sequence
+	# 3. Spawn end platform under camera center
+	var end_platform := StaticBody2D.new()
+	end_platform.name = "EndPlatform"
+	end_platform.collision_layer = 1
+	end_platform.collision_mask = 0
+	var plat_width: float = 800.0
+	var plat_height: float = 32.0
+	var cam_center: Vector2 = runner_camera.global_position if runner_camera else Vector2.ZERO
+	end_platform.global_position = Vector2(cam_center.x, cam_center.y + 200.0)
+
+	var shape := CollisionShape2D.new()
+	var rect := RectangleShape2D.new()
+	rect.size = Vector2(plat_width, plat_height)
+	shape.shape = rect
+	end_platform.add_child(shape)
+
+	var visual := ColorRect.new()
+	visual.size = Vector2(plat_width, plat_height)
+	visual.position = Vector2(-plat_width * 0.5, -plat_height * 0.5)
+	visual.color = Color(0.2, 0.15, 0.3)
+	end_platform.add_child(visual)
+
+	get_parent().add_child(end_platform)
+
+	# 4. Teleport player (+ P2 + boss) onto platform
+	var platform_surface_y: float = end_platform.global_position.y - plat_height * 0.5 - 40.0
+	var player: Node2D = GameManager.player if GameManager else null
+	if player and is_instance_valid(player):
+		player.global_position = Vector2(cam_center.x - 100.0, platform_surface_y)
+		if player is CharacterBody2D:
+			player.velocity = Vector2.ZERO
+
+	var p2: Node2D = _get_p2_player()
+	if p2 and is_instance_valid(p2):
+		p2.global_position = Vector2(cam_center.x - 200.0, platform_surface_y)
+		if p2 is CharacterBody2D:
+			p2.velocity = Vector2.ZERO
+
+	if mirror_boss and is_instance_valid(mirror_boss):
+		mirror_boss.global_position = Vector2(cam_center.x + 100.0, platform_surface_y)
+		mirror_boss.velocity = Vector2.ZERO
+
+	# 5. Brief pause
+	await get_tree().create_timer(1.5).timeout
+
+	# 6. Defeat dialog
 	_play_defeat_dialog()
 
 
@@ -597,6 +803,37 @@ func _get_p2_player() -> Node2D:
 	return CoopManager.p2_instance
 
 
+func on_knockdown_triggered(knockdown_count: int) -> void:
+	"""Called by MomentumSystem when knockdown meter hits 100 in Phase 2+3"""
+	print("[MirrorController] Knockdown %d triggered!" % knockdown_count)
+
+	if runner_camera:
+		runner_camera.shake(12.0, 3.0)
+
+	# Make boss enter knockdown state
+	if mirror_boss and mirror_boss.has_method("enter_knockdown_state"):
+		mirror_boss.enter_knockdown_state()
+
+
+func on_knockdown_ended(knockdown_count: int) -> void:
+	"""Called by MirrorBoss when knockdown timer expires"""
+	print("[MirrorController] Knockdown %d ended" % knockdown_count)
+
+	# Reset momentum system knockdown state
+	if momentum_system and momentum_system.has_method("_end_knockdown"):
+		momentum_system._end_knockdown()
+
+	# After 4 knockdowns → Phase 3
+	if knockdown_count >= 4 and current_phase == Phase.DER_FALL:
+		_start_transition_to_phase_3()
+
+
+func on_boss_hp_depleted() -> void:
+	"""Called when boss HP reaches 0 in Phase 3"""
+	if current_phase == Phase.FINALER_KAMPF:
+		_start_defeat_sequence()
+
+
 func get_mirror_boss() -> CharacterBody2D:
 	return mirror_boss
 
@@ -606,4 +843,8 @@ func get_current_section() -> int:
 
 
 func get_scroll_speed() -> float:
-	return _get_current_scroll_speed()
+	if current_phase == Phase.RUNNER:
+		return _get_current_scroll_speed()
+	elif runner_camera:
+		return runner_camera.scroll_speed
+	return 200.0

@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://cghk1dd6301yd"]
+[gd_scene load_steps=7 format=3 uid="uid://cghk1dd6301yd"]
 
 [ext_resource type="Script" uid="uid://bh2wvbwpdv1qu" path="res://bosses/mirror/mirror_boss.gd" id="1_script"]
 [ext_resource type="Script" uid="uid://be8au7dl6rc4k" path="res://components/hurtbox_component.gd" id="2_hurtbox"]
 [ext_resource type="Texture2D" uid="uid://cuydl5cchj7iu" path="res://Assets/AIPlaceholder/Char/Murum_Spiegel/mirrorai1.jpg" id="3_1t85a"]
+[ext_resource type="Script" path="res://components/health_component_generic.gd" id="4_health"]
 
 [sub_resource type="RectangleShape2D" id="body_shape"]
 size = Vector2(96, 240)
@@ -12,7 +13,7 @@ size = Vector2(120, 264)
 
 [node name="MirrorBoss" type="CharacterBody2D"]
 collision_layer = 8
-collision_mask = 0
+collision_mask = 1
 script = ExtResource("1_script")
 
 [node name="BodyShape" type="CollisionShape2D" parent="."]
@@ -38,3 +39,7 @@ shape = SubResource("hurtbox_shape")
 position = Vector2(7, -147)
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("3_1t85a")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("4_health")
+max_hp = 1500.0

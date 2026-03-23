@@ -7,7 +7,7 @@ class_name MirrorBoss
 signal finisher_hit(count: int)
 
 # ============ STATES ============
-enum State { RUNNING, ATTACKING_RANGED, ATTACKING_MELEE, VULNERABLE, DEFEATED }
+enum State { RUNNING, ATTACKING_RANGED, ATTACKING_MELEE, VULNERABLE, DEFEATED, FALLING, KNOCKDOWN, AGGRESSIVE }
 
 # ============ MOVEMENT ============
 const MOVE_SPEED: float = 300.0  # Fallback only
@@ -19,11 +19,20 @@ const Y_SMOOTHING: float = 6.0            # How fast boss tracks player Y
 
 # ============ ATTACK CONFIG ============
 const RANGED_ATTACK_COOLDOWN: float = 4.0
-const MELEE_ATTACK_RANGE: float = 350.0  # Trigger melee when within this X distance
+const MELEE_ATTACK_RANGE: float = 350.0
 const MELEE_ATTACK_COOLDOWN: float = 4.0
-const STUN_DURATION: float = 5.0       # How long boss stays grounded before rising again
-const GROUND_Y: float = 800.0          # Match chunk_spawner GROUND_Y
+const STUN_DURATION: float = 5.0
+const GROUND_Y: float = 800.0
 const URTEIL_COOLDOWN: float = 12.0
+
+# ============ PHASE 2+3 CONFIG ============
+const GRAVITY: float = 800.0
+const FALL_PREFERRED_Y_OFFSET: float = 250.0  # Boss stays this far below player
+const FALL_X_SMOOTHING: float = 3.0
+const FALL_Y_SMOOTHING: float = 4.0
+const KNOCKDOWN_DURATION: float = 4.0
+const AGGRESSIVE_DISTANCE: float = 150.0  # Boss stays close in Phase 3
+const AGGRESSIVE_SPEED: float = 350.0
 
 # ============ VISUAL ============
 const BOSS_COLOR := Color(0.4, 0.0, 0.6, 0.8)
@@ -37,7 +46,8 @@ const DAMAGED_COLORS: Array[Color] = [
 
 # ============ STATE ============
 var current_state: int = State.RUNNING
-var controller: Node = null  # MirrorController reference
+var boss_phase: int = 1
+var controller: Node = null
 var _attack_timer: float = 0.0
 var _melee_timer: float = 0.0
 var _current_waypoint: Marker2D = null
@@ -45,28 +55,64 @@ var _finisher_count: int = 0
 var _facing_right: bool = true
 var _urteil_timer: float = 0.0
 var _stun_timer: float = 0.0
-var _is_grounded: bool = false  # True while boss is stunned on the floor
+var _is_grounded: bool = false
+var _knockdown_timer: float = 0.0
+var _phase2_attack_timer: float = 0.0
+var damage_resistance: float = 0.0  # 0 in Phase 1, 0.90 in Phase 2+3, 0 during knockdown
+
+# ============ VISUAL ============
+const DARK_TINT := Color(0.4, 0.2, 0.6, 0.9)
 
 # ============ NODE REFS ============
-@onready var _sprite: ColorRect = $Sprite
+@onready var _sprite: Node = $Sprite  # ColorRect initially, replaced with AnimatedSprite2D
+@onready var _anim_sprite: AnimatedSprite2D = $AnimatedSprite2D if has_node("AnimatedSprite2D") else null
 @onready var _hurtbox: HurtboxComponent = $HurtboxArea
 var _hitbox: Area2D = null
 
 
 func _ready() -> void:
-	# Add to enemies group
 	add_to_group("enemies")
 
-	# Register with CombatManager
 	if CombatManager:
 		CombatManager.register_enemy(self)
 
-	# Connect HurtboxComponent damage signal for visual feedback
 	if _hurtbox:
 		_hurtbox.damage_received.connect(_on_damage_received)
 
+	# Setup HealthComponent (starts invulnerable, activated in Phase 2)
+	if has_node("HealthComponent"):
+		var hc: HealthComponentGeneric = get_node("HealthComponent")
+		hc.set_invulnerable(true)
+		hc.died.connect(_on_boss_died)
+
+	# Setup animated sprite with Murum frames (dark tint)
+	_setup_animated_sprite()
+
 	set_process(false)
 	set_physics_process(false)
+
+
+func _setup_animated_sprite() -> void:
+	"""Replace ColorRect with AnimatedSprite2D using Murum's frames"""
+	var frames_path: String = "res://Assets/AIPlaceholder/Char/Murum/murum_frames.tres"
+	if not ResourceLoader.exists(frames_path):
+		print("[MirrorBoss] murum_frames.tres not found, keeping ColorRect")
+		return
+
+	_anim_sprite = AnimatedSprite2D.new()
+	_anim_sprite.name = "AnimatedSprite2D"
+	_anim_sprite.sprite_frames = load(frames_path)
+	_anim_sprite.scale = Vector2(0.268, 0.268)
+	_anim_sprite.position = Vector2(0, -147)
+	_anim_sprite.modulate = DARK_TINT
+	_anim_sprite.play("idle")
+	add_child(_anim_sprite)
+
+	# Hide the old ColorRect and placeholder Sprite2D
+	if _sprite:
+		_sprite.visible = false
+	if has_node("Sprite2D"):
+		get_node("Sprite2D").visible = false
 
 
 # ============ ACTIVATION ============
@@ -88,23 +134,30 @@ func _physics_process(delta: float) -> void:
 	if current_state == State.DEFEATED:
 		return
 
-	# Vertical: stay near ground level, only loosely track player Y
-	# Boss should be ON the ground, not floating above platforms
-	var target_y: float = GROUND_Y - 120.0  # Default: stand on ground (half body above surface)
+	if boss_phase == 1:
+		_physics_phase_1(delta)
+	else:
+		_physics_phase_2_3(delta)
+
+	move_and_slide()
+	_clamp_to_camera()
+	_update_facing()
+
+
+func _physics_phase_1(delta: float) -> void:
+	"""Phase 1 (Runner) — horizontal movement, ground tracking"""
+	var target_y: float = GROUND_Y - 120.0
 	var player_ref: Node2D = GameManager.player if GameManager else null
 	if current_state == State.VULNERABLE:
-		target_y = GROUND_Y  # Sink TO ground when stunned
+		target_y = GROUND_Y
 	elif current_state == State.ATTACKING_MELEE and player_ref and is_instance_valid(player_ref):
-		# Only during melee: track player Y to reach them on platforms
 		target_y = player_ref.global_position.y
 	elif player_ref and is_instance_valid(player_ref):
-		# Running: stay near ground, but loosely follow player if they're on platforms
 		var player_y: float = player_ref.global_position.y
 		target_y = clampf(player_y, GROUND_Y - 300.0, GROUND_Y - 40.0)
 	global_position.y = lerpf(global_position.y, target_y, Y_SMOOTHING * delta)
 	velocity.y = 0.0
 
-	# State-specific movement
 	match current_state:
 		State.RUNNING:
 			_process_running(delta)
@@ -115,28 +168,135 @@ func _physics_process(delta: float) -> void:
 		State.VULNERABLE:
 			_process_vulnerable(delta)
 
-	move_and_slide()
 
-	# Safety: keep boss within camera view
-	if controller and controller.runner_camera:
-		var cam_left: float = controller.runner_camera.get_left_edge()
-		var cam_right: float = controller.runner_camera.get_right_edge()
-		# Boss should stay in the right ~60% of screen
-		var min_x: float = cam_left + 400.0
-		var max_x: float = cam_right - 100.0
+func _physics_phase_2_3(delta: float) -> void:
+	"""Phase 2+3 — vertical fall with gravity, platform landing"""
+	var player_ref: Node2D = GameManager.player if GameManager else null
+
+	match current_state:
+		State.FALLING:
+			_process_falling(delta, player_ref)
+		State.KNOCKDOWN:
+			_process_knockdown(delta)
+		State.AGGRESSIVE:
+			_process_aggressive(delta, player_ref)
+		State.ATTACKING_RANGED:
+			_process_attacking_vertical(delta)
+		State.ATTACKING_MELEE:
+			_process_melee_vertical(delta, player_ref)
+
+
+func _process_falling(delta: float, player: Node2D) -> void:
+	"""Phase 2: Boss falls, staying below player, occasional attacks"""
+	# Gravity
+	velocity.y += GRAVITY * delta
+
+	# If on floor, reduce downward velocity
+	if is_on_floor():
+		velocity.y = 0.0
+
+	if player and is_instance_valid(player):
+		# Target: below player by FALL_PREFERRED_Y_OFFSET
+		var target_y: float = player.global_position.y + FALL_PREFERRED_Y_OFFSET
+		var y_diff: float = target_y - global_position.y
+		velocity.y += y_diff * FALL_Y_SMOOTHING * delta
+
+		# X: loosely track player
+		var x_diff: float = player.global_position.x - global_position.x
+		velocity.x = x_diff * FALL_X_SMOOTHING
+
+	# Clamp fall speed
+	velocity.y = clampf(velocity.y, -200.0, 600.0)
+
+
+func _process_knockdown(delta: float) -> void:
+	"""Phase 2+3: Boss is stunned, no movement"""
+	velocity = Vector2.ZERO
+	if not is_on_floor():
+		velocity.y = GRAVITY * delta
+
+	_knockdown_timer -= delta
+	if _knockdown_timer <= 0.0:
+		exit_knockdown_state()
+
+
+func _process_aggressive(delta: float, player: Node2D) -> void:
+	"""Phase 3: Boss actively chases player"""
+	# Gravity
+	velocity.y += GRAVITY * delta
+	if is_on_floor():
+		velocity.y = 0.0
+
+	if player and is_instance_valid(player):
+		# Move toward player aggressively
+		var dir: Vector2 = (player.global_position - global_position)
+		velocity.x = dir.x * 5.0
+		velocity.x = clampf(velocity.x, -AGGRESSIVE_SPEED, AGGRESSIVE_SPEED)
+
+		# Y: stay at same level as player
+		var y_diff: float = player.global_position.y - global_position.y
+		velocity.y += y_diff * FALL_Y_SMOOTHING * delta
+
+	velocity.y = clampf(velocity.y, -300.0, 600.0)
+
+
+func _process_attacking_vertical(_delta: float) -> void:
+	"""Brief pause during ranged attack in Phase 2+3"""
+	velocity.y += GRAVITY * _delta
+	if is_on_floor():
+		velocity.y = 0.0
+	velocity.x *= 0.9
+
+
+func _process_melee_vertical(delta: float, player: Node2D) -> void:
+	"""Melee attack during Phase 2+3"""
+	velocity.y += GRAVITY * delta
+	if is_on_floor():
+		velocity.y = 0.0
+
+	if player and is_instance_valid(player):
+		var dir_x: float = player.global_position.x - global_position.x
+		velocity.x = clampf(dir_x * 6.0, -AGGRESSIVE_SPEED, AGGRESSIVE_SPEED)
+
+
+func _clamp_to_camera() -> void:
+	"""Keep boss within camera viewport"""
+	if not controller or not controller.runner_camera:
+		return
+
+	var cam: RunnerCamera = controller.runner_camera
+	if boss_phase == 1:
+		# Horizontal: stay in right ~60% of screen
+		var min_x: float = cam.get_left_edge() + 400.0
+		var max_x: float = cam.get_right_edge() - 100.0
 		if global_position.x > max_x:
 			global_position.x = max_x
 			velocity.x = min(velocity.x, controller.get_scroll_speed())
 		elif global_position.x < min_x:
-			# Boss fell behind — teleport forward
 			global_position.x = min_x
 			velocity.x = controller.get_scroll_speed()
+	else:
+		# Vertical: stay within viewport bounds
+		var margin: float = 80.0
+		global_position.x = clampf(global_position.x, cam.get_left_edge() + margin, cam.get_right_edge() - margin)
+		global_position.y = clampf(global_position.y, cam.get_top_edge() + margin, cam.get_bottom_edge() - margin)
 
-	# Update facing direction
-	if velocity.x > 10.0:
-		_facing_right = true
-	elif velocity.x < -10.0:
-		_facing_right = false
+
+func _update_facing() -> void:
+	var player_ref: Node2D = GameManager.player if GameManager else null
+	if boss_phase >= 2 and player_ref and is_instance_valid(player_ref):
+		_facing_right = player_ref.global_position.x > global_position.x
+	else:
+		if velocity.x > 10.0:
+			_facing_right = true
+		elif velocity.x < -10.0:
+			_facing_right = false
+
+	# Update sprite flip
+	if _anim_sprite:
+		_anim_sprite.flip_h = not _facing_right  # Sprite faces right by default
+
+	_update_animation()
 
 
 func _process(delta: float) -> void:
@@ -146,23 +306,82 @@ func _process(delta: float) -> void:
 	# Attack timers
 	_attack_timer += delta
 	_melee_timer += delta
+	_phase2_attack_timer += delta
 	if _grav_schnitt_timer > 0.0:
 		_grav_schnitt_timer -= delta
 	if _urteil_timer > 0.0:
 		_urteil_timer -= delta
 
-	# Check for ranged attack opportunity
+	if boss_phase == 1:
+		_process_phase_1_ai(delta)
+	else:
+		_process_phase_2_3_ai(delta)
+
+
+func _process_phase_1_ai(_delta: float) -> void:
+	"""Phase 1 AI: ranged attacks, gravitaetsschnitt, urteil"""
 	if current_state == State.RUNNING and _attack_timer >= RANGED_ATTACK_COOLDOWN:
 		if controller and controller.current_section >= MirrorController.Section.DER_FALL:
 			_start_ranged_attack()
 
-	# Gravitaetsschnitt check (section 2+)
 	if current_state == State.RUNNING:
 		try_gravitaetsschnitt()
 
-	# Urteil-Spiegel check (section 3+)
 	if current_state == State.RUNNING:
 		_try_urteil_spiegel()
+
+
+func _process_phase_2_3_ai(delta: float) -> void:
+	"""Phase 2+3 AI: attacks during falling/aggressive states"""
+	if current_state == State.KNOCKDOWN or current_state == State.DEFEATED:
+		return
+
+	# Decrement dark attack cooldowns
+	if _dark_machtbruch_timer > 0.0:
+		_dark_machtbruch_timer -= delta
+	if _dark_wolkenbruch_timer > 0.0:
+		_dark_wolkenbruch_timer -= delta
+	if _dark_machtstoss_timer > 0.0:
+		_dark_machtstoss_timer -= delta
+
+	var attack_cooldown: float = RANGED_ATTACK_COOLDOWN
+	var melee_cooldown: float = MELEE_ATTACK_COOLDOWN
+	if boss_phase == 3:
+		attack_cooldown *= 0.5
+		melee_cooldown *= 0.5
+
+	if current_state != State.FALLING and current_state != State.AGGRESSIVE:
+		return
+
+	# Pick attack based on priority and cooldowns
+	var player: Node2D = GameManager.player if GameManager else null
+	var dist: float = 9999.0
+	if player and is_instance_valid(player):
+		dist = global_position.distance_to(player.global_position)
+
+	# Wolkenbruch (Phase 3 only, ranged priority)
+	if boss_phase == 3 and _dark_wolkenbruch_timer <= 0.0 and dist > 200.0:
+		_try_dark_wolkenbruch()
+		return
+
+	# Melee when close
+	if dist < MELEE_ATTACK_RANGE and _melee_timer >= melee_cooldown:
+		_start_melee_attack_vertical()
+		return
+
+	# Machtbruch (medium range)
+	if dist < 300.0 and _dark_machtbruch_timer <= 0.0:
+		_try_dark_machtbruch()
+		return
+
+	# Machtstoss (medium range knockback)
+	if dist < 350.0 and _dark_machtstoss_timer <= 0.0:
+		_try_dark_machtstoss()
+		return
+
+	# Dark Orb (long range fallback)
+	if _attack_timer >= attack_cooldown:
+		_start_ranged_attack_vertical()
 
 
 # ============ RUNNING AI ============
@@ -306,12 +525,13 @@ func enter_vulnerable_state() -> void:
 	_is_grounded = false
 
 	# Visual: white + pulsing flash
-	if _sprite:
-		_sprite.color = VULNERABLE_COLOR
-	var tween := create_tween().set_loops()
-	tween.tween_property(_sprite, "modulate:a", 0.4, 0.25)
-	tween.tween_property(_sprite, "modulate:a", 1.0, 0.25)
-	set_meta("_vulnerable_tween", tween)
+	_set_sprite_color(VULNERABLE_COLOR)
+	var target: Node = _anim_sprite if _anim_sprite else _sprite
+	if target:
+		var tween := create_tween().set_loops()
+		tween.tween_property(target, "modulate:a", 0.4, 0.25)
+		tween.tween_property(target, "modulate:a", 1.0, 0.25)
+		set_meta("_vulnerable_tween", tween)
 
 
 func exit_vulnerable_state() -> void:
@@ -323,9 +543,7 @@ func exit_vulnerable_state() -> void:
 	var tween = get_meta("_vulnerable_tween") if has_meta("_vulnerable_tween") else null
 	if tween and tween is Tween:
 		tween.kill()
-	if _sprite:
-		_sprite.modulate.a = 1.0
-		_sprite.color = DAMAGED_COLORS[min(_finisher_count, DAMAGED_COLORS.size() - 1)]
+	_restore_sprite_color()
 
 
 func on_finisher_hit(count: int) -> void:
@@ -336,7 +554,7 @@ func on_finisher_hit(count: int) -> void:
 	print("[MirrorBoss] Finisher hit! (%d total)" % count)
 
 	# Visual degradation
-	if _sprite:
+	if _sprite and _sprite is ColorRect:
 		_sprite.color = DAMAGED_COLORS[min(count, DAMAGED_COLORS.size() - 1)]
 
 	current_state = State.RUNNING
@@ -345,8 +563,7 @@ func on_finisher_hit(count: int) -> void:
 	var tween = get_meta("_vulnerable_tween") if has_meta("_vulnerable_tween") else null
 	if tween and tween is Tween:
 		tween.kill()
-	if _sprite:
-		_sprite.modulate.a = 1.0
+	_restore_sprite_color()
 
 	# Hitstop
 	if GlobalTimeEffects:
@@ -377,15 +594,16 @@ func _on_damage_received(_damage: int, _knockback: Vector2, _hitstun: float) -> 
 		return
 
 	# Flash sprite white as hit feedback
-	if _sprite:
-		var tween := create_tween()
-		tween.tween_property(_sprite, "modulate", Color(2.0, 2.0, 2.0, 1.0), 0.05)
-		tween.tween_property(_sprite, "modulate", Color.WHITE, 0.15)
+	_flash_hit()
 
-	# Jeder Treffer im Vulnerable-State zählt als Finisher
-	if current_state == State.VULNERABLE:
-		if controller and controller.momentum_system:
-			controller.momentum_system.on_finisher_landed()
+	if boss_phase == 1:
+		# Phase 1: finisher check
+		if current_state == State.VULNERABLE:
+			if controller and controller.momentum_system:
+				controller.momentum_system.on_finisher_landed()
+	else:
+		# Phase 2+3: apply HP damage with resistance
+		_apply_hp_damage(_damage)
 
 
 func take_damage(amount: float, _attacker: Node = null) -> void:
@@ -393,16 +611,68 @@ func take_damage(amount: float, _attacker: Node = null) -> void:
 	if current_state == State.DEFEATED:
 		return
 
-	# Flash feedback
-	if _sprite:
-		var tween := create_tween()
-		tween.tween_property(_sprite, "modulate", Color(2.0, 2.0, 2.0, 1.0), 0.05)
-		tween.tween_property(_sprite, "modulate", Color.WHITE, 0.15)
+	_flash_hit()
 
-	# Jeder Treffer im Vulnerable-State zählt als Finisher
-	if current_state == State.VULNERABLE:
-		if controller and controller.momentum_system:
-			controller.momentum_system.on_finisher_landed()
+	if boss_phase == 1:
+		if current_state == State.VULNERABLE:
+			if controller and controller.momentum_system:
+				controller.momentum_system.on_finisher_landed()
+	else:
+		_apply_hp_damage(int(amount))
+
+
+func _apply_hp_damage(raw_damage: int) -> void:
+	"""Apply damage to HP with resistance. Also feeds knockdown meter."""
+	if not has_node("HealthComponent"):
+		return
+
+	var hc: HealthComponentGeneric = get_node("HealthComponent")
+	if hc.is_invulnerable:
+		return
+
+	# Apply resistance
+	var effective_damage: float = raw_damage * (1.0 - damage_resistance)
+	if effective_damage > 0:
+		hc.take_damage(effective_damage)
+
+	# Raw damage feeds knockdown meter (no resistance applied)
+	if controller and controller.momentum_system:
+		controller.momentum_system.add_knockdown_meter(raw_damage * MomentumSystem.KD_GAIN_PER_DAMAGE_POINT)
+
+
+func _flash_hit() -> void:
+	var target: Node = _anim_sprite if _anim_sprite else _sprite
+	if target:
+		var base_color: Color = DARK_TINT if _anim_sprite else Color.WHITE
+		var tween := create_tween()
+		tween.tween_property(target, "modulate", Color(2.0, 2.0, 2.0, 1.0), 0.05)
+		tween.tween_property(target, "modulate", base_color, 0.15)
+
+
+func _set_sprite_color(color: Color) -> void:
+	"""Set visual state — works with both ColorRect and AnimatedSprite2D"""
+	if _anim_sprite:
+		_anim_sprite.modulate = color
+	elif _sprite and _sprite is ColorRect:
+		_sprite.color = color
+
+
+func _restore_sprite_color() -> void:
+	"""Restore normal visual — works with both ColorRect and AnimatedSprite2D"""
+	if _anim_sprite:
+		_anim_sprite.modulate = DARK_TINT
+	elif _sprite and _sprite is ColorRect:
+		_sprite.modulate.a = 1.0
+		_sprite.color = DAMAGED_COLORS[min(_finisher_count, DAMAGED_COLORS.size() - 1)]
+
+
+func _on_boss_died() -> void:
+	"""Called when HealthComponent.died signal fires"""
+	if current_state == State.DEFEATED:
+		return
+	print("[MirrorBoss] HP depleted!")
+	if controller and controller.has_method("on_boss_hp_depleted"):
+		controller.on_boss_hp_depleted()
 
 
 # ============ ATTACKS ============
@@ -574,6 +844,304 @@ func _try_urteil_spiegel() -> void:
 	var mark: UrteilMark = UrteilMark.create_on_target(player)
 	get_tree().current_scene.add_child(mark)
 	print("[MirrorBoss] Urteil-Spiegel! Player marked!")
+
+
+# ============ PHASE SWITCHING ============
+func switch_to_phase_2() -> void:
+	"""Called by controller when transitioning to Phase 2 (Free Fall)"""
+	print("[MirrorBoss] Switching to Phase 2 — FALLING")
+	boss_phase = 2
+	current_state = State.FALLING
+	damage_resistance = 0.90
+	_attack_timer = 0.0
+	_melee_timer = 0.0
+
+	# Activate HP system
+	if has_node("HealthComponent"):
+		var hc: HealthComponentGeneric = get_node("HealthComponent")
+		hc.set_invulnerable(false)
+
+
+func switch_to_phase_3() -> void:
+	"""Called by controller when transitioning to Phase 3 (Finaler Kampf)"""
+	print("[MirrorBoss] Switching to Phase 3 — AGGRESSIVE")
+	boss_phase = 3
+	current_state = State.AGGRESSIVE
+	damage_resistance = 0.90
+	_attack_timer = 0.0
+	_melee_timer = 0.0
+
+	# Reset HP to full
+	if has_node("HealthComponent"):
+		var hc: HealthComponentGeneric = get_node("HealthComponent")
+		hc.reset_health()
+
+
+func enter_knockdown_state() -> void:
+	"""Boss enters knockdown — 4s of full vulnerability"""
+	print("[MirrorBoss] KNOCKDOWN! (%.1fs)" % KNOCKDOWN_DURATION)
+	current_state = State.KNOCKDOWN
+	_knockdown_timer = KNOCKDOWN_DURATION
+	damage_resistance = 0.0  # Full damage during knockdown
+	velocity = Vector2.ZERO
+
+	# Visual feedback
+	_set_sprite_color(VULNERABLE_COLOR)
+	var target: Node = _anim_sprite if _anim_sprite else _sprite
+	if target:
+		var tween := create_tween().set_loops()
+		tween.tween_property(target, "modulate:a", 0.4, 0.25)
+		tween.tween_property(target, "modulate:a", 1.0, 0.25)
+		set_meta("_knockdown_tween", tween)
+
+
+func exit_knockdown_state() -> void:
+	"""Boss recovers from knockdown"""
+	print("[MirrorBoss] Knockdown ended — resuming")
+	damage_resistance = 0.90
+
+	var tween = get_meta("_knockdown_tween") if has_meta("_knockdown_tween") else null
+	if tween and tween is Tween:
+		tween.kill()
+	_restore_sprite_color()
+
+	# Return to appropriate state
+	if boss_phase == 3:
+		current_state = State.AGGRESSIVE
+	else:
+		current_state = State.FALLING
+
+	# Notify controller
+	if controller and controller.has_method("on_knockdown_ended"):
+		if controller.momentum_system:
+			controller.on_knockdown_ended(controller.momentum_system.knockdown_count)
+
+
+func set_temp_invulnerable(duration: float) -> void:
+	"""Briefly make boss invulnerable (during transitions)"""
+	if has_node("HealthComponent"):
+		var hc: HealthComponentGeneric = get_node("HealthComponent")
+		hc.start_invulnerability(duration)
+
+
+# ============ PHASE 2+3 ATTACKS ============
+const DARK_MACHTBRUCH_COOLDOWN: float = 10.0
+const DARK_WOLKENBRUCH_COOLDOWN: float = 12.0
+const DARK_MACHTSTOSS_COOLDOWN: float = 6.0
+var _dark_machtbruch_timer: float = 0.0
+var _dark_wolkenbruch_timer: float = 0.0
+var _dark_machtstoss_timer: float = 0.0
+
+
+func _start_ranged_attack_vertical() -> void:
+	"""Fire dark orb toward player in vertical mode"""
+	_attack_timer = 0.0
+	var prev_state: int = current_state
+	current_state = State.ATTACKING_RANGED
+
+	_spawn_dark_orb()
+
+	get_tree().create_timer(0.5).timeout.connect(func():
+		if current_state == State.ATTACKING_RANGED:
+			current_state = prev_state
+	)
+
+
+func _start_melee_attack_vertical() -> void:
+	"""Melee combo in Phase 2+3 with adjusted damage"""
+	_melee_timer = 0.0
+	var prev_state: int = current_state
+	current_state = State.ATTACKING_MELEE
+
+	if not _hitbox:
+		_setup_melee_hitbox()
+
+	var combo_damage: Array[int] = [10, 12, 15]
+	var combo_timing: Array[float] = [0.3, 0.35, 0.4]
+
+	for i in range(3):
+		if current_state != State.ATTACKING_MELEE:
+			break
+		_hitbox.set_meta("current_damage", combo_damage[mini(i, combo_damage.size() - 1)])
+		_activate_melee_hitbox(i)
+		await get_tree().create_timer(combo_timing[mini(i, combo_timing.size() - 1)]).timeout
+
+	_deactivate_melee_hitbox()
+
+	if current_state == State.ATTACKING_MELEE:
+		current_state = prev_state
+
+
+func _try_dark_machtbruch() -> void:
+	"""Dark Machtbruch — AoE explosion around boss"""
+	if _dark_machtbruch_timer > 0.0:
+		return
+
+	var cd: float = DARK_MACHTBRUCH_COOLDOWN
+	if boss_phase == 3:
+		cd *= 0.5
+	_dark_machtbruch_timer = cd
+
+	# Determine tier based on phase
+	var tier: int = 1 if boss_phase == 2 else randi_range(1, 3)
+	var damage_values: Array[int] = [20, 35, 50]
+	var radius_values: Array[float] = [100.0, 150.0, 200.0]
+	var dmg: int = damage_values[mini(tier - 1, 2)]
+	var radius: float = radius_values[mini(tier - 1, 2)]
+
+	print("[MirrorBoss] Dark Machtbruch Stufe %d! (%d dmg, %.0f radius)" % [tier, dmg, radius])
+
+	# Visual: expanding ring
+	var ring := ColorRect.new()
+	ring.name = "MachtbruchRing"
+	ring.size = Vector2(radius * 2, radius * 2)
+	ring.position = Vector2(-radius, -radius - 120)
+	ring.color = Color(0.6, 0.1, 0.8, 0.4)
+	add_child(ring)
+
+	# Damage players in range
+	_deal_aoe_damage(dmg, radius)
+
+	# Fade out ring
+	var tween := create_tween()
+	tween.tween_property(ring, "modulate:a", 0.0, 0.5)
+	tween.tween_callback(ring.queue_free)
+
+
+func _try_dark_wolkenbruch() -> void:
+	"""Dark Wolkenbruch — Boss jumps up and slams down on player position (Phase 3 only)"""
+	if boss_phase < 3:
+		return
+	if _dark_wolkenbruch_timer > 0.0:
+		return
+
+	_dark_wolkenbruch_timer = DARK_WOLKENBRUCH_COOLDOWN * 0.5  # Halved in Phase 3
+
+	var player: Node2D = GameManager.player if GameManager else null
+	if not player or not is_instance_valid(player):
+		return
+
+	var target_pos: Vector2 = player.global_position
+	var dmg: int = randi_range(40, 80)
+	var aoe_radius: float = 150.0
+
+	print("[MirrorBoss] Dark Wolkenbruch! Target: (%.0f, %.0f)" % [target_pos.x, target_pos.y])
+
+	# Jump up briefly
+	velocity.y = -400.0
+	await get_tree().create_timer(0.4).timeout
+
+	# Slam down to target
+	global_position = target_pos + Vector2(0, -200)
+	velocity.y = 800.0
+	await get_tree().create_timer(0.3).timeout
+
+	# Impact
+	velocity = Vector2.ZERO
+	_deal_aoe_damage(dmg, aoe_radius)
+
+	# Shockwave visual
+	var shockwave := ColorRect.new()
+	shockwave.name = "WolkenbruchShockwave"
+	shockwave.size = Vector2(aoe_radius * 2, 32)
+	shockwave.position = Vector2(-aoe_radius, -16)
+	shockwave.color = Color(0.8, 0.2, 1.0, 0.5)
+	add_child(shockwave)
+
+	var tween := create_tween()
+	tween.tween_property(shockwave, "modulate:a", 0.0, 0.4)
+	tween.tween_callback(shockwave.queue_free)
+
+	if controller and controller.runner_camera:
+		controller.runner_camera.shake(8.0, 4.0)
+
+
+func _try_dark_machtstoss() -> void:
+	"""Dark Machtstoss — Knockback wave toward player"""
+	if _dark_machtstoss_timer > 0.0:
+		return
+
+	var cd: float = DARK_MACHTSTOSS_COOLDOWN
+	if boss_phase == 3:
+		cd *= 0.5
+	_dark_machtstoss_timer = cd
+
+	var tier: int = 1 if boss_phase == 2 else randi_range(1, 3)
+	var damage_values: Array[int] = [20, 30, 40]
+	var dmg: int = damage_values[mini(tier - 1, 2)]
+
+	var player: Node2D = GameManager.player if GameManager else null
+	if not player or not is_instance_valid(player):
+		return
+
+	var dir: Vector2 = (player.global_position - global_position).normalized()
+	var knockback: Vector2 = dir * 300.0
+
+	print("[MirrorBoss] Dark Machtstoss Stufe %d! (%d dmg)" % [tier, dmg])
+
+	# Visual: wave effect
+	var wave := ColorRect.new()
+	wave.name = "MachtstossWave"
+	wave.size = Vector2(80, 60)
+	wave.position = Vector2(dir.x * 50 - 40, -90)
+	wave.color = Color(0.5, 0.1, 0.9, 0.6)
+	add_child(wave)
+
+	# Damage and knockback player if in range
+	var dist: float = global_position.distance_to(player.global_position)
+	if dist < 250.0:
+		if player.has_node("HurtboxArea"):
+			var hurtbox: HurtboxComponent = player.get_node("HurtboxArea")
+			if not hurtbox.is_invulnerable:
+				hurtbox.take_damage(dmg, knockback, 0.3, self)
+
+	var tween := create_tween()
+	tween.tween_property(wave, "position:x", wave.position.x + dir.x * 200, 0.3)
+	tween.parallel().tween_property(wave, "modulate:a", 0.0, 0.3)
+	tween.tween_callback(wave.queue_free)
+
+
+func _deal_aoe_damage(damage: int, radius: float) -> void:
+	"""Deal damage to all players within radius"""
+	var center: Vector2 = global_position + Vector2(0, -120)
+
+	for target_group in ["player", "player2"]:
+		for node in get_tree().get_nodes_in_group(target_group):
+			if not is_instance_valid(node):
+				continue
+			var dist: float = center.distance_to(node.global_position)
+			if dist <= radius:
+				if node.has_node("HurtboxArea"):
+					var hurtbox: HurtboxComponent = node.get_node("HurtboxArea")
+					if not hurtbox.is_invulnerable:
+						var kb: Vector2 = (node.global_position - center).normalized() * 200.0
+						hurtbox.take_damage(damage, kb, 0.2, self)
+
+
+# ============ ANIMATION ============
+func _update_animation() -> void:
+	if not _anim_sprite:
+		return
+
+	var anim: String = "idle"
+	match current_state:
+		State.RUNNING:
+			anim = "walk"
+		State.FALLING:
+			anim = "fall"
+		State.ATTACKING_MELEE:
+			anim = "attack"
+		State.ATTACKING_RANGED:
+			anim = "special"
+		State.VULNERABLE, State.KNOCKDOWN:
+			anim = "hurt"
+		State.AGGRESSIVE:
+			anim = "walk"
+		State.DEFEATED:
+			anim = "hurt"
+
+	if _anim_sprite.animation != anim:
+		_anim_sprite.play(anim)
 
 
 # ============ UTILITY ============
