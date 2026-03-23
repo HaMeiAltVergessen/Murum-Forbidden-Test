@@ -394,22 +394,28 @@ func _check_fall_off() -> void:
 
 # ============ VERTICAL DEATH ZONE (Phase 2+3) ============
 func _check_vertical_death_zone() -> void:
-	"""Death zone = top edge of camera (player scrolled off screen above)"""
+	"""Death zone = top edge (left behind) AND bottom edge (fell too far)"""
 	if not runner_camera:
 		return
 
 	var cam_top: float = runner_camera.get_top_edge()
-	var death_y: float = cam_top + DEATH_ZONE_OFFSET
+	var cam_bottom: float = runner_camera.get_bottom_edge()
+	var death_y_top: float = cam_top + DEATH_ZONE_OFFSET
+	var death_y_bottom: float = cam_bottom + 200.0  # Grace zone below camera
 
 	var player: Node2D = GameManager.player if GameManager else null
 	if player and is_instance_valid(player):
-		if player.global_position.y < death_y:
+		# Player scrolled off above (left behind by camera)
+		if player.global_position.y < death_y_top:
+			_respawn_at_camera_center_vertical(player)
+		# Player fell too far below camera
+		elif player.global_position.y > death_y_bottom:
 			_respawn_at_camera_center_vertical(player)
 
 	# P2 check
 	var p2: Node2D = _get_p2_player()
 	if p2 and is_instance_valid(p2):
-		if p2.global_position.y < death_y - 100.0:
+		if p2.global_position.y < death_y_top - 100.0 or p2.global_position.y > death_y_bottom + 100.0:
 			if p2.has_node("HealthComponent"):
 				var p2_health = p2.get_node("HealthComponent")
 				if p2_health.has_method("take_damage"):

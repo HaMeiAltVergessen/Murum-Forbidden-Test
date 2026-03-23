@@ -244,7 +244,7 @@ func _create_placeholder_chunk() -> Node2D:
 
 
 func _create_vertical_placeholder_chunk() -> Node2D:
-	"""Creates a vertical fall chunk with 2-3 platforms at various X positions"""
+	"""Creates a vertical fall chunk with staggered platforms for reliable landing"""
 	var chunk := Node2D.new()
 	chunk.name = "VerticalPlaceholderChunk"
 
@@ -252,13 +252,19 @@ func _create_vertical_placeholder_chunk() -> Node2D:
 	chunk.set_meta("chunk_height", height)
 	chunk.set_meta("chunk_width", 1920.0)
 
-	# Place 2-3 platforms at varying positions
-	var platform_count: int = randi_range(2, 3)
+	# 4 platforms per chunk — staggered left/right for reliable landing
+	# Each platform is wide enough and alternates sides so the player always has somewhere to land
+	var platform_count: int = 4
 	var y_step: float = height / (platform_count + 1)
 
 	for i in range(platform_count):
-		var plat_width: float = randf_range(200.0, 400.0)
-		var plat_x: float = randf_range(200.0, 1920.0 - plat_width - 200.0)
+		var plat_width: float = randf_range(400.0, 700.0)
+		# Alternate left/right to create a zigzag pattern
+		var plat_x: float
+		if i % 2 == 0:
+			plat_x = randf_range(100.0, 600.0)  # Left side
+		else:
+			plat_x = randf_range(1920.0 - plat_width - 600.0, 1920.0 - plat_width - 100.0)  # Right side
 		var plat_y: float = y_step * (i + 1)
 
 		var platform := StaticBody2D.new()

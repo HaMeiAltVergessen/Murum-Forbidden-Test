@@ -57,11 +57,22 @@ func _process_horizontal(delta: float) -> void:
 
 
 func _process_vertical(delta: float) -> void:
-	# Auto-scroll downward at scroll_speed
-	global_position.y += scroll_speed * delta
+	# Auto-scroll Y: minimum speed is scroll_speed, but also track the player
+	# so the camera never falls too far behind a fast-falling player
+	var min_y: float = global_position.y + scroll_speed * delta
+
+	var player: Node2D = GameManager.player if GameManager else null
+	if player and is_instance_valid(player):
+		# Player should be in the upper ~40% of the screen
+		# so camera center = player.y + 10% of viewport (player slightly above center)
+		var player_target_y: float = player.global_position.y + viewport_size.y * 0.1
+		# Use the larger of scroll-based and player-based position
+		# Camera always scrolls at minimum speed, but if player falls faster, camera follows
+		global_position.y = maxf(min_y, lerpf(global_position.y, player_target_y, 4.0 * delta))
+	else:
+		global_position.y = min_y
 
 	# Track player X loosely (keep player centered horizontally)
-	var player: Node2D = GameManager.player if GameManager else null
 	if player and is_instance_valid(player):
 		var target_x: float = player.global_position.x
 		global_position.x = lerpf(global_position.x, target_x, x_smoothing * delta)
