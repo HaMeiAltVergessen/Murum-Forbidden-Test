@@ -44,6 +44,8 @@ enum State { IDLE, CHARGING, SLAMMING, RECOVERY }
 var current_state: State = State.IDLE
 var state_timer: float = 0.0
 var ability_disabled: bool = false  # Set by MirrorController during Phase 2
+var slam_timer: float = 0.0  # Tracks how long we've been slamming
+const MAX_SLAM_DURATION: float = 3.0  # Auto-cancel slam after 3s (no floor found)
 
 # Charging
 var charge_time: float = 0.0
@@ -213,6 +215,7 @@ func _release_charge() -> void:
 
 	# Enter slamming state
 	current_state = State.SLAMMING
+	slam_timer = 0.0
 
 	# PULL ENEMIES DOWN FIRST (before player)
 	_pull_enemies_down()
@@ -402,6 +405,14 @@ func _process_slamming(delta: float) -> void:
 	# Check if already on floor FIRST
 	if player.is_on_floor():
 		_on_impact()
+		return
+
+	# Timeout: cancel slam after MAX_SLAM_DURATION (no floor found, e.g. free fall)
+	slam_timer += delta
+	if slam_timer >= MAX_SLAM_DURATION:
+		print("[Wolkenbruch] Slam timeout (%.1fs) — canceling, no floor found" % slam_timer)
+		player.velocity = Vector2.ZERO
+		_complete_wolkenbruch()
 		return
 
 	# CRITICAL: Push enemies sideways BEFORE they can cause collision glitch

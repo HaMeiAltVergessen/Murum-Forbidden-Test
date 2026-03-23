@@ -128,9 +128,10 @@ func _process(delta: float) -> void:
 	if current_phase == Phase.RUNNER:
 		_check_death_zone(delta)
 		_check_fall_off()
-	else:
+	elif current_phase == Phase.DER_FALL:
 		_check_vertical_death_zone()
 		_check_vertical_side_bounds()
+	# Phase 3 (FINALER_KAMPF): Arena has floor + walls, no death zone needed
 
 	# Emit health_changed (momentum in Phase 1, HP in Phase 2+3)
 	if momentum_system:
@@ -569,44 +570,150 @@ func _start_transition_to_phase_3() -> void:
 	"""4 knockdowns in Phase 2 → transition to Phase 3 (Finaler Kampf)"""
 	print("[MirrorController] Phase 2 complete — transitioning to Phase 3: Finaler Kampf!")
 
-	# Brief invulnerability + visual
-	if mirror_boss and mirror_boss.has_method("set_temp_invulnerable"):
-		mirror_boss.set_temp_invulnerable(2.0)
+	# 1. Stop everything — freeze the scene
 	if runner_camera:
+		runner_camera.pause_scrolling()
 		runner_camera.shake(20.0, 3.0)
+
+	# 2. Freeze player + boss in mid-air (disable gravity)
+	var player: Node2D = GameManager.player if GameManager else null
+	if player and is_instance_valid(player) and player is CharacterBody2D:
+		player.velocity = Vector2.ZERO
+	if mirror_boss and is_instance_valid(mirror_boss):
+		mirror_boss.velocity = Vector2.ZERO
+
+	# Set hover flags to stop gravity
+	var movement_ctrl: Node = player.get_node_or_null("MovementController") if player else null
+	if movement_ctrl and "is_hovering" in movement_ctrl:
+		movement_ctrl.is_hovering = true
+	if mirror_boss and mirror_boss.has_method("set_process"):
+		mirror_boss.set_physics_process(false)  # Pause boss physics entirely
 
 	_show_section_title("Finaler Kampf")
 	await get_tree().create_timer(1.5).timeout
 
-	# Update phase
+	# 3. Clear all vertical fall chunks
+	if chunk_spawner:
+		chunk_spawner.clear_all_chunks()
+
+	# 4. Build arena platform under camera center
+	var cam_center: Vector2 = runner_camera.global_position if runner_camera else Vector2.ZERO
+	var arena_y: float = cam_center.y + 300.0  # Platform below center
+	_spawn_arena_platform(cam_center.x, arena_y)
+
+	# 5. Position player + boss above platform, then let them sink
+	var platform_surface_y: float = arena_y - 56.0  # Stand ON platform
+	var player_target := Vector2(cam_center.x - 150.0, platform_surface_y)
+	var boss_target := Vector2(cam_center.x + 150.0, platform_surface_y)
+
+	# Teleport to hover position (above platform)
+	var hover_y: float = arena_y - 200.0
+	if player and is_instance_valid(player):
+		player.global_position = Vector2(player_target.x, hover_y)
+	if mirror_boss and is_instance_valid(mirror_boss):
+		mirror_boss.global_position = Vector2(boss_target.x, hover_y)
+
+	await get_tree().create_timer(0.5).timeout
+
+	# 6. Smoothly sink both to platform surface
+	var sink_tween := create_tween().set_parallel(true)
+	if player and is_instance_valid(player):
+		sink_tween.tween_property(player, "global_position:y", platform_surface_y, 1.0).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	if mirror_boss and is_instance_valid(mirror_boss):
+		sink_tween.tween_property(mirror_boss, "global_position:y", platform_surface_y, 1.0).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	await sink_tween.finished
+
+	# 7. Re-enable gravity + physics
+	if movement_ctrl and "is_hovering" in movement_ctrl:
+		movement_ctrl.is_hovering = false
+	if mirror_boss and is_instance_valid(mirror_boss):
+		mirror_boss.set_physics_process(true)
+
+	# 8. Update phase
 	current_phase = Phase.FINALER_KAMPF
 
-	# Boss heals and becomes aggressive
+	# 9. Boss heals and becomes aggressive
 	if mirror_boss and mirror_boss.has_method("switch_to_phase_3"):
 		mirror_boss.switch_to_phase_3()
 
-	# Switch chunk pool to finale
-	if chunk_spawner:
-		chunk_spawner.switch_pool("finale_vertical")
-
-	# Increase camera speed
+	# 10. Camera stays static (no scrolling in Phase 3 arena)
 	if runner_camera:
-		runner_camera.scroll_speed = 200.0
+		runner_camera.scroll_speed = 0.0
+		# Don't resume scrolling — arena is fixed
 
-	# Update HUD
+	# 11. Update HUD
 	if momentum_bar and momentum_bar.has_method("switch_to_phase_3_hud"):
 		momentum_bar.switch_to_phase_3_hud()
 
-	# Re-enable Wolkenbruch for Phase 3
+	# 12. Re-enable Wolkenbruch for Phase 3
 	_set_wolkenbruch_disabled(false)
 
-	# Start wave spawner (enemies every 9s)
+	# 13. Start wave spawner (enemies every 9s)
 	_wave_spawner = BossWaveSpawner.new()
 	_wave_spawner.name = "WaveSpawner"
 	add_child(_wave_spawner)
 	_wave_spawner.start_spawning()
 
-	print("[MirrorController] Phase 3 active — finaler Kampf!")
+	print("[MirrorController] Phase 3 active — Arena-Kampf!")
+
+
+func _spawn_arena_platform(center_x: float, platform_y: float) -> void:
+	"""Spawns the Phase 3 arena platform — wide floor with walls"""
+	var arena_width: float = 1600.0
+	var arena_height: float = 48.0
+	var wall_height: float = 600.0
+	var wall_width: float = 32.0
+
+	# Floor platform
+	var floor_body := StaticBody2D.new()
+	floor_body.name = "ArenaFloor"
+	floor_body.collision_layer = 1
+	floor_body.collision_mask = 0
+	floor_body.global_position = Vector2(center_x, platform_y)
+
+	var floor_shape := CollisionShape2D.new()
+	var floor_rect := RectangleShape2D.new()
+	floor_rect.size = Vector2(arena_width, arena_height)
+	floor_shape.shape = floor_rect
+	floor_body.add_child(floor_shape)
+
+	var floor_visual := ColorRect.new()
+	floor_visual.size = Vector2(arena_width, arena_height)
+	floor_visual.position = Vector2(-arena_width * 0.5, -arena_height * 0.5)
+	floor_visual.color = Color(0.15, 0.1, 0.25)
+	floor_body.add_child(floor_visual)
+
+	get_parent().add_child(floor_body)
+
+	# Left wall
+	_spawn_arena_wall(center_x - arena_width * 0.5 - wall_width * 0.5, platform_y - wall_height * 0.5, wall_width, wall_height)
+	# Right wall
+	_spawn_arena_wall(center_x + arena_width * 0.5 + wall_width * 0.5, platform_y - wall_height * 0.5, wall_width, wall_height)
+
+	print("[MirrorController] Arena spawned at Y=%.0f (%.0fx%.0f)" % [platform_y, arena_width, arena_height])
+
+
+func _spawn_arena_wall(x: float, y: float, w: float, h: float) -> void:
+	"""Spawns an arena wall"""
+	var wall := StaticBody2D.new()
+	wall.name = "ArenaWall"
+	wall.collision_layer = 1
+	wall.collision_mask = 0
+	wall.global_position = Vector2(x, y)
+
+	var shape := CollisionShape2D.new()
+	var rect := RectangleShape2D.new()
+	rect.size = Vector2(w, h)
+	shape.shape = rect
+	wall.add_child(shape)
+
+	var visual := ColorRect.new()
+	visual.size = Vector2(w, h)
+	visual.position = Vector2(-w * 0.5, -h * 0.5)
+	visual.color = Color(0.12, 0.08, 0.2)
+	wall.add_child(visual)
+
+	get_parent().add_child(wall)
 
 
 func _start_defeat_sequence() -> void:
