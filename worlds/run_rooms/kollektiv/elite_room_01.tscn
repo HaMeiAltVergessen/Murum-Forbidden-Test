@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://arrow_trap_001" path="res://traps/scenes/arrow_trap.tscn" id="3_arrow_trap"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
-size = Vector2(2400, 40)
+size = Vector2(9600, 40)
 
 [sub_resource type="RectangleShape2D" id="wall_left_shape"]
 size = Vector2(40, 1080)
@@ -14,7 +14,7 @@ size = Vector2(40, 1080)
 size = Vector2(40, 1080)
 
 [sub_resource type="RectangleShape2D" id="ceiling_shape"]
-size = Vector2(2400, 40)
+size = Vector2(9600, 40)
 
 [sub_resource type="RectangleShape2D" id="platform_left"]
 size = Vector2(280, 20)
@@ -26,18 +26,18 @@ size = Vector2(280, 20)
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 2400.0
+offset_right = 9600.0
 offset_bottom = 800.0
 color = Color(0.05, 0.03, 0.1, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
 offset_top = 800.0
-offset_right = 2400.0
+offset_right = 9600.0
 offset_bottom = 1080.0
 color = Color(0.12, 0.08, 0.18, 1)
 
 [node name="Ground" type="StaticBody2D" parent="."]
-position = Vector2(1200, 820)
+position = Vector2(4800, 820)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
 shape = SubResource("ground_shape")
@@ -49,19 +49,19 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(2420, 540)
+position = Vector2(9620, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
 
 [node name="Ceiling" type="StaticBody2D" parent="."]
-position = Vector2(1200, -20)
+position = Vector2(4800, -20)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling"]
 shape = SubResource("ceiling_shape")
 
 [node name="PlatformLeft" type="StaticBody2D" parent="."]
-position = Vector2(500, 620)
+position = Vector2(2000, 620)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformLeft"]
 shape = SubResource("platform_left")
@@ -74,7 +74,7 @@ offset_bottom = 10.0
 color = Color(0.15, 0.1, 0.25, 1)
 
 [node name="PlatformRight" type="StaticBody2D" parent="."]
-position = Vector2(1900, 620)
+position = Vector2(7600, 620)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformRight"]
 shape = SubResource("platform_right")
@@ -89,53 +89,58 @@ color = Color(0.15, 0.1, 0.25, 1)
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Default" parent="SpawnPoints" instance=ExtResource("1_spawn")]
-position = Vector2(200, 760)
+position = Vector2(800, 760)
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 
 [node name="EnemySpawn1" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(500, 760)
+position = Vector2(2000, 760)
 
 [node name="EnemySpawn2" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(850, 760)
+position = Vector2(3400, 760)
 
 [node name="EnemySpawn3" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1200, 760)
+position = Vector2(4800, 760)
 
 [node name="EnemySpawn4" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1550, 760)
+position = Vector2(6200, 760)
 
 [node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1900, 760)
+position = Vector2(7600, 760)
 
 [node name="EnemySpawn6" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(2200, 760)
+position = Vector2(8800, 760)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(600, 700)
+position = Vector2(1920, 700)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1200, 700)
+position = Vector2(3840, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1800, 700)
+position = Vector2(5760, 700)
 
+[node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
+position = Vector2(7680, 700)
+
+[node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
+position = Vector2(8640, 700)
 [node name="SpikeTrap1" parent="." instance=ExtResource("2_spike_trap")]
-position = Vector2(900, 790)
+position = Vector2(3600, 790)
 
 [node name="SpikeTrap2" parent="." instance=ExtResource("2_spike_trap")]
-position = Vector2(1500, 790)
+position = Vector2(6000, 790)
 
 [node name="ArrowTrap1" parent="." instance=ExtResource("3_arrow_trap")]
-position = Vector2(50, 450)
+position = Vector2(200, 450)
 
 [node name="EnemySpawn7" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(500, 580)
+position = Vector2(2000, 580)
 
 [node name="EnemySpawn8" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1900, 580)
+position = Vector2(7600, 580)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

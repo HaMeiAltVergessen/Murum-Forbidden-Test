@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://6kwthd3m82gc" path="res://environment/pickups/testpickup.tscn" id="2_c32y6"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
-size = Vector2(2600, 40)
+size = Vector2(10400, 40)
 
 [sub_resource type="RectangleShape2D" id="wall_left_shape"]
 size = Vector2(40, 1200)
@@ -14,28 +14,28 @@ size = Vector2(40, 1200)
 size = Vector2(40, 1200)
 
 [sub_resource type="RectangleShape2D" id="ceiling_shape"]
-size = Vector2(2600, 40)
+size = Vector2(10400, 40)
 
 [node name="BossRoom01" type="Node2D"]
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 2600.0
+offset_right = 10400.0
 offset_bottom = 800.0
 color = Color(0.1, 0.02, 0.02, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
 offset_top = 800.0
-offset_right = 2600.0
+offset_right = 10400.0
 offset_bottom = 1080.0
 color = Color(0.2, 0.05, 0.05, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(1274, 158)
+position = Vector2(5096, 158)
 texture = ExtResource("1_1umlh")
 
 [node name="Ground" type="StaticBody2D" parent="."]
-position = Vector2(1300, 820)
+position = Vector2(5200, 820)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
 shape = SubResource("ground_shape")
@@ -47,13 +47,13 @@ position = Vector2(-20, 500)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(2620, 500)
+position = Vector2(10420, 500)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
 
 [node name="Ceiling" type="StaticBody2D" parent="."]
-position = Vector2(1300, -20)
+position = Vector2(5200, -20)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling"]
 shape = SubResource("ceiling_shape")
@@ -61,27 +61,26 @@ shape = SubResource("ceiling_shape")
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Default" parent="SpawnPoints" instance=ExtResource("1_spawn")]
-position = Vector2(300, 760)
+position = Vector2(1200, 760)
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 
 [node name="BossSpawn" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1900, 760)
+position = Vector2(7600, 760)
 
 [node name="EnemySpawn1" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1200, 760)
+position = Vector2(4800, 760)
 
 [node name="EnemySpawn2" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1600, 760)
+position = Vector2(6400, 760)
 
 [node name="EnemySpawn3" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(2200, 760)
+position = Vector2(8800, 760)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(203, 733)
-
+position = Vector2(1040, 700)
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
 offset_top = 20.0
@@ -90,4 +89,4 @@ offset_bottom = 50.0
 text = "Boss - Die Heldengruppe"
 
 [node name="RelicPickup" parent="." instance=ExtResource("2_c32y6")]
-position = Vector2(2345, 741)
+position = Vector2(9380, 741)

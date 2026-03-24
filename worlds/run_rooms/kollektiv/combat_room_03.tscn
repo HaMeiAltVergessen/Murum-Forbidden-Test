@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="2_platform"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
-size = Vector2(1800, 40)
+size = Vector2(7200, 40)
 
 [sub_resource type="RectangleShape2D" id="wall_left_shape"]
 size = Vector2(40, 1080)
@@ -13,7 +13,7 @@ size = Vector2(40, 1080)
 size = Vector2(40, 1080)
 
 [sub_resource type="RectangleShape2D" id="ceiling_shape"]
-size = Vector2(1800, 40)
+size = Vector2(7200, 40)
 
 [sub_resource type="RectangleShape2D" id="platform_shape"]
 size = Vector2(350, 20)
@@ -22,18 +22,18 @@ size = Vector2(350, 20)
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 1800.0
+offset_right = 7200.0
 offset_bottom = 800.0
 color = Color(0.05, 0.07, 0.12, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
 offset_top = 800.0
-offset_right = 1800.0
+offset_right = 7200.0
 offset_bottom = 1080.0
 color = Color(0.1, 0.13, 0.2, 1)
 
 [node name="Ground" type="StaticBody2D" parent="."]
-position = Vector2(900, 820)
+position = Vector2(3600, 820)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
 shape = SubResource("ground_shape")
@@ -45,19 +45,19 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(1820, 540)
+position = Vector2(7220, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
 
 [node name="Ceiling" type="StaticBody2D" parent="."]
-position = Vector2(900, -20)
+position = Vector2(3600, -20)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling"]
 shape = SubResource("ceiling_shape")
 
 [node name="PlatformCenter" type="StaticBody2D" parent="."]
-position = Vector2(900, 620)
+position = Vector2(3600, 620)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformCenter"]
 shape = SubResource("platform_shape")
@@ -72,47 +72,52 @@ color = Color(0.12, 0.2, 0.3, 1)
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Default" parent="SpawnPoints" instance=ExtResource("1_spawn")]
-position = Vector2(200, 760)
+position = Vector2(800, 760)
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 
 [node name="EnemySpawn1" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(500, 760)
+position = Vector2(2000, 760)
 
 [node name="EnemySpawn2" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(900, 760)
+position = Vector2(3600, 760)
 
 [node name="EnemySpawn3" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1300, 760)
+position = Vector2(5200, 760)
 
 [node name="EnemySpawn4" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1600, 760)
+position = Vector2(6400, 760)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(450, 700)
+position = Vector2(1440, 700)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(900, 700)
+position = Vector2(2880, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1350, 700)
+position = Vector2(4320, 700)
 
+[node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
+position = Vector2(5760, 700)
+
+[node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
+position = Vector2(6480, 700)
 [node name="Platform2" parent="." instance=ExtResource("2_platform")]
-position = Vector2(400, 450)
+position = Vector2(1600, 450)
 
 [node name="Platform3" parent="." instance=ExtResource("2_platform")]
-position = Vector2(1400, 350)
+position = Vector2(5600, 350)
 
 [node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(400, 410)
+position = Vector2(1600, 410)
 
 [node name="EnemySpawn6" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1400, 310)
+position = Vector2(5600, 310)
 
 [node name="EnemySpawn7" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(900, 580)
+position = Vector2(3600, 580)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

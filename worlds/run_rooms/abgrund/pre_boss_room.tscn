@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="2_spawn"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
-size = Vector2(2400, 40)
+size = Vector2(8560, 40)
 
 [sub_resource type="RectangleShape2D" id="wall_left_shape"]
 size = Vector2(40, 1200)
@@ -24,12 +24,12 @@ script = ExtResource("1_script")
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
 offset_left = -240.0
-offset_right = 2160.0
+offset_right = 8560.0
 offset_bottom = 1400.0
 color = Color(0.04, 0.01, 0.06, 1)
 
 [node name="Ground" type="StaticBody2D" parent="."]
-position = Vector2(960, 820)
+position = Vector2(4280, 820)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
 shape = SubResource("ground_shape")
@@ -48,7 +48,7 @@ position = Vector2(-240, 420)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(2160, 420)
+position = Vector2(8580, 420)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -56,12 +56,12 @@ shape = SubResource("wall_right_shape")
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Default" parent="SpawnPoints" instance=ExtResource("2_spawn")]
-position = Vector2(480, 760)
+position = Vector2(1920, 760)
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 
 [node name="BossSpawn" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1400, 760)
+position = Vector2(5600, 760)
 
 [node name="Doors" type="Node2D" parent="."]
 

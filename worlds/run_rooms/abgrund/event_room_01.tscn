@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
-size = Vector2(1400, 40)
+size = Vector2(5600, 40)
 
 [sub_resource type="RectangleShape2D" id="wall_left_shape"]
 size = Vector2(40, 1080)
@@ -12,7 +12,7 @@ size = Vector2(40, 1080)
 size = Vector2(40, 1080)
 
 [sub_resource type="RectangleShape2D" id="ceiling_shape"]
-size = Vector2(1400, 40)
+size = Vector2(5600, 40)
 
 [sub_resource type="RectangleShape2D" id="choice_shape"]
 size = Vector2(160, 120)
@@ -21,18 +21,18 @@ size = Vector2(160, 120)
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 1400.0
+offset_right = 5600.0
 offset_bottom = 800.0
 color = Color(0.04, 0.015, 0.05, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
 offset_top = 800.0
-offset_right = 1400.0
+offset_right = 5600.0
 offset_bottom = 1080.0
 color = Color(0.08, 0.04, 0.1, 1)
 
 [node name="Ground" type="StaticBody2D" parent="."]
-position = Vector2(700, 820)
+position = Vector2(2800, 820)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
 shape = SubResource("ground_shape")
@@ -44,43 +44,48 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(1420, 540)
+position = Vector2(5620, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
 
 [node name="Ceiling" type="StaticBody2D" parent="."]
-position = Vector2(700, -20)
+position = Vector2(2800, -20)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling"]
 shape = SubResource("ceiling_shape")
 
 [node name="ShadowFigure" type="ColorRect" parent="."]
 z_index = -5
-offset_left = 650.0
+offset_left = 2750.0
 offset_top = 550.0
-offset_right = 750.0
+offset_right = 2850.0
 offset_bottom = 800.0
 color = Color(0.15, 0.05, 0.15, 0.7)
 
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Default" parent="SpawnPoints" instance=ExtResource("1_spawn")]
-position = Vector2(700, 760)
+position = Vector2(2800, 760)
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(350, 700)
+position = Vector2(1120, 700)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(700, 700)
+position = Vector2(2240, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1050, 700)
+position = Vector2(3360, 700)
 
+[node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
+position = Vector2(4480, 700)
+
+[node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
+position = Vector2(5040, 700)
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
 offset_top = 20.0
@@ -89,9 +94,9 @@ offset_bottom = 50.0
 text = "Ereignis - Fluesternde Schatten"
 
 [node name="EventTitle" type="Label" parent="."]
-offset_left = 200.0
+offset_left = 2300.0
 offset_top = 350.0
-offset_right = 1200.0
+offset_right = 3300.0
 offset_bottom = 390.0
 text = "Schatten fluestern dir zwei Wege zu..."
 horizontal_alignment = 1
@@ -99,7 +104,7 @@ horizontal_alignment = 1
 [node name="EventChoices" type="Node2D" parent="."]
 
 [node name="ChoiceA" type="Area2D" parent="EventChoices"]
-position = Vector2(259, 490)
+position = Vector2(1036, 490)
 collision_layer = 0
 collision_mask = 2
 
@@ -138,7 +143,7 @@ text = "+20 HP, -10 Mana"
 horizontal_alignment = 1
 
 [node name="ChoiceB" type="Area2D" parent="EventChoices"]
-position = Vector2(1059, 490)
+position = Vector2(4236, 490)
 collision_layer = 0
 collision_mask = 2
 

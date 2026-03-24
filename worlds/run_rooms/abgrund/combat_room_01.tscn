@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://falling_rock_001" path="res://traps/scenes/falling_rock.tscn" id="4_falling_rock"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
-size = Vector2(2000, 40)
+size = Vector2(8000, 40)
 
 [sub_resource type="RectangleShape2D" id="wall_left_shape"]
 size = Vector2(40, 1080)
@@ -15,24 +15,24 @@ size = Vector2(40, 1080)
 size = Vector2(40, 1080)
 
 [sub_resource type="RectangleShape2D" id="ceiling_shape"]
-size = Vector2(2000, 40)
+size = Vector2(8000, 40)
 
 [node name="CombatRoom01" type="Node2D"]
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 2000.0
+offset_right = 8000.0
 offset_bottom = 800.0
 color = Color(0.05, 0.02, 0.05, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
 offset_top = 800.0
-offset_right = 2000.0
+offset_right = 8000.0
 offset_bottom = 1080.0
 color = Color(0.1, 0.04, 0.08, 1)
 
 [node name="Ground" type="StaticBody2D" parent="."]
-position = Vector2(1000, 820)
+position = Vector2(4000, 820)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
 shape = SubResource("ground_shape")
@@ -44,13 +44,13 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(2020, 540)
+position = Vector2(8020, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
 
 [node name="Ceiling" type="StaticBody2D" parent="."]
-position = Vector2(1000, -20)
+position = Vector2(4000, -20)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling"]
 shape = SubResource("ceiling_shape")

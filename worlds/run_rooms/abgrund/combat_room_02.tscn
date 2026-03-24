@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="4_climbable"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
-size = Vector2(2400, 40)
+size = Vector2(9600, 40)
 
 [sub_resource type="RectangleShape2D" id="wall_left_shape"]
 size = Vector2(40, 1080)
@@ -15,7 +15,7 @@ size = Vector2(40, 1080)
 size = Vector2(40, 1080)
 
 [sub_resource type="RectangleShape2D" id="ceiling_shape"]
-size = Vector2(2400, 40)
+size = Vector2(9600, 40)
 
 [sub_resource type="RectangleShape2D" id="bone_pile_shape"]
 size = Vector2(100, 60)
@@ -24,18 +24,18 @@ size = Vector2(100, 60)
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 2400.0
+offset_right = 9600.0
 offset_bottom = 800.0
 color = Color(0.04, 0.01, 0.04, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
 offset_top = 800.0
-offset_right = 2400.0
+offset_right = 9600.0
 offset_bottom = 1080.0
 color = Color(0.08, 0.03, 0.07, 1)
 
 [node name="Ground" type="StaticBody2D" parent="."]
-position = Vector2(1200, 820)
+position = Vector2(4800, 820)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
 shape = SubResource("ground_shape")
@@ -47,19 +47,19 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(2420, 540)
+position = Vector2(9620, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
 
 [node name="Ceiling" type="StaticBody2D" parent="."]
-position = Vector2(1200, -20)
+position = Vector2(4800, -20)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling"]
 shape = SubResource("ceiling_shape")
 
 [node name="BonePile" type="StaticBody2D" parent="."]
-position = Vector2(900, 770)
+position = Vector2(3600, 770)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BonePile"]
 shape = SubResource("bone_pile_shape")
@@ -74,47 +74,52 @@ color = Color(0.2, 0.15, 0.12, 1)
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Default" parent="SpawnPoints" instance=ExtResource("1_spawn")]
-position = Vector2(200, 760)
+position = Vector2(800, 760)
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 
 [node name="EnemySpawn1" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(500, 760)
+position = Vector2(2000, 760)
 
 [node name="EnemySpawn2" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1000, 760)
+position = Vector2(4000, 760)
 
 [node name="EnemySpawn3" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1400, 760)
+position = Vector2(5600, 760)
 
 [node name="EnemySpawn4" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1800, 760)
+position = Vector2(7200, 760)
 
 [node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(2200, 760)
+position = Vector2(8800, 760)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(600, 700)
+position = Vector2(1920, 700)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1200, 700)
+position = Vector2(3840, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1800, 700)
+position = Vector2(5760, 700)
 
+[node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
+position = Vector2(7680, 700)
+
+[node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
+position = Vector2(8640, 700)
 [node name="QuicksandPit1" parent="." instance=ExtResource("2_quicksand")]
-position = Vector2(1200, 790)
+position = Vector2(4800, 790)
 
 [node name="SpikeTrap1" parent="." instance=ExtResource("3_spike_trap")]
-position = Vector2(700, 790)
+position = Vector2(2800, 790)
 
 [node name="SpikeTrap2" parent="." instance=ExtResource("3_spike_trap")]
-position = Vector2(1800, 790)
+position = Vector2(7200, 790)
 
 [node name="ClimbableArea1" parent="." instance=ExtResource("4_climbable")]
-position = Vector2(50, 400)
+position = Vector2(200, 400)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

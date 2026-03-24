@@ -11,7 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="8_passthrough"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
-size = Vector2(2800, 40)
+size = Vector2(11200, 40)
 
 [sub_resource type="RectangleShape2D" id="wall_left_shape"]
 size = Vector2(40, 2800)
@@ -20,7 +20,7 @@ size = Vector2(40, 2800)
 size = Vector2(40, 2800)
 
 [sub_resource type="RectangleShape2D" id="ceiling_shape"]
-size = Vector2(2800, 40)
+size = Vector2(11200, 40)
 
 [sub_resource type="RectangleShape2D" id="ledge_shape_1"]
 size = Vector2(120, 16)
@@ -34,19 +34,19 @@ size = Vector2(120, 16)
 [node name="BossRoom01" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(1419.75, 1402)
+position = Vector2(5679, 1402)
 scale = Vector2(1.80957, 2.71094)
 texture = ExtResource("1_q0f1w")
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 2800.0
+offset_right = 11200.0
 offset_bottom = 2800.0
 color = Color(0.02, 0.04, 0.08, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
 offset_top = 2760.0
-offset_right = 2800.0
+offset_right = 11200.0
 offset_bottom = 2800.0
 color = Color(0.15, 0.22, 0.35, 1)
 
@@ -56,19 +56,19 @@ offset_bottom = 2800.0
 color = Color(0.12, 0.18, 0.3, 1)
 
 [node name="WallRightVisual" type="ColorRect" parent="."]
-offset_left = 2800.0
-offset_right = 2840.0
+offset_left = 11260.0
+offset_right = 11300.0
 offset_bottom = 2800.0
 color = Color(0.12, 0.18, 0.3, 1)
 
 [node name="CeilingVisual" type="ColorRect" parent="."]
-offset_left = -40.0
+offset_left = 4160.0
 offset_top = -40.0
-offset_right = 2840.0
+offset_right = 7040.0
 color = Color(0.12, 0.18, 0.3, 1)
 
 [node name="Ground" type="StaticBody2D" parent="."]
-position = Vector2(1400, 2780)
+position = Vector2(5600, 2780)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
 shape = SubResource("ground_shape")
@@ -80,13 +80,13 @@ position = Vector2(-20, 1400)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(2820, 1400)
+position = Vector2(11220, 1400)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
 
 [node name="Ceiling" type="StaticBody2D" parent="."]
-position = Vector2(1400, -20)
+position = Vector2(5600, -20)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling"]
 shape = SubResource("ceiling_shape")
@@ -94,18 +94,17 @@ shape = SubResource("ceiling_shape")
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Default" parent="SpawnPoints" instance=ExtResource("1_spawn")]
-position = Vector2(300, 2720)
+position = Vector2(1200, 2720)
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 
 [node name="BossSpawn" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1400, 1400)
+position = Vector2(5600, 1400)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1400, 2680)
-
+position = Vector2(1120, 700)
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
 offset_top = 20.0

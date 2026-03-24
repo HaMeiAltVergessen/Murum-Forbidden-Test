@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="3_climbable"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
-size = Vector2(1800, 40)
+size = Vector2(7200, 40)
 
 [sub_resource type="RectangleShape2D" id="wall_left_shape"]
 size = Vector2(40, 1080)
@@ -14,24 +14,24 @@ size = Vector2(40, 1080)
 size = Vector2(40, 1080)
 
 [sub_resource type="RectangleShape2D" id="ceiling_shape"]
-size = Vector2(1800, 40)
+size = Vector2(7200, 40)
 
 [node name="CombatRoom05" type="Node2D"]
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 1800.0
+offset_right = 7200.0
 offset_bottom = 800.0
 color = Color(0.04, 0.015, 0.04, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
 offset_top = 800.0
-offset_right = 1800.0
+offset_right = 7200.0
 offset_bottom = 1080.0
 color = Color(0.09, 0.035, 0.07, 1)
 
 [node name="Ground" type="StaticBody2D" parent="."]
-position = Vector2(900, 820)
+position = Vector2(3600, 820)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
 shape = SubResource("ground_shape")
@@ -43,13 +43,13 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(1820, 540)
+position = Vector2(7220, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
 
 [node name="Ceiling" type="StaticBody2D" parent="."]
-position = Vector2(900, -20)
+position = Vector2(3600, -20)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling"]
 shape = SubResource("ceiling_shape")
@@ -57,47 +57,52 @@ shape = SubResource("ceiling_shape")
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Default" parent="SpawnPoints" instance=ExtResource("1_spawn")]
-position = Vector2(200, 760)
+position = Vector2(800, 760)
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 
 [node name="EnemySpawn1" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(400, 760)
+position = Vector2(1600, 760)
 
 [node name="EnemySpawn2" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(800, 760)
+position = Vector2(3200, 760)
 
 [node name="EnemySpawn3" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1200, 760)
+position = Vector2(4800, 760)
 
 [node name="EnemySpawn4" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1600, 760)
+position = Vector2(6400, 760)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(450, 700)
+position = Vector2(1440, 700)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(900, 700)
+position = Vector2(2880, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1350, 700)
+position = Vector2(4320, 700)
 
+[node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
+position = Vector2(5760, 700)
+
+[node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
+position = Vector2(6480, 700)
 [node name="Platform1" parent="." instance=ExtResource("2_platform")]
-position = Vector2(500, 550)
+position = Vector2(2000, 550)
 
 [node name="Platform2" parent="." instance=ExtResource("2_platform")]
-position = Vector2(1300, 450)
+position = Vector2(5200, 450)
 
 [node name="ClimbableArea1" parent="." instance=ExtResource("3_climbable")]
-position = Vector2(50, 350)
+position = Vector2(200, 350)
 
 [node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(500, 510)
+position = Vector2(2000, 510)
 
 [node name="EnemySpawn6" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1300, 410)
+position = Vector2(5200, 410)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://blta5m8ixhcu8" path="res://puzzles/scenes/components/puzzle_switch.tscn" id="3_switch"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
-size = Vector2(2200, 40)
+size = Vector2(8800, 40)
 
 [sub_resource type="RectangleShape2D" id="wall_left_shape"]
 size = Vector2(40, 1080)
@@ -14,7 +14,7 @@ size = Vector2(40, 1080)
 size = Vector2(40, 1080)
 
 [sub_resource type="RectangleShape2D" id="ceiling_shape"]
-size = Vector2(2200, 40)
+size = Vector2(8800, 40)
 
 [sub_resource type="RectangleShape2D" id="column_shape"]
 size = Vector2(40, 250)
@@ -23,18 +23,18 @@ size = Vector2(40, 250)
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 2200.0
+offset_right = 8800.0
 offset_bottom = 800.0
 color = Color(0.04, 0.03, 0.08, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
 offset_top = 800.0
-offset_right = 2200.0
+offset_right = 8800.0
 offset_bottom = 1080.0
 color = Color(0.1, 0.08, 0.15, 1)
 
 [node name="Ground" type="StaticBody2D" parent="."]
-position = Vector2(1100, 820)
+position = Vector2(4400, 820)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
 shape = SubResource("ground_shape")
@@ -46,19 +46,19 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(2220, 540)
+position = Vector2(8820, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
 
 [node name="Ceiling" type="StaticBody2D" parent="."]
-position = Vector2(1100, -20)
+position = Vector2(4400, -20)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling"]
 shape = SubResource("ceiling_shape")
 
 [node name="Column1" type="StaticBody2D" parent="."]
-position = Vector2(22, 694)
+position = Vector2(88, 694)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Column1"]
 shape = SubResource("column_shape")
@@ -71,7 +71,7 @@ offset_bottom = 125.0
 color = Color(0.18, 0.15, 0.28, 1)
 
 [node name="Column3" type="StaticBody2D" parent="."]
-position = Vector2(2178, 698)
+position = Vector2(8712, 698)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Column3"]
 shape = SubResource("column_shape")
@@ -86,50 +86,55 @@ color = Color(0.18, 0.15, 0.28, 1)
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Default" parent="SpawnPoints" instance=ExtResource("1_spawn")]
-position = Vector2(200, 760)
+position = Vector2(800, 760)
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 
 [node name="EnemySpawn1" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(400, 760)
+position = Vector2(1600, 760)
 
 [node name="EnemySpawn2" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(750, 760)
+position = Vector2(3000, 760)
 
 [node name="EnemySpawn3" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1100, 760)
+position = Vector2(4400, 760)
 
 [node name="EnemySpawn4" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1450, 760)
+position = Vector2(5800, 760)
 
 [node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1800, 760)
+position = Vector2(7200, 760)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(550, 700)
+position = Vector2(1760, 700)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1100, 700)
+position = Vector2(3520, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1650, 700)
+position = Vector2(5280, 700)
 
+[node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
+position = Vector2(7040, 700)
+
+[node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
+position = Vector2(7920, 700)
 [node name="PuzzleGate" type="Node" parent="." groups=["puzzle_gate"]]
 script = ExtResource("2_seq_controller")
 correct_sequence = PackedInt32Array(1, 2, 3)
 
 [node name="Switch1" parent="PuzzleGate" instance=ExtResource("3_switch")]
-position = Vector2(500, 700)
+position = Vector2(2000, 700)
 switch_id = 1
 
 [node name="Switch2" parent="PuzzleGate" instance=ExtResource("3_switch")]
-position = Vector2(1100, 700)
+position = Vector2(4400, 700)
 switch_id = 2
 
 [node name="Switch3" parent="PuzzleGate" instance=ExtResource("3_switch")]
-position = Vector2(1700, 700)
+position = Vector2(6800, 700)
 switch_id = 3
 
 [node name="RoomLabel" type="Label" parent="."]
