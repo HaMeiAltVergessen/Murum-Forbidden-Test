@@ -39,6 +39,9 @@ var spawned_enemies: Array[Node] = []
 var _spawning_in_progress: bool = false  # Guard against race condition during stagger
 var _spawn_parent: Node = null  # Parent node for spawned enemies (room, not root)
 var _paused: bool = false  # When true, wave progression halts after current wave clears
+var _stuck_check_timer: Timer = null  # Periodic check for stuck/lost enemies
+const STUCK_CHECK_INTERVAL: float = 5.0  # Seconds between stuck checks
+const STUCK_MAX_DISTANCE: float = 3000.0  # Distance from room center to be considered lost
 
 # ============================================================================
 # SIGNALS
@@ -57,6 +60,14 @@ signal enemy_spawned(enemy: Node, wave_index: int)
 func _ready() -> void:
 	# Connect to EventBus
 	EventBus.enemy_died.connect(_on_enemy_died)
+
+	# Setup stuck enemy check timer
+	_stuck_check_timer = Timer.new()
+	_stuck_check_timer.name = "StuckCheckTimer"
+	_stuck_check_timer.wait_time = STUCK_CHECK_INTERVAL
+	_stuck_check_timer.one_shot = false
+	_stuck_check_timer.timeout.connect(_check_stuck_enemies)
+	add_child(_stuck_check_timer)
 
 	# Auto-start if enabled
 	if auto_start:
@@ -100,6 +111,10 @@ func start_waves() -> void:
 
 	is_active = true
 	current_wave_index = -1
+
+	# Start stuck enemy check timer
+	if _stuck_check_timer:
+		_stuck_check_timer.start()
 
 	# Lock doors
 	if lock_doors:
@@ -274,6 +289,10 @@ func _on_all_waves_completed() -> void:
 
 	is_active = false
 
+	# Stop stuck check timer
+	if _stuck_check_timer:
+		_stuck_check_timer.stop()
+
 	# Unlock doors
 	if lock_doors:
 		_unlock_arena_doors()
@@ -362,6 +381,72 @@ func _play_completion_effect() -> void:
 
 	# Notification
 	EventBus.show_notification.emit("All Waves Cleared!", 3.0)
+
+# ============================================================================
+# STUCK ENEMY DETECTION
+# ============================================================================
+
+func _check_stuck_enemies() -> void:
+	"""Periodic check for enemies that are stuck, lost, or unreachable.
+	Removes them from tracking so wave completion isn't blocked forever."""
+	if not is_active or _spawning_in_progress or spawned_enemies.is_empty():
+		return
+
+	var room_center := _get_room_center()
+	var removed_count: int = 0
+
+	var enemies_to_remove: Array[Node] = []
+	for enemy in spawned_enemies:
+		if not is_instance_valid(enemy) or enemy.is_queued_for_deletion():
+			enemies_to_remove.append(enemy)
+			continue
+
+		# Check if enemy is too far from room center (fell out of bounds)
+		var dist: float = enemy.global_position.distance_to(room_center)
+		if dist > STUCK_MAX_DISTANCE:
+			print("[WaveSpawner] Enemy '%s' is %.0f px from room center — killing as stuck" % [enemy.name, dist])
+			enemies_to_remove.append(enemy)
+			_force_kill_enemy(enemy)
+			removed_count += 1
+			continue
+
+		# Check if enemy is marked as dead but still in tracking (death signal missed)
+		if enemy.get("is_dead") == true:
+			print("[WaveSpawner] Enemy '%s' is dead but still tracked — removing" % enemy.name)
+			enemies_to_remove.append(enemy)
+			removed_count += 1
+
+	for enemy in enemies_to_remove:
+		spawned_enemies.erase(enemy)
+
+	if removed_count > 0:
+		print("[WaveSpawner] Removed %d stuck/dead enemies, remaining: %d" % [removed_count, spawned_enemies.size()])
+		_check_wave_completion()
+
+
+func _force_kill_enemy(enemy: Node) -> void:
+	"""Force-kills a stuck enemy, trying proper death first."""
+	if enemy.has_method("die") and enemy.get("is_dead") != true:
+		enemy.die()
+	else:
+		EventBus.enemy_died.emit(enemy, enemy.global_position)
+		enemy.queue_free()
+
+
+func _get_room_center() -> Vector2:
+	"""Gets approximate room center from the spawn parent or viewport."""
+	if is_instance_valid(_spawn_parent) and _spawn_parent is Node2D:
+		# Try to find Background ColorRect for room dimensions
+		var bg: ColorRect = _spawn_parent.get_node_or_null("Background") as ColorRect
+		if bg:
+			return Vector2(
+				(bg.offset_left + bg.offset_right) / 2.0,
+				(bg.offset_top + bg.offset_bottom) / 2.0
+			)
+		# Fallback: use spawn parent position + offset
+		return _spawn_parent.global_position + Vector2(960, 540)
+	return Vector2(960, 540)
+
 
 # ============================================================================
 # UTILITY

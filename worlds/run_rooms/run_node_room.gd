@@ -117,6 +117,9 @@ var node_data: RunMapData.MapNode = null
 var arena_controller: ArenaController = null
 var doors_spawned: bool = false
 
+# ============ DEATH ZONE ============
+const DEATH_ZONE_MARGIN: float = 500.0  # How far outside the room walls before killing
+
 
 func _is_any_player(body: Node) -> bool:
 	"""Returns true if body is P1 (Murum) or P2 (Lythrun)"""
@@ -134,6 +137,7 @@ func _activate() -> void:
 		GameManager.current_state = GameManager.GameState.PLAYING
 
 	_setup_background()
+	_setup_death_zone()
 	_setup_player()
 	_spawn_exit_doors()
 
@@ -160,6 +164,102 @@ func _activate() -> void:
 			_setup_shop()
 		RunMapData.NodeType.ARENA:
 			pass  # Arena rooms use their own script, loaded directly by RunManager
+
+
+# ============ DEATH ZONE ============
+func _setup_death_zone() -> void:
+	"""Creates an Area2D kill zone around the room that kills enemies who fall/glitch out of bounds."""
+	# Detect room bounds from existing walls
+	var room_rect := _detect_room_bounds()
+	if room_rect.size == Vector2.ZERO:
+		push_warning("[RunNodeRoom] Could not detect room bounds for death zone")
+		return
+
+	# Expand bounds by margin — anything beyond this is out of bounds
+	var outer := Rect2(
+		room_rect.position - Vector2(DEATH_ZONE_MARGIN, DEATH_ZONE_MARGIN),
+		room_rect.size + Vector2(DEATH_ZONE_MARGIN * 2, DEATH_ZONE_MARGIN * 2)
+	)
+
+	# Create 4 large Area2D strips around the room (top, bottom, left, right)
+	var strip_thickness: float = 2000.0
+	var strips: Array[Rect2] = [
+		# Bottom
+		Rect2(outer.position.x, outer.end.y, outer.size.x, strip_thickness),
+		# Top
+		Rect2(outer.position.x, outer.position.y - strip_thickness, outer.size.x, strip_thickness),
+		# Left
+		Rect2(outer.position.x - strip_thickness, outer.position.y - strip_thickness, strip_thickness, outer.size.y + strip_thickness * 2),
+		# Right
+		Rect2(outer.end.x, outer.position.y - strip_thickness, strip_thickness, outer.size.y + strip_thickness * 2),
+	]
+
+	for i in range(strips.size()):
+		var strip_rect := strips[i]
+		var area := Area2D.new()
+		area.name = "DeathZone_%d" % i
+		area.collision_layer = 0
+		area.collision_mask = 8  # Layer 4 = enemies (adjust if needed)
+		area.monitoring = true
+		area.monitorable = false
+
+		var shape := CollisionShape2D.new()
+		var rect_shape := RectangleShape2D.new()
+		rect_shape.size = strip_rect.size
+		shape.shape = rect_shape
+		shape.position = strip_rect.position + strip_rect.size / 2.0
+
+		area.add_child(shape)
+		add_child(area)
+		area.body_entered.connect(_on_death_zone_body_entered)
+
+	print("[RunNodeRoom] Death zone created (room bounds: %v, margin: %.0f)" % [room_rect.size, DEATH_ZONE_MARGIN])
+
+
+func _detect_room_bounds() -> Rect2:
+	"""Detects room bounds from Background ColorRect or wall positions."""
+	# Method 1: Use Background ColorRect dimensions
+	var bg: ColorRect = get_node_or_null("Background") as ColorRect
+	if bg:
+		return Rect2(bg.offset_left, bg.offset_top, bg.offset_right - bg.offset_left, bg.offset_bottom - bg.offset_top)
+
+	# Method 2: Use wall StaticBody2D positions
+	var wall_left: StaticBody2D = get_node_or_null("WallLeft") as StaticBody2D
+	var wall_right: StaticBody2D = get_node_or_null("WallRight") as StaticBody2D
+	var ground: StaticBody2D = get_node_or_null("Ground") as StaticBody2D
+	var ceiling: StaticBody2D = get_node_or_null("Ceiling") as StaticBody2D
+
+	if wall_left and wall_right and ground:
+		var left_x: float = wall_left.position.x
+		var right_x: float = wall_right.position.x
+		var top_y: float = ceiling.position.y if ceiling else -100.0
+		var bottom_y: float = ground.position.y
+		return Rect2(left_x, top_y, right_x - left_x, bottom_y - top_y)
+
+	# Fallback: default 1920x1080 room
+	return Rect2(0, 0, 1920, 1080)
+
+
+func _on_death_zone_body_entered(body: Node) -> void:
+	"""Kills enemies that enter the death zone (out of bounds)."""
+	if not body.is_in_group("enemies"):
+		return
+
+	print("[RunNodeRoom] Enemy '%s' fell out of bounds — killing" % body.name)
+
+	# Try to trigger proper death via die() or take_damage
+	if body.has_method("die"):
+		if body.get("is_dead") == true:
+			# Already dead but still moving — force remove
+			body.queue_free()
+		else:
+			body.die()
+	elif body.has_method("take_damage"):
+		body.take_damage(99999)
+	else:
+		# Last resort: emit death signal manually and free
+		EventBus.enemy_died.emit(body, body.global_position)
+		body.queue_free()
 
 
 # ============ BACKGROUND SETUP ============
