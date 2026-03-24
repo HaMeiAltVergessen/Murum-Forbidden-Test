@@ -564,6 +564,30 @@ func load_progression_data(data: Dictionary) -> void:
 
 	print("[WorldManager] Progression data loaded: %d items, %d puzzles, %d dialogs" % [collected_items.size(), solved_puzzles.size(), played_dialogs.size()])
 
+
+func clear_run_states() -> void:
+	"""Clears all run-transient state. Called by RunManager at start of each new run."""
+	# Clear run-prefixed entries from cleared_rooms
+	var keys_to_remove: Array = []
+	for key in cleared_rooms.keys():
+		if key.begins_with("run_") or key.begins_with("event_npc_"):
+			keys_to_remove.append(key)
+	for key in keys_to_remove:
+		cleared_rooms.erase(key)
+
+	# Clear run-transient puzzle, item, dialog, door states
+	# Run rooms use fresh scene instances, so ALL accumulated run state must go
+	solved_puzzles.clear()
+	collected_items.clear()
+	played_dialogs.clear()
+	unlocked_doors.clear()
+
+	var total: int = keys_to_remove.size()
+	if total > 0:
+		print("[WorldManager] Cleared %d stale run room states" % total)
+	print("[WorldManager] Run states cleared (puzzles, items, dialogs, doors)")
+
+
 # ============================================================================
 # UTILITY
 # ============================================================================

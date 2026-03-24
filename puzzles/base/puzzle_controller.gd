@@ -80,8 +80,8 @@ func solve() -> void:
 	if puzzle_id != "" and WorldManager:
 		WorldManager.mark_puzzle_solved(puzzle_id)
 
-	# Auto-save after solving puzzle (like pickups)
-	if SaveManager:
+	# Auto-save after solving puzzle (NOT during runs — run state is transient)
+	if SaveManager and not RunManager.is_run_active():
 		SaveManager.save_current_game()
 		print("[PuzzleController] Auto-saved after solving %s" % puzzle_name)
 

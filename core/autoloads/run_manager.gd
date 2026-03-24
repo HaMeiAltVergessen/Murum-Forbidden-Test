@@ -597,21 +597,9 @@ func get_accessible_nodes() -> Array:
 
 # ============ HELPERS ============
 func _clear_run_room_states() -> void:
-	"""Clears ALL run-specific room states from WorldManager to prevent stale 'already cleared' flags.
-	Matches: run_node_, event_npc_, run_boss_, run_arena_, and any other run-prefixed keys."""
-	if not WorldManager:
-		return
-
-	var keys_to_remove: Array = []
-	for key in WorldManager.cleared_rooms.keys():
-		if key.begins_with("run_") or key.begins_with("event_npc_"):
-			keys_to_remove.append(key)
-
-	for key in keys_to_remove:
-		WorldManager.cleared_rooms.erase(key)
-
-	if keys_to_remove.size() > 0:
-		print("[RunManager] Cleared %d stale run room states" % keys_to_remove.size())
+	"""Clears ALL run-specific states from WorldManager to prevent stale flags."""
+	if WorldManager:
+		WorldManager.clear_run_states()
 
 
 # ============ RUN STAT BONUSES ============
