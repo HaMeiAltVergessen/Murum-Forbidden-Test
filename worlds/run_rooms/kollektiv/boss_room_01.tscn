@@ -105,6 +105,7 @@ position = Vector2(5600, 1400)
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
 position = Vector2(1120, 700)
+
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
 offset_top = 20.0
