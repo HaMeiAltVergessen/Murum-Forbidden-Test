@@ -311,6 +311,17 @@ func _advance_section() -> void:
 	var config: Dictionary = SECTION_CONFIG[current_section]
 	print("[MirrorController] Section transition → %s (speed: %.0f)" % [config["name"], config["scroll_speed"]])
 
+	# Hitstop for dramatic transition
+	if GlobalTimeEffects:
+		GlobalTimeEffects.hit_stop(0.2)
+
+	# Screen flash (white overlay that fades out)
+	_flash_screen(Color(0.9, 0.85, 1.0, 0.5), 0.4)
+
+	# Camera shake on transition
+	if runner_camera and runner_camera.has_method("shake"):
+		runner_camera.shake(8.0, 5.0)
+
 	# Update chunk pool
 	if chunk_spawner:
 		chunk_spawner.switch_pool(config["chunk_pool"])
@@ -323,10 +334,6 @@ func _advance_section() -> void:
 
 	# Update background
 	_update_background(current_section)
-
-	# Camera shake on transition
-	if runner_camera and runner_camera.has_method("shake"):
-		runner_camera.shake(6.0, 4.0)
 
 
 func _get_current_scroll_speed() -> float:
@@ -520,7 +527,8 @@ func _start_transition_to_phase_2() -> void:
 	if runner_camera:
 		runner_camera.pause_scrolling()
 
-	# 2. Screen shake + pause
+	# 2. Screen flash + shake + pause
+	_flash_screen(Color(1.0, 0.8, 0.6, 0.6), 0.5)
 	if runner_camera:
 		runner_camera.shake(15.0, 3.0)
 	_show_section_title("Der Fall")
@@ -575,6 +583,9 @@ func _start_transition_to_phase_3() -> void:
 	print("[MirrorController] Phase 2 complete — transitioning to Phase 3: Finaler Kampf!")
 
 	# 1. Stop everything — freeze the scene
+	if GlobalTimeEffects:
+		GlobalTimeEffects.hit_stop(0.3)
+	_flash_screen(Color(1.0, 0.6, 0.6, 0.7), 0.5)
 	if runner_camera:
 		runner_camera.pause_scrolling()
 		runner_camera.shake(20.0, 3.0)
@@ -666,7 +677,7 @@ func _start_transition_to_phase_3() -> void:
 
 
 func _spawn_arena_platform(center_x: float, platform_y: float) -> void:
-	"""Spawns the Phase 3 arena platform — wide floor with walls"""
+	"""Spawns the Phase 3 arena platform — wide floor with walls + edge glow particles"""
 	var arena_width: float = 1600.0
 	var arena_height: float = 48.0
 	var wall_height: float = 600.0
@@ -685,11 +696,47 @@ func _spawn_arena_platform(center_x: float, platform_y: float) -> void:
 	floor_shape.shape = floor_rect
 	floor_body.add_child(floor_shape)
 
+	# Floor visual — darker center with glowing top edge
 	var floor_visual := ColorRect.new()
 	floor_visual.size = Vector2(arena_width, arena_height)
 	floor_visual.position = Vector2(-arena_width * 0.5, -arena_height * 0.5)
-	floor_visual.color = Color(0.15, 0.1, 0.25)
+	floor_visual.color = Color(0.12, 0.08, 0.2)
 	floor_body.add_child(floor_visual)
+
+	# Glowing top edge line
+	var edge_glow := ColorRect.new()
+	edge_glow.size = Vector2(arena_width, 3.0)
+	edge_glow.position = Vector2(-arena_width * 0.5, -arena_height * 0.5)
+	edge_glow.color = Color(0.6, 0.4, 1.0, 0.8)
+	floor_body.add_child(edge_glow)
+
+	# Edge glow pulse tween
+	var glow_tween := floor_body.create_tween().set_loops()
+	glow_tween.tween_property(edge_glow, "color:a", 0.3, 1.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	glow_tween.tween_property(edge_glow, "color:a", 0.8, 1.5).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+
+	# Edge particles rising from platform surface
+	var edge_particles := GPUParticles2D.new()
+	edge_particles.name = "EdgeParticles"
+	edge_particles.amount = 30
+	edge_particles.lifetime = 1.5
+	edge_particles.emitting = true
+	edge_particles.position = Vector2(0, -arena_height * 0.5)
+
+	var edge_mat := ParticleProcessMaterial.new()
+	edge_mat.particle_flag_disable_z = true
+	edge_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	edge_mat.emission_box_extents = Vector3(arena_width * 0.5, 2.0, 0.0)
+	edge_mat.direction = Vector3(0, -1, 0)
+	edge_mat.spread = 15.0
+	edge_mat.gravity = Vector3(0, -30, 0)
+	edge_mat.initial_velocity_min = 15.0
+	edge_mat.initial_velocity_max = 40.0
+	edge_mat.scale_min = 1.0
+	edge_mat.scale_max = 2.5
+	edge_mat.color = Color(0.5, 0.3, 0.9, 0.6)
+	edge_particles.process_material = edge_mat
+	floor_body.add_child(edge_particles)
 
 	get_parent().add_child(floor_body)
 
@@ -813,10 +860,52 @@ func _play_defeat_dialog() -> void:
 	# Final strike + dissolve
 	await get_tree().create_timer(1.0).timeout
 
-	# Boss dissolves
+	# Hitstop on final moment
+	if GlobalTimeEffects:
+		GlobalTimeEffects.hit_stop(0.3)
+	await get_tree().create_timer(0.3, true, false, true).timeout
+
+	# Screen flash
+	_flash_screen(Color(1.0, 0.9, 1.0, 0.7), 0.6)
+
+	# Boss dissolve with particle burst
 	if mirror_boss and is_instance_valid(mirror_boss):
+		# Dissolve particles (fragments breaking away)
+		var dissolve_vfx := GPUParticles2D.new()
+		dissolve_vfx.amount = 60
+		dissolve_vfx.lifetime = 2.0
+		dissolve_vfx.one_shot = true
+		dissolve_vfx.explosiveness = 0.3
+
+		var dissolve_mat := ParticleProcessMaterial.new()
+		dissolve_mat.particle_flag_disable_z = true
+		dissolve_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+		dissolve_mat.emission_sphere_radius = 40.0
+		dissolve_mat.direction = Vector3(0, -1, 0)
+		dissolve_mat.spread = 180.0
+		dissolve_mat.gravity = Vector3(0, -40, 0)
+		dissolve_mat.initial_velocity_min = 20.0
+		dissolve_mat.initial_velocity_max = 80.0
+		dissolve_mat.scale_min = 1.5
+		dissolve_mat.scale_max = 4.0
+		dissolve_mat.color = Color(0.6, 0.4, 1.0, 0.8)
+		dissolve_vfx.process_material = dissolve_mat
+
+		dissolve_vfx.global_position = mirror_boss.global_position
+		get_tree().current_scene.add_child(dissolve_vfx)
+
+		# Auto-free dissolve VFX
+		var vfx_timer := Timer.new()
+		vfx_timer.wait_time = 3.0
+		vfx_timer.one_shot = true
+		vfx_timer.timeout.connect(dissolve_vfx.queue_free)
+		dissolve_vfx.add_child(vfx_timer)
+		vfx_timer.start()
+
+		# Boss fades to transparent
 		var tween := create_tween()
-		tween.tween_property(mirror_boss, "modulate:a", 0.0, 2.0)
+		tween.tween_property(mirror_boss, "modulate", Color(0.6, 0.4, 1.0, 1.0), 0.3)
+		tween.tween_property(mirror_boss, "modulate:a", 0.0, 1.7)
 		await tween.finished
 		mirror_boss.queue_free()
 
@@ -907,36 +996,70 @@ func _on_mirror_dialog_finished(_dialog_id: String) -> void:
 
 # ============ UTILITY ============
 func _show_section_title(title: String) -> void:
-	_show_dialog_text(title, 3.0)
-
-
-func _show_dialog_text(text: String, duration: float) -> void:
-	"""Zeigt Text direkt als CanvasLayer-Label an (unabhaengig von HUD/EventBus)"""
-	# Auch an EventBus senden falls HUD aktiv
-	EventBus.show_notification.emit(text, duration)
-
-	# Eigenes Label erstellen das immer funktioniert
+	"""Shows a dramatic section title with slide-in and glow effect."""
 	var layer := CanvasLayer.new()
 	layer.layer = 200
 	add_child(layer)
 
+	# Background bar (cinematic letterbox strip)
+	var bar := ColorRect.new()
+	bar.color = Color(0.0, 0.0, 0.0, 0.6)
+	bar.size = Vector2(1920.0, 80.0)
+	bar.position = Vector2(0.0, 180.0)
+	bar.modulate.a = 0.0
+	layer.add_child(bar)
+
+	# Main title label (large)
 	var label := Label.new()
-	label.text = text
+	label.text = title.to_upper()
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.anchors_preset = Control.PRESET_CENTER_TOP
-	label.position = Vector2(960.0 - 400.0, 200.0)
-	label.size = Vector2(800.0, 60.0)
-	label.add_theme_font_size_override("font_size", 28)
-	label.add_theme_color_override("font_color", Color.WHITE)
+	label.position = Vector2(260.0, 185.0)
+	label.size = Vector2(1400.0, 70.0)
+	label.add_theme_font_size_override("font_size", 40)
+	label.add_theme_color_override("font_color", Color(0.85, 0.75, 1.0))
 	label.modulate.a = 0.0
 	layer.add_child(label)
 
-	# Einblenden
-	var tween := label.create_tween()
-	tween.tween_property(label, "modulate:a", 1.0, 0.3)
-	tween.tween_interval(duration - 0.6)
-	tween.tween_property(label, "modulate:a", 0.0, 0.3)
+	# Animate: bar fades in, title slides from left + fades in, hold, fade out
+	var tween := create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(bar, "modulate:a", 1.0, 0.3)
+	tween.tween_property(label, "modulate:a", 1.0, 0.4).set_delay(0.15)
+	tween.tween_property(label, "position:x", 260.0, 0.5).from(160.0).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD).set_delay(0.1)
+
+	# Flash: brief white glow then settle
+	tween.chain().set_parallel(false)
+	tween.tween_property(label, "modulate", Color(1.5, 1.5, 2.0, 1.0), 0.15)
+	tween.tween_property(label, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.3)
+	tween.tween_interval(2.0)
+
+	# Fade out
+	tween.set_parallel(true)
+	tween.tween_property(bar, "modulate:a", 0.0, 0.4)
+	tween.tween_property(label, "modulate:a", 0.0, 0.4)
+	tween.chain().tween_callback(layer.queue_free)
+
+
+func _show_dialog_text(text: String, duration: float) -> void:
+	"""Zeigt Text direkt als CanvasLayer-Label an (unabhaengig von HUD/EventBus)"""
+	EventBus.show_notification.emit(text, duration)
+
+
+func _flash_screen(color: Color, duration: float) -> void:
+	"""Flashes the screen with a color overlay that fades out."""
+	var layer := CanvasLayer.new()
+	layer.layer = 150
+	add_child(layer)
+
+	var flash := ColorRect.new()
+	flash.color = color
+	flash.size = Vector2(1920.0, 1080.0)
+	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(flash)
+
+	var tween := create_tween()
+	tween.tween_property(flash, "color:a", 0.0, duration).set_ease(Tween.EASE_OUT)
 	tween.tween_callback(layer.queue_free)
 
 

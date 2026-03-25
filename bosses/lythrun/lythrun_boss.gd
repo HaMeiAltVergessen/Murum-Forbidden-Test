@@ -22,6 +22,17 @@ const CHARGE_COLOR_AOE: Color = Color(1.0, 0.0, 0.0)       # Red for desperation
 const CHARGE_COLOR_TELEPORT: Color = Color(0.3, 0.0, 0.5)  # Deep purple for teleport
 
 # ============================================================================
+# DIALOG PORTRAITS
+# ============================================================================
+const LYTHRUN_PORTRAIT := "res://Assets/AIPlaceholder/Char/Lythrun/lythrunVBossSprite.png"
+const MURUM_PORTRAIT := "res://Assets/AIPlaceholder/Char/Murum/Murum.png"
+
+# ============================================================================
+# SIGNALS
+# ============================================================================
+signal dialog_sequence_finished
+
+# ============================================================================
 # STATE
 # ============================================================================
 
@@ -361,15 +372,39 @@ func _perform_gap_closer_dash() -> void:
 			sprite.modulate = Color.WHITE
 
 
-# Override start_fight to set faster attack cooldown
+# Override start_fight for dramatic intro sequence
 func start_fight() -> void:
-	"""Starts the boss fight with reduced cooldown for aggressive AI"""
-	# Set faster attack cooldown BEFORE calling parent
+	"""Starts the boss fight with full intro cutscene"""
+	# Set faster attack cooldown
 	if attack_manager:
-		attack_manager.attack_cooldown = 0.8  # Reduced from 2.0 to 0.8 seconds
+		attack_manager.attack_cooldown = 0.8
 
-	# Call parent implementation
-	super.start_fight()
+	is_active = true
+	fight_started.emit()
+
+	# Make invulnerable during intro
+	if health_component:
+		health_component.set_invulnerable(true)
+
+	# Activate camera
+	if camera_controller:
+		camera_controller.activate()
+
+	# --- INTRO SEQUENCE ---
+	await _play_intro_sequence()
+
+	# Show health bar (after intro)
+	if health_bar:
+		health_bar.show_bar()
+
+	# Make vulnerable
+	if health_component:
+		health_component.set_invulnerable(false)
+
+	# Activate attacks
+	if attack_manager:
+		attack_manager.set_pattern(phase_1_pattern)
+		attack_manager.activate()
 
 	# Phase 1 music
 	if MusicScenePlayer:
@@ -382,6 +417,79 @@ func start_fight() -> void:
 	_wave_spawner.start_spawning()
 
 	print("[Lythrun] Fight started with attack_cooldown: ", attack_manager.attack_cooldown if attack_manager else "N/A")
+
+
+func _play_intro_sequence() -> void:
+	"""Dramatic intro — boss materializes from darkness, dialog, then fight."""
+	# Boss starts invisible
+	modulate = Color(0.0, 0.0, 0.0, 0.0)
+
+	await get_tree().create_timer(0.5).timeout
+
+	# Spawn dark energy particles at boss position
+	var intro_vfx := GPUParticles2D.new()
+	intro_vfx.amount = 40
+	intro_vfx.lifetime = 1.5
+	intro_vfx.one_shot = true
+	intro_vfx.explosiveness = 0.4
+
+	var intro_mat := ParticleProcessMaterial.new()
+	intro_mat.particle_flag_disable_z = true
+	intro_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	intro_mat.emission_sphere_radius = 50.0
+	intro_mat.direction = Vector3(0, -1, 0)
+	intro_mat.spread = 180.0
+	intro_mat.gravity = Vector3(0, -60, 0)
+	intro_mat.initial_velocity_min = 20.0
+	intro_mat.initial_velocity_max = 60.0
+	intro_mat.scale_min = 2.0
+	intro_mat.scale_max = 5.0
+	intro_mat.color = Color(0.4, 0.1, 0.7, 0.8)
+	intro_vfx.process_material = intro_mat
+	intro_vfx.position = Vector2.ZERO
+	add_child(intro_vfx)
+
+	# Auto-free VFX
+	var vfx_timer := Timer.new()
+	vfx_timer.wait_time = 3.0
+	vfx_timer.one_shot = true
+	vfx_timer.timeout.connect(intro_vfx.queue_free)
+	intro_vfx.add_child(vfx_timer)
+	vfx_timer.start()
+
+	# Materialize — fade in with purple tint
+	var materialize := create_tween()
+	materialize.tween_property(self, "modulate", Color(0.5, 0.2, 0.8, 1.0), 1.0).set_ease(Tween.EASE_OUT)
+	await materialize.finished
+
+	# Flash white → settle to normal
+	var flash := create_tween()
+	flash.tween_property(self, "modulate", Color(2.0, 1.8, 2.5, 1.0), 0.15)
+	flash.tween_property(self, "modulate", Color.WHITE, 0.4)
+	await flash.finished
+
+	# Camera shake on arrival
+	if camera_controller:
+		camera_controller.shake(8.0, 0.5)
+
+	# Scythe glow
+	if scythe_sprite:
+		_glow_scythe(Color(0.5, 0.0, 1.0), 0.5)
+
+	await get_tree().create_timer(0.3).timeout
+
+	# Play idle animation
+	if sprite and sprite.sprite_frames and sprite.sprite_frames.has_animation("idle"):
+		sprite.play("idle")
+
+	# Intro dialog
+	var entries: Array[DialogEntry] = [
+		_make_dialog_entry("Lythrun", LYTHRUN_PORTRAIT, "Du hast mich gefunden. Das Vergessen hat mich nicht schuetzen koennen."),
+		_make_dialog_entry("Murum", MURUM_PORTRAIT, "Dann kaempfe. Zeig mir, was das Vergessen uebrig gelassen hat."),
+	]
+	await _play_dialog(entries, "lythrun_intro")
+
+	await get_tree().create_timer(0.5).timeout
 
 
 # ============================================================================
@@ -483,18 +591,23 @@ func _perform_revive() -> void:
 
 
 func _play_revive_animation() -> void:
-	"""Plays revive animation and VFX"""
+	"""Plays revive animation — hitstop + glow pulse + golden particles."""
+
+	# Hitstop for dramatic effect
+	if GlobalTimeEffects:
+		GlobalTimeEffects.hit_stop(0.3)
 
 	# Spawn revive VFX
 	_spawn_revive_vfx()
 
-	# Flash effect
+	# Power-up glow: dark → gold → white → normal
 	if sprite:
-		for i in range(3):
-			sprite.modulate = Color.WHITE * 1.5
-			await get_tree().create_timer(0.1).timeout
-			sprite.modulate = Color.WHITE
-			await get_tree().create_timer(0.1).timeout
+		var glow := create_tween()
+		glow.tween_property(sprite, "modulate", Color(0.2, 0.1, 0.3, 1.0), 0.2)
+		glow.tween_property(sprite, "modulate", Color(1.5, 1.2, 0.5, 1.0), 0.3)
+		glow.tween_property(sprite, "modulate", Color(2.0, 2.0, 2.0, 1.0), 0.15)
+		glow.tween_property(sprite, "modulate", Color.WHITE, 0.4)
+		await glow.finished
 
 
 func _spawn_revive_vfx() -> void:
@@ -1333,21 +1446,45 @@ func perform_ground_aoe() -> void:
 
 
 func _spawn_ground_wave_visual(center: Vector2, radius: float) -> void:
-	"""Spawnt eine visuelle Bodenwelle (expandierender Ring)"""
+	"""Spawnt eine visuelle Bodenwelle (expandierender Partikelring)"""
 	var scene_root: Node = get_tree().current_scene
 	if not scene_root:
 		return
 
-	var ring := ColorRect.new()
-	ring.color = Color(1.0, 0.2, 0.0, 0.4)
-	ring.size = Vector2(radius * 2, 10)
-	ring.position = Vector2(center.x - radius, center.y)
-	scene_root.add_child(ring)
+	# Expanding particle ring
+	var ring_vfx := GPUParticles2D.new()
+	ring_vfx.amount = int(clampf(radius * 0.15, 15, 80))
+	ring_vfx.lifetime = 0.6
+	ring_vfx.one_shot = true
+	ring_vfx.explosiveness = 0.95
 
-	# Kurz anzeigen, dann verblassen
-	var tween := ring.create_tween()
-	tween.tween_property(ring, "modulate:a", 0.0, 0.5)
-	tween.tween_callback(ring.queue_free)
+	var ring_mat := ParticleProcessMaterial.new()
+	ring_mat.particle_flag_disable_z = true
+	ring_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_RING
+	ring_mat.emission_ring_radius = radius
+	ring_mat.emission_ring_inner_radius = radius * 0.85
+	ring_mat.emission_ring_height = 0.0
+	ring_mat.emission_ring_axis = Vector3(0, 0, 1)
+	ring_mat.direction = Vector3(0, -1, 0)
+	ring_mat.spread = 30.0
+	ring_mat.gravity = Vector3(0, 50, 0)
+	ring_mat.initial_velocity_min = 10.0
+	ring_mat.initial_velocity_max = 40.0
+	ring_mat.scale_min = 2.0
+	ring_mat.scale_max = 4.0
+	ring_mat.color = Color(1.0, 0.3, 0.1, 0.7)
+	ring_vfx.process_material = ring_mat
+
+	ring_vfx.global_position = center
+	scene_root.add_child(ring_vfx)
+
+	# Auto-free
+	var timer := Timer.new()
+	timer.wait_time = 1.5
+	timer.one_shot = true
+	timer.timeout.connect(ring_vfx.queue_free)
+	ring_vfx.add_child(timer)
+	timer.start()
 
 
 # ============================================================================
@@ -1363,25 +1500,145 @@ func play_intro_animation() -> void:
 
 
 func play_phase_transition(new_phase: int) -> void:
-	"""Plays Lythrun's phase transition animation"""
+	"""Plays dramatic phase transition with hitstop, particles, and power-up glow."""
 	print("[Lythrun] Phase transition to phase ", new_phase)
 
-	# Flash effect
-	if sprite:
-		for i in range(3):
-			sprite.modulate = Color.WHITE * 1.5
-			await get_tree().create_timer(0.1).timeout
-			sprite.modulate = Color.WHITE
-			await get_tree().create_timer(0.1).timeout
+	# Hitstop for dramatic pause
+	if GlobalTimeEffects:
+		GlobalTimeEffects.hit_stop(0.25)
+	await get_tree().create_timer(0.25, true, false, true).timeout
 
-	await get_tree().create_timer(0.5).timeout
+	# Camera shake
+	if camera_controller:
+		camera_controller.shake(12.0, 0.8)
+
+	# Phase-specific colors
+	var phase_color: Color
+	match new_phase:
+		2: phase_color = Color(0.6, 0.3, 1.0)   # Purple — hover awakening
+		3: phase_color = Color(1.0, 0.2, 0.4)    # Red — desperation
+		_: phase_color = Color(0.8, 0.8, 1.0)
+
+	# Power-up particle burst
+	var burst_vfx := GPUParticles2D.new()
+	burst_vfx.amount = 50
+	burst_vfx.lifetime = 1.2
+	burst_vfx.one_shot = true
+	burst_vfx.explosiveness = 0.9
+
+	var burst_mat := ParticleProcessMaterial.new()
+	burst_mat.particle_flag_disable_z = true
+	burst_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	burst_mat.emission_sphere_radius = 30.0
+	burst_mat.direction = Vector3(0, 0, 0)
+	burst_mat.spread = 180.0
+	burst_mat.gravity = Vector3(0, -20, 0)
+	burst_mat.initial_velocity_min = 80.0
+	burst_mat.initial_velocity_max = 200.0
+	burst_mat.scale_min = 2.0
+	burst_mat.scale_max = 4.0
+	burst_mat.color = phase_color
+	burst_vfx.process_material = burst_mat
+	burst_vfx.position = Vector2.ZERO
+	add_child(burst_vfx)
+
+	var vfx_timer := Timer.new()
+	vfx_timer.wait_time = 2.0
+	vfx_timer.one_shot = true
+	vfx_timer.timeout.connect(burst_vfx.queue_free)
+	burst_vfx.add_child(vfx_timer)
+	vfx_timer.start()
+
+	# Boss glow pulse: intense phase color → white flash → settle
+	if sprite:
+		var glow := create_tween()
+		glow.tween_property(sprite, "modulate", phase_color * 2.0, 0.15)
+		glow.tween_property(sprite, "modulate", Color.WHITE * 1.8, 0.1)
+		glow.tween_property(sprite, "modulate", Color.WHITE, 0.4)
+		await glow.finished
+	else:
+		await get_tree().create_timer(0.65).timeout
+
+	await get_tree().create_timer(0.3).timeout
 
 
 func play_death_animation() -> void:
-	"""Plays Lythrun's death animation"""
+	"""Plays Lythrun's death animation — color shift + particles + dissolve."""
 	print("[Lythrun] Death animation")
 
+	# Death particle burst (dark purple fragments)
+	var death_vfx := GPUParticles2D.new()
+	death_vfx.amount = 60
+	death_vfx.lifetime = 2.0
+	death_vfx.one_shot = true
+	death_vfx.explosiveness = 0.3
+
+	var death_mat := ParticleProcessMaterial.new()
+	death_mat.particle_flag_disable_z = true
+	death_mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_SPHERE
+	death_mat.emission_sphere_radius = 40.0
+	death_mat.direction = Vector3(0, -1, 0)
+	death_mat.spread = 180.0
+	death_mat.gravity = Vector3(0, -30, 0)
+	death_mat.initial_velocity_min = 15.0
+	death_mat.initial_velocity_max = 70.0
+	death_mat.scale_min = 2.0
+	death_mat.scale_max = 5.0
+	death_mat.color = Color(0.4, 0.15, 0.7, 0.8)
+	death_vfx.process_material = death_mat
+	death_vfx.position = Vector2.ZERO
+	add_child(death_vfx)
+
+	var vfx_timer := Timer.new()
+	vfx_timer.wait_time = 3.0
+	vfx_timer.one_shot = true
+	vfx_timer.timeout.connect(death_vfx.queue_free)
+	death_vfx.add_child(vfx_timer)
+	vfx_timer.start()
+
+	# Boss color shift to purple → fade to transparent
 	if sprite:
-		var tween = create_tween()
-		tween.tween_property(sprite, "modulate:a", 0.0, 2.0)
+		var tween := create_tween()
+		tween.tween_property(sprite, "modulate", Color(0.5, 0.2, 0.8, 1.0), 0.4)
+		tween.tween_property(sprite, "modulate:a", 0.0, 1.6)
 		await tween.finished
+
+	# Scythe fades too
+	if scythe_sprite:
+		var s_tween := create_tween()
+		s_tween.tween_property(scythe_sprite, "modulate:a", 0.0, 1.0)
+
+
+# ============================================================================
+# DIALOG HELPERS
+# ============================================================================
+
+func _make_dialog_entry(speaker_name: String, portrait_path: String, text: String) -> DialogEntry:
+	"""Creates a DialogEntry with speaker portrait."""
+	var entry := DialogEntry.new()
+	entry.speaker_name = speaker_name
+	entry.text = text
+	entry.text_speed = 35.0
+
+	if portrait_path != "" and ResourceLoader.exists(portrait_path):
+		entry.speaker_sprite = load(portrait_path)
+
+	return entry
+
+
+func _play_dialog(entries: Array[DialogEntry], dialog_id: String) -> void:
+	"""Plays dialog entries via DialogManager and awaits completion."""
+	var dialog := DialogData.new()
+	dialog.dialog_id = dialog_id
+	dialog.entries = entries
+
+	if EventBus:
+		EventBus.dialog_finished.connect(_on_lythrun_dialog_finished, CONNECT_ONE_SHOT)
+
+	DialogManager.play_dialog_resource(dialog)
+
+	await dialog_sequence_finished
+
+
+func _on_lythrun_dialog_finished(_dialog_id: String) -> void:
+	dialog_sequence_finished.emit()

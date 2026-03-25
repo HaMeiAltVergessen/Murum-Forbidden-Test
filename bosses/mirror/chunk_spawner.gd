@@ -6,6 +6,7 @@ class_name ChunkSpawner
 # ============ CONFIG ============
 const SPAWN_AHEAD_DISTANCE: float = 1500.0  # How far ahead of camera edge to spawn
 const DESPAWN_BEHIND_DISTANCE: float = 300.0  # How far behind camera edge to despawn
+const DESPAWN_WARNING_OFFSET: float = 400.0  # Warning starts when chunk trailing edge is this close to camera edge
 const MAX_ACTIVE_CHUNKS: int = 5
 const GROUND_Y: float = 800.0
 
@@ -28,6 +29,7 @@ var _next_spawn_x: float = 0.0
 var _next_spawn_y: float = 0.0
 var _is_spawning: bool = false
 var _pool_index: int = 0
+var _warned_chunks: Dictionary = {}  # chunk instance_id → true
 
 
 func _ready() -> void:
@@ -56,8 +58,21 @@ func _process_horizontal(camera: RunnerCamera) -> void:
 			break
 		_spawn_next_chunk()
 
+	var left_edge: float = camera.get_left_edge()
+
+	# Warn chunks approaching camera left edge (still partially visible)
+	var warning_x: float = left_edge + DESPAWN_WARNING_OFFSET
+	for chunk in active_chunks:
+		if not is_instance_valid(chunk):
+			continue
+		if _warned_chunks.has(chunk.get_instance_id()):
+			continue
+		var cw: float = chunk.get_meta("chunk_width", 800.0)
+		if chunk.global_position.x + cw < warning_x:
+			_start_chunk_warning(chunk)
+
 	# Despawn chunks behind camera left edge
-	var despawn_x: float = camera.get_left_edge() - DESPAWN_BEHIND_DISTANCE
+	var despawn_x: float = left_edge - DESPAWN_BEHIND_DISTANCE
 	var to_remove: Array[Node2D] = []
 	for chunk in active_chunks:
 		if not is_instance_valid(chunk):
@@ -70,6 +85,7 @@ func _process_horizontal(camera: RunnerCamera) -> void:
 	for chunk in to_remove:
 		active_chunks.erase(chunk)
 		if is_instance_valid(chunk):
+			_warned_chunks.erase(chunk.get_instance_id())
 			chunk.queue_free()
 
 
@@ -81,8 +97,21 @@ func _process_vertical(camera: RunnerCamera) -> void:
 			break
 		_spawn_next_chunk_vertical()
 
+	var top_edge: float = camera.get_top_edge()
+
+	# Warn chunks approaching camera top edge
+	var warning_y: float = top_edge + DESPAWN_WARNING_OFFSET
+	for chunk in active_chunks:
+		if not is_instance_valid(chunk):
+			continue
+		if _warned_chunks.has(chunk.get_instance_id()):
+			continue
+		var ch: float = chunk.get_meta("chunk_height", 800.0)
+		if chunk.global_position.y + ch < warning_y:
+			_start_chunk_warning(chunk)
+
 	# Despawn chunks above camera top edge
-	var despawn_y: float = camera.get_top_edge() - DESPAWN_BEHIND_DISTANCE
+	var despawn_y: float = top_edge - DESPAWN_BEHIND_DISTANCE
 	var to_remove: Array[Node2D] = []
 	for chunk in active_chunks:
 		if not is_instance_valid(chunk):
@@ -95,6 +124,7 @@ func _process_vertical(camera: RunnerCamera) -> void:
 	for chunk in to_remove:
 		active_chunks.erase(chunk)
 		if is_instance_valid(chunk):
+			_warned_chunks.erase(chunk.get_instance_id())
 			chunk.queue_free()
 
 
@@ -157,6 +187,32 @@ func clear_all_chunks() -> void:
 		if is_instance_valid(chunk):
 			chunk.queue_free()
 	active_chunks.clear()
+	_warned_chunks.clear()
+
+
+func _start_chunk_warning(chunk: Node2D) -> void:
+	"""Start blinking all platform visuals in a chunk to warn of imminent despawn."""
+	_warned_chunks[chunk.get_instance_id()] = true
+	var rects: Array = _find_visual_rects(chunk)
+	for rect in rects:
+		if not is_instance_valid(rect):
+			continue
+		var original: Color = rect.color
+		var warning: Color = Color(0.7, 0.12, 0.12, original.a * 0.7)
+		var tween := create_tween()
+		tween.set_loops()
+		tween.tween_property(rect, "color", warning, 0.2)
+		tween.tween_property(rect, "color", original.lerp(warning, 0.3), 0.2)
+
+
+func _find_visual_rects(node: Node) -> Array:
+	"""Recursively find all ColorRect nodes under a node."""
+	var rects: Array = []
+	if node is ColorRect:
+		rects.append(node)
+	for child in node.get_children():
+		rects.append_array(_find_visual_rects(child))
+	return rects
 
 
 func _spawn_next_chunk() -> void:
