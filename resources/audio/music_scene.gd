@@ -13,3 +13,8 @@ class_name MusicScene
 
 ## Tracks die in dieser Szene zufaellig abgespielt werden
 @export var tracks: Array[AudioStream] = []
+
+## Run-Kontext-Keys fuer automatisches Mapping (z.B. "w0_combat", "w1_elite", "w2_boss").
+## Format: w{welt_index}_{typ} — Typen: combat, elite, treasure, rest, event, boss, shop
+## Leer = kein Run-Mapping (nutzt stattdessen level_paths oder force_play_scene).
+@export var run_keys: Array[String] = []

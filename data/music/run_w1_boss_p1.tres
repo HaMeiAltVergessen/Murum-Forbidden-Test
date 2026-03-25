@@ -11,3 +11,4 @@ script = ExtResource("1_script")
 scene_name = "W1BossP1"
 level_paths = Array[String]([])
 tracks = Array[AudioStream]([ExtResource("2_t1"), ExtResource("3_t2"), ExtResource("4_t3"), ExtResource("5_t4")])
+run_keys = Array[String](["w0_boss"])

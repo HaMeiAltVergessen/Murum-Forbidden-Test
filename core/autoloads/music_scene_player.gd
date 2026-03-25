@@ -27,35 +27,8 @@ var _crossfading: bool = false
 var _forced: bool = false  # Blockiert auto-detection wenn force_play_scene aktiv
 
 # ============================================================================
-# RUN MUSIC MAPPING (world_id + node_type -> scene_name)
+# RUN MUSIC MAPPING (dynamisch aus MusicScene.run_keys aufgebaut)
 # ============================================================================
-
-const RUN_MUSIC_MAP: Dictionary = {
-	# Welt 1: Niemandsland
-	"w0_combat": "W1Combat",
-	"w0_elite": "W1Elite",
-	"w0_treasure": "W1Calm",
-	"w0_rest": "W1Calm",
-	"w0_shop": "W1Calm",
-	"w0_event": "W1Event",
-	"w0_boss": "W1BossP1",
-	# Welt 2: Kollektiv
-	"w1_combat": "W2Combat",
-	"w1_elite": "W2Elite",
-	"w1_treasure": "W2Calm",
-	"w1_rest": "W2Calm",
-	"w1_shop": "W2Calm",
-	"w1_event": "W2Event",
-	"w1_boss": "W2BossP1",
-	# Welt 3: Abgrund
-	"w2_combat": "W3Combat",
-	"w2_elite": "W3Elite",
-	"w2_treasure": "W3Calm",
-	"w2_rest": "W3Calm",
-	"w2_shop": "W3Calm",
-	"w2_event": "W3Event",
-	"w2_boss": "W3BossP1",
-}
 
 const NODE_TYPE_KEYS: Dictionary = {
 	0: "combat",   # COMBAT
@@ -67,6 +40,9 @@ const NODE_TYPE_KEYS: Dictionary = {
 	6: "shop",     # SHOP
 	7: "arena",    # ARENA -> combat
 }
+
+## Wird in _ready() aus den run_keys der MusicScene-Ressourcen aufgebaut
+var _run_music_map: Dictionary = {}
 
 # ============================================================================
 # AUDIO PLAYERS (zwei fuer Crossfade)
@@ -101,7 +77,10 @@ func _ready() -> void:
 	player_a.finished.connect(_on_track_finished.bind(player_a))
 	player_b.finished.connect(_on_track_finished.bind(player_b))
 
-	print("[MusicScenePlayer] Initialized with %d scenes" % music_scenes.size())
+	# Run-Music-Map aus den MusicScene-Ressourcen aufbauen
+	_build_run_music_map()
+
+	print("[MusicScenePlayer] Initialized with %d scenes, %d run mappings" % [music_scenes.size(), _run_music_map.size()])
 
 
 # ============================================================================
@@ -231,6 +210,15 @@ func _on_track_finished(player: AudioStreamPlayer) -> void:
 # HELPERS
 # ============================================================================
 
+func _build_run_music_map() -> void:
+	_run_music_map.clear()
+	for scene in music_scenes:
+		if scene == null or scene.run_keys.is_empty():
+			continue
+		for key in scene.run_keys:
+			_run_music_map[key] = scene.scene_name
+
+
 func _find_scene_for_level(level_path: String) -> MusicScene:
 	for scene in music_scenes:
 		for path in scene.level_paths:
@@ -287,7 +275,7 @@ func play_for_run_room(world_id: int, node_type: int) -> void:
 	"""Spielt die passende Musik fuer einen Run-Raum (world_id + node_type)"""
 	var type_key: String = NODE_TYPE_KEYS.get(node_type, "combat")
 	var lookup: String = "w%d_%s" % [world_id, type_key]
-	var scene_name: String = RUN_MUSIC_MAP.get(lookup, "")
+	var scene_name: String = _run_music_map.get(lookup, "")
 
 	if scene_name.is_empty():
 		push_warning("[MusicScenePlayer] No run music for: %s" % lookup)
