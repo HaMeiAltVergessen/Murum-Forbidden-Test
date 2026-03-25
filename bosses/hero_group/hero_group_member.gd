@@ -377,8 +377,7 @@ func die() -> void:
 	_disable_combat()
 
 	_play_anim("death")
-	if animated_sprite:
-		animated_sprite.modulate = Color(0.5, 0.5, 0.5, 0.7)
+	# Note: death VFX (fade, explosion) handled by HeroGroupController._play_hero_death_vfx()
 
 	# Emit signals
 	died.emit(self)

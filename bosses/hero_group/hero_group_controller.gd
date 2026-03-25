@@ -10,6 +10,7 @@ signal health_changed(current_hp: float, max_hp: float)
 signal hero_died(hero: HeroGroupMember)
 signal hero_resurrected(hero: HeroGroupMember)
 signal last_standing_triggered(hero: HeroGroupMember)
+signal dialog_sequence_finished
 
 # ============ HERO SCENES ============
 const HERO_SCENES: Dictionary = {
@@ -19,6 +20,13 @@ const HERO_SCENES: Dictionary = {
 	"barbarian": "res://bosses/hero_group/heroes/hero_barbarian.tscn",
 	"necromancer": "res://bosses/hero_group/heroes/hero_necromancer.tscn",
 }
+
+# ============ PORTRAIT SPRITES (for dialog) ============
+const KNIGHT_PORTRAIT := "res://Assets/placeholders/5heros/hero/Hero Knight 2/Sprites/Idle.png"
+const MURUM_PORTRAIT := "res://Assets/AIPlaceholder/Char/Murum/Murum.png"
+
+# ============ DEATH VFX ============
+const DEATH_VFX_SCENE: PackedScene = preload("res://vfx/boss/boss_death_explosion.tscn")
 
 # ============ SPAWN POSITIONS (relative to controller position) ============
 const SPAWN_OFFSETS: Dictionary = {
@@ -64,13 +72,18 @@ func start_fight() -> void:
 
 	print("[HeroGroupController] Starting boss fight!")
 
-	# Spawn all heroes
+	# Spawn all heroes (frozen, no AI yet)
 	_spawn_heroes()
+	_freeze_heroes(true)
 
-	# Create health bar
+	# --- INTRO SEQUENCE ---
+	await _play_intro_sequence()
+
+	# Create health bar (after intro)
 	_create_health_bar()
 
-	# Start fight after brief delay
+	# Unfreeze heroes and begin
+	_freeze_heroes(false)
 	is_fight_active = true
 	set_process(true)
 	fight_started.emit()
@@ -143,6 +156,9 @@ func _on_hero_died(hero: HeroGroupMember) -> void:
 
 	print("[HeroGroupController] %s died — %d alive, %d dead" % [hero.hero_name, alive_heroes.size(), dead_heroes.size()])
 
+	# Hero death VFX: hitstop + fade + explosion
+	_play_hero_death_vfx(hero)
+
 	# Necromancer passive: heal 20% on ally death
 	for h in alive_heroes:
 		if h.hero_name == "Nekromant" and h != hero:
@@ -162,6 +178,7 @@ func _on_hero_died(hero: HeroGroupMember) -> void:
 		if not last.is_last_standing:
 			last.activate_last_standing()
 			last_standing_triggered.emit(last)
+			_play_last_standing_vfx(last)
 			# Phase 2 music — last hero standing
 			if MusicScenePlayer:
 				MusicScenePlayer.force_play_scene("W1BossP2")
@@ -205,6 +222,9 @@ func _on_all_heroes_defeated() -> void:
 	# Hide health bar
 	if health_bar:
 		health_bar.visible = false
+
+	# --- DEFEAT SEQUENCE ---
+	await _play_defeat_sequence()
 
 	defeated.emit()
 	EventBus.boss_defeated.emit("hero_group")
@@ -266,3 +286,150 @@ func get_dead_heroes() -> Array[HeroGroupMember]:
 
 func get_alive_count() -> int:
 	return alive_heroes.size()
+
+
+# ============ INTRO SEQUENCE ============
+func _play_intro_sequence() -> void:
+	"""Plays the intro cutscene before fight starts."""
+
+	# Brief pause — let camera settle
+	await get_tree().create_timer(0.5).timeout
+
+	# Flash each hero in sequence (step-forward effect)
+	for hero in heroes:
+		if hero and is_instance_valid(hero) and hero.sprite:
+			hero.sprite.modulate = Color(2.0, 2.0, 2.0, 1.0)
+			var tween := create_tween()
+			tween.tween_property(hero.sprite, "modulate", Color.WHITE, 0.3)
+			await get_tree().create_timer(0.2).timeout
+
+	await get_tree().create_timer(0.3).timeout
+
+	# Intro dialog
+	var entries: Array[DialogEntry] = [
+		_make_dialog_entry("Ritter", KNIGHT_PORTRAIT, "Endlich. Der Gesetzlose zeigt sich."),
+		_make_dialog_entry("Ritter", KNIGHT_PORTRAIT, "Wir sind die Heldengruppe. Fuer dich endet es hier."),
+		_make_dialog_entry("Murum", MURUM_PORTRAIT, "Dann zeigt mir, was eure Legende wert ist."),
+	]
+
+	await _play_dialog(entries, "hero_group_intro")
+
+	# Small pause before fight
+	await get_tree().create_timer(0.5).timeout
+
+
+func _freeze_heroes(freeze: bool) -> void:
+	"""Freezes/unfreezes all heroes (disables AI during intro)."""
+	for hero in heroes:
+		if hero and is_instance_valid(hero):
+			hero.set_physics_process(not freeze)
+
+
+# ============ HERO DEATH VFX ============
+func _play_hero_death_vfx(hero: HeroGroupMember) -> void:
+	"""Plays death VFX for a single hero — hitstop + fade + small explosion."""
+	if not hero or not is_instance_valid(hero):
+		return
+
+	# Short hitstop for dramatic effect
+	if GlobalTimeEffects:
+		GlobalTimeEffects.hit_stop(0.15)
+
+	# Death explosion at hero position
+	var vfx: GPUParticles2D = DEATH_VFX_SCENE.instantiate()
+	vfx.scale = Vector2(0.5, 0.5)  # Smaller than boss death
+	get_tree().current_scene.add_child(vfx)
+	vfx.global_position = hero.global_position
+
+	# Fade hero sprite to gray/transparent (instead of instant gray)
+	if hero.sprite and is_instance_valid(hero.sprite):
+		var tween := create_tween()
+		tween.set_parallel(true)
+		tween.tween_property(hero.sprite, "modulate", Color(0.4, 0.4, 0.4, 0.4), 0.8)
+		tween.tween_property(hero.sprite, "position:y", hero.sprite.position.y - 5.0, 0.4).set_ease(Tween.EASE_OUT)
+
+
+# ============ DEFEAT SEQUENCE ============
+func _play_defeat_sequence() -> void:
+	"""Plays dramatic defeat sequence after all heroes are dead."""
+
+	# Hitstop on final kill
+	if GlobalTimeEffects:
+		GlobalTimeEffects.hit_stop(0.4)
+	await get_tree().create_timer(0.4, true, false, true).timeout
+
+	# Slowmo
+	if GlobalTimeEffects:
+		GlobalTimeEffects.slow_motion(0.3, 2.0)
+
+	# Spawn death explosion on each dead hero (staggered)
+	for hero in dead_heroes:
+		if hero and is_instance_valid(hero):
+			var vfx: GPUParticles2D = DEATH_VFX_SCENE.instantiate()
+			vfx.scale = Vector2(0.6, 0.6)
+			get_tree().current_scene.add_child(vfx)
+			vfx.global_position = hero.global_position
+			await get_tree().create_timer(0.15).timeout
+
+	await get_tree().create_timer(0.5).timeout
+
+	# Dissolve all hero corpses
+	var dissolve_tweens: Array = []
+	for hero in heroes:
+		if hero and is_instance_valid(hero) and hero.sprite:
+			var tween := create_tween()
+			tween.tween_property(hero.sprite, "modulate:a", 0.0, 1.2)
+			dissolve_tweens.append(tween)
+
+	# Wait for dissolve
+	if not dissolve_tweens.is_empty():
+		await dissolve_tweens[0].finished
+
+	await get_tree().create_timer(0.5).timeout
+
+
+# ============ LAST STANDING VFX ============
+func _play_last_standing_vfx(hero: HeroGroupMember) -> void:
+	"""Called when only one hero remains — dramatic power-up effect."""
+	if not hero or not is_instance_valid(hero):
+		return
+
+	# Flash sequence: white → red → normal
+	if hero.sprite:
+		var tween := create_tween()
+		tween.tween_property(hero.sprite, "modulate", Color(3.0, 3.0, 3.0, 1.0), 0.1)
+		tween.tween_property(hero.sprite, "modulate", Color(2.0, 0.5, 0.5, 1.0), 0.3)
+		tween.tween_property(hero.sprite, "modulate", Color.WHITE, 0.6)
+
+
+# ============ DIALOG HELPERS ============
+func _make_dialog_entry(speaker_name: String, portrait_path: String, text: String) -> DialogEntry:
+	"""Creates a DialogEntry with speaker portrait."""
+	var entry := DialogEntry.new()
+	entry.speaker_name = speaker_name
+	entry.text = text
+	entry.text_speed = 35.0
+
+	if portrait_path != "" and ResourceLoader.exists(portrait_path):
+		entry.speaker_sprite = load(portrait_path)
+
+	return entry
+
+
+func _play_dialog(entries: Array[DialogEntry], dialog_id: String) -> void:
+	"""Plays dialog entries via DialogManager and awaits completion."""
+	var dialog := DialogData.new()
+	dialog.dialog_id = dialog_id
+	dialog.entries = entries
+
+	if EventBus:
+		EventBus.dialog_finished.connect(_on_dialog_finished, CONNECT_ONE_SHOT)
+
+	DialogManager.play_dialog_resource(dialog)
+
+	# Wait for dialog to finish
+	await dialog_sequence_finished
+
+
+func _on_dialog_finished(_dialog_id: String) -> void:
+	dialog_sequence_finished.emit()
