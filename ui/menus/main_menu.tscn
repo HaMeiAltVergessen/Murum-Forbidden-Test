@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b1gh80biwnswd" path="res://ui/menus/main_menu.gd" id="1_main_menu"]
 [ext_resource type="Texture2D" uid="uid://exe3rc543r73" path="res://Assets/AIAssets/mainscreen.jpg" id="2_background"]
-[ext_resource type="AudioStream" uid="uid://btwiyxoo48loi" path="res://Music/Limbus/MainTheme001.mp3" id="3_music"]
+[ext_resource type="AudioStream" uid="uid://cabatw3tl7w" path="res://Music/Limbus/MainTheme001.mp3" id="3_music"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
