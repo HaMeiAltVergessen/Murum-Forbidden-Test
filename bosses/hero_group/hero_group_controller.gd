@@ -387,6 +387,12 @@ func _play_defeat_sequence() -> void:
 
 	await get_tree().create_timer(0.5).timeout
 
+	# Victory dialog
+	var entries: Array[DialogEntry] = [
+		_make_dialog_entry("Murum", MURUM_PORTRAIT, "Das war eure Legende."),
+	]
+	await _play_dialog(entries, "hero_group_victory")
+
 
 # ============ LAST STANDING VFX ============
 func _play_last_standing_vfx(hero: HeroGroupMember) -> void:
