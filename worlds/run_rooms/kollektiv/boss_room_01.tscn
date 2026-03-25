@@ -34,14 +34,17 @@ size = Vector2(120, 16)
 [node name="BossRoom01" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(5679, 1402)
+position = Vector2(1462, 1378)
 scale = Vector2(1.80957, 2.71094)
 texture = ExtResource("1_q0f1w")
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 11200.0
-offset_bottom = 2800.0
+offset_left = -480.0
+offset_top = -668.0
+offset_right = 10720.0
+offset_bottom = 2132.0
+scale = Vector2(0.353731, 1.48337)
 color = Color(0.02, 0.04, 0.08, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
@@ -52,12 +55,6 @@ color = Color(0.15, 0.22, 0.35, 1)
 
 [node name="WallLeftVisual" type="ColorRect" parent="."]
 offset_left = -40.0
-offset_bottom = 2800.0
-color = Color(0.12, 0.18, 0.3, 1)
-
-[node name="WallRightVisual" type="ColorRect" parent="."]
-offset_left = 11260.0
-offset_right = 11300.0
 offset_bottom = 2800.0
 color = Color(0.12, 0.18, 0.3, 1)
 
@@ -83,6 +80,8 @@ shape = SubResource("wall_left_shape")
 position = Vector2(11220, 1400)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
+position = Vector2(-8364, -13)
+scale = Vector2(0.711009, 1)
 shape = SubResource("wall_right_shape")
 
 [node name="Ceiling" type="StaticBody2D" parent="."]
@@ -99,7 +98,7 @@ position = Vector2(1200, 2720)
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 
 [node name="BossSpawn" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(5600, 1400)
+position = Vector2(1465, 1164)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 

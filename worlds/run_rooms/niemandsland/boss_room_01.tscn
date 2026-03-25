@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://c4x721hpfcui4"]
 
-[ext_resource type="Texture2D" uid="uid://dg2j7sphue6ht" path="res://Assets/AIAssets/tempel01.jpg" id="1_1umlh"]
+[ext_resource type="Texture2D" uid="uid://bd2i5fqltb4d8" path="res://Assets/AIPlaceholder/world01Tempel.png" id="1_1umlh"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 [ext_resource type="PackedScene" uid="uid://6kwthd3m82gc" path="res://environment/pickups/testpickup.tscn" id="2_c32y6"]
 
@@ -31,7 +31,7 @@ offset_bottom = 1080.0
 color = Color(0.2, 0.05, 0.05, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(5096, 158)
+position = Vector2(4778, -1150)
 texture = ExtResource("1_1umlh")
 
 [node name="Ground" type="StaticBody2D" parent="."]
@@ -44,24 +44,27 @@ shape = SubResource("ground_shape")
 position = Vector2(-20, 500)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
+position = Vector2(1682, -322)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
 position = Vector2(10420, 500)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
+position = Vector2(-2518, -317)
 shape = SubResource("wall_right_shape")
 
 [node name="Ceiling" type="StaticBody2D" parent="."]
 position = Vector2(5200, -20)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling"]
+position = Vector2(47, -444)
 shape = SubResource("ceiling_shape")
 
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Default" parent="SpawnPoints" instance=ExtResource("1_spawn")]
-position = Vector2(1200, 760)
+position = Vector2(1830, 751)
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 
@@ -75,12 +78,13 @@ position = Vector2(4800, 760)
 position = Vector2(6400, 760)
 
 [node name="EnemySpawn3" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(8800, 760)
+position = Vector2(6760, 636)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1040, 700)
+position = Vector2(2520, 465)
+
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
 offset_top = 20.0
@@ -89,4 +93,4 @@ offset_bottom = 50.0
 text = "Boss - Die Heldengruppe"
 
 [node name="RelicPickup" parent="." instance=ExtResource("2_c32y6")]
-position = Vector2(9380, 741)
+position = Vector2(7055, 337)

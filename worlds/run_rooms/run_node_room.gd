@@ -1333,10 +1333,25 @@ func _on_boss_defeated(is_final_boss: bool) -> void:
 	_show_completion_ui("Boss besiegt! +%d Magicka!" % magicka_amount)
 	EventBus.show_notification.emit("+%d Magicka! Volle Heilung!" % magicka_amount, 4.0)
 
+	# Wait for VictorySequence if boss has one, otherwise use fallback timer
+	var wait_time: float = 4.0
+	if _boss_controller:
+		var vs: VictorySequence = _boss_controller.get_node_or_null("Components/VictorySequence")
+		if vs and vs._is_running:
+			await vs.sequence_completed
+			# Small extra pause after sequence
+			await get_tree().create_timer(0.5).timeout
+			if is_final_boss:
+				_on_node_cleared()
+			else:
+				_setup_boon_selection()
+			return
+
+	# Fallback: fixed timer (for bosses without VictorySequence)
 	if is_final_boss:
-		get_tree().create_timer(2.0).timeout.connect(_on_node_cleared)
+		get_tree().create_timer(wait_time).timeout.connect(_on_node_cleared)
 	else:
-		get_tree().create_timer(2.0).timeout.connect(_setup_boon_selection)
+		get_tree().create_timer(wait_time).timeout.connect(_setup_boon_selection)
 
 
 func _setup_boss_placeholder(boss_name: String, is_final_boss: bool) -> void:

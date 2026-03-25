@@ -73,6 +73,8 @@ func _setup_component_references() -> void:
 		attack_manager.boss = self
 	if camera_controller and "boss" in camera_controller:
 		camera_controller.boss = self
+	if victory_sequence:
+		victory_sequence.boss = self
 
 
 func _physics_process(delta: float) -> void:
@@ -121,7 +123,6 @@ func setup_boss() -> void:
 
 	# Setup victory sequence
 	if victory_sequence:
-		victory_sequence.gold_reward = gold_reward
 		victory_sequence.unlock_flag = unlock_flag
 
 	print("[BaseBoss] Boss setup complete: ", boss_name)

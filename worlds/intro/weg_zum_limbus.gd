@@ -28,7 +28,7 @@ const FIRST_SPAWN_DELAY: float = 1.5      # Seconds after chase phase starts
 # Stab
 const STAB_SPAWN_OFFSET: Vector2 = Vector2(0, -100)  # Appears above player
 const STAB_FLOAT_HEIGHT: float = -80.0   # Floats above ground
-const STAB_PATH_SPEED: float = 120.0     # Pixels per second along path
+const STAB_PATH_SPEED: float = 420.0     # Pixels per second along path
 
 # ============================================================================
 # ENEMY SCENES — all worlds, no bosses
@@ -281,7 +281,7 @@ func _spawn_stab() -> void:
 
 	# Create Stab sprite
 	stab_sprite = Sprite2D.new()
-	var stab_texture = load("res://Assets/AIPlaceholder/MurumStab.png")
+	var stab_texture = load("res://Assets/AIAssets/AIStuff/MurumStab01.png")
 	if stab_texture:
 		stab_sprite.texture = stab_texture
 	else:

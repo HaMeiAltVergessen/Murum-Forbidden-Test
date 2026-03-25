@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="2_platform"]
-[ext_resource type="PackedScene" uid="uid://falling_rock_001" path="res://traps/scenes/falling_rock.tscn" id="3_falling_rock"]
+[ext_resource type="PackedScene" path="res://traps/scenes/falling_rock.tscn" id="3_falling_rock"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(7680, 40)
@@ -17,6 +17,8 @@ size = Vector2(40, 1080)
 size = Vector2(7680, 40)
 
 [node name="CombatRoom01" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10

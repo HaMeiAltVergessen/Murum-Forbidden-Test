@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=2 format=3 uid="uid://xpoiclxvas51"]
 
-[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/MurumStab.png" id="1_murum_stab"]
+[ext_resource type="Texture2D" uid="uid://bpdnixmhbn7cm" path="res://Assets/AIAssets/AIStuff/MurumStab01.png" id="1_jpr6i"]
 
 [node name="MurumStabSprite" type="Sprite2D"]
-texture = ExtResource("1_murum_stab")
+scale = Vector2(0.488896, 0.488896)
+texture = ExtResource("1_jpr6i")
