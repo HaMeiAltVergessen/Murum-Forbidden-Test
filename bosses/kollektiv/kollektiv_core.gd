@@ -96,9 +96,7 @@ func die() -> void:
 	# Disable combat but keep visual
 	_disable_combat()
 
-	# Visual: darken and flash
-	if sprite:
-		sprite.modulate = Color(0.3, 0.3, 0.3, 0.7)
+	# Note: destruction VFX (explosion, fade) handled by KollektivController._play_core_destruction_vfx()
 
 	# Emit signals
 	destroyed.emit(self)

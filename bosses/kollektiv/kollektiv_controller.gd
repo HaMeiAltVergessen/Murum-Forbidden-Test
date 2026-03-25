@@ -9,6 +9,7 @@ signal fight_started
 signal defeated
 signal health_changed(current_hp: float, max_hp: float)
 signal core_destroyed(core: KollektivCore)
+signal dialog_sequence_finished
 
 # ============ CORE SCENE (for central hub only) ============
 const HUB_SCENE: String = "res://bosses/kollektiv/cores/central_hub.tscn"
@@ -20,6 +21,21 @@ const CORE_ID_MAP: Dictionary = {
 	"MobilityCore": "mobility",
 	"FabricatorCore": "fabricator",
 	"CognitionCore": "cognition",
+}
+
+# ============ PORTRAITS (for dialog) ============
+const MURUM_PORTRAIT := "res://Assets/AIPlaceholder/Char/Murum/Murum.png"
+
+# ============ DEATH VFX ============
+const DEATH_VFX_SCENE: PackedScene = preload("res://vfx/boss/boss_death_explosion.tscn")
+
+# ============ CORE COLORS (for VFX tinting) ============
+const CORE_COLORS: Dictionary = {
+	"energy": Color(1.0, 0.6, 0.1),     # Orange/Reactor
+	"defense": Color(0.8, 0.2, 0.2),    # Red/Weapons
+	"mobility": Color(0.2, 0.6, 1.0),   # Blue/Navigation
+	"fabricator": Color(0.2, 0.8, 0.3),  # Green/Drones
+	"cognition": Color(0.7, 0.3, 1.0),  # Purple/AI
 }
 
 # ============ ESCALATION ============
@@ -74,7 +90,10 @@ func start_fight() -> void:
 	# Find cores already placed in scene
 	_find_cores()
 
-	# Create health bar
+	# --- INTRO SEQUENCE ---
+	await _play_intro_sequence()
+
+	# Create health bar (after intro)
 	_create_health_bar()
 
 	# Start fight
@@ -168,11 +187,17 @@ func _on_core_destroyed(core: KollektivCore, core_id: String) -> void:
 
 	print("[KollektivController] %s destroyed — %d alive, %d destroyed" % [core.core_name, alive_cores.size(), destroyed_core_ids.size()])
 
+	# Core destruction VFX
+	_play_core_destruction_vfx(core, core_id)
+
 	# Apply specific destruction effects
 	_apply_destruction_effect(core_id)
 
 	# Update escalation for all remaining cores
 	_update_escalation()
+
+	# Escalation VFX: pulse remaining cores red
+	_play_escalation_vfx()
 
 	# Check if all cores destroyed → final phase
 	if alive_cores.is_empty() and not _in_final_phase:
@@ -351,6 +376,7 @@ func _on_all_cores_and_hub_defeated() -> void:
 	# Clean up remaining entities
 	for drone in get_tree().get_nodes_in_group("kollektiv_drone"):
 		if is_instance_valid(drone):
+			_play_drone_death_vfx(drone)
 			drone.queue_free()
 	for pulse in get_tree().get_nodes_in_group("energy_pulse"):
 		if is_instance_valid(pulse):
@@ -362,6 +388,9 @@ func _on_all_cores_and_hub_defeated() -> void:
 	# Hide health bar
 	if health_bar:
 		health_bar.visible = false
+
+	# --- DEFEAT SEQUENCE ---
+	await _play_defeat_sequence()
 
 	defeated.emit()
 	EventBus.boss_defeated.emit("kollektiv")
@@ -379,3 +408,187 @@ func get_alive_count() -> int:
 	return alive_cores.size()
 
 
+# ============ INTRO SEQUENCE ============
+func _play_intro_sequence() -> void:
+	"""Plays intro: cores power up one by one, then Kollektiv speaks."""
+
+	await get_tree().create_timer(0.5).timeout
+
+	# Power up each core in sequence (flash + color pulse)
+	for core in cores:
+		if core and is_instance_valid(core) and core.sprite:
+			# Start dark
+			core.sprite.modulate = Color(0.2, 0.2, 0.2, 1.0)
+
+	for core in cores:
+		if core and is_instance_valid(core) and core.sprite:
+			var core_id: String = core.get_meta("core_id", "")
+			var target_color: Color = CORE_COLORS.get(core_id, core.core_color)
+
+			# Flash white → settle to core color
+			var tween := create_tween()
+			tween.tween_property(core.sprite, "modulate", Color(2.0, 2.0, 2.0, 1.0), 0.15)
+			tween.tween_property(core.sprite, "modulate", target_color, 0.3)
+			await get_tree().create_timer(0.35).timeout
+
+	await get_tree().create_timer(0.3).timeout
+
+	# Intro dialog — Kollektiv speaks as one
+	var entries: Array[DialogEntry] = [
+		_make_dialog_entry("Kollektiv", "", "Einheit erkannt. Nicht kompatibel."),
+		_make_dialog_entry("Kollektiv", "", "Wir sind Eins. Du wirst assimiliert — oder eliminiert."),
+		_make_dialog_entry("Murum", MURUM_PORTRAIT, "Dann zeigt mir eure Einheit."),
+	]
+
+	await _play_dialog(entries, "kollektiv_intro")
+
+	await get_tree().create_timer(0.5).timeout
+
+
+# ============ CORE DESTRUCTION VFX ============
+func _play_core_destruction_vfx(core: KollektivCore, core_id: String) -> void:
+	"""Explosion + screen shake when a core is destroyed."""
+	if not core or not is_instance_valid(core):
+		return
+
+	# Hitstop
+	if GlobalTimeEffects:
+		GlobalTimeEffects.hit_stop(0.2)
+
+	# Core-colored explosion
+	var vfx: GPUParticles2D = DEATH_VFX_SCENE.instantiate()
+	vfx.scale = Vector2(0.7, 0.7)
+	get_tree().current_scene.add_child(vfx)
+	vfx.global_position = core.global_position
+
+	# Tint explosion to core color
+	var color: Color = CORE_COLORS.get(core_id, Color.WHITE)
+	vfx.modulate = color
+
+	# Fade core sprite to dark
+	if core.sprite and is_instance_valid(core.sprite):
+		var tween := create_tween()
+		tween.tween_property(core.sprite, "modulate", Color(0.15, 0.15, 0.15, 0.5), 0.6)
+
+	# Notification
+	var core_display_name: String = core.core_name if core.core_name != "" else core_id
+	EventBus.show_notification.emit("%s zerstoert!" % core_display_name, 2.0)
+
+
+func _play_escalation_vfx() -> void:
+	"""Quick red pulse on all remaining alive cores when escalation increases."""
+	for core in alive_cores:
+		if core and is_instance_valid(core) and core.sprite:
+			var core_id: String = core.get_meta("core_id", "")
+			var original: Color = CORE_COLORS.get(core_id, core.core_color)
+			var tween := create_tween()
+			tween.tween_property(core.sprite, "modulate", Color(2.0, 0.4, 0.4, 1.0), 0.1)
+			tween.tween_property(core.sprite, "modulate", original, 0.4)
+
+
+func _play_drone_death_vfx(drone: Node) -> void:
+	"""Small explosion when a drone is cleaned up."""
+	if not drone or not is_instance_valid(drone):
+		return
+
+	var vfx: GPUParticles2D = DEATH_VFX_SCENE.instantiate()
+	vfx.scale = Vector2(0.25, 0.25)
+	get_tree().current_scene.add_child(vfx)
+	vfx.global_position = drone.global_position
+	vfx.modulate = Color(0.3, 0.8, 0.3)  # Green tint (fabricator color)
+
+
+# ============ DEFEAT SEQUENCE ============
+func _play_defeat_sequence() -> void:
+	"""Hub destroyed — dramatic multi-explosion chain + victory dialog."""
+
+	# Hitstop
+	if GlobalTimeEffects:
+		GlobalTimeEffects.hit_stop(0.5)
+	await get_tree().create_timer(0.5, true, false, true).timeout
+
+	# Slowmo
+	if GlobalTimeEffects:
+		GlobalTimeEffects.slow_motion(0.3, 2.5)
+
+	# Chain explosions across all core positions (staggered)
+	var all_positions: Array[Vector2] = []
+	for core in cores:
+		if core and is_instance_valid(core):
+			all_positions.append(core.global_position)
+	if _central_hub and is_instance_valid(_central_hub):
+		all_positions.append(_central_hub.global_position)
+
+	for pos in all_positions:
+		var vfx: GPUParticles2D = DEATH_VFX_SCENE.instantiate()
+		vfx.scale = Vector2(0.6, 0.6)
+		get_tree().current_scene.add_child(vfx)
+		vfx.global_position = pos
+		await get_tree().create_timer(0.12).timeout
+
+	await get_tree().create_timer(0.5).timeout
+
+	# Big central explosion at hub position
+	if _central_hub and is_instance_valid(_central_hub):
+		var big_vfx: GPUParticles2D = DEATH_VFX_SCENE.instantiate()
+		big_vfx.scale = Vector2(1.5, 1.5)
+		get_tree().current_scene.add_child(big_vfx)
+		big_vfx.global_position = _central_hub.global_position
+		big_vfx.modulate = Color(1.0, 0.85, 0.3)  # Gold
+
+	await get_tree().create_timer(0.5).timeout
+
+	# Dissolve all core visuals
+	var dissolve_tweens: Array = []
+	for core in cores:
+		if core and is_instance_valid(core) and core.sprite:
+			var tween := create_tween()
+			tween.tween_property(core.sprite, "modulate:a", 0.0, 1.0)
+			dissolve_tweens.append(tween)
+	if _central_hub and is_instance_valid(_central_hub):
+		var hub_sprite = _central_hub.get_node_or_null("Sprite2D")
+		if hub_sprite:
+			var tween := create_tween()
+			tween.tween_property(hub_sprite, "modulate:a", 0.0, 1.0)
+			dissolve_tweens.append(tween)
+
+	if not dissolve_tweens.is_empty():
+		await dissolve_tweens[0].finished
+
+	await get_tree().create_timer(0.5).timeout
+
+	# Victory dialog
+	var entries: Array[DialogEntry] = [
+		_make_dialog_entry("Kollektiv", "", "Ein...heit... zer...brochen..."),
+		_make_dialog_entry("Murum", MURUM_PORTRAIT, "Eure Stimme ist verstummt."),
+	]
+	await _play_dialog(entries, "kollektiv_victory")
+
+
+# ============ DIALOG HELPERS ============
+func _make_dialog_entry(speaker_name: String, portrait_path: String, text: String) -> DialogEntry:
+	var entry := DialogEntry.new()
+	entry.speaker_name = speaker_name
+	entry.text = text
+	entry.text_speed = 35.0
+
+	if portrait_path != "" and ResourceLoader.exists(portrait_path):
+		entry.speaker_sprite = load(portrait_path)
+
+	return entry
+
+
+func _play_dialog(entries: Array[DialogEntry], dialog_id: String) -> void:
+	var dialog := DialogData.new()
+	dialog.dialog_id = dialog_id
+	dialog.entries = entries
+
+	if EventBus:
+		EventBus.dialog_finished.connect(_on_dialog_finished, CONNECT_ONE_SHOT)
+
+	DialogManager.play_dialog_resource(dialog)
+	await dialog_sequence_finished
+
+
+func _on_dialog_finished(_dialog_id: String) -> void:
+	dialog_sequence_finished.emit()
