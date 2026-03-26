@@ -47,7 +47,8 @@ camera/               Coop-Kamera, Split-Screen-Manager
 | ChallengeRunManager | `core/autoloads/challenge_run_manager.gd` | 33 Siegel-Modifikatoren, Tiefe-System, Schwellensicht |
 | RewardManager | `core/autoloads/reward_manager.gd` | Belohnungs-Pools pro Raumtyp & Welt |
 | BoonManager | `core/autoloads/boon_manager.gd` | 5 Pachron-Pfade (25 Boons), Run-volatil |
-| BoonEffectHandler | `core/autoloads/boon_effect_handler.gd` | Alle 25 Boon-Effekte (T1–T5) via EventBus |
+| BoonEffectHandler | `core/autoloads/boon_effect_handler.gd` | Alle 25 Boon-Effekte (T1–T5) + 10 Sync-Effekte via EventBus |
+| SyncSkillManager | `core/autoloads/sync_skill_manager.gd` | 10 Pachron-Sync-Skills (Paar-Kombinationen), Run-volatil |
 | MusicScenePlayer | `core/autoloads/music_scene_player.tscn` | Musik pro Szene |
 
 ## Kampfsystem (P1 Murum)
@@ -258,6 +259,9 @@ worlds/world_1_ruins/
 - [ ] Boss-Polish (Intro-Cutscene, Victory-Sequence, SFX, Balancing)
 - [ ] Mirror-Boss-Polish (Despawning Platforms, mehr Chunk-Varianten)
 - [ ] CC-Reduktion Upgrade-Effekt (einziger nicht-implementierter Upgrade-Effekt)
+- [x] **Pachron Sync Skills** — 10 Paar-Kombinations-Skills (T5+T3+ Voraussetzung, 30%/60%/80% Chance)
+  - `SyncSkillManager` Autoload, `data/boons/sync_skills.json`, 10 Sync-Dialog-Dateien
+  - UI: Goldene Extra-Option im Boon-Choice-Screen, Dual-Pachron-Dialog
 
 ## Bekannte TODOs
 

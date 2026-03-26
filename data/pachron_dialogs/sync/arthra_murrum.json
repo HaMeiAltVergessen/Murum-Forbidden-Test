@@ -1,0 +1,13 @@
+{
+  "sync_id": "arthra_murrum",
+  "intro": [
+    {"speaker": "arthra", "text": "Elemente? Kinderspielzeug. Aber... kombiniert mit meinem Blitz..."},
+    {"speaker": "murrum", "text": "Arthra. Ich erinnere mich an Feuer, das den Himmel zerriss. Oder... vergesse ich es gerade?"},
+    {"speaker": "arthra", "text": "Halt den Mund und buendle deine Kraft. Zusammen werden wir Stuerme entfesseln."},
+    {"speaker": "murrum", "text": "Stuerme... ja. Ich glaube, ich habe einmal einen gesehen. Oder war ich der Sturm?"}
+  ],
+  "farewell": [
+    {"speaker": "arthra", "text": "Sturmfeuer. Ein wuerdiger Name fuer eine wuerdige Waffe."},
+    {"speaker": "murrum", "text": "Vergiss nicht... oder erinnere dich. Eines von beiden."}
+  ]
+}

@@ -329,6 +329,9 @@ func clear_boons() -> void:
 	# Cleanup active boon effects (blades, DoTs, etc.)
 	if BoonEffectHandler:
 		BoonEffectHandler.cleanup()
+	# Clear sync skills alongside boons
+	if SyncSkillManager:
+		SyncSkillManager.clear_syncs()
 	boons_cleared.emit()
 	print("[BoonManager] All boons cleared")
 

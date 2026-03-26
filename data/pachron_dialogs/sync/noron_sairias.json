@@ -1,0 +1,13 @@
+{
+  "sync_id": "noron_sairias",
+  "intro": [
+    {"speaker": "noron", "text": "Sairias. Dein Mut... er ist wie ein Licht im Wahnsinn. Stoerend. Und doch..."},
+    {"speaker": "sairias", "text": "Noron. Dein Wahnsinn ist das, was ich am meisten fuerchte. Aber auch... respektiere."},
+    {"speaker": "noron", "text": "Was, wenn Murums Parade ein Schild aus Zwielicht erzeugt? Licht UND Dunkelheit, vereint."},
+    {"speaker": "sairias", "text": "Ein Schild, das schuetzt UND vergilt... Ewiger Waechter. Ja. Dafuer ueberkomme ich meine Angst."}
+  ],
+  "farewell": [
+    {"speaker": "noron", "text": "Das Zwielicht wacht. Ob das Ruhe oder Wahn ist, werden wir sehen."},
+    {"speaker": "sairias", "text": "Solange es Murum schuetzt... ist mir beides recht."}
+  ]
+}

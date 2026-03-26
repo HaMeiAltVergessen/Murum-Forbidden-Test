@@ -1,0 +1,13 @@
+{
+  "sync_id": "arthra_raelear",
+  "intro": [
+    {"speaker": "arthra", "text": "...Ich spuere eine andere Kraft hier. Dunkel. Verzweifelt."},
+    {"speaker": "raelear", "text": "Arthra. Dein Zorn... er ist mir fremd. Aber ich erkenne seine Schaerfe."},
+    {"speaker": "arthra", "text": "Und deine Schatten sind mir zuwider. Doch der Sterbliche braucht mehr als wir einzeln geben koennen."},
+    {"speaker": "raelear", "text": "Dann lass uns ihm geben, was keiner allein erschaffen kann. Meine Schatten... und dein Urteil."}
+  ],
+  "farewell": [
+    {"speaker": "arthra", "text": "Nutze es weise. Oder nicht. Mir gleich."},
+    {"speaker": "raelear", "text": "Sei vorsichtig mit dieser Macht... sie traegt beider Last."}
+  ]
+}

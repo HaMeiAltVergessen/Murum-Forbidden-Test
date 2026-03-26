@@ -1,0 +1,13 @@
+{
+  "sync_id": "raelear_sairias",
+  "intro": [
+    {"speaker": "sairias", "text": "Raelear... deine Schatten. Sie koennten schuetzen statt nur angreifen."},
+    {"speaker": "raelear", "text": "Schuetzen? Das ist... nicht meine Art. Verzweiflung kennt keinen Schild."},
+    {"speaker": "sairias", "text": "Aber Entschlossenheit schon. Was, wenn deine Klone Treffer abfangen? Fuer Murum?"},
+    {"speaker": "raelear", "text": "...Sich opfern, damit er weiterkaempft. Ja. Das... verstehe ich."}
+  ],
+  "farewell": [
+    {"speaker": "sairias", "text": "Phantome, die schuetzen und vergelten. Mut in Schattenform."},
+    {"speaker": "raelear", "text": "Vielleicht ist Schutz eine andere Art von Verzweiflung."}
+  ]
+}

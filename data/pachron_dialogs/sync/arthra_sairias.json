@@ -1,0 +1,13 @@
+{
+  "sync_id": "arthra_sairias",
+  "intro": [
+    {"speaker": "sairias", "text": "Arthra... ich fuerchte deine Macht. Aber Murum braucht uns beide."},
+    {"speaker": "arthra", "text": "Angst? Vor MIR? ...Gut. Aber ueberwindest du sie fuer ihn?"},
+    {"speaker": "sairias", "text": "Mut heisst nicht, keine Angst zu haben. Es heisst, trotzdem zu handeln."},
+    {"speaker": "arthra", "text": "Dann handle. Dein Schild wird mein Donner. Jede Parade ein Gewitter."}
+  ],
+  "farewell": [
+    {"speaker": "sairias", "text": "Donner der Vergeltung... der Name allein jagt mir Schauer ein."},
+    {"speaker": "arthra", "text": "Gut so. Angst ist der Anfang von Respekt."}
+  ]
+}

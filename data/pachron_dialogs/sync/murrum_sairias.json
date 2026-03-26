@@ -1,0 +1,13 @@
+{
+  "sync_id": "murrum_sairias",
+  "intro": [
+    {"speaker": "sairias", "text": "Mur|rum... deine Elemente. Koennte man sie... in einem Schild speichern?"},
+    {"speaker": "murrum", "text": "Speichern? Ich vergesse alles, aber Elemente... die erinnern sich an Schmerz."},
+    {"speaker": "sairias", "text": "Wenn Murum pariert, koennte die Kraft als Elementar-Nova zurueckschlagen."},
+    {"speaker": "murrum", "text": "Ja! Nein. Vielleicht. Ich erinnere mich an eine Explosion... aus vier Farben."}
+  ],
+  "farewell": [
+    {"speaker": "sairias", "text": "Jede Parade wird zur elementaren Vergeltung. Das gibt mir... Mut."},
+    {"speaker": "murrum", "text": "Mut... oder war es Erinnerung? Ich vergesse den Unterschied."}
+  ]
+}

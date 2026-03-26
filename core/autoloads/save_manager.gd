@@ -262,6 +262,7 @@ func _gather_save_data(slot_index: int) -> Dictionary:
 		"upgrades": _gather_upgrade_data(),
 		"found_relics": _gather_found_relics(),
 		"boons": _gather_boon_data(),
+		"sync_skills": _gather_sync_skill_data(),
 		"pachron_dialogs": _gather_pachron_dialog_data()
 	}
 
@@ -454,6 +455,13 @@ func _gather_boon_data() -> Dictionary:
 	return {"active_boons": {}}
 
 
+func _gather_sync_skill_data() -> Dictionary:
+	"""Gathers SyncSkillManager run-volatile data (for mid-run saves)"""
+	if SyncSkillManager:
+		return SyncSkillManager.get_save_data()
+	return {"active_syncs": {}}
+
+
 func _gather_pachron_dialog_data() -> Dictionary:
 	"""Gathers PachronDialogSystem story tracking (persistent across runs)"""
 	if PachronDialogSystem:
@@ -576,6 +584,11 @@ func _apply_save_data(save_data: Dictionary) -> void:
 	var boon_data = save_data.get("boons", {})
 	if BoonManager:
 		BoonManager.load_from_save(boon_data)
+
+	# Restore SyncSkillManager data (mid-run saves)
+	var sync_data = save_data.get("sync_skills", {})
+	if SyncSkillManager:
+		SyncSkillManager.load_from_save(sync_data)
 
 	# Restore PachronDialogSystem story tracking
 	var pachron_data = save_data.get("pachron_dialogs", {})

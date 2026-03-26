@@ -60,6 +60,17 @@ var _active_clones: Array = []  # Track active clones for max limit
 # ============ STAFF TRACKING ============
 var _staff_projectile: Node = null  # Reference to active staff projectile
 
+# ============ SYNC SKILL STATE ============
+var _sync_urteil_clone_cooldown: float = 0.0       # Arthra×Raelear: cooldown for urteil-death clones
+var _sync_lightning_toggle: bool = false             # Arthra×Noron: alternates light/dark lightning
+var _sync_block_charge: int = 0                      # Murrum×Sairias: blocks stored for element burst
+var _sync_guardian_shield_active: bool = false        # Noron×Sairias: twilight shield active
+var _sync_guardian_shield_timer: float = 0.0         # Noron×Sairias: shield remaining duration
+var _sync_clone_absorb_cooldown: float = 0.0         # Raelear×Sairias: hit absorption cooldown
+var _sync_element_cycle_timer: float = 0.0           # Murrum×Noron: blade element cycle timer
+var _sync_current_blade_element: String = "fire"     # Murrum×Noron: current element on blades
+var _sync_clone_light_toggle: bool = false            # Raelear×Noron: alternates light/dark clones
+
 
 func _ready() -> void:
 	# Connect to EventBus signals — T1/T2
@@ -114,6 +125,9 @@ func _process(delta: float) -> void:
 	# Murrum T2: process DoTs
 	_process_dots(delta)
 
+	# Sync skill process effects
+	_process_sync_effects(delta)
+
 
 # ============ COMBO INCREASED HANDLER (Arthra T1 + Raelear T1) ============
 func _on_combo_increased(new_count: int, _multiplier: float) -> void:
@@ -135,8 +149,17 @@ func _on_combo_increased(new_count: int, _multiplier: float) -> void:
 				var total_damage: int = int(base_damage * (1.0 + bonus_pct))
 				var nearest: Node = _get_nearest_enemy(player.global_position, 300.0)
 				if nearest and nearest.has_method("take_damage"):
+					# Sync 3: Arthra×Noron — lightning alternates light/dark
+					if SyncSkillManager and SyncSkillManager.has_sync("arthra_noron"):
+						total_damage = _sync_twilight_wrath_modify_lightning(total_damage, player)
+
 					nearest.take_damage(total_damage, player)
 					_spawn_lightning_vfx(nearest.global_position)
+
+					# Sync 2: Arthra×Murrum — lightning creates element zone
+					if SyncSkillManager and SyncSkillManager.has_sync("arthra_murrum"):
+						_sync_storm_fire_zone(nearest.global_position)
+
 					print("[BoonEffect] Arthra T1: Lightning strike! %d damage on %s" % [total_damage, nearest.name])
 
 	# Raelear T1: Clone every 3rd hit (skip if T4 active — T4 spawns on every attack)
@@ -183,6 +206,21 @@ func _on_enemy_died(enemy: Node, position: Vector2) -> void:
 	# Noron T4: Kill explosion (alternating light/dark) — guard against recursion
 	if BoonManager.has_boon("noron", 4) and not _kill_explosion_active:
 		_spawn_kill_explosion(position)
+
+	# Sync 1: Arthra×Raelear — Urteil death spawns clone
+	if SyncSkillManager and SyncSkillManager.has_sync("arthra_raelear"):
+		if is_instance_valid(enemy) and enemy.has_meta("urteil_marked"):
+			if _sync_urteil_clone_cooldown <= 0.0:
+				_spawn_raelear_clone(position)
+				_sync_urteil_clone_cooldown = SyncSkillManager.get_sync_param("arthra_raelear", "extra_clone_cooldown", 1.0)
+				_spawn_raelear_vfx(position, 60.0)
+				print("[SyncEffect] Arthra×Raelear: Urteil-death clone at %v" % position)
+
+	# Sync 2: Arthra×Murrum — Elemental kill triggers bonus lightning
+	if SyncSkillManager and SyncSkillManager.has_sync("arthra_murrum"):
+		if is_instance_valid(enemy) and enemy.has_meta("dot_original_modulate"):
+			# Enemy had elemental DoT = elemental kill
+			_sync_storm_fire_bonus_lightning(position)
 
 	# Raelear T2: Death clone
 	if not BoonManager.has_boon("raelear", 2):
@@ -343,6 +381,14 @@ func _process_blade_damage(delta: float) -> void:
 		# Noron T3: Light heals HP, Dark heals Mana (alternating)
 		if BoonManager.has_boon("noron", 3):
 			_noron_t3_blade_heal(player)
+
+		# Sync 3: Arthra×Noron — every blade hit triggers mini-lightning
+		if SyncSkillManager and SyncSkillManager.has_sync("arthra_noron"):
+			_sync_twilight_wrath_blade_lightning(enemy)
+
+		# Sync 8: Murrum×Noron — blade hits deal current element + DoT
+		if SyncSkillManager and SyncSkillManager.has_sync("murrum_noron"):
+			_sync_prism_blade_element_hit(enemy, player)
 
 
 func _noron_t3_blade_heal(player: Node) -> void:
@@ -578,12 +624,20 @@ func _on_attack_blocked(enemy: Node, _damage_reduction: float) -> void:
 		var aoe_damage: int = BoonManager.get_scaled_param("sairias", 1, "block_aoe_damage", 10)
 		var aoe_radius: float = BoonManager.get_scaled_param("sairias", 1, "block_aoe_radius", 100)
 
+		# Sync 4: Arthra×Sairias — kill stacks boost block AoE
+		if SyncSkillManager and SyncSkillManager.has_sync("arthra_sairias"):
+			aoe_damage = int(aoe_damage * (1.0 + BoonManager.arthra_kill_bonus))
+
 		var enemies: Array = _get_enemies_in_radius(player.global_position, aoe_radius)
 		for e in enemies:
 			e.take_damage(aoe_damage, player)
 
 		_spawn_block_aoe_vfx(player.global_position, aoe_radius)
 		print("[BoonEffect] Sairias T1: Block AoE! %d enemies hit for %d" % [enemies.size(), aoe_damage])
+
+	# Sync 9: Murrum×Sairias — charge element burst on block
+	if SyncSkillManager and SyncSkillManager.has_sync("murrum_sairias"):
+		_sync_elemental_counter_block()
 
 	# Sairias T3: Himmel und Erde — launch/slam blocked enemy
 	if BoonManager.has_boon("sairias", 3) and is_instance_valid(enemy):
@@ -626,6 +680,22 @@ func _on_perfect_parry_executed(enemy: Node) -> void:
 			var heal_amount: int = int(health.max_health * heal_pct)
 			health.heal(heal_amount)
 			print("[BoonEffect] Sairias T5: Parry heal +%d HP" % heal_amount)
+
+	# Sync 4: Arthra×Sairias — parry triggers lightning storm
+	if SyncSkillManager and SyncSkillManager.has_sync("arthra_sairias") and player:
+		_sync_thunder_retribution_storm(player.global_position)
+
+	# Sync 7: Raelear×Sairias — parry makes all clones dash+explode on enemy
+	if SyncSkillManager and SyncSkillManager.has_sync("raelear_sairias") and is_instance_valid(enemy):
+		_sync_phantom_counter_parry(enemy)
+
+	# Sync 9: Murrum×Sairias — parry triggers element nova
+	if SyncSkillManager and SyncSkillManager.has_sync("murrum_sairias") and player:
+		_sync_elemental_counter_nova(player.global_position)
+
+	# Sync 10: Noron×Sairias — parry creates twilight shield
+	if SyncSkillManager and SyncSkillManager.has_sync("noron_sairias") and player:
+		_sync_eternal_guardian_activate()
 
 
 # ============ T5 CAPSTONE EFFECTS ============
@@ -941,8 +1011,35 @@ func _spawn_raelear_clone(pos: Vector2) -> void:
 
 	clone.mode = _get_raelear_clone_mode()
 
+	# Sync 5: Raelear×Murrum — clone gets random element
+	if SyncSkillManager and SyncSkillManager.has_sync("raelear_murrum"):
+		var elements: Array = ["fire", "water", "earth", "lightning"]
+		var element: String = elements[randi() % elements.size()]
+		clone.set_meta("sync_element", element)
+		clone.set_meta("sync_element_damage", SyncSkillManager.get_sync_param("raelear_murrum", "clone_element_damage", 15))
+		# Tint clone with element color
+		var tint: Color = ELEMENT_COLORS.get(element, MURRUM_COLOR)
+		clone.modulate = tint.lerp(CLONE_SCENE_COLOR, 0.4)
+
+	# Sync 6: Raelear×Noron — clone is light or dark variant
+	if SyncSkillManager and SyncSkillManager.has_sync("raelear_noron"):
+		var is_light: bool = _sync_clone_light_toggle
+		_sync_clone_light_toggle = not _sync_clone_light_toggle
+		clone.set_meta("sync_twilight_type", "light" if is_light else "dark")
+		if is_light:
+			clone.modulate = Color(1.0, 1.0, 0.8, 0.7)  # Light
+		else:
+			clone.modulate = Color(0.5, 0.2, 0.6, 0.7)  # Dark
+			# Dark clone: +60% damage
+			var bonus: float = SyncSkillManager.get_sync_param("raelear_noron", "dark_damage_bonus_percent", 0.6)
+			clone.clone_damage = int(clone.clone_damage * (1.0 + bonus))
+
 	scene_root.add_child(clone)
 	_active_clones.append(clone)
+
+	# Sync 6: Raelear×Noron — light clone heals player passively (via meta)
+	if clone.has_meta("sync_twilight_type") and clone.get_meta("sync_twilight_type") == "light":
+		clone.set_meta("sync_heal_tick", 0.0)
 
 	print("[BoonEffect] Raelear clone spawned (%s) at %v (%d/%d)" % [
 		"MIRROR" if clone.mode == 1 else "CHASE",
@@ -1223,6 +1320,378 @@ func _spawn_raelear_vfx(pos: Vector2, radius: float) -> void:
 	_spawn_explosion_vfx(pos, PATH_VFX["raelear"][0], radius / 80.0, Color(0.7, 0.4, 1.0))
 
 
+# ============ SYNC SKILL EFFECTS ============
+
+func _process_sync_effects(delta: float) -> void:
+	"""Per-frame processing for active sync skills."""
+	if not _is_in_run() or not SyncSkillManager:
+		return
+
+	# Arthra×Raelear: cooldown tick
+	if _sync_urteil_clone_cooldown > 0.0:
+		_sync_urteil_clone_cooldown -= delta
+
+	# Raelear×Sairias: absorption cooldown tick
+	if _sync_clone_absorb_cooldown > 0.0:
+		_sync_clone_absorb_cooldown -= delta
+
+	# Murrum×Noron: cycle blade element
+	if SyncSkillManager.has_sync("murrum_noron") and _twilight_blades_active:
+		var cycle_dur: float = SyncSkillManager.get_sync_param("murrum_noron", "element_cycle_duration", 2.0)
+		_sync_element_cycle_timer += delta
+		if _sync_element_cycle_timer >= cycle_dur:
+			_sync_element_cycle_timer -= cycle_dur
+			var elements: Array = ["fire", "water", "earth", "lightning"]
+			var idx: int = elements.find(_sync_current_blade_element)
+			_sync_current_blade_element = elements[(idx + 1) % elements.size()]
+			# Update blade tints
+			if _twilight_blades_node and is_instance_valid(_twilight_blades_node):
+				var color: Color = ELEMENT_COLORS.get(_sync_current_blade_element, Color.WHITE)
+				for blade in _twilight_blades_node.get_children():
+					blade.modulate = color.lerp(blade.modulate, 0.3)
+
+	# Noron×Sairias: twilight shield timer
+	if _sync_guardian_shield_active:
+		_sync_guardian_shield_timer -= delta
+		# Blade speed boost
+		if _twilight_blades_active and _twilight_blades_node and is_instance_valid(_twilight_blades_node):
+			var speed_mult: float = SyncSkillManager.get_sync_param("noron_sairias", "blade_speed_multiplier", 2.0)
+			_blade_rotation += delta * 3.0 * (speed_mult - 1.0)  # Extra rotation on top of normal
+		if _sync_guardian_shield_timer <= 0.0:
+			_sync_eternal_guardian_expire()
+
+	# Raelear×Noron: light clone heals player
+	if SyncSkillManager.has_sync("raelear_noron"):
+		var player = _get_player()
+		if player:
+			_cleanup_dead_clones()
+			for clone in _active_clones:
+				if is_instance_valid(clone) and clone.has_meta("sync_twilight_type"):
+					if clone.get_meta("sync_twilight_type") == "light":
+						var tick: float = clone.get_meta("sync_heal_tick", 0.0) + delta
+						clone.set_meta("sync_heal_tick", tick)
+						if tick >= 1.0:
+							clone.set_meta("sync_heal_tick", tick - 1.0)
+							var heal_ps: int = SyncSkillManager.get_sync_param("raelear_noron", "light_heal_per_sec", 3)
+							var health = player.get_node_or_null("HealthComponent")
+							if health and health.has_method("heal"):
+								health.heal(heal_ps)
+
+
+# -- Sync 1: Arthra×Raelear — clone explosion applies Urteil (hooked externally via clone damage) --
+# The urteil-death clone spawning is handled in _on_enemy_died above.
+# Clone urteil application: clones deal damage via take_damage → triggers _on_enemy_damaged → auto_urteil.
+# With this sync, Arthra T4 auto-urteil extends to clone damage automatically.
+# No additional function needed — the existing T4 auto_urteil handles it.
+
+
+# -- Sync 2: Arthra×Murrum — Sturmfeuer --
+func _sync_storm_fire_zone(pos: Vector2) -> void:
+	"""Creates an elemental AoE zone at lightning impact point."""
+	var zone_dur: float = SyncSkillManager.get_sync_param("arthra_murrum", "zone_duration", 4.0)
+	var zone_radius: float = SyncSkillManager.get_sync_param("arthra_murrum", "zone_radius", 150)
+	var zone_dps: int = SyncSkillManager.get_sync_param("arthra_murrum", "zone_dps", 12)
+	var elements: Array = ["fire", "water", "earth", "lightning"]
+	var element: String = elements[randi() % elements.size()]
+	var color: Color = ELEMENT_COLORS.get(element, MURRUM_COLOR)
+
+	var scene_root = get_tree().current_scene
+	if not scene_root:
+		return
+
+	# Visual zone
+	var zone := ColorRect.new()
+	zone.color = Color(color.r, color.g, color.b, 0.3)
+	var s: float = zone_radius * 2.0
+	zone.size = Vector2(s, s)
+	zone.global_position = pos - Vector2(zone_radius, zone_radius)
+	zone.z_index = -1
+	scene_root.add_child(zone)
+
+	# Damage tick every 1s for zone_dur seconds
+	var player = _get_player()
+	var ticks: int = int(zone_dur)
+	for i in range(ticks):
+		get_tree().create_timer(float(i) + 0.5).timeout.connect(func():
+			if not is_instance_valid(zone):
+				return
+			var enemies: Array = _get_enemies_in_radius(pos, zone_radius)
+			for enemy in enemies:
+				enemy.take_damage(zone_dps, player)
+				if BoonManager.has_boon("murrum", 2):
+					_apply_dot(enemy)
+		)
+
+	# Fade and remove
+	var tween := zone.create_tween()
+	tween.tween_property(zone, "modulate:a", 0.0, zone_dur).from(1.0)
+	tween.tween_callback(zone.queue_free)
+
+	_spawn_element_vfx(pos, element, 1.5)
+	print("[SyncEffect] Arthra×Murrum: %s zone at %v (%.0fs)" % [element, pos, zone_dur])
+
+
+func _sync_storm_fire_bonus_lightning(pos: Vector2) -> void:
+	"""Bonus lightning strike triggered by elemental kill."""
+	var player = _get_player()
+	if not player:
+		return
+	var lightning_dmg: int = SyncSkillManager.get_sync_param("arthra_murrum", "bonus_lightning_damage", 25)
+	var nearest: Node = _get_nearest_enemy(pos, 400.0)
+	if nearest and nearest.has_method("take_damage"):
+		nearest.take_damage(lightning_dmg, player)
+		_spawn_lightning_vfx(nearest.global_position)
+		# Chain: this lightning also creates a zone
+		_sync_storm_fire_zone(nearest.global_position)
+		print("[SyncEffect] Arthra×Murrum: Bonus lightning! %d dmg on %s" % [lightning_dmg, nearest.name])
+
+
+# -- Sync 3: Arthra×Noron — Zorn des Zwielichts --
+func _sync_twilight_wrath_blade_lightning(enemy: Node) -> void:
+	"""Every blade hit triggers a mini-lightning."""
+	if not is_instance_valid(enemy):
+		return
+	var player = _get_player()
+	if not player:
+		return
+	var dmg_pct: float = SyncSkillManager.get_sync_param("arthra_noron", "blade_lightning_damage_percent", 0.5)
+	var base_lightning: int = 20
+	var bonus_pct: float = BoonManager.get_scaled_param("arthra", 1, "bonus_damage_percent", 0.3) if BoonManager.has_boon("arthra", 1) else 0.0
+	var full_damage: int = int(base_lightning * (1.0 + bonus_pct))
+	var mini_damage: int = int(full_damage * dmg_pct)
+
+	# Apply light/dark alternation
+	mini_damage = _sync_twilight_wrath_modify_lightning(mini_damage, player)
+
+	enemy.take_damage(mini_damage, player)
+	_spawn_lightning_vfx(enemy.global_position)
+
+
+func _sync_twilight_wrath_modify_lightning(damage: int, player: Node) -> int:
+	"""Alternates lightning between light (heals) and dark (+80% damage)."""
+	_sync_lightning_toggle = not _sync_lightning_toggle
+	if _sync_lightning_toggle:
+		# Light: heal 5% max HP
+		var heal_pct: float = SyncSkillManager.get_sync_param("arthra_noron", "light_heal_percent", 0.05)
+		var health = player.get_node_or_null("HealthComponent")
+		if health and health.has_method("heal"):
+			var heal: int = int(health.max_health * heal_pct)
+			health.heal(heal)
+		return damage
+	else:
+		# Dark: +80% damage
+		var bonus: float = SyncSkillManager.get_sync_param("arthra_noron", "dark_damage_bonus_percent", 0.8)
+		return int(damage * (1.0 + bonus))
+
+
+# -- Sync 4: Arthra×Sairias — Donner der Vergeltung --
+func _sync_thunder_retribution_storm(center: Vector2) -> void:
+	"""Perfect Parry triggers lightning storm (5 strikes on random enemies)."""
+	var player = _get_player()
+	if not player:
+		return
+	var count: int = SyncSkillManager.get_sync_param("arthra_sairias", "lightning_storm_count", 5)
+	var dmg: int = SyncSkillManager.get_sync_param("arthra_sairias", "lightning_storm_damage", 30)
+
+	for i in range(count):
+		get_tree().create_timer(0.1 + i * 0.12).timeout.connect(func():
+			var target: Node = _get_nearest_enemy(center + Vector2(randf_range(-200, 200), randf_range(-200, 200)), 500.0)
+			if target and target.has_method("take_damage"):
+				target.take_damage(dmg, player)
+				_spawn_lightning_vfx(target.global_position)
+		)
+
+	print("[SyncEffect] Arthra×Sairias: Lightning storm! %d strikes" % count)
+
+
+# -- Sync 5: Raelear×Murrum — Elementargeister (clone element is set in _spawn_raelear_clone) --
+# Element zone on clone death is handled by checking clone meta in process/cleanup.
+# We hook into _cleanup_dead_clones to spawn zones when clones die.
+
+
+# -- Sync 6: Raelear×Noron — Schatten der Daemmerung (light/dark set in _spawn_raelear_clone) --
+# Light heal is processed in _process_sync_effects above.
+# Dual-hit burst is checked when enemies take clone damage — handled by _on_enemy_damaged.
+
+
+# -- Sync 7: Raelear×Sairias — Phantomkonter --
+func _sync_phantom_counter_parry(parried_enemy: Node) -> void:
+	"""All active clones dash to parried enemy and explode."""
+	_cleanup_dead_clones()
+	if _active_clones.is_empty():
+		return
+
+	var player = _get_player()
+	var bonus_per_clone: float = SyncSkillManager.get_sync_param("raelear_sairias", "parry_clone_damage_bonus_percent", 0.3)
+	var clone_count: int = _active_clones.size()
+	var total_bonus: float = 1.0 + bonus_per_clone * clone_count
+
+	for clone in _active_clones.duplicate():
+		if is_instance_valid(clone) and is_instance_valid(parried_enemy):
+			var dmg: int = int(clone.clone_damage * total_bonus)
+			parried_enemy.take_damage(dmg, player)
+			_spawn_raelear_vfx(clone.global_position, 80.0)
+			clone.queue_free()
+
+	_active_clones.clear()
+	print("[SyncEffect] Raelear×Sairias: %d clones exploded on %s! (%.0f%% bonus)" % [
+		clone_count, parried_enemy.name, total_bonus * 100
+	])
+
+
+# Called from player_damaged signal for Raelear×Sairias clone absorption
+func _sync_phantom_counter_absorb(damage: int) -> bool:
+	"""Tries to absorb a hit with an active clone. Returns true if absorbed."""
+	if not SyncSkillManager or not SyncSkillManager.has_sync("raelear_sairias"):
+		return false
+	if _sync_clone_absorb_cooldown > 0.0:
+		return false
+
+	_cleanup_dead_clones()
+	if _active_clones.is_empty():
+		return false
+
+	# Sacrifice nearest clone
+	var player = _get_player()
+	if not player:
+		return false
+
+	var nearest_clone: Node2D = null
+	var nearest_dist: float = INF
+	for clone in _active_clones:
+		if is_instance_valid(clone):
+			var dist: float = clone.global_position.distance_to(player.global_position)
+			if dist < nearest_dist:
+				nearest_dist = dist
+				nearest_clone = clone
+
+	if nearest_clone:
+		_spawn_raelear_vfx(nearest_clone.global_position, 60.0)
+		nearest_clone.queue_free()
+		_active_clones.erase(nearest_clone)
+		_sync_clone_absorb_cooldown = SyncSkillManager.get_sync_param("raelear_sairias", "clone_absorb_cooldown", 1.0)
+		print("[SyncEffect] Raelear×Sairias: Clone absorbed %d damage!" % damage)
+		return true
+
+	return false
+
+
+# -- Sync 8: Murrum×Noron — Prisma der Elemente --
+func _sync_prism_blade_element_hit(enemy: Node, player: Node) -> void:
+	"""Blade hit deals current cycling element damage + applies DoT."""
+	if not is_instance_valid(enemy):
+		return
+	var element_dmg: int = SyncSkillManager.get_sync_param("murrum_noron", "blade_element_damage", 12)
+	enemy.take_damage(element_dmg, player)
+
+	# Apply DoT if Murrum T2 active
+	if BoonManager.has_boon("murrum", 2):
+		_apply_dot(enemy)
+
+	# Small element VFX
+	_spawn_element_hit_vfx(enemy.global_position, 0.4)
+
+
+# -- Sync 9: Murrum×Sairias — Elementarer Gegenschlag --
+func _sync_elemental_counter_nova(center: Vector2) -> void:
+	"""Perfect Parry triggers elemental nova (all 4 elements, AoE)."""
+	var player = _get_player()
+	if not player:
+		return
+
+	var nova_radius: float = SyncSkillManager.get_sync_param("murrum_sairias", "nova_radius", 250)
+	var dmg_per_element: int = SyncSkillManager.get_sync_param("murrum_sairias", "nova_damage_per_element", 25)
+	var total_damage: int = dmg_per_element * 4
+
+	var enemies: Array = _get_enemies_in_radius(center, nova_radius)
+	for enemy in enemies:
+		enemy.take_damage(total_damage, player)
+		# Apply all 4 DoTs
+		if BoonManager.has_boon("murrum", 2):
+			_apply_dot(enemy)
+
+	# VFX: 4 element explosions in sequence
+	var elements: Array = ["fire", "water", "earth", "lightning"]
+	for i in range(4):
+		get_tree().create_timer(i * 0.08).timeout.connect(func():
+			_spawn_element_vfx(center + Vector2(randf_range(-40, 40), randf_range(-40, 40)), elements[i], 2.5)
+		)
+
+	print("[SyncEffect] Murrum×Sairias: Element nova! %d enemies hit for %d" % [enemies.size(), total_damage])
+
+
+func _sync_elemental_counter_block() -> void:
+	"""Increments block charge. At 3: next attack gets element burst."""
+	var blocks_needed: int = SyncSkillManager.get_sync_param("murrum_sairias", "blocks_for_burst", 3)
+	_sync_block_charge += 1
+
+	if _sync_block_charge >= blocks_needed:
+		_sync_block_charge = 0
+		# Store burst flag on player
+		var player = _get_player()
+		if player:
+			player.set_meta("sync_element_burst_ready", true)
+			EventBus.show_notification.emit("Elementar-Burst bereit!", 2.0)
+			print("[SyncEffect] Murrum×Sairias: Element burst charged!")
+
+
+# -- Sync 10: Noron×Sairias — Ewiger Waechter --
+func _sync_eternal_guardian_activate() -> void:
+	"""Activates twilight shield on perfect parry."""
+	if _sync_guardian_shield_active:
+		# Refresh duration
+		_sync_guardian_shield_timer = SyncSkillManager.get_sync_param("noron_sairias", "shield_duration", 5.0)
+		return
+
+	_sync_guardian_shield_active = true
+	_sync_guardian_shield_timer = SyncSkillManager.get_sync_param("noron_sairias", "shield_duration", 5.0)
+
+	# Visual: tint player with twilight glow
+	var player = _get_player()
+	if player:
+		var sprite = player.get_node_or_null("AnimatedSprite2D")
+		if sprite:
+			sprite.modulate = Color(0.7, 0.8, 1.0, 0.9)
+
+	print("[SyncEffect] Noron×Sairias: Twilight shield activated (%.0fs)" % _sync_guardian_shield_timer)
+
+
+func _sync_eternal_guardian_expire() -> void:
+	"""Shield expires — triggers nova and restores visuals."""
+	_sync_guardian_shield_active = false
+	_sync_guardian_shield_timer = 0.0
+
+	var player = _get_player()
+	if player:
+		# Restore sprite
+		var sprite = player.get_node_or_null("AnimatedSprite2D")
+		if sprite:
+			sprite.modulate = Color.WHITE
+
+		# Nova on expire
+		var nova_dmg: int = SyncSkillManager.get_sync_param("noron_sairias", "nova_damage", 120)
+		var nova_radius: float = SyncSkillManager.get_sync_param("noron_sairias", "nova_radius", 300)
+
+		var enemies: Array = _get_enemies_in_radius(player.global_position, nova_radius)
+		for enemy in enemies:
+			enemy.take_damage(nova_dmg, player)
+
+		# VFX: Light + Dark explosion
+		_spawn_noron_vfx(player.global_position, nova_radius, true)
+		get_tree().create_timer(0.1).timeout.connect(func():
+			_spawn_noron_vfx(player.global_position, nova_radius, false)
+		)
+
+		print("[SyncEffect] Noron×Sairias: Shield expired — nova! %d enemies hit for %d" % [enemies.size(), nova_dmg])
+
+
+func sync_guardian_get_miss_chance() -> float:
+	"""Returns extra miss chance from twilight shield (called by HurtboxComponent)."""
+	if _sync_guardian_shield_active and SyncSkillManager and SyncSkillManager.has_sync("noron_sairias"):
+		return SyncSkillManager.get_sync_param("noron_sairias", "shield_miss_chance", 0.5)
+	return 0.0
+
+
 # ============ UTILITY ============
 func _get_player() -> Node:
 	if GameManager and GameManager.player and is_instance_valid(GameManager.player):
@@ -1292,3 +1761,19 @@ func cleanup() -> void:
 		if is_instance_valid(clone):
 			clone.queue_free()
 	_active_clones.clear()
+	# Sync skill state
+	_sync_urteil_clone_cooldown = 0.0
+	_sync_lightning_toggle = false
+	_sync_block_charge = 0
+	_sync_guardian_shield_active = false
+	_sync_guardian_shield_timer = 0.0
+	_sync_clone_absorb_cooldown = 0.0
+	_sync_element_cycle_timer = 0.0
+	_sync_current_blade_element = "fire"
+	_sync_clone_light_toggle = false
+	# Restore player sprite if shield was active
+	var player = _get_player()
+	if player:
+		var sprite = player.get_node_or_null("AnimatedSprite2D")
+		if sprite:
+			sprite.modulate = Color.WHITE

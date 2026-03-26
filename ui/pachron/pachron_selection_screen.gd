@@ -1,6 +1,7 @@
 extends CanvasLayer
 ## PachronSelectionScreen — Fullscreen UI for Pachron selection, dialog, and boon choice/upgrade.
-## Flow: Symbol-Auswahl (3 Masken) → Pachron-Dialog → Boon waehlen/upgraden → Farewell → Done
+## Flow: Symbol-Auswahl (3 Masken) → Pachron-Dialog → [Sync-Dialog] → Boon waehlen/upgraden → Farewell → Done
+## Sync skills appear as additional golden option when SyncSkillManager rolls a successful offer.
 class_name PachronSelectionScreen
 
 # ============ SIGNALS ============
@@ -25,7 +26,7 @@ const PACHRON_IMAGES: Dictionary = {
 }
 
 # ============ STATE ============
-enum Phase { SYMBOL_SELECT, DIALOG, BOON_CHOICE, FAREWELL, DONE }
+enum Phase { SYMBOL_SELECT, DIALOG, SYNC_DIALOG, BOON_CHOICE, FAREWELL, DONE }
 var current_phase: Phase = Phase.SYMBOL_SELECT
 var _offered_paths: Array = []  # 3 path_id strings
 var _selected_index: int = 0
@@ -34,7 +35,11 @@ var _mask_nodes: Array = []  # TextureRect references for hover effects
 
 # Boon choice state
 var _boon_option_index: int = 0  # 0 = new boon, 1+ = upgrade options
-var _boon_options: Array = []  # Array of {type: "new"/"upgrade", path_id, tier, boon_data}
+var _boon_options: Array = []  # Array of {type: "new"/"upgrade"/"sync", path_id, tier, boon_data/sync_data}
+
+# Sync skill state
+var _offered_sync: Dictionary = {}  # The sync data dict if offered, empty if not
+var _chosen_sync_id: String = ""    # Set when player chooses a sync skill
 
 # UI Nodes
 var _bg: ColorRect
@@ -240,6 +245,14 @@ func _setup_boon_phase() -> void:
 	header.add_theme_color_override("font_color", path_color)
 	_boon_panel.add_child(header)
 
+	# SYNC SKILL OPTION (if offered — always first/top option)
+	if not _offered_sync.is_empty():
+		_boon_options.append({
+			"type": "sync",
+			"sync_id": _offered_sync.get("id", ""),
+			"sync_data": _offered_sync,
+		})
+
 	# Option A: New boon (if available)
 	var next_tier: int = BoonManager.get_next_available_tier(_selected_path_id)
 	if next_tier > 0:
@@ -269,7 +282,11 @@ func _setup_boon_phase() -> void:
 	# Build option UI cards
 	for i in range(_boon_options.size()):
 		var option: Dictionary = _boon_options[i]
-		var card := _create_boon_option_card(option, i)
+		var card: PanelContainer
+		if option["type"] == "sync":
+			card = _create_sync_option_card(option, i)
+		else:
+			card = _create_boon_option_card(option, i)
 		_boon_panel.add_child(card)
 		_boon_option_nodes.append(card)
 
@@ -369,21 +386,93 @@ func _create_boon_option_card(option: Dictionary, _index: int) -> PanelContainer
 	return card
 
 
+func _create_sync_option_card(option: Dictionary, _index: int) -> PanelContainer:
+	"""Creates a golden sync skill card — visually distinct from normal boons."""
+	var card := PanelContainer.new()
+	card.custom_minimum_size = Vector2(480, 0)
+
+	var sync_data: Dictionary = option.get("sync_data", {})
+	var sync_color: Color = SyncSkillManager.get_sync_color(sync_data.get("id", ""))
+
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.2, 0.15, 0.05, 0.95)
+	style.corner_radius_top_left = 8
+	style.corner_radius_top_right = 8
+	style.corner_radius_bottom_left = 8
+	style.corner_radius_bottom_right = 8
+	style.content_margin_left = 12
+	style.content_margin_right = 12
+	style.content_margin_top = 10
+	style.content_margin_bottom = 10
+	# Golden border by default
+	style.border_color = Color(1.0, 0.85, 0.2, 0.8)
+	style.border_width_left = 2
+	style.border_width_right = 2
+	style.border_width_top = 2
+	style.border_width_bottom = 2
+	card.add_theme_stylebox_override("panel", style)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 4)
+	card.add_child(vbox)
+
+	# Sync header
+	var path_a: String = sync_data.get("path_a", "")
+	var path_b: String = sync_data.get("path_b", "")
+	var name_a: String = BoonManager.get_path_data(path_a).get("name", path_a.capitalize())
+	var name_b: String = BoonManager.get_path_data(path_b).get("name", path_b.capitalize())
+
+	var type_label := Label.new()
+	type_label.text = "SYNC SKILL — %s + %s" % [name_a, name_b]
+	type_label.add_theme_font_size_override("font_size", 14)
+	type_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
+	vbox.add_child(type_label)
+
+	var name_label := Label.new()
+	name_label.text = sync_data.get("name", "?")
+	name_label.add_theme_font_size_override("font_size", 22)
+	name_label.add_theme_color_override("font_color", sync_color)
+	vbox.add_child(name_label)
+
+	var desc_label := Label.new()
+	desc_label.text = sync_data.get("description", "")
+	desc_label.add_theme_font_size_override("font_size", 13)
+	desc_label.add_theme_color_override("font_color", Color(0.9, 0.85, 0.7))
+	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vbox.add_child(desc_label)
+
+	return card
+
+
 func _update_boon_highlight() -> void:
 	for i in range(_boon_option_nodes.size()):
 		var card: PanelContainer = _boon_option_nodes[i]
 		var style: StyleBoxFlat = card.get_theme_stylebox("panel") as StyleBoxFlat
+		var option: Dictionary = _boon_options[i]
+
 		if i == _boon_option_index:
-			style.border_color = Color(1.0, 0.85, 0.3)
+			if option.get("type", "") == "sync":
+				# Golden glow for sync
+				style.border_color = Color(1.0, 0.9, 0.3, 1.0)
+			else:
+				style.border_color = Color(1.0, 0.85, 0.3)
 			style.border_width_left = 3
 			style.border_width_right = 3
 			style.border_width_top = 3
 			style.border_width_bottom = 3
 		else:
-			style.border_width_left = 0
-			style.border_width_right = 0
-			style.border_width_top = 0
-			style.border_width_bottom = 0
+			if option.get("type", "") == "sync":
+				# Keep subtle golden border for sync even when not selected
+				style.border_color = Color(1.0, 0.85, 0.2, 0.5)
+				style.border_width_left = 2
+				style.border_width_right = 2
+				style.border_width_top = 2
+				style.border_width_bottom = 2
+			else:
+				style.border_width_left = 0
+				style.border_width_right = 0
+				style.border_width_top = 0
+				style.border_width_bottom = 0
 
 
 # ============ INPUT ============
@@ -392,7 +481,7 @@ func _input(event: InputEvent) -> void:
 		_handle_symbol_input(event)
 	elif current_phase == Phase.BOON_CHOICE:
 		_handle_boon_input(event)
-	elif current_phase == Phase.DIALOG or current_phase == Phase.FAREWELL:
+	elif current_phase == Phase.DIALOG or current_phase == Phase.SYNC_DIALOG or current_phase == Phase.FAREWELL:
 		pass  # Dialog system handles its own input
 
 
@@ -434,6 +523,10 @@ func _confirm_symbol_selection() -> void:
 	pachron_selected.emit(_selected_path_id)
 	print("[PachronSelection] Pachron selected: %s" % _selected_path_id)
 
+	# Reset sync state
+	_offered_sync = {}
+	_chosen_sync_id = ""
+
 	# Start dialog phase
 	_start_dialog_phase()
 
@@ -458,25 +551,71 @@ func _start_dialog_phase() -> void:
 
 
 func _on_pachron_dialog_finished() -> void:
+	# After normal dialog, check for sync skill offer
+	if SyncSkillManager:
+		_offered_sync = SyncSkillManager.roll_sync_offer(_selected_path_id)
+
+	if not _offered_sync.is_empty():
+		# Sync offered! Play the dual-Pachron sync dialog
+		_start_sync_dialog_phase()
+	else:
+		# No sync — go straight to boon choice
+		_setup_boon_phase()
+
+
+# ============ SYNC DIALOG PHASE ============
+func _start_sync_dialog_phase() -> void:
+	current_phase = Phase.SYNC_DIALOG
+	# Hide all visuals — DialogUI handles display
+	_mask_container.visible = false
+	_title_label.visible = false
+	_pachron_image.visible = false
+	_boon_panel.visible = false
+	_bg.visible = false
+
+	var sync_id: String = _offered_sync.get("id", "")
+	print("[PachronSelection] Sync dialog starting: %s" % sync_id)
+
+	if PachronDialogSystem:
+		PachronDialogSystem.start_sync_dialog(sync_id)
+		PachronDialogSystem.dialog_sequence_finished.connect(_on_sync_dialog_finished, CONNECT_ONE_SHOT)
+	else:
+		_on_sync_dialog_finished()
+
+
+func _on_sync_dialog_finished() -> void:
+	# Sync dialog done — now show boon choice with sync option
 	_setup_boon_phase()
 
 
+# ============ BOON SELECTION ============
 func _confirm_boon_selection() -> void:
 	if _boon_option_index < 0 or _boon_option_index >= _boon_options.size():
 		return
 
 	var option: Dictionary = _boon_options[_boon_option_index]
-	var path_id: String = option.get("path_id", "")
-	var tier: int = option.get("tier", 1)
 
 	var success: bool = false
-	if option["type"] == "new":
+	if option["type"] == "sync":
+		# Sync skill chosen
+		var sync_id: String = option.get("sync_id", "")
+		success = SyncSkillManager.acquire_sync(sync_id)
+		if success:
+			_chosen_sync_id = sync_id
+			var sync_name: String = option.get("sync_data", {}).get("name", "?")
+			EventBus.show_notification.emit("Sync Skill: %s erworben!" % sync_name, 4.0)
+			print("[PachronSelection] Sync skill acquired: %s" % sync_id)
+	elif option["type"] == "new":
+		var path_id: String = option.get("path_id", "")
+		var tier: int = option.get("tier", 1)
 		success = BoonManager.add_boon(path_id, tier)
 		if success:
 			var boon_name: String = option.get("boon_data", {}).get("name", "?")
 			EventBus.show_notification.emit("%s T%d: %s erworben!" % [path_id.capitalize(), tier, boon_name], 4.0)
 			print("[PachronSelection] New boon: %s T%d" % [path_id, tier])
 	else:
+		var path_id: String = option.get("path_id", "")
+		var tier: int = option.get("tier", 1)
 		success = BoonManager.upgrade_boon(path_id, tier)
 		if success:
 			var boon_name: String = option.get("boon_data", {}).get("name", "?")
@@ -500,7 +639,12 @@ func _start_farewell_phase() -> void:
 	_bg.visible = false
 
 	if PachronDialogSystem:
-		PachronDialogSystem.play_farewell(_selected_path_id)
+		if _chosen_sync_id != "":
+			# Sync farewell (both Pachrons)
+			PachronDialogSystem.play_sync_farewell(_chosen_sync_id)
+		else:
+			# Normal farewell
+			PachronDialogSystem.play_farewell(_selected_path_id)
 		PachronDialogSystem.dialog_sequence_finished.connect(_finish_flow, CONNECT_ONE_SHOT)
 	else:
 		_finish_flow()

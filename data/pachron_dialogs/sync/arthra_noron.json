@@ -1,0 +1,13 @@
+{
+  "sync_id": "arthra_noron",
+  "intro": [
+    {"speaker": "noron", "text": "Arthra. Dein Blitz stoert die Balance zwischen Licht und Schatten."},
+    {"speaker": "arthra", "text": "Balance? Schwaeche, getarnt als Weisheit. Aber deine Klingen... die haben Potenzial."},
+    {"speaker": "noron", "text": "Wahnsinn und Zorn... vielleicht sind sie naeher verwandt, als ich dachte."},
+    {"speaker": "arthra", "text": "Lade meine Blitze in deine Klingen. Der Sterbliche wird zum Zwielicht-Sturm."}
+  ],
+  "farewell": [
+    {"speaker": "arthra", "text": "Licht und Donner. Eine Kombination, die selbst mich beeindruckt."},
+    {"speaker": "noron", "text": "Moege der Zorn des Zwielichts dich leiten... und nicht verschlingen."}
+  ]
+}

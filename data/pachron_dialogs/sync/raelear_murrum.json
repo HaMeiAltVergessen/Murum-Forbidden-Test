@@ -1,0 +1,13 @@
+{
+  "sync_id": "raelear_murrum",
+  "intro": [
+    {"speaker": "raelear", "text": "Mur|rum... deine Elemente. Sie koennten meinen Schatten Form geben."},
+    {"speaker": "murrum", "text": "Schatten? Ja... ich erinnere mich an Schatten, die Feuer trugen. Oder war es Eis?"},
+    {"speaker": "raelear", "text": "Beides. Alles. Jeder meiner Klone koennte eine Elementarkraft tragen."},
+    {"speaker": "murrum", "text": "Elementargeister... das Wort loest etwas in mir aus. Als haette ich es vergessen."}
+  ],
+  "farewell": [
+    {"speaker": "raelear", "text": "Meine Schatten tragen nun deine Erinnerungen, Mur|rum."},
+    {"speaker": "murrum", "text": "Dann... werden sie sich fuer mich erinnern."}
+  ]
+}

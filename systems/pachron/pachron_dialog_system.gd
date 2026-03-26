@@ -9,6 +9,7 @@ signal dialog_sequence_finished()
 
 # ============ CONSTANTS ============
 const DIALOG_DATA_PATH: String = "res://data/pachron_dialogs/"
+const SYNC_DIALOG_PATH: String = "res://data/pachron_dialogs/sync/"
 const PACHRON_IMAGES: Dictionary = {
 	"arthra": "res://Assets/AIPlaceholder/Char/Pachrons/Arthra/NORON_Pachron_of_Twilight_Use__Nano_Banana_Pro_58172.jpg",
 	"noron": "res://Assets/AIPlaceholder/Char/Pachrons/Noron/NORON_Pachron_of_Twilight_Use__Nano_Banana_Pro_34835.jpg",
@@ -27,9 +28,10 @@ var _is_farewell: bool = false
 
 func _ready() -> void:
 	_load_all_dialogs()
+	_load_sync_dialogs()
 	if RunManager:
 		RunManager.run_started.connect(_on_run_started)
-	print("[PachronDialogSystem] Initialized — %d pachron dialogs loaded" % _pachron_dialogs.size())
+	print("[PachronDialogSystem] Initialized — %d pachron dialogs, %d sync dialogs loaded" % [_pachron_dialogs.size(), _sync_dialogs.size()])
 
 
 func _on_run_started() -> void:
@@ -192,3 +194,88 @@ func load_from_save(data: Dictionary) -> void:
 func reset_run_state() -> void:
 	"""Called at run start — resets loop indices but keeps story tracking."""
 	_loop_indices.clear()
+
+
+# ============ SYNC SKILL DIALOGS ============
+var _sync_dialogs: Dictionary = {}  # sync_id -> parsed JSON dict
+
+func _load_sync_dialogs() -> void:
+	"""Loads all sync dialog files from the sync/ subdirectory."""
+	var dir := DirAccess.open(SYNC_DIALOG_PATH)
+	if not dir:
+		push_warning("[PachronDialogSystem] Sync dialog directory missing: %s" % SYNC_DIALOG_PATH)
+		return
+
+	dir.list_dir_begin()
+	var file_name: String = dir.get_next()
+	while file_name != "":
+		if file_name.ends_with(".json"):
+			var full_path: String = SYNC_DIALOG_PATH + file_name
+			var file := FileAccess.open(full_path, FileAccess.READ)
+			if file:
+				var json := JSON.new()
+				var result := json.parse(file.get_as_text())
+				file.close()
+				if result == OK:
+					var data: Dictionary = json.data
+					var sync_id: String = data.get("sync_id", file_name.get_basename())
+					_sync_dialogs[sync_id] = data
+		file_name = dir.get_next()
+	dir.list_dir_end()
+	print("[PachronDialogSystem] Loaded %d sync dialogs" % _sync_dialogs.size())
+
+
+func start_sync_dialog(sync_id: String) -> void:
+	"""Starts the dual-Pachron intro dialog for a sync skill."""
+	_current_path_id = sync_id
+	_is_farewell = false
+
+	var dialog_data: Dictionary = _sync_dialogs.get(sync_id, {})
+	if dialog_data.is_empty():
+		print("[PachronDialogSystem] No sync dialog for %s — skipping" % sync_id)
+		dialog_sequence_finished.emit()
+		return
+
+	var intro: Array = dialog_data.get("intro", [])
+	if intro.is_empty():
+		dialog_sequence_finished.emit()
+		return
+
+	var entries: Array[DialogEntry] = []
+	for line in intro:
+		var speaker: String = line.get("speaker", "")
+		var text: String = line.get("text", "")
+		if speaker != "" and text != "":
+			entries.append(_make_entry(speaker, text))
+
+	if entries.is_empty():
+		dialog_sequence_finished.emit()
+		return
+
+	_play_entries("sync_%s" % sync_id, entries)
+
+
+func play_sync_farewell(sync_id: String) -> void:
+	"""Plays the farewell dialog for a sync skill (both Pachrons)."""
+	_current_path_id = sync_id
+	_is_farewell = true
+
+	var dialog_data: Dictionary = _sync_dialogs.get(sync_id, {})
+	var farewell_lines: Array = dialog_data.get("farewell", [])
+
+	if farewell_lines.is_empty():
+		dialog_sequence_finished.emit()
+		return
+
+	var entries: Array[DialogEntry] = []
+	for line in farewell_lines:
+		var speaker: String = line.get("speaker", "")
+		var text: String = line.get("text", "")
+		if speaker != "" and text != "":
+			entries.append(_make_entry(speaker, text))
+
+	if entries.is_empty():
+		dialog_sequence_finished.emit()
+		return
+
+	_play_entries("sync_%s_farewell" % sync_id, entries)

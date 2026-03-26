@@ -461,6 +461,13 @@ signal pachron_dialog_started(path_id: String)
 ## Emitted when Pachron dialog finishes
 signal pachron_dialog_finished(path_id: String)
 
+# ============ SYNC SKILL SIGNALS ============
+## Emitted when a sync skill is acquired
+signal sync_skill_acquired(sync_id: String, sync_data: Dictionary)
+
+## Emitted when all sync skills are cleared (run end)
+signal sync_skills_cleared()
+
 
 func _ready() -> void:
 	print("[EventBus] Initialized")

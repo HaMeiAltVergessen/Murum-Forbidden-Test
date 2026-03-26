@@ -1,0 +1,13 @@
+{
+  "sync_id": "raelear_noron",
+  "intro": [
+    {"speaker": "noron", "text": "Raelear. Deine Klone... sie kennen weder Licht noch Dunkelheit. Nur Verzweiflung."},
+    {"speaker": "raelear", "text": "Und deine Klingen kennen beides, aber nicht den Schmerz dazwischen."},
+    {"speaker": "noron", "text": "Was waere, wenn deine Schatten sich teilen? Licht und Dunkel, zwei Seiten..."},
+    {"speaker": "raelear", "text": "...derselben Entschlossenheit. Ja. Gib ihnen Dualitaet."}
+  ],
+  "farewell": [
+    {"speaker": "noron", "text": "Licht-Schatten und Dunkel-Schatten... die Daemmerung lebt in ihnen."},
+    {"speaker": "raelear", "text": "Vielleicht finden meine Klone so den Frieden, den ich nie hatte."}
+  ]
+}

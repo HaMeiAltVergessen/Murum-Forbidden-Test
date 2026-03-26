@@ -1,0 +1,150 @@
+{
+  "version": "1.0",
+  "sync_skills": {
+    "arthra_raelear": {
+      "id": "arthra_raelear",
+      "path_a": "arthra",
+      "path_b": "raelear",
+      "name": "Urteil der Schatten",
+      "description": "Schattenklone erben Urteil — Klon-Explosionen markieren alle getroffenen Gegner mit Todesmal. Urteil-Tode spawnen automatisch einen Schattenklon.",
+      "effect_type": "sync_urteil_clones",
+      "icon_color": [0.75, 0.3, 0.5],
+      "params": {
+        "clone_applies_urteil": true,
+        "urteil_death_spawns_clone": true,
+        "extra_clone_cooldown": 1.0
+      }
+    },
+    "arthra_murrum": {
+      "id": "arthra_murrum",
+      "path_a": "arthra",
+      "path_b": "murrum",
+      "name": "Sturmfeuer",
+      "description": "Blitzschlaege hinterlassen eine zufaellige Elementarzone (4s AoE-DoT). Elementar-Kills loesen sofort einen Bonus-Blitzschlag auf den naechsten Feind aus.",
+      "effect_type": "sync_storm_fire",
+      "icon_color": [0.6, 0.5, 0.55],
+      "params": {
+        "zone_duration": 4.0,
+        "zone_radius": 150,
+        "zone_dps": 12,
+        "bonus_lightning_damage": 25
+      }
+    },
+    "arthra_noron": {
+      "id": "arthra_noron",
+      "path_a": "arthra",
+      "path_b": "noron",
+      "name": "Zorn des Zwielichts",
+      "description": "Zwielicht-Klingen werden blitzgeladen — jeder Klingen-Treffer loest einen Mini-Blitz aus (50% Schaden). Blitzschlaege alternieren: Licht heilt 5% Max HP, Dunkel dealt +80% Schaden.",
+      "effect_type": "sync_twilight_wrath",
+      "icon_color": [0.7, 0.55, 0.25],
+      "params": {
+        "blade_lightning_damage_percent": 0.5,
+        "light_heal_percent": 0.05,
+        "dark_damage_bonus_percent": 0.8
+      }
+    },
+    "arthra_sairias": {
+      "id": "arthra_sairias",
+      "path_a": "arthra",
+      "path_b": "sairias",
+      "name": "Donner der Vergeltung",
+      "description": "Perfect Parry loest einen Blitzsturm aus (5 Schlaege auf zufaellige Feinde, je 30 Schaden). Kill-Stacks erhoehen zusaetzlich den Block-AoE-Schaden.",
+      "effect_type": "sync_thunder_retribution",
+      "icon_color": [0.95, 0.58, 0.2],
+      "params": {
+        "lightning_storm_count": 5,
+        "lightning_storm_damage": 30,
+        "kill_stack_block_bonus": true
+      }
+    },
+    "raelear_murrum": {
+      "id": "raelear_murrum",
+      "path_a": "raelear",
+      "path_b": "murrum",
+      "name": "Elementargeister",
+      "description": "Klone spawnen mit zufaelligem Element-Aura. Klon-Angriffe dealen Elementarschaden + DoT. Klon-Tod hinterlaesst eine Elementarzone (3s AoE).",
+      "effect_type": "sync_elemental_ghosts",
+      "icon_color": [0.35, 0.5, 0.85],
+      "params": {
+        "clone_element_damage": 15,
+        "clone_zone_duration": 3.0,
+        "clone_zone_radius": 100,
+        "clone_zone_dps": 10
+      }
+    },
+    "raelear_noron": {
+      "id": "raelear_noron",
+      "path_a": "raelear",
+      "path_b": "noron",
+      "name": "Schatten der Daemmerung",
+      "description": "Klone spawnen als Licht- oder Dunkel-Variante (alternierend). Licht-Klon heilt 3 HP/s. Dunkel-Klon dealt +60% Schaden. Beide auf demselben Gegner: garantierte Konfusion + AoE-Burst (80 Schaden).",
+      "effect_type": "sync_twilight_clones",
+      "icon_color": [0.45, 0.55, 0.55],
+      "params": {
+        "light_heal_per_sec": 3,
+        "dark_damage_bonus_percent": 0.6,
+        "dual_hit_burst_damage": 80,
+        "dual_hit_burst_radius": 200
+      }
+    },
+    "raelear_sairias": {
+      "id": "raelear_sairias",
+      "path_a": "raelear",
+      "path_b": "sairias",
+      "name": "Phantomkonter",
+      "description": "Perfect Parry laesst alle aktiven Klone zum Gegner dashen und explodieren (+30% Schaden pro Klon). Klone absorbieren je 1 Treffer fuer den Spieler (max 1/s).",
+      "effect_type": "sync_phantom_counter",
+      "icon_color": [0.7, 0.58, 0.5],
+      "params": {
+        "parry_clone_damage_bonus_percent": 0.3,
+        "clone_absorb_cooldown": 1.0
+      }
+    },
+    "murrum_noron": {
+      "id": "murrum_noron",
+      "path_a": "murrum",
+      "path_b": "noron",
+      "name": "Prisma der Elemente",
+      "description": "Zwielicht-Klingen zirkulieren durch die 4 Elemente (2s pro Element). Klingen-Treffer dealen Elementarschaden + DoT. Konfusion verdoppelt Elementar-DoT-Geschwindigkeit.",
+      "effect_type": "sync_elemental_prism",
+      "icon_color": [0.3, 0.75, 0.6],
+      "params": {
+        "element_cycle_duration": 2.0,
+        "blade_element_damage": 12,
+        "confusion_dot_speed_multiplier": 2.0
+      }
+    },
+    "murrum_sairias": {
+      "id": "murrum_sairias",
+      "path_a": "murrum",
+      "path_b": "sairias",
+      "name": "Elementarer Gegenschlag",
+      "description": "Perfect Parry loest eine Elementar-Nova aus (alle 4 Elemente, 250px AoE, je 25 Schaden). Nach 3 Blocks entlaedt der naechste Angriff einen Elementar-Burst (60 Schaden + alle 4 DoTs).",
+      "effect_type": "sync_elemental_counter",
+      "icon_color": [0.55, 0.78, 0.55],
+      "params": {
+        "nova_radius": 250,
+        "nova_damage_per_element": 25,
+        "blocks_for_burst": 3,
+        "burst_damage": 60
+      }
+    },
+    "noron_sairias": {
+      "id": "noron_sairias",
+      "path_a": "noron",
+      "path_b": "sairias",
+      "name": "Ewiger Waechter",
+      "description": "Perfect Parry erzeugt ein Zwielicht-Schild (5s). Waehrend Schild: +50% Miss-Chance auf feindliche Angriffe. Schild-Ende: Licht/Dunkel-Nova (120 Schaden, 300px). Klingen rotieren 2x schneller.",
+      "effect_type": "sync_eternal_guardian",
+      "icon_color": [0.65, 0.83, 0.25],
+      "params": {
+        "shield_duration": 5.0,
+        "shield_miss_chance": 0.5,
+        "nova_damage": 120,
+        "nova_radius": 300,
+        "blade_speed_multiplier": 2.0
+      }
+    }
+  }
+}

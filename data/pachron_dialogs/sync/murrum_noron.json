@@ -1,0 +1,13 @@
+{
+  "sync_id": "murrum_noron",
+  "intro": [
+    {"speaker": "murrum", "text": "Noron... deine Klingen. Sie erinnern mich an... nein, ich vergesse es schon wieder."},
+    {"speaker": "noron", "text": "Du vergisst, ich bin im Wahn. Zusammen sind wir ein schoenes Chaos, nicht wahr?"},
+    {"speaker": "murrum", "text": "Was, wenn deine Klingen meine Elemente tragen? Feuer, Wasser, Erde, Blitz... im Wechsel."},
+    {"speaker": "noron", "text": "Ein Prisma... ja. Die Elemente werden zum Zwielicht, das Zwielicht wird zu Elementen."}
+  ],
+  "farewell": [
+    {"speaker": "murrum", "text": "Ich werde versuchen, mich daran zu erinnern, wie das funktioniert."},
+    {"speaker": "noron", "text": "Und ich werde versuchen, nicht wahnsinnig dabei zu werden. ...Zu spaet."}
+  ]
+}
