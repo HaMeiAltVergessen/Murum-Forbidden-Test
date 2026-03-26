@@ -41,6 +41,12 @@ static func _make_node(id: int, row: int, col: int, type: RunMapData.NodeType,
 	return node
 
 
+static func _connect(node: RunMapData.MapNode, target_ids: Array) -> void:
+	"""Sets connections on a node (workaround for typed Array[int] assignment)"""
+	for tid in target_ids:
+		node.connections.append(tid as int)
+
+
 # ============ WELT 1: DAS NIEMANDSLAND ============
 # Row 0: [Verfallene Ruinen] [Tempelvorplatz]                                (Wahl)
 # Row 1: [Dorf der Verlorenen]                                               (Optional — skip to Row 2)
@@ -79,21 +85,21 @@ static func _generate_fixed_w1() -> RunMapData.Map:
 
 	# ---- Connections ----
 	# Row 0 → Rest (optional) or Elite (skip rest)
-	n0.connections = [2, 3]
-	n1.connections = [2, 3]
+	_connect(n0, [2, 3])
+	_connect(n1, [2, 3])
 	# Row 1 → Elite
-	n2.connections = [3]
+	_connect(n2, [3])
 	# Row 2 → Temple hub (all 4 doors)
-	n3.connections = [4, 5, 6, 7]
+	_connect(n3, [4, 5, 6, 7])
 	# Temple hub: non-combat → same-row combat
-	n4.connections = [6, 7]
-	n5.connections = [6, 7]
+	_connect(n4, [6, 7])
+	_connect(n5, [6, 7])
 	# Temple hub: combat → pre-boss
-	n6.connections = [8, 9]
-	n7.connections = [8, 9]
+	_connect(n6, [8, 9])
+	_connect(n7, [8, 9])
 	# Pre-boss → Boss
-	n8.connections = [10]
-	n9.connections = [10]
+	_connect(n8, [10])
+	_connect(n9, [10])
 
 	# Build map
 	for n in [n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, n10]:
@@ -148,23 +154,23 @@ static func _generate_fixed_w2() -> RunMapData.Map:
 
 	# ---- Connections ----
 	# Row 0: Event → same-row combat, combat → elite
-	n0.connections = [3]
-	n1.connections = [3]
-	n2.connections = [0, 1]    # Wohnung → must do combat first
+	_connect(n0, [3])
+	_connect(n1, [3])
+	_connect(n2, [0, 1])       # Wohnung → must do combat first
 	# Row 1 → Rest
-	n3.connections = [4]
+	_connect(n3, [4])
 	# Row 2 → Combat choices
-	n4.connections = [5, 6]
+	_connect(n4, [5, 6])
 	# Row 3 → Docks
-	n5.connections = [7]
-	n6.connections = [7]
+	_connect(n5, [7])
+	_connect(n6, [7])
 	# Row 4 → Treasure/Elite
-	n7.connections = [8, 9]
+	_connect(n7, [8, 9])
 	# Row 5: Treasure → same-row Elite
-	n8.connections = [9]
-	n9.connections = [10]      # Elite → Shop
+	_connect(n8, [9])
+	_connect(n9, [10])         # Elite → Shop
 	# Row 6 → Boss
-	n10.connections = [11]
+	_connect(n10, [11])
 
 	# Build map
 	for n in [n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11]:
@@ -228,29 +234,29 @@ static func _generate_fixed_w3() -> RunMapData.Map:
 
 	# ---- Connections ----
 	# Row 0: Event → same-row combat, combat → elite
-	n0.connections = [4]
-	n1.connections = [4]
-	n2.connections = [4]
-	n3.connections = [0, 1, 2]  # Elysium → must do combat first
+	_connect(n0, [4])
+	_connect(n1, [4])
+	_connect(n2, [4])
+	_connect(n3, [0, 1, 2])    # Elysium → must do combat first
 	# Row 1 → Rest/Event choice
-	n4.connections = [5, 6]
+	_connect(n4, [5, 6])
 	# Row 2 → Row 3 (all choices)
-	n5.connections = [7, 8, 9]
-	n6.connections = [7, 8, 9]
+	_connect(n5, [7, 8, 9])
+	_connect(n6, [7, 8, 9])
 	# Row 3: Treasure → same-row combat, combat → elite
-	n7.connections = [10]
-	n8.connections = [10]
-	n9.connections = [7, 8]     # Verzerrte Schatzkammer → must do combat first
+	_connect(n7, [10])
+	_connect(n8, [10])
+	_connect(n9, [7, 8])       # Verzerrte Schatzkammer → must do combat first
 	# Row 4 → Shop
-	n10.connections = [11]
+	_connect(n10, [11])
 	# Row 5 → Combat
-	n11.connections = [12]
+	_connect(n11, [12])
 	# Row 6 → Pre-boss
-	n12.connections = [13]
+	_connect(n12, [13])
 	# Row 7 → Arena + Boss
-	n13.connections = [14, 15]
+	_connect(n13, [14, 15])
 	# Arena → Boss
-	n14.connections = [15]
+	_connect(n14, [15])
 
 	# Build map
 	for n in [n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13, n14, n15]:
