@@ -1,0 +1,42 @@
+[gd_scene load_steps=3 format=3 uid="uid://electro_panel_001"]
+
+[ext_resource type="Script" path="res://traps/world_2/electro_panel.gd" id="1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_panel"]
+size = Vector2(96, 16)
+
+[node name="ElectroPanel" type="Node2D"]
+script = ExtResource("1")
+damage = 20
+cycle_off = 3.0
+cycle_warning = 0.5
+cycle_active = 2.0
+
+[node name="PanelVisual" type="ColorRect" parent="."]
+offset_left = -48.0
+offset_top = -8.0
+offset_right = 48.0
+offset_bottom = 8.0
+color = Color(0.1, 0.15, 0.3, 1)
+
+[node name="GlowVisual" type="ColorRect" parent="."]
+visible = false
+offset_left = -52.0
+offset_top = -12.0
+offset_right = 52.0
+offset_bottom = 12.0
+color = Color(0, 0.8, 1, 0.5)
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+shape = SubResource("RectangleShape2D_panel")
+
+[node name="SparkParticles" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 8
+process_material = null
+lifetime = 0.4
+one_shot = false

@@ -1,0 +1,67 @@
+[gd_scene load_steps=5 format=3 uid="uid://cosmic_eye_001"]
+
+[ext_resource type="Script" path="res://traps/world_3/cosmic_eye.gd" id="1"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_detection"]
+radius = 500.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hurtbox"]
+radius = 24.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 28.0
+
+[node name="CosmicEye" type="Node2D"]
+script = ExtResource("1")
+hp = 40
+max_hp = 40
+damage_per_second = 8.0
+rotation_speed = 60.0
+activation_range = 500.0
+
+[node name="EyeVisual" type="ColorRect" parent="."]
+offset_left = -28.0
+offset_top = -28.0
+offset_right = 28.0
+offset_bottom = 28.0
+color = Color(0.8, 0.7, 0.85, 1)
+
+[node name="IrisVisual" type="ColorRect" parent="."]
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+color = Color(0.5, 0.1, 0.6, 1)
+
+[node name="PupilVisual" type="ColorRect" parent="."]
+visible = false
+offset_left = -6.0
+offset_top = -8.0
+offset_right = 6.0
+offset_bottom = 8.0
+color = Color(0.05, 0, 0.1, 1)
+
+[node name="BeamVisual" type="Line2D" parent="."]
+visible = false
+width = 4.0
+default_color = Color(1, 0.15, 0.3, 0.8)
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+enabled = false
+target_position = Vector2(500, 0)
+collision_mask = 1
+
+[node name="DetectionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource("CircleShape2D_detection")
+debug_color = Color(0.5, 0, 0.5, 0.05)
+
+[node name="HurtboxArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxArea"]
+shape = SubResource("CircleShape2D_hurtbox")

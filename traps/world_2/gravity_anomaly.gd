@@ -1,45 +1,41 @@
 extends Area2D
-class_name QuicksandPit
+class_name GravityAnomaly
 
-## F4 - Treibsand/Abgrund
-## Pulls player towards center and deals damage over time
+## F2.3 - Gravitationsanomalie (W2 Sci-Fi Reskin des Treibsands)
+## Sci-Fi pull zone with visible gravitational field
+## Stronger pull and faster death than quicksand
 ## Godot 4.4 compatible
 
 # ============================================================================
 # SIGNALS
 # ============================================================================
 
-signal player_entered_pit(player: Node2D)
-signal player_exited_pit(player: Node2D)
-signal player_died_in_pit(player: Node2D)
+signal player_entered_field(player: Node2D)
+signal player_exited_field(player: Node2D)
+signal player_killed(player: Node2D)
 
 # ============================================================================
 # EXPORTS
 # ============================================================================
 
-@export var pull_strength: float = 200.0
-@export var damage_per_second: int = 10
-@export var instant_death_time: float = 5.0  ## Time until instant death
-@export var pit_type: PitType = PitType.QUICKSAND
-
-enum PitType {
-	QUICKSAND,   # Sand/earth themed
-	ABYSS,       # Void/darkness themed
-	LAVA         # Fire/lava themed
-}
+@export var pull_strength: float = 250.0
+@export var damage_per_second: int = 12
+@export var instant_death_time: float = 4.0
+@export var distortion_intensity: float = 1.0  ## Visual intensity
 
 # ============================================================================
 # STATE
 # ============================================================================
 
 var players_inside: Dictionary = {}  # player -> time_inside
+var pulse_time: float = 0.0
 
 # ============================================================================
 # REFERENCES
 # ============================================================================
 
-@onready var sprite: Sprite2D = $Sprite2D if has_node("Sprite2D") else null
-@onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D if has_node("AnimatedSprite2D") else null
+@onready var field_visual: ColorRect = $FieldVisual if has_node("FieldVisual") else null
+@onready var core_visual: ColorRect = $CoreVisual if has_node("CoreVisual") else null
 @onready var pull_particles: GPUParticles2D = $PullParticles if has_node("PullParticles") else null
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D if has_node("CollisionShape2D") else null
 
@@ -50,13 +46,12 @@ var damage_timer: Timer = null
 # ============================================================================
 
 func _ready() -> void:
-	# Godot 4.4: Explicitly set monitoring
 	monitoring = true
 	monitorable = false
 
-	# Ensure both P1 and P2 are detected
-	set_collision_mask_value(2, true)   # P1 Body (Layer 2)
-	set_collision_mask_value(3, true)   # P2 Body (Layer 3)
+	# Ensure both P1 and P2 detected
+	set_collision_mask_value(2, true)   # P1
+	set_collision_mask_value(3, true)   # P2
 
 	# Connect signals
 	body_entered.connect(_on_body_entered)
@@ -70,29 +65,23 @@ func _ready() -> void:
 	add_child(damage_timer)
 	damage_timer.start()
 
-	# Start animation if present
-	if animated_sprite:
-		animated_sprite.play("default")
-
 	# Start particles
 	if pull_particles:
 		pull_particles.emitting = true
 
 	add_to_group("traps")
-	add_to_group("quicksand_pits")
+	add_to_group("gravity_anomalies")
 
-	print("[QuicksandPit] %s initialized, type: %s" % [name, PitType.keys()[pit_type]])
+	print("[GravityAnomaly] %s initialized (pull: %.0f, death: %.1fs)" % [name, pull_strength, instant_death_time])
 
 # ============================================================================
-# PHYSICS PROCESS - PULL EFFECT
+# PHYSICS - PULL EFFECT
 # ============================================================================
 
 func _physics_process(delta: float) -> void:
-	"""Apply pull force to players inside"""
 	if players_inside.is_empty():
 		return
 
-	# Update time for each player
 	for player in players_inside.keys():
 		if not is_instance_valid(player):
 			players_inside.erase(player)
@@ -109,65 +98,60 @@ func _physics_process(delta: float) -> void:
 		# Apply pull force
 		_apply_pull_force(player, delta)
 
+	# Visual pulse
+	pulse_time += delta
+	_update_visual_pulse()
+
 func _apply_pull_force(player: Node2D, delta: float) -> void:
-	"""Apply pull force towards pit center"""
 	if not player is CharacterBody2D:
 		return
 
-	# Calculate direction to center
-	var pit_center = global_position
-	var direction = (pit_center - player.global_position).normalized()
+	var center = global_position
+	var direction = (center - player.global_position).normalized()
+	var distance = global_position.distance_to(player.global_position)
 
-	# Apply force to player velocity
+	# Stronger pull as player gets closer to center
+	var distance_factor = clampf(1.0 - (distance / 200.0), 0.3, 1.5)
+	var force = pull_strength * distance_factor
+
 	if "velocity" in player:
-		player.velocity += direction * pull_strength * delta
-		#print("[QuicksandPit] Pulling %s towards center (force: %.1f)" % [player.name, pull_strength * delta])
+		player.velocity += direction * force * delta
 
 # ============================================================================
 # BODY ENTER/EXIT
 # ============================================================================
 
 func _on_body_entered(body: Node2D) -> void:
-	"""Player enters quicksand"""
 	if not (body.is_in_group("player") or body.is_in_group("player2")):
 		return
 
-	# Add to tracking
 	players_inside[body] = 0.0
+	player_entered_field.emit(body)
 
-	# Signal
-	player_entered_pit.emit(body)
-
-	# Audio
 	if AudioManager:
-		AudioManager.play_sfx_at_position("traps/quicksand_enter", global_position, 0.3)
+		AudioManager.play_sfx_at_position("traps/gravity_pull", global_position, 0.3)
 
-	print("[QuicksandPit] %s entered by %s" % [name, body.name])
+	print("[GravityAnomaly] %s entered by %s" % [name, body.name])
 
 func _on_body_exited(body: Node2D) -> void:
-	"""Player exits quicksand"""
 	if not (body.is_in_group("player") or body.is_in_group("player2")):
 		return
 
-	# Remove from tracking
 	if body in players_inside:
 		players_inside.erase(body)
 
-	# Signal
-	player_exited_pit.emit(body)
+	player_exited_field.emit(body)
 
-	# Audio
 	if AudioManager:
-		AudioManager.play_sfx_at_position("traps/quicksand_exit", global_position, 0.2)
+		AudioManager.play_sfx_at_position("traps/gravity_release", global_position, 0.2)
 
-	print("[QuicksandPit] %s exited by %s" % [name, body.name])
+	print("[GravityAnomaly] %s exited by %s" % [name, body.name])
 
 # ============================================================================
 # DAMAGE
 # ============================================================================
 
 func _apply_damage() -> void:
-	"""Apply damage to all players inside (called every second)"""
 	if players_inside.is_empty():
 		return
 
@@ -175,45 +159,43 @@ func _apply_damage() -> void:
 		if not is_instance_valid(player):
 			continue
 
-		# Deal damage
 		var health_comp = player.get_node_or_null("HealthComponent")
 		if health_comp and health_comp.has_method("take_damage"):
 			health_comp.take_damage(damage_per_second)
-			print("[QuicksandPit] %s dealt %d damage to %s (time: %.1fs)" % [name, damage_per_second, player.name, players_inside[player]])
-
-# ============================================================================
-# INSTANT DEATH
-# ============================================================================
 
 func _instant_death(player: Node2D) -> void:
-	"""Player has been in pit too long - instant death"""
-	player_died_in_pit.emit(player)
+	player_killed.emit(player)
 
-	# Try to kill player
 	if player.has_method("die"):
 		player.die()
-		print("[QuicksandPit] %s killed %s (instant death)" % [name, player.name])
+		print("[GravityAnomaly] %s killed %s" % [name, player.name])
 	else:
-		# Fallback: deal massive damage
 		var health_comp = player.get_node_or_null("HealthComponent")
 		if health_comp and health_comp.has_method("take_damage"):
 			health_comp.take_damage(9999)
 
-	# Remove from tracking
 	players_inside.erase(player)
+
+# ============================================================================
+# VISUALS
+# ============================================================================
+
+func _update_visual_pulse() -> void:
+	"""Pulsing visual effect for gravitational field"""
+	if field_visual:
+		var pulse = sin(pulse_time * 2.0) * 0.15 + 0.55
+		field_visual.modulate.a = pulse
+
+	if core_visual:
+		var core_pulse = sin(pulse_time * 3.0) * 0.2 + 0.8
+		core_visual.modulate.a = core_pulse
 
 # ============================================================================
 # HELPERS
 # ============================================================================
 
-func get_pit_center() -> Vector2:
-	"""Get the center position of the pit"""
-	return global_position
-
 func is_player_inside(player: Node2D) -> bool:
-	"""Check if player is inside pit"""
 	return player in players_inside
 
-func get_time_in_pit(player: Node2D) -> float:
-	"""Get how long player has been in pit"""
+func get_time_in_field(player: Node2D) -> float:
 	return players_inside.get(player, 0.0)

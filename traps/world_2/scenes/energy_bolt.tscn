@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=3 uid="uid://energy_bolt_001"]
+
+[ext_resource type="Script" path="res://traps/world_2/energy_bolt.gd" id="1"]
+
+[node name="EnergyBolt" type="Area2D"]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1")
+damage = 18
+speed = 350.0
+
+[node name="BoltVisual" type="ColorRect" parent="."]
+offset_left = -8.0
+offset_top = -3.0
+offset_right = 8.0
+offset_bottom = 3.0
+color = Color(0, 0.9, 1, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+
+[node name="Trail" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 4
+process_material = null
+lifetime = 0.3

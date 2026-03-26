@@ -1,0 +1,62 @@
+[gd_scene load_steps=4 format=3 uid="uid://pendulum_blade_001"]
+
+[ext_resource type="Script" path="res://traps/pendulum_blade.gd" id="1"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_proximity"]
+radius = 150.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_blade"]
+size = Vector2(16, 120)
+
+[node name="PendulumBlade" type="Node2D"]
+script = ExtResource("1")
+swing_mode = 0
+damage = 25
+knockback_force = 300.0
+swing_arc_degrees = 120.0
+swing_duration = 2.0
+trigger_range = 150.0
+reset_cooldown = 3.0
+
+[node name="Pivot" type="Node2D" parent="."]
+
+[node name="BladeVisual" type="ColorRect" parent="Pivot"]
+offset_left = -8.0
+offset_top = 20.0
+offset_right = 8.0
+offset_bottom = 140.0
+color = Color(0.6, 0.6, 0.65, 1)
+
+[node name="BladeHitbox" type="Area2D" parent="Pivot"]
+position = Vector2(0, 80)
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Pivot/BladeHitbox"]
+shape = SubResource("RectangleShape2D_blade")
+
+[node name="TrailParticles" type="GPUParticles2D" parent="Pivot"]
+position = Vector2(0, 130)
+emitting = false
+amount = 4
+process_material = null
+lifetime = 0.3
+
+[node name="PivotVisual" type="ColorRect" parent="."]
+offset_left = -6.0
+offset_top = -6.0
+offset_right = 6.0
+offset_bottom = 6.0
+color = Color(0.35, 0.3, 0.25, 1)
+
+[node name="ChainVisual" type="Line2D" parent="."]
+width = 2.0
+default_color = Color(0.4, 0.35, 0.3, 1)
+
+[node name="ProximityDetector" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ProximityDetector"]
+shape = SubResource("CircleShape2D_proximity")
+debug_color = Color(1, 1, 0, 0.15)

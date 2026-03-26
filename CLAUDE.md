@@ -15,7 +15,9 @@ bosses/               boss_base.gd + Lythrun-Boss mit adaptiver AI
 worlds/               Weltstruktur: world_1_ruins mit 4 Sektionen, 15+ Raeume
 levels/               test_room.tscn, item_room.tscn
 environment/          Tueren, Checkpoints, NPCs, Pickups, Interactables
-traps/                Pfeilfallen, Fallende Steine, Treibsand
+traps/                Fallen-System (W1: Pfeil, Stein, Treibsand, Stachel, Pendel)
+traps/world_2/        W2 Sci-Fi Fallen (Turret, Elektropanel, Gravitation, Laser, Kraftfeld, Drohne)
+traps/world_3/        W3 Horror Fallen (Void-Riss, Auge, Ranke, Phasen-Plattform, Zeitverzerrung)
 puzzles/              Druckplatten, Kristalle, Bloecke, Zeittueren
 ui/                   HUD, Menues, Inventar, Shop, Notifications
 systems/              Cutscene, Dialog, Input-Remapping
@@ -95,6 +97,37 @@ Verwaltet von `ChallengeRunManager`. 6 Kategorien mit gewichteter Tiefe (max 59 
 - Aussen (r=320): Kern + Albtraum (14 Knoten)
 - Mitte (r=220): Koerper (8 Knoten)
 - Innen (r=130): Myrkur + Voch Numta + Urgathon (11 Knoten)
+
+## Fallen-System (pro Welt thematisch)
+
+### Welt 1: Ruinen (Fantasy)
+| Falle | Datei | Mechanik |
+|-------|-------|----------|
+| Pfeilfalle | `traps/arrow_trap.gd` | 3 Modi (Druckplatte/Proximity/Immer), parry-bar (1.5x reflekt) |
+| Fallender Stein | `traps/falling_rock.gd` | Proximity-Trigger, Warning, 35 DMG Radius |
+| Treibsand | `traps/quicksand_pit.gd` | Pull + 10 DMG/s + Soforttod nach 5s |
+| Stachelfalle | `environment/hazards/spike_trap.gd` | Zyklisch: OFF→WARNING→ACTIVE, 20 DMG |
+| Pendelklinge | `traps/pendulum_blade.gd` | 2 Modi (RHYTHMIC/TRIGGERED), 25 DMG, nicht parry-bar |
+| Leichenfalle | `enemies/world_1_ruins/corpse_trap.gd` | Zerstoerbar, spawnt Glimmerseeds |
+
+### Welt 2: Das Kollektiv (Sci-Fi)
+| Falle | Datei | Mechanik |
+|-------|-------|----------|
+| Energieturret | `traps/world_2/energy_turret.gd` | Rotiert+zielt, parry-bare Bolts, Stun→Boden→Emerge |
+| Elektropanel | `traps/world_2/electro_panel.gd` | Zyklisch elektrifiziert, Sync-Groups, 20 DMG |
+| Gravitationsanomalie | `traps/world_2/gravity_anomaly.gd` | Sci-Fi Treibsand, staerker (250 Pull, 4s Tod) |
+| Laserwand | `traps/world_2/laser_wall.gd` | Sweept durch Raum (H/V/Rotating), 2s Warning |
+| Kraftfeld | `traps/world_2/force_field.gd` | Blockiert physisch + DoT, Schalter-deaktivierbar |
+| Sicherheitsdrohne | `traps/world_2/security_drone.gd` | Patrouilliert, feuert Bursts, zerstoerbar (respawnt) |
+
+### Welt 3: Der Abgrund (Kosmischer Horror)
+| Falle | Datei | Mechanik |
+|-------|-------|----------|
+| Void-Riss | `traps/world_3/void_rift_trap.gd` | Teleportiert Spieler zu zufaelligem Punkt, 10 DMG |
+| Kosmisches Auge | `traps/world_3/cosmic_eye.gd` | DoT-Strahl bei Sichtlinie, zerstoerbar (HP=40) |
+| Schattenranke | `traps/world_3/shadow_tendril.gd` | Grab (4x Angriff befreien), P2 kann Ranke zerstoeren |
+| Phasen-Plattform | `traps/world_3/phase_platform.gd` | SOLID→WARNING→PHASED Zyklus, Gruppen-Sync |
+| Zeitverzerrung | `traps/world_3/time_distortion.gd` | Zone verlangsamt Spieler auf 40% (Gegner normal) |
 
 ## Run-Map (Hades-Style Knoten-Netz)
 
@@ -262,6 +295,10 @@ worlds/world_1_ruins/
 - [x] **Pachron Sync Skills** — 10 Paar-Kombinations-Skills (T5+T3+ Voraussetzung, 30%/60%/80% Chance)
   - `SyncSkillManager` Autoload, `data/boons/sync_skills.json`, 10 Sync-Dialog-Dateien
   - UI: Goldene Extra-Option im Boon-Choice-Screen, Dual-Pachron-Dialog
+- [x] **W2/W3 Fallen-System** — 12 neue Fallen (1 W1 + 6 W2 + 5 W3)
+  - W1: Pendelklinge (2 Modi), Treibsand P2-Bugfix
+  - W2: Energieturret (Stun→Boden), Elektropanel, Gravitationsanomalie, Laserwand, Kraftfeld, Sicherheitsdrohne
+  - W3: Void-Riss (Teleport), Kosmisches Auge (DoT-Strahl), Schattenranke (Grab+Coop), Phasen-Plattform, Zeitverzerrung
 
 ## Bekannte TODOs
 

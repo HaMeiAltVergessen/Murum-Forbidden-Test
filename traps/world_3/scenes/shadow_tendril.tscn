@@ -1,0 +1,68 @@
+[gd_scene load_steps=5 format=3 uid="uid://shadow_tendril_001"]
+
+[ext_resource type="Script" path="res://traps/world_3/shadow_tendril.gd" id="1"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_trigger"]
+radius = 150.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_grab"]
+size = Vector2(40, 80)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurtbox"]
+size = Vector2(30, 60)
+
+[node name="ShadowTendril" type="Area2D"]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1")
+damage_hit = 15
+damage_grab_per_second = 5
+grab_hits_to_escape = 4
+grab_hp = 15
+trigger_range = 150.0
+cooldown = 5.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_trigger")
+debug_color = Color(0.5, 0, 0.5, 0.1)
+
+[node name="CrackVisual" type="ColorRect" parent="."]
+visible = false
+offset_left = -16.0
+offset_top = -4.0
+offset_right = 16.0
+offset_bottom = 4.0
+color = Color(0.15, 0, 0.2, 0.8)
+
+[node name="TendrilVisual" type="ColorRect" parent="."]
+visible = false
+offset_left = -6.0
+offset_top = -80.0
+offset_right = 6.0
+offset_bottom = 0.0
+color = Color(0.2, 0, 0.3, 0.9)
+
+[node name="GrabHitbox" type="Area2D" parent="."]
+position = Vector2(0, -40)
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GrabHitbox"]
+shape = SubResource("RectangleShape2D_grab")
+
+[node name="HurtboxArea" type="Area2D" parent="."]
+position = Vector2(0, -40)
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxArea"]
+shape = SubResource("RectangleShape2D_hurtbox")
+
+[node name="EscapeLabel" type="Label" parent="."]
+visible = false
+offset_left = -20.0
+offset_top = -100.0
+offset_right = 20.0
+offset_bottom = -84.0
+horizontal_alignment = 1
+text = "0/4"
