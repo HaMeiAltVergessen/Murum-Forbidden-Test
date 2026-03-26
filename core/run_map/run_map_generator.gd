@@ -1,326 +1,263 @@
 extends RefCounted
-## Generates Hades-style node network maps for each world
-## Each world has a specific layout defined by WorldConfig
+## Generates fixed node-network maps for each world
+## Each world has a predefined, deterministic layout
 class_name RunMapGenerator
-
-# ============ WORLD CONFIGS ============
-# Predefined configs for all 3 worlds
-
-static var world_configs: Dictionary = {}
-static var _configs_initialized: bool = false
-
-static func _init_configs() -> void:
-	if _configs_initialized:
-		return
-	_configs_initialized = true
-
-	# Welt 1: Das Niemandsland (Fantasy)
-	# 3 Reihen + Boss, 8-9 Knoten, ~10-15 Min
-	# Rast in Reihe 2 (Mitte)
-	world_configs[RunMapData.WorldId.NIEMANDSLAND] = RunMapData.WorldConfig.new(
-		RunMapData.WorldId.NIEMANDSLAND,
-		"Das Niemandsland",
-		3,     # 3 rows before boss
-		2, 3,  # 2-3 nodes per row
-		1,     # Rest at row 1 (middle, 0-indexed)
-		0      # No events in Welt 1
-	)
-
-	# Welt 2: Das Kollektiv (Sci-Fi)
-	# 4 Reihen + Boss, 12-13 Knoten, ~15-20 Min
-	# Rast in Reihe 2 (middle-ish)
-	world_configs[RunMapData.WorldId.KOLLEKTIV] = RunMapData.WorldConfig.new(
-		RunMapData.WorldId.KOLLEKTIV,
-		"Das Kollektiv",
-		4,     # 4 rows before boss
-		3, 4,  # 3-4 nodes per row
-		2,     # Rest at row 2
-		1      # 1 event per run
-	)
-
-	# Welt 3: Der Abgrund (Kosmischer Horror)
-	# 6 Reihen + Boss, 18-20 Knoten, ~25-30 Min
-	# Rast in Reihe 3 (middle)
-	# Schwellensicht ab Reihe 3
-	world_configs[RunMapData.WorldId.ABGRUND] = RunMapData.WorldConfig.new(
-		RunMapData.WorldId.ABGRUND,
-		"Der Abgrund",
-		6,     # 6 rows before boss
-		3, 4,  # 3-4 nodes per row
-		3,     # Rest at row 3
-		2,     # 2 events per run
-		true,  # Has Schwellensicht
-		3      # Schwellensicht starts at row 3
-	)
 
 
 # ============ GENERATION ============
 
-static func generate_map(world_id: RunMapData.WorldId, rng_seed: int = -1) -> RunMapData.Map:
-	"""Generates a complete node-network map for the given world"""
-	_init_configs()
+static func generate_map(world_id: RunMapData.WorldId, _rng_seed: int = -1) -> RunMapData.Map:
+	"""Generates the fixed node-network map for the given world"""
+	var map: RunMapData.Map
+	match world_id:
+		RunMapData.WorldId.NIEMANDSLAND:
+			map = _generate_fixed_w1()
+		RunMapData.WorldId.KOLLEKTIV:
+			map = _generate_fixed_w2()
+		RunMapData.WorldId.ABGRUND:
+			map = _generate_fixed_w3()
+		_:
+			push_error("[RunMapGenerator] Unknown world %d" % world_id)
+			return null
 
-	var config: RunMapData.WorldConfig = world_configs.get(world_id)
-	if not config:
-		push_error("[RunMapGenerator] No config for world %d" % world_id)
-		return null
-
-	var rng = RandomNumberGenerator.new()
-	if rng_seed >= 0:
-		rng.seed = rng_seed
-	else:
-		rng.randomize()
-
-	var map = RunMapData.Map.new()
-	map.world_id = world_id
-
-	var next_id: int = 0
-
-	# ---- Generate rows ----
-	for row_index in range(config.num_rows):
-		var row_node_ids: Array = []
-		var num_nodes: int = rng.randi_range(config.nodes_per_row_min, config.nodes_per_row_max)
-
-		# Rest row: exactly 1 REST node
-		if row_index == config.rest_row:
-			var rest_node = RunMapData.MapNode.new(next_id, row_index, 0, RunMapData.NodeType.REST)
-			rest_node.reward_type = "heal"
-			map.nodes[next_id] = rest_node
-			row_node_ids.append(next_id)
-			next_id += 1
-			map.rows.append(row_node_ids)
-			continue
-
-		# Determine node types for this row
-		var node_types: Array = _generate_row_types(row_index, num_nodes, config, rng)
-
-		for col_index in range(node_types.size()):
-			var node = RunMapData.MapNode.new(next_id, row_index, col_index, node_types[col_index])
-			node.reward_type = _get_default_reward(node.type)
-			map.nodes[next_id] = node
-			row_node_ids.append(next_id)
-			next_id += 1
-
-		map.rows.append(row_node_ids)
-
-	# ---- W3: Pre-Boss room (single node) → Arena + Boss row ----
-	if world_id == RunMapData.WorldId.ABGRUND:
-		# Pre-Boss row: 1 REST node (safe room before final choice)
-		var pre_boss_row_index: int = config.num_rows
-		var pre_boss_node = RunMapData.MapNode.new(next_id, pre_boss_row_index, 0, RunMapData.NodeType.REST)
-		pre_boss_node.reward_type = "heal"
-		map.nodes[next_id] = pre_boss_node
-		map.rows.append([next_id])
-		var pre_boss_id: int = next_id
-		next_id += 1
-
-		# Boss row: Arena + Boss — pre-boss connects to both
-		var boss_row_index: int = pre_boss_row_index + 1
-		var arena_node = RunMapData.MapNode.new(next_id, boss_row_index, 0, RunMapData.NodeType.ARENA)
-		arena_node.reward_type = "arena"
-		map.nodes[next_id] = arena_node
-		var arena_id: int = next_id
-		next_id += 1
-
-		var boss_node = RunMapData.MapNode.new(next_id, boss_row_index, 1, RunMapData.NodeType.BOSS)
-		boss_node.reward_type = "magicka"
-		map.nodes[next_id] = boss_node
-		var boss_id: int = next_id
-		next_id += 1
-
-		# Pre-boss connects to both Arena and Boss
-		pre_boss_node.connections.append(arena_id)
-		pre_boss_node.connections.append(boss_id)
-		# Arena connects to Boss (after arena → boss)
-		arena_node.connections.append(boss_id)
-
-		map.rows.append([arena_id, boss_id])
-	else:
-		# W1/W2: Boss row (single BOSS node)
-		var boss_row_index: int = config.num_rows
-		var boss_node = RunMapData.MapNode.new(next_id, boss_row_index, 0, RunMapData.NodeType.BOSS)
-		boss_node.reward_type = "magicka"
-		map.nodes[next_id] = boss_node
-		map.rows.append([next_id])
-		next_id += 1
-
-	# ---- Place shops (1 per world) ----
-	_place_shop(map, config, rng)
-
-	# ---- Place events (Welt 2+) ----
-	if config.events_per_run > 0:
-		_place_events(map, config, rng)
-
-	# ---- Connect rows ----
-	_connect_rows(map, rng)
-
-	# ---- Assign visual positions ----
 	_assign_positions(map)
 
-	print("[RunMapGenerator] Generated map for '%s': %d nodes, %d rows" % [
-		config.world_name, map.nodes.size(), map.rows.size()
+	print("[RunMapGenerator] Generated fixed map for world %d: %d nodes, %d rows" % [
+		world_id, map.nodes.size(), map.rows.size()
 	])
 
 	return map
 
 
-# ============ ROW TYPE GENERATION ============
+# ============ HELPER ============
 
-static func _generate_row_types(row_index: int, num_nodes: int,
-		config: RunMapData.WorldConfig, rng: RandomNumberGenerator) -> Array:
-	"""Determines what node types to place in a row"""
-	var types: Array = []
-
-	# Last row before boss: must have at least 1 Elite
-	var is_pre_boss_row: bool = (row_index == config.num_rows - 1)
-
-	for i in range(num_nodes):
-		if is_pre_boss_row and i == 0:
-			# First node in pre-boss row is always Elite
-			types.append(RunMapData.NodeType.ELITE)
-		else:
-			types.append(_pick_node_type(row_index, config, rng))
-
-	# Guarantee at least 1 Treasure in the map: place in row 0 or 1
-	if row_index == 0 and types.size() >= 2:
-		# Check if no treasure yet — replace last node with treasure
-		var has_treasure = types.has(RunMapData.NodeType.TREASURE)
-		if not has_treasure:
-			types[types.size() - 1] = RunMapData.NodeType.TREASURE
-
-	return types
+static func _make_node(id: int, row: int, col: int, type: RunMapData.NodeType,
+		scene_path: String) -> RunMapData.MapNode:
+	"""Creates a MapNode with scene path, display name, and default reward"""
+	var node = RunMapData.MapNode.new(id, row, col, type)
+	node.room_scene_path = scene_path
+	node.display_name = RunRoomPool.get_display_name(scene_path)
+	node.reward_type = _get_default_reward(type)
+	return node
 
 
-static func _pick_node_type(row_index: int, config: RunMapData.WorldConfig,
-		rng: RandomNumberGenerator) -> RunMapData.NodeType:
-	"""Picks a random node type based on weighted probabilities"""
-	# Weights: K+R is most common, with occasional treasure/elite
-	var roll: float = rng.randf()
+# ============ WELT 1: DAS NIEMANDSLAND ============
+# Row 0: [Verfallene Ruinen] [Tempelvorplatz]                                (Wahl)
+# Row 1: [Dorf der Verlorenen]                                               (Optional — skip to Row 2)
+# Row 2: [Tempeltor]                                                          (Elite, Pflicht)
+# Row 3: [Versteckte Kammer] [Schatzkammer] [Tempelhalle] [Mittlere Ebene]   (Tempel-Hub, Wahl)
+# Row 4: [Tiefer Tempel] [Letzter Haendler]                                  (Wahl)
+# Row 5: [Heldengruppe-Arena]                                                 (Boss)
 
-	if row_index >= config.num_rows - 1:
-		# Pre-boss: higher Elite chance
-		if roll < 0.5:
-			return RunMapData.NodeType.COMBAT
-		elif roll < 0.85:
-			return RunMapData.NodeType.ELITE
-		else:
-			return RunMapData.NodeType.TREASURE
-	else:
-		# Normal row
-		if roll < 0.6:
-			return RunMapData.NodeType.COMBAT
-		elif roll < 0.8:
-			return RunMapData.NodeType.ELITE
-		else:
-			return RunMapData.NodeType.TREASURE
+static func _generate_fixed_w1() -> RunMapData.Map:
+	var map = RunMapData.Map.new()
+	map.world_id = RunMapData.WorldId.NIEMANDSLAND
+	var P = "res://worlds/run_rooms/niemandsland/"
 
+	# Row 0: Combat choices (Pre-Tempel)
+	var n0 = _make_node(0, 0, 0, RunMapData.NodeType.COMBAT, P + "combat_room_04.tscn")   # Verfallene Ruinen
+	var n1 = _make_node(1, 0, 1, RunMapData.NodeType.COMBAT, P + "combat_room_03.tscn")   # Tempelvorplatz
 
-# ============ EVENT PLACEMENT ============
+	# Row 1: Optional rest (skippable)
+	var n2 = _make_node(2, 1, 0, RunMapData.NodeType.REST, P + "rest_room_01.tscn")       # Dorf der Verlorenen
 
-static func _place_events(map: RunMapData.Map, config: RunMapData.WorldConfig,
-		rng: RandomNumberGenerator) -> void:
-	"""Replaces some K+R nodes with Event nodes"""
-	var events_placed: int = 0
-	var eligible_nodes: Array = []
+	# Row 2: Mandatory elite
+	var n3 = _make_node(3, 2, 0, RunMapData.NodeType.ELITE, P + "elite_room_02.tscn")     # Tempeltor
 
-	# Collect K+R nodes that can be replaced (not in row 0, not pre-boss, not rest)
-	for node_id in map.nodes:
-		var node: RunMapData.MapNode = map.nodes[node_id]
-		if node.type == RunMapData.NodeType.COMBAT:
-			if node.row > 0 and node.row < config.num_rows - 1 and node.row != config.rest_row:
-				eligible_nodes.append(node)
+	# Row 3: Temple hub (non-combat → same-row combat)
+	var n4 = _make_node(4, 3, 0, RunMapData.NodeType.EVENT, P + "event_room_01.tscn")     # Versteckte Kammer
+	var n5 = _make_node(5, 3, 1, RunMapData.NodeType.TREASURE, P + "treasure_room_01.tscn") # Schatzkammer
+	var n6 = _make_node(6, 3, 2, RunMapData.NodeType.COMBAT, P + "combat_room_01.tscn")   # Tempelhalle
+	var n7 = _make_node(7, 3, 3, RunMapData.NodeType.COMBAT, P + "combat_room_02.tscn")   # Mittlere Ebene
 
-	# Shuffle and pick
-	eligible_nodes.shuffle()
-	for node in eligible_nodes:
-		if events_placed >= config.events_per_run:
-			break
-		node.type = RunMapData.NodeType.EVENT
-		node.reward_type = _get_default_reward(RunMapData.NodeType.EVENT)
-		events_placed += 1
+	# Row 4: Pre-boss choices
+	var n8 = _make_node(8, 4, 0, RunMapData.NodeType.ELITE, P + "elite_room_01.tscn")     # Tiefer Tempel
+	var n9 = _make_node(9, 4, 1, RunMapData.NodeType.SHOP, P + "shop_room_01.tscn")       # Letzter Haendler
 
-	print("[RunMapGenerator] Placed %d/%d events" % [events_placed, config.events_per_run])
+	# Row 5: Boss
+	var n10 = _make_node(10, 5, 0, RunMapData.NodeType.BOSS, P + "boss_room_01.tscn")     # Heldengruppe-Arena
 
+	# ---- Connections ----
+	# Row 0 → Rest (optional) or Elite (skip rest)
+	n0.connections = [2, 3]
+	n1.connections = [2, 3]
+	# Row 1 → Elite
+	n2.connections = [3]
+	# Row 2 → Temple hub (all 4 doors)
+	n3.connections = [4, 5, 6, 7]
+	# Temple hub: non-combat → same-row combat
+	n4.connections = [6, 7]
+	n5.connections = [6, 7]
+	# Temple hub: combat → pre-boss
+	n6.connections = [8, 9]
+	n7.connections = [8, 9]
+	# Pre-boss → Boss
+	n8.connections = [10]
+	n9.connections = [10]
 
-# ============ SHOP PLACEMENT ============
+	# Build map
+	for n in [n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, n10]:
+		map.nodes[n.id] = n
+	map.rows = [[0, 1], [2], [3], [4, 5, 6, 7], [8, 9], [10]]
 
-static func _place_shop(map: RunMapData.Map, config: RunMapData.WorldConfig,
-		rng: RandomNumberGenerator) -> void:
-	"""Places exactly 1 SHOP node per world — replaces a COMBAT node"""
-	var eligible_nodes: Array = []
-
-	for node_id in map.nodes:
-		var node: RunMapData.MapNode = map.nodes[node_id]
-		if node.type == RunMapData.NodeType.COMBAT:
-			# Not in row 0, not pre-boss, not rest row
-			if node.row > 0 and node.row < config.num_rows - 1 and node.row != config.rest_row:
-				eligible_nodes.append(node)
-
-	if eligible_nodes.is_empty():
-		push_warning("[RunMapGenerator] No eligible node for SHOP placement")
-		return
-
-	eligible_nodes.shuffle()
-	var chosen: RunMapData.MapNode = eligible_nodes[0]
-	chosen.type = RunMapData.NodeType.SHOP
-	chosen.reward_type = "shop"
-	print("[RunMapGenerator] Placed SHOP at row %d, col %d" % [chosen.row, chosen.column])
+	return map
 
 
-# ============ CONNECTION LOGIC ============
+# ============ WELT 2: DAS KOLLEKTIV ============
+# Row 0: [Neon-Gassen] [Kneipen] [Wohnung]                  (Wahl, Event → same-row combat)
+# Row 1: [Kollektiv-Mecha]                                    (Elite, Pflicht)
+# Row 2: [Schmuggler-Versteck]                                (Rast, Pflicht)
+# Row 3: [Aufzuege] [Wolkenkratzer]                           (Wahl)
+# Row 4: [Docks auf den Daechern]                             (Combat, Pflicht)
+# Row 5: [Tech-Schatzkammer] [AI-Assassine]                   (Wahl, Treasure → same-row Elite)
+# Row 6: [Schwarzmarkt]                                       (Shop, Pflicht)
+# Row 7: [Kollektiv-Arena]                                    (Boss)
 
-static func _connect_rows(map: RunMapData.Map, rng: RandomNumberGenerator) -> void:
-	"""Connects nodes between adjacent rows (Hades-style web)
-	Rules:
-	- Every node must have at least 1 connection forward
-	- Every node (except row 0) must be reachable from at least 1 node in previous row
-	- Connections should not cross too much (keeps the graph readable)
-	"""
-	for row_index in range(map.rows.size() - 1):
-		var current_row: Array = map.rows[row_index]
-		var next_row: Array = map.rows[row_index + 1]
+static func _generate_fixed_w2() -> RunMapData.Map:
+	var map = RunMapData.Map.new()
+	map.world_id = RunMapData.WorldId.KOLLEKTIV
+	var P = "res://worlds/run_rooms/kollektiv/"
 
-		if current_row.is_empty() or next_row.is_empty():
-			continue
+	# Row 0: Slum choices
+	var n0 = _make_node(0, 0, 0, RunMapData.NodeType.COMBAT, P + "combat_room_01.tscn")   # Neon-Gassen
+	var n1 = _make_node(1, 0, 1, RunMapData.NodeType.COMBAT, P + "combat_room_02.tscn")   # Kneipen
+	var n2 = _make_node(2, 0, 2, RunMapData.NodeType.EVENT, P + "event_room_01.tscn")     # Wohnung
 
-		# Step 1: Ensure every node in current row has at least 1 forward connection
-		for i in range(current_row.size()):
-			var node: RunMapData.MapNode = map.nodes[current_row[i]]
-			# Map column proportionally to next row
-			var proportional_col: int = clampi(
-				roundi(float(i) / max(current_row.size() - 1, 1) * (next_row.size() - 1)),
-				0, next_row.size() - 1
-			)
-			if not node.connections.has(next_row[proportional_col]):
-				node.connections.append(next_row[proportional_col])
+	# Row 1: Mandatory elite
+	var n3 = _make_node(3, 1, 0, RunMapData.NodeType.ELITE, P + "elite_room_01.tscn")     # Kollektiv-Mecha
 
-		# Step 2: Ensure every node in next row is reachable
-		var reachable: Dictionary = {}
-		for node_id in current_row:
-			var node: RunMapData.MapNode = map.nodes[node_id]
-			for conn in node.connections:
-				reachable[conn] = true
+	# Row 2: Mandatory rest
+	var n4 = _make_node(4, 2, 0, RunMapData.NodeType.REST, P + "rest_room_01.tscn")       # Schmuggler-Versteck
 
-		for j in range(next_row.size()):
-			if not reachable.has(next_row[j]):
-				# Not reachable — connect from nearest node in current row
-				var nearest_i: int = clampi(
-					roundi(float(j) / max(next_row.size() - 1, 1) * (current_row.size() - 1)),
-					0, current_row.size() - 1
-				)
-				var node: RunMapData.MapNode = map.nodes[current_row[nearest_i]]
-				node.connections.append(next_row[j])
+	# Row 3: Combat choices
+	var n5 = _make_node(5, 3, 0, RunMapData.NodeType.COMBAT, P + "combat_room_03.tscn")   # Aufzuege
+	var n6 = _make_node(6, 3, 1, RunMapData.NodeType.COMBAT, P + "combat_room_04.tscn")   # Wolkenkratzer
 
-		# Step 3: Add some extra connections for branching (30% chance per pair)
-		for i in range(current_row.size()):
-			var node: RunMapData.MapNode = map.nodes[current_row[i]]
-			for j in range(next_row.size()):
-				if node.connections.has(next_row[j]):
-					continue
-				# Only connect to adjacent columns (prevent wild crossings)
-				var proportional: float = float(i) / max(current_row.size() - 1, 1) * (next_row.size() - 1)
-				if absf(j - proportional) <= 1.2 and rng.randf() < 0.3:
-					node.connections.append(next_row[j])
+	# Row 4: Mandatory combat
+	var n7 = _make_node(7, 4, 0, RunMapData.NodeType.COMBAT, P + "combat_room_05.tscn")   # Docks auf den Daechern
+
+	# Row 5: Treasure/Elite choice
+	var n8 = _make_node(8, 5, 0, RunMapData.NodeType.TREASURE, P + "treasure_room_01.tscn") # Tech-Schatzkammer
+	var n9 = _make_node(9, 5, 1, RunMapData.NodeType.ELITE, P + "elite_room_02.tscn")     # AI-Assassine
+
+	# Row 6: Mandatory shop
+	var n10 = _make_node(10, 6, 0, RunMapData.NodeType.SHOP, P + "shop_room_01.tscn")     # Schwarzmarkt
+
+	# Row 7: Boss
+	var n11 = _make_node(11, 7, 0, RunMapData.NodeType.BOSS, P + "boss_room_01.tscn")     # Kollektiv-Arena
+
+	# ---- Connections ----
+	# Row 0: Event → same-row combat, combat → elite
+	n0.connections = [3]
+	n1.connections = [3]
+	n2.connections = [0, 1]    # Wohnung → must do combat first
+	# Row 1 → Rest
+	n3.connections = [4]
+	# Row 2 → Combat choices
+	n4.connections = [5, 6]
+	# Row 3 → Docks
+	n5.connections = [7]
+	n6.connections = [7]
+	# Row 4 → Treasure/Elite
+	n7.connections = [8, 9]
+	# Row 5: Treasure → same-row Elite
+	n8.connections = [9]
+	n9.connections = [10]      # Elite → Shop
+	# Row 6 → Boss
+	n10.connections = [11]
+
+	# Build map
+	for n in [n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11]:
+		map.nodes[n.id] = n
+	map.rows = [[0, 1, 2], [3], [4], [5, 6], [7], [8, 9], [10], [11]]
+
+	return map
+
+
+# ============ WELT 3: DER ABGRUND ============
+# Row 0: [Verzerrte Zeit] [Tiefe] [Augen] [Elysium]         (Wahl, Event → same-row combat)
+# Row 1: [Alptraum-Vision]                                    (Elite, Pflicht)
+# Row 2: [Das letzte Licht] [Urgathon]                        (Wahl)
+# Row 3: [Fleisch] [Abstieg] [Verzerrte Schatzkammer]         (Wahl, Treasure → same-row combat)
+# Row 4: [Stimme der Leere]                                   (Elite, Pflicht)
+# Row 5: [Loch im Abgrund]                                    (Shop, Pflicht)
+# Row 6: [Gehirn]                                             (Combat, Pflicht)
+# Row 7: [Nurdurun]                                           (Pre-Boss: Wahl Arena/Boss)
+# Row 8: [Lythrun-Arena] [Das Siegel]                         (Arena + Boss)
+
+static func _generate_fixed_w3() -> RunMapData.Map:
+	var map = RunMapData.Map.new()
+	map.world_id = RunMapData.WorldId.ABGRUND
+	var P = "res://worlds/run_rooms/abgrund/"
+
+	# Row 0: Abyss entry choices
+	var n0 = _make_node(0, 0, 0, RunMapData.NodeType.COMBAT, P + "combat_room_01.tscn")   # Verzerrte Zeit
+	var n1 = _make_node(1, 0, 1, RunMapData.NodeType.COMBAT, P + "combat_room_02.tscn")   # Tiefe
+	var n2 = _make_node(2, 0, 2, RunMapData.NodeType.COMBAT, P + "combat_room_03.tscn")   # Augen
+	var n3 = _make_node(3, 0, 3, RunMapData.NodeType.EVENT, P + "event_room_01.tscn")     # Elysium
+
+	# Row 1: Mandatory elite
+	var n4 = _make_node(4, 1, 0, RunMapData.NodeType.ELITE, P + "elite_room_01.tscn")     # Alptraum-Vision
+
+	# Row 2: Rest/Event choice
+	var n5 = _make_node(5, 2, 0, RunMapData.NodeType.REST, P + "rest_room_01.tscn")       # Das letzte Licht
+	var n6 = _make_node(6, 2, 1, RunMapData.NodeType.EVENT, P + "event_room_02.tscn")     # Urgathon
+
+	# Row 3: Combat/Treasure choice
+	var n7 = _make_node(7, 3, 0, RunMapData.NodeType.COMBAT, P + "combat_room_04.tscn")   # Fleisch
+	var n8 = _make_node(8, 3, 1, RunMapData.NodeType.COMBAT, P + "combat_room_05.tscn")   # Abstieg
+	var n9 = _make_node(9, 3, 2, RunMapData.NodeType.TREASURE, P + "treasure_room_01.tscn") # Verzerrte Schatzkammer
+
+	# Row 4: Mandatory elite
+	var n10 = _make_node(10, 4, 0, RunMapData.NodeType.ELITE, P + "elite_room_02.tscn")   # Stimme der Leere
+
+	# Row 5: Mandatory shop
+	var n11 = _make_node(11, 5, 0, RunMapData.NodeType.SHOP, P + "shop_room_01.tscn")     # Loch im Abgrund
+
+	# Row 6: Mandatory combat
+	var n12 = _make_node(12, 6, 0, RunMapData.NodeType.COMBAT, P + "combat_room_06.tscn") # Gehirn
+
+	# Row 7: Pre-boss (Nurdurun — choice between Arena and Boss)
+	var n13 = _make_node(13, 7, 0, RunMapData.NodeType.REST, P + "pre_boss_room.tscn")    # Nurdurun
+	n13.display_name = "Nurdurun"
+
+	# Row 8: Arena + Boss
+	var n14 = _make_node(14, 8, 0, RunMapData.NodeType.ARENA,
+		"res://worlds/world_1_ruins/section_4_tempel/room_15_boss_urgathon.tscn")          # Lythrun-Arena
+	var n15 = _make_node(15, 8, 1, RunMapData.NodeType.BOSS, P + "boss_room_01.tscn")     # Das Siegel
+
+	# ---- Connections ----
+	# Row 0: Event → same-row combat, combat → elite
+	n0.connections = [4]
+	n1.connections = [4]
+	n2.connections = [4]
+	n3.connections = [0, 1, 2]  # Elysium → must do combat first
+	# Row 1 → Rest/Event choice
+	n4.connections = [5, 6]
+	# Row 2 → Row 3 (all choices)
+	n5.connections = [7, 8, 9]
+	n6.connections = [7, 8, 9]
+	# Row 3: Treasure → same-row combat, combat → elite
+	n7.connections = [10]
+	n8.connections = [10]
+	n9.connections = [7, 8]     # Verzerrte Schatzkammer → must do combat first
+	# Row 4 → Shop
+	n10.connections = [11]
+	# Row 5 → Combat
+	n11.connections = [12]
+	# Row 6 → Pre-boss
+	n12.connections = [13]
+	# Row 7 → Arena + Boss
+	n13.connections = [14, 15]
+	# Arena → Boss
+	n14.connections = [15]
+
+	# Build map
+	for n in [n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13, n14, n15]:
+		map.nodes[n.id] = n
+	map.rows = [[0, 1, 2, 3], [4], [5, 6], [7, 8, 9], [10], [11], [12], [13], [14, 15]]
+
+	return map
 
 
 # ============ VISUAL POSITIONING ============
@@ -369,7 +306,7 @@ static func print_map(map: RunMapData.Map) -> void:
 		var row: Array = map.rows[row_index]
 		for node_id in row:
 			var node: RunMapData.MapNode = map.nodes[node_id]
-			row_str += "[%d:%s]" % [node.id, node.get_type_name()]
+			row_str += "[%d:%s]" % [node.id, node.get_display_name()]
 			if not node.connections.is_empty():
 				row_str += "→%s " % str(node.connections)
 			else:

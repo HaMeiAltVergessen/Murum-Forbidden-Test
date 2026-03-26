@@ -30,6 +30,7 @@ class MapNode:
 	var type: NodeType                   # Node type (K+R, E+R, S, RAST, Er, BOSS)
 	var connections: Array[int] = []     # IDs of connected nodes in the NEXT row
 	var room_scene_path: String = ""     # Path to the room scene (set by room pool)
+	var display_name: String = ""        # Thematic room name shown on doors and map
 	var reward_type: String = ""         # Reward preview icon key (gold, item, relic, etc.)
 	var is_completed: bool = false       # Player has cleared this node
 	var is_accessible: bool = false      # Player can currently select this node
@@ -40,6 +41,11 @@ class MapNode:
 		row = p_row
 		column = p_column
 		type = p_type
+
+	func get_display_name() -> String:
+		if display_name != "":
+			return display_name
+		return get_type_name()
 
 	func get_type_name() -> String:
 		match type:
@@ -61,6 +67,7 @@ class MapNode:
 			"type": type,
 			"connections": connections,
 			"room_scene_path": room_scene_path,
+			"display_name": display_name,
 			"reward_type": reward_type,
 			"is_completed": is_completed,
 		}
@@ -74,6 +81,7 @@ class MapNode:
 		)
 		node.connections = Array(data.get("connections", []), TYPE_INT, "", null)
 		node.room_scene_path = data.get("room_scene_path", "")
+		node.display_name = data.get("display_name", "")
 		node.reward_type = data.get("reward_type", "")
 		node.is_completed = data.get("is_completed", false)
 		return node

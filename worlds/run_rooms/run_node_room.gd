@@ -801,7 +801,7 @@ func _setup_rest() -> void:
 	add_child(container)
 
 	var title = Label.new()
-	title.text = _get_rest_name()
+	title.text = node_data.get_display_name() if node_data else _get_rest_name()
 	title.add_theme_font_size_override("font_size", 28)
 	title.add_theme_color_override("font_color", Color(0.3, 0.7, 1.0))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -1556,7 +1556,7 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 
 	# Node type label
 	var type_label = Label.new()
-	type_label.text = node.get_type_name()
+	type_label.text = node.get_display_name()
 	type_label.add_theme_font_size_override("font_size", 16)
 	type_label.add_theme_color_override("font_color", Color.WHITE)
 	type_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -1592,12 +1592,12 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 	# Prompt label
 	var prompt = Label.new()
 	prompt.name = "PromptLabel"
-	prompt.text = "E - %s" % node.get_type_name()
+	prompt.text = "E - %s" % node.get_display_name()
 	prompt.add_theme_font_size_override("font_size", 14)
 	prompt.add_theme_color_override("font_color", Color.WHITE)
 	prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	prompt.size = Vector2(140, 20)
-	prompt.position = Vector2(-70, 10)
+	prompt.size = Vector2(200, 20)
+	prompt.position = Vector2(-100, 10)
 	prompt.visible = false
 	door_container.add_child(prompt)
 

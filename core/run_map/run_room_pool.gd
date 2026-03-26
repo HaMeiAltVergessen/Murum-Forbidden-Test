@@ -187,6 +187,59 @@ const ENTRY_ROOM_SCENES: Dictionary = {
 	RunMapData.WorldId.ABGRUND: "res://worlds/run_rooms/abgrund/entry_room.tscn",
 }
 
+# ============ ROOM DISPLAY NAMES (scene path → German in-game name) ============
+const ROOM_DISPLAY_NAMES: Dictionary = {
+	# === Welt 1: Das Niemandsland ===
+	"res://worlds/run_rooms/niemandsland/entry_room.tscn": "Ruinen-Eingang",
+	"res://worlds/run_rooms/niemandsland/combat_room_01.tscn": "Tempelhalle",
+	"res://worlds/run_rooms/niemandsland/combat_room_02.tscn": "Mittlere Ebene",
+	"res://worlds/run_rooms/niemandsland/combat_room_03.tscn": "Tempelvorplatz",
+	"res://worlds/run_rooms/niemandsland/combat_room_04.tscn": "Verfallene Ruinen",
+	"res://worlds/run_rooms/niemandsland/elite_room_01.tscn": "Tiefer Tempel",
+	"res://worlds/run_rooms/niemandsland/elite_room_02.tscn": "Tempeltor",
+	"res://worlds/run_rooms/niemandsland/treasure_room_01.tscn": "Schatzkammer",
+	"res://worlds/run_rooms/niemandsland/rest_room_01.tscn": "Dorf der Verlorenen",
+	"res://worlds/run_rooms/niemandsland/event_room_01.tscn": "Versteckte Kammer",
+	"res://worlds/run_rooms/niemandsland/shop_room_01.tscn": "Letzter Haendler",
+	"res://worlds/run_rooms/niemandsland/boss_room_01.tscn": "Heldengruppe-Arena",
+	# === Welt 2: Das Kollektiv ===
+	"res://worlds/run_rooms/kollektiv/entry_room.tscn": "Slum-Eingang",
+	"res://worlds/run_rooms/kollektiv/combat_room_01.tscn": "Neon-Gassen",
+	"res://worlds/run_rooms/kollektiv/combat_room_02.tscn": "Kneipen",
+	"res://worlds/run_rooms/kollektiv/combat_room_03.tscn": "Aufzuege",
+	"res://worlds/run_rooms/kollektiv/combat_room_04.tscn": "Wolkenkratzer",
+	"res://worlds/run_rooms/kollektiv/combat_room_05.tscn": "Docks auf den Daechern",
+	"res://worlds/run_rooms/kollektiv/elite_room_01.tscn": "Kollektiv-Mecha",
+	"res://worlds/run_rooms/kollektiv/elite_room_02.tscn": "AI-Assassine",
+	"res://worlds/run_rooms/kollektiv/treasure_room_01.tscn": "Tech-Schatzkammer",
+	"res://worlds/run_rooms/kollektiv/rest_room_01.tscn": "Schmuggler-Versteck",
+	"res://worlds/run_rooms/kollektiv/event_room_01.tscn": "Wohnung",
+	"res://worlds/run_rooms/kollektiv/shop_room_01.tscn": "Schwarzmarkt",
+	"res://worlds/run_rooms/kollektiv/boss_room_01.tscn": "Kollektiv-Arena",
+	"res://worlds/run_rooms/kollektiv/transition_room.tscn": "Brainroom",
+	# === Welt 3: Der Abgrund ===
+	"res://worlds/run_rooms/abgrund/entry_room.tscn": "Auge des Abgrunds",
+	"res://worlds/run_rooms/abgrund/combat_room_01.tscn": "Verzerrte Zeit",
+	"res://worlds/run_rooms/abgrund/combat_room_02.tscn": "Tiefe",
+	"res://worlds/run_rooms/abgrund/combat_room_03.tscn": "Augen",
+	"res://worlds/run_rooms/abgrund/combat_room_04.tscn": "Fleisch",
+	"res://worlds/run_rooms/abgrund/combat_room_05.tscn": "Abstieg",
+	"res://worlds/run_rooms/abgrund/combat_room_06.tscn": "Gehirn",
+	"res://worlds/run_rooms/abgrund/elite_room_01.tscn": "Alptraum-Vision",
+	"res://worlds/run_rooms/abgrund/elite_room_02.tscn": "Stimme der Leere",
+	"res://worlds/run_rooms/abgrund/treasure_room_01.tscn": "Verzerrte Schatzkammer",
+	"res://worlds/run_rooms/abgrund/rest_room_01.tscn": "Das letzte Licht",
+	"res://worlds/run_rooms/abgrund/event_room_01.tscn": "Elysium",
+	"res://worlds/run_rooms/abgrund/event_room_02.tscn": "Urgathon",
+	"res://worlds/run_rooms/abgrund/shop_room_01.tscn": "Loch im Abgrund",
+	"res://worlds/run_rooms/abgrund/boss_room_01.tscn": "Das Siegel",
+	"res://worlds/run_rooms/abgrund/pre_boss_room.tscn": "Nurdurun",
+	"res://worlds/world_1_ruins/section_4_tempel/room_15_boss_urgathon.tscn": "Lythrun-Arena",
+}
+
+static func get_display_name(scene_path: String) -> String:
+	return ROOM_DISPLAY_NAMES.get(scene_path, "")
+
 
 # ============ STATIC API ============
 

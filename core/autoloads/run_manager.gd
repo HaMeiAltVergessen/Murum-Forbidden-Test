@@ -129,7 +129,7 @@ func select_map_node(node_id: int) -> void:
 	current_node = node
 	current_state = RunState.IN_NODE
 	node_selected.emit(node)
-	print("[RunManager] Node selected: %d (%s)" % [node.id, node.get_type_name()])
+	print("[RunManager] Node selected: %d (%s)" % [node.id, node.get_display_name()])
 
 	# Load the room for this node
 	_load_node_room(node)
@@ -144,7 +144,11 @@ func _load_node_room(node: RunMapData.MapNode) -> void:
 		_load_arena_room(node)
 		return
 
-	var scene_path = RunRoomPool.get_room_scene_path(current_world, node.type)
+	# Use the fixed scene path from the map node (set by generator)
+	var scene_path: String = node.room_scene_path
+	if scene_path.is_empty():
+		# Fallback to random pool (should not happen with fixed maps)
+		scene_path = RunRoomPool.get_room_scene_path(current_world, node.type)
 	if scene_path.is_empty():
 		push_error("[RunManager] No room scene for node type %d" % node.type)
 		return
@@ -159,7 +163,7 @@ func _load_node_room(node: RunMapData.MapNode) -> void:
 	room.node_data = node
 
 	_replace_current_scene(room)
-	print("[RunManager] Loaded room for node %d (%s): %s" % [node.id, node.get_type_name(), scene_path])
+	print("[RunManager] Loaded room for node %d (%s): %s" % [node.id, node.get_display_name(), scene_path])
 
 
 func _load_arena_room(node: RunMapData.MapNode) -> void:
@@ -273,17 +277,17 @@ func _spawn_arena_exit_doors(room: Node2D, next_nodes: Array) -> void:
 		door.add_child(rect)
 
 		var label = Label.new()
-		label.text = node.get_type_name()
-		label.add_theme_font_size_override("font_size", 16)
+		label.text = node.get_display_name()
+		label.add_theme_font_size_override("font_size", 14)
 		label.add_theme_color_override("font_color", Color.WHITE)
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		label.size = Vector2(80, 30)
-		label.position = Vector2(-40, -75)
+		label.size = Vector2(120, 30)
+		label.position = Vector2(-60, -75)
 		door.add_child(label)
 
 		var prompt = Label.new()
 		prompt.name = "PromptLabel"
-		prompt.text = "E - %s" % node.get_type_name()
+		prompt.text = "E - %s" % node.get_display_name()
 		prompt.add_theme_font_size_override("font_size", 14)
 		prompt.add_theme_color_override("font_color", Color.WHITE)
 		prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -349,6 +353,109 @@ func _start_arena_door_listener() -> void:
 
 func transition_to_next_world(next_world_id: RunMapData.WorldId) -> void:
 	"""Transition to the next world after beating a boss (W1->W2, W2->W3)"""
+	# W2 → W3: Load Brainroom transition first
+	if current_world == RunMapData.WorldId.KOLLEKTIV and next_world_id == RunMapData.WorldId.ABGRUND:
+		_load_brainroom_transition(next_world_id)
+		return
+
+	_complete_world_transition(next_world_id)
+
+
+func _load_brainroom_transition(next_world_id: RunMapData.WorldId) -> void:
+	"""Load the W2 Brainroom transition room before advancing to W3"""
+	_preserve_player()
+
+	var scene_path: String = "res://worlds/run_rooms/kollektiv/transition_room.tscn"
+	if not ResourceLoader.exists(scene_path):
+		push_warning("[RunManager] Brainroom scene not found, skipping transition")
+		_complete_world_transition(next_world_id)
+		return
+
+	var packed_scene: PackedScene = load(scene_path)
+	var room: Node2D = packed_scene.instantiate()
+	room.name = "BrainroomTransition"
+
+	_replace_current_scene(room)
+
+	# Place player at spawn point
+	var spawn = room.get_node_or_null("SpawnPoints/Default")
+	if spawn and GameManager.player and is_instance_valid(GameManager.player):
+		GameManager.player.global_position = spawn.global_position
+
+	# Create portal interaction to proceed to W3
+	_create_brainroom_portal(room, next_world_id)
+
+	print("[RunManager] Loaded Brainroom transition — interact with portal to proceed")
+
+
+func _create_brainroom_portal(room: Node2D, next_world_id: RunMapData.WorldId) -> void:
+	"""Create an interact area at the portal that triggers the real world transition"""
+	var portal = room.get_node_or_null("PortalCore")
+	if not portal:
+		# Fallback: auto-transition after delay
+		get_tree().create_timer(3.0).timeout.connect(func():
+			_complete_world_transition(next_world_id)
+		)
+		return
+
+	var area = Area2D.new()
+	area.name = "PortalArea"
+	var col = CollisionShape2D.new()
+	var shape = RectangleShape2D.new()
+	shape.size = Vector2(200, 300)
+	col.shape = shape
+	area.add_child(col)
+	area.collision_layer = 0
+	area.collision_mask = 0
+	area.set_collision_mask_value(2, true)
+	area.monitoring = true
+	area.global_position = portal.global_position + Vector2(80, 120)
+	room.add_child(area)
+
+	# Prompt label
+	var prompt = Label.new()
+	prompt.name = "PortalPrompt"
+	prompt.text = "E - Der Abgrund"
+	prompt.add_theme_font_size_override("font_size", 16)
+	prompt.add_theme_color_override("font_color", Color.WHITE)
+	prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	prompt.size = Vector2(200, 30)
+	prompt.position = Vector2(-20, -60)
+	prompt.visible = false
+	area.add_child(prompt)
+
+	var _player_in_portal: bool = false
+	area.body_entered.connect(func(body):
+		if body == GameManager.player or (body is CharacterBody2D and body.name.contains("Lythrun")):
+			prompt.visible = true
+			area.set_meta("player_inside", true)
+	)
+	area.body_exited.connect(func(body):
+		if body == GameManager.player or (body is CharacterBody2D and body.name.contains("Lythrun")):
+			prompt.visible = false
+			area.set_meta("player_inside", false)
+	)
+
+	# Poll for interact input
+	var timer = Timer.new()
+	timer.wait_time = 0.05
+	timer.autostart = true
+	room.add_child(timer)
+	timer.timeout.connect(func():
+		if area.get_meta("player_inside", false):
+			var interact = false
+			if InputManager:
+				interact = InputManager.is_p1_action_just_pressed("interact") or InputManager.is_p2_action_just_pressed("interact")
+			else:
+				interact = Input.is_action_just_pressed("interact")
+			if interact:
+				timer.stop()
+				_complete_world_transition(next_world_id)
+	)
+
+
+func _complete_world_transition(next_world_id: RunMapData.WorldId) -> void:
+	"""Actually transition to the next world (generates new map, loads entry room)"""
 	print("[RunManager] Transitioning from '%s' to '%s'" % [
 		_get_world_name(current_world), _get_world_name(next_world_id)
 	])

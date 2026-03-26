@@ -133,13 +133,18 @@ func _draw_map_node(node: RunMapData.MapNode, pos: Vector2, current_id: int) -> 
 	if node.is_accessible and not is_current:
 		_draw_node.draw_arc(pos, radius + 2, 0, TAU, 32, Color(1, 1, 1, 0.6), 1.5)
 
-	# Node type label
+	# Node type label (inside circle)
 	var label: String = _get_node_label(node.type)
 	_draw_centered_text(label, pos + Vector2(0, -2), 12, Color.WHITE)
 
-	# Reward preview (small text below)
+	# Display name (below circle)
+	var name_text: String = node.get_display_name()
+	var name_color: Color = Color(0.85, 0.85, 0.85, 0.8) if not node.is_completed else Color(0.5, 0.5, 0.5, 0.5)
+	_draw_centered_text(name_text, pos + Vector2(0, radius + 14), 10, name_color)
+
+	# Reward preview (further below)
 	if node.reward_type != "" and not node.is_completed:
-		_draw_centered_text(node.reward_type, pos + Vector2(0, radius + 12), 10, Color(0.7, 0.7, 0.5, 0.7))
+		_draw_centered_text(node.reward_type, pos + Vector2(0, radius + 28), 10, Color(0.7, 0.7, 0.5, 0.7))
 
 
 func _draw_legend() -> void:
