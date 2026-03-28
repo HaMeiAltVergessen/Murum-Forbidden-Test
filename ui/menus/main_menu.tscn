@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://bqc8yv8x3jk0m"]
 
 [ext_resource type="Script" uid="uid://b1gh80biwnswd" path="res://ui/menus/main_menu.gd" id="1_main_menu"]
-[ext_resource type="VideoStreamTheora" path="res://Assets/AIVids/MurumBackground.ogv" id="2_video"]
+[ext_resource type="VideoStream" uid="uid://hcd5301dg6eb" path="res://Assets/AIVids/MurumBackground.ogv" id="2_video"]
 [ext_resource type="AudioStream" uid="uid://cabatw3tl7w" path="res://Music/Limbus/MainTheme001.mp3" id="3_music"]
 [ext_resource type="Texture2D" uid="uid://bx6s5sv5scv0c" path="res://Assets/AIPlaceholder/Char/Murum/murum back.png" id="4_murum_back"]
 [ext_resource type="Texture2D" uid="uid://txut8dtflkxf" path="res://Assets/AIPlaceholder/Char/Murum/NurunBack.png" id="5_nurun_back"]
@@ -25,8 +25,8 @@ grow_horizontal = 2
 grow_vertical = 2
 stream = ExtResource("2_video")
 autoplay = true
-loop = true
 expand = true
+loop = true
 
 [node name="VignetteOverlay" type="ColorRect" parent="."]
 layout_mode = 1
@@ -39,27 +39,27 @@ mouse_filter = 2
 color = Color(0, 0, 0, 0.6)
 
 [node name="MurumBack" type="TextureRect" parent="."]
+self_modulate = Color(1, 1, 1, 0.709804)
 layout_mode = 1
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
+anchors_preset = 9
 anchor_bottom = 1.0
-offset_right = 400
-grow_horizontal = 2
+offset_right = 688.0
 grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("4_murum_back")
 expand_mode = 1
 stretch_mode = 5
+flip_h = true
 
 [node name="NurunBack" type="TextureRect" parent="."]
+self_modulate = Color(1, 1, 1, 0.709804)
 layout_mode = 1
+anchors_preset = 11
 anchor_left = 1.0
-anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -400
-grow_horizontal = 2
+offset_left = -722.0
+grow_horizontal = 0
 grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("5_nurun_back")

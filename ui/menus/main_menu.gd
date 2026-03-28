@@ -1,6 +1,9 @@
 extends Control
 class_name MainMenu
 
+# Video Settings
+@export_range(0.1, 3.0, 0.05) var video_playback_speed: float = 1.0
+
 # Node References
 @onready var continue_button: Button = %ContinueButton
 @onready var new_game_button: Button = %NewGameButton
@@ -63,7 +66,7 @@ func _ready():
 		video_background.finished.connect(_on_video_finished)
 		if not video_background.is_playing():
 			video_background.play()
-		print("[MainMenu] Video background started")
+		print("[MainMenu] Video background started (speed: %.2f)" % video_playback_speed)
 
 	# Starte Musik
 	if music_player:
@@ -416,6 +419,11 @@ func _on_challenge_started():
 
 	# Open slot screen for challenge run (same as new game)
 	_show_save_slot_screen(0)  # Mode.NEW_GAME
+
+
+func _process(delta: float) -> void:
+	if video_background and video_background.is_playing() and not is_equal_approx(video_playback_speed, 1.0):
+		video_background.stream_position += delta * (video_playback_speed - 1.0)
 
 
 func _on_video_finished():
