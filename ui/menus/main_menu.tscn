@@ -15,7 +15,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 1
 script = ExtResource("1_main_menu")
-video_playback_speed = 0.2
+video_playback_speed = 0.1
 
 [node name="Background" type="VideoStreamPlayer" parent="."]
 layout_mode = 1

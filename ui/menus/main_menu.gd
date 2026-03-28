@@ -421,15 +421,45 @@ func _on_challenge_started():
 	_show_save_slot_screen(0)  # Mode.NEW_GAME
 
 
+var _video_time: float = 0.0
+var _video_length: float = 0.0
+
+
 func _process(delta: float) -> void:
-	if video_background and video_background.is_playing() and not is_equal_approx(video_playback_speed, 1.0):
-		video_background.stream_position += delta * (video_playback_speed - 1.0)
+	if not video_background:
+		return
+
+	# Normal speed: let native playback handle it
+	if is_equal_approx(video_playback_speed, 1.0):
+		if video_background.paused:
+			video_background.paused = false
+		return
+
+	# Custom speed: pause native playback, control position manually
+	if not video_background.paused:
+		_video_time = video_background.stream_position
+		_video_length = video_background.get_stream_length()
+		video_background.paused = true
+
+	_video_time += delta * video_playback_speed
+
+	# Loop
+	if _video_length > 0.0 and _video_time >= _video_length:
+		_video_time = fmod(_video_time, _video_length)
+		# Restart video to reset decoder, then pause and seek
+		video_background.play()
+		video_background.paused = true
+
+	video_background.stream_position = _video_time
 
 
 func _on_video_finished():
 	"""Restarts video for seamless loop"""
 	if video_background:
 		video_background.play()
+		if not is_equal_approx(video_playback_speed, 1.0):
+			_video_time = 0.0
+			video_background.paused = true
 
 
 func _restore_focus():
