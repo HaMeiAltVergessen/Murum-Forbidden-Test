@@ -196,6 +196,31 @@ worlds/world_1_ruins/
 **Basis**: `enemies/base_enemy.gd` (alle Gegner erben davon)
 **World 1 Gegner**: Geist, Hermit, Guardian Statue, Glimmerseed, Corpse Trap
 **Placeholder**: Ashworm (small/medium/large), Dark Fantasy, Monster Creature
+
+### Welt 2 Gegner — Das Kollektiv (Sci-Fi) [DESIGNED, NICHT IMPLEMENTIERT]
+| Gegner | Typ | HP | Mechanik | Coop |
+|--------|-----|-----|----------|------|
+| Sentinel Drone | Regular, Ranged | 35 | Networked Targeting (2+ Drones synchron) | Split Targeting |
+| Enforcer | Regular, Melee Tank | 60 | Directional Armor (Front 60%, Back 0%) | Flanking noetig |
+| Mender | Regular, Support | 25 | Heilt Verbuendete 8 HP/s, flieht | Kill-Priority-Koordination |
+| Disruptor | Regular, Debuff | 40 | Frequenz-Feld (ROT=P1, LILA=P2 slow) | Abwechselnd durchs Feld |
+| Vanguard | Elite | 200 | 80HP Schild (Front), 3-Hit Combo, Rally Cry | Front-Aggro + Back-DPS |
+| Hivemind Nexus | Elite | 150 | Stationaer, spawnt Minions, immun bei 2+ Adds | Adds clearen → Boss bursten |
+
+### Welt 3 Gegner — Der Abgrund (Kosmischer Horror) [DESIGNED, NICHT IMPLEMENTIERT]
+| Gegner | Typ | HP | Mechanik | Coop |
+|--------|-----|-----|----------|------|
+| Phase Wraith | NEU, Melee | 50 | Phast durch Waende, materialisiert hinter Ziel | Back-to-Back stehen |
+| Hollow Vessel | Korrumpierter Geist | 45 | Afterimage Split alle 3 Angriffe | Fake finden → Bonus-DMG |
+| Abyssal Anchor | NEU, Control | 55 | Gravity Well (200px), doppelt bei 2 Spielern | Nie beide ins Feld |
+| Breach Hulk | Korrumpierter Enforcer | 85 | Void Burst + Tendril Grab + Void Trail | P2 befreit P1 |
+| Echo Siren | NEU, Debuff | 35 | Scream invertiert Steuerung 4s | Partner deckt Getroffenen |
+| Hollow Mender | Korrumpierter Mender | 35 | Anti-Heal Beam, Heilung→Schaden | Sofort jagen + toeten |
+| The Tethered | Elite, Dual | 240 | Warden+Beast an Kette, Kill Order matters | Jeder nimmt ein Wesen |
+| The Witness | Elite, Caster | 180 | Gaze Beam wechselt P1↔P2, Blink=DMG-Window | Gaze Juggling |
+
+**Sprite-Prompts**: `docs/enemy_sprite_prompts.md` (18 Sheets, 80 Frames)
+**Design-Dokument**: `.claude/plans/cozy-puzzling-phoenix.md`
 **Lythrun-Boss**: `bosses/lythrun/lythrun_boss.gd` mit `adaptive_ai.gd` und Phase-Manager
 **Boss-Komponenten**: `bosses/components/` — AttackPatternManager, PhaseManager, VictorySequence, BossCameraController
 
@@ -287,7 +312,7 @@ worlds/world_1_ruins/
 - [x] Welt-3-Boss: "Murum (Spiegel)" (Auto-Scrolling Runner, 4 Abschnitte, Momentum-System)
 
 ### Noch zu implementieren
-- [ ] Welt-2- und Welt-3-Gegner (Sci-Fi/Horror, aktuell Placeholder)
+- [ ] Welt-2- und Welt-3-Gegner (Sci-Fi/Horror, DESIGNED — Sprites ausstehend, dann Implementierung)
 - [ ] VFX-Polish (Placeholder-ColorRects durch echte Partikeleffekte ersetzen)
 - [ ] Boss-Polish (Intro-Cutscene, Victory-Sequence, SFX, Balancing)
 - [ ] Mirror-Boss-Polish (Despawning Platforms, mehr Chunk-Varianten)
@@ -305,5 +330,5 @@ worlds/world_1_ruins/
 - Gameplay-Effekte der meisten Siegel-Modifikatoren sind data-only (nicht implementiert)
 - Nur World 1 (Ruins) existiert mit handcrafted Raeumen
 - Gegner sind teilweise Placeholder (Ashworm, Dark Fantasy, Monster Creature)
-- Welt 2 (Sci-Fi) und Welt 3 (Kosmischer Horror) Gegner noch nicht definiert
+- Welt 2 (Sci-Fi) und Welt 3 (Kosmischer Horror) Gegner designed (14 Gegner), Sprites ausstehend
 - Raelear-Klone nutzen Murums Sprite aber noch ohne VFX-Polish

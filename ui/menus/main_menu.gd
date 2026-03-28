@@ -12,6 +12,7 @@ class_name MainMenu
 @onready var quit_button: Button = %QuitButton
 @onready var music_player: AudioStreamPlayer = $MusicPlayer
 @onready var main_menu_container: Control = %MenuContainer
+@onready var video_background: VideoStreamPlayer = $Background
 
 # Sub-screens
 const OPTIONS_MENU_SCENE = preload("res://ui/menus/options_submenu.tscn")
@@ -56,6 +57,13 @@ func _ready():
 		var pause_menu = get_node("/root/PauseMenu")
 		pause_menu.visible = false
 		print("[MainMenu] PauseMenu hidden")
+
+	# Video-Loop Fallback (falls loop-Property nicht greift)
+	if video_background:
+		video_background.finished.connect(_on_video_finished)
+		if not video_background.is_playing():
+			video_background.play()
+		print("[MainMenu] Video background started")
 
 	# Starte Musik
 	if music_player:
@@ -408,6 +416,12 @@ func _on_challenge_started():
 
 	# Open slot screen for challenge run (same as new game)
 	_show_save_slot_screen(0)  # Mode.NEW_GAME
+
+
+func _on_video_finished():
+	"""Restarts video for seamless loop"""
+	if video_background:
+		video_background.play()
 
 
 func _restore_focus():
