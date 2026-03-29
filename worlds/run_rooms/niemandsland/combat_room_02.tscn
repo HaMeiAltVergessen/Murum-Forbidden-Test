@@ -1,7 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://s2ypavga1dmo"]
+[gd_scene load_steps=11 format=3 uid="uid://s2ypavga1dmo"]
 
+[ext_resource type="Texture2D" uid="uid://cvdmut0lxbs38" path="res://Assets/AIPlaceholder/AlbtraumWelten/Welt1_Niemandsland/Dark_fantasy_battlefield_backg_GPT_Image_15_65828.jpg" id="1_mhaxh"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
-[ext_resource type="PackedScene" uid="uid://arrow_trap_001" path="res://traps/scenes/arrow_trap.tscn" id="2_arrow_trap"]
+[ext_resource type="PackedScene" path="res://traps/scenes/arrow_trap.tscn" id="2_arrow_trap"]
 [ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="3_spike_trap"]
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="4_climbable"]
 
@@ -22,10 +23,24 @@ size = Vector2(300, 20)
 
 [node name="CombatRoom02" type="Node2D"]
 
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(1675, 363)
+scale = Vector2(2.50502, 2.50502)
+texture = ExtResource("1_mhaxh")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(5523, 350)
+scale = Vector2(2.50502, 2.50502)
+texture = ExtResource("1_mhaxh")
+flip_h = true
+
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 9600.0
-offset_bottom = 800.0
+offset_left = -881.0
+offset_top = -861.0
+offset_right = 8719.0
+offset_bottom = -61.0
+scale = Vector2(2.20119, 3.7559)
 color = Color(0.06, 0.04, 0.06, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
@@ -47,7 +62,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(9620, 540)
+position = Vector2(7483, 512)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -91,7 +106,7 @@ position = Vector2(5600, 760)
 position = Vector2(7200, 760)
 
 [node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(8400, 760)
+position = Vector2(6884, 686)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
@@ -105,13 +120,13 @@ position = Vector2(3840, 700)
 position = Vector2(5760, 700)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(7680, 700)
+position = Vector2(4868, 346)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(8640, 700)
+position = Vector2(6338, 709)
 
 [node name="ArrowTrap1" parent="." instance=ExtResource("2_arrow_trap")]
-position = Vector2(9400, 600)
+position = Vector2(3271, 788)
 arrow_direction = Vector2(-1, 0)
 
 [node name="SpikeTrap1" parent="." instance=ExtResource("3_spike_trap")]

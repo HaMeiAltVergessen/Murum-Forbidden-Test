@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=12 format=3 uid="uid://baq4dv003l8ry"]
 
+[ext_resource type="Texture2D" uid="uid://ddshbf3nio6lw" path="res://Assets/AIAssets/8d33fd80-90de-40ba-a387-b68c6792874b.jpg" id="1_k83fx"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
-[ext_resource type="PackedScene" uid="uid://arrow_trap_001" path="res://traps/scenes/arrow_trap.tscn" id="2_arrow_trap"]
-[ext_resource type="PackedScene" uid="uid://falling_rock_001" path="res://traps/scenes/falling_rock.tscn" id="3_falling_rock"]
+[ext_resource type="PackedScene" path="res://traps/scenes/arrow_trap.tscn" id="2_arrow_trap"]
+[ext_resource type="PackedScene" path="res://traps/scenes/falling_rock.tscn" id="3_falling_rock"]
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="4_climbable"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
@@ -24,6 +25,23 @@ size = Vector2(250, 20)
 size = Vector2(250, 20)
 
 [node name="EliteRoom01" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(1624, 274)
+scale = Vector2(2.09375, 2.09375)
+texture = ExtResource("1_k83fx")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(-1590, 252)
+scale = Vector2(2.09375, 2.09375)
+texture = ExtResource("1_k83fx")
+flip_h = true
+
+[node name="Sprite2D3" type="Sprite2D" parent="."]
+position = Vector2(4833, 280)
+scale = Vector2(2.09375, 2.09375)
+texture = ExtResource("1_k83fx")
+flip_h = true
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
@@ -50,7 +68,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(8820, 540)
+position = Vector2(6421, 531)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -75,7 +93,7 @@ offset_bottom = 10.0
 color = Color(0.3, 0.2, 0.1, 1)
 
 [node name="PlatformRight" type="StaticBody2D" parent="."]
-position = Vector2(7000, 620)
+position = Vector2(3154, 418)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformRight"]
 shape = SubResource("platform_right_shape")
@@ -107,16 +125,16 @@ position = Vector2(4400, 760)
 position = Vector2(5600, 760)
 
 [node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(6800, 760)
+position = Vector2(3703, 466)
 
 [node name="EnemySpawn6" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(8000, 760)
+position = Vector2(5362, 521)
 
 [node name="EnemySpawn7" type="Marker2D" parent="EnemySpawnPoints"]
 position = Vector2(1800, 580)
 
 [node name="EnemySpawn8" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(7000, 580)
+position = Vector2(4946, 594)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
@@ -130,15 +148,17 @@ position = Vector2(3520, 700)
 position = Vector2(5280, 700)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(7040, 700)
+position = Vector2(5271, 167)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(7920, 700)
+position = Vector2(5260, 89)
+
 [node name="ArrowTrap1" parent="." instance=ExtResource("2_arrow_trap")]
 position = Vector2(200, 500)
 
 [node name="ArrowTrap2" parent="." instance=ExtResource("2_arrow_trap")]
-position = Vector2(8600, 500)
+position = Vector2(6224, 789)
+rotation = -3.09256
 arrow_direction = Vector2(-1, 0)
 
 [node name="FallingRock1" parent="." instance=ExtResource("3_falling_rock")]
@@ -148,7 +168,7 @@ position = Vector2(4400, 100)
 position = Vector2(200, 350)
 
 [node name="ClimbableArea2" parent="." instance=ExtResource("4_climbable")]
-position = Vector2(8600, 350)
+position = Vector2(5328, 198)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

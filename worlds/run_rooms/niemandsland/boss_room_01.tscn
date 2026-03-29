@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://c4x721hpfcui4"]
 
-[ext_resource type="Texture2D" uid="uid://bd2i5fqltb4d8" path="res://Assets/AIPlaceholder/world01Tempel.png" id="1_1umlh"]
+[ext_resource type="Texture2D" uid="uid://u30nhqyshih4" path="res://Assets/AIPlaceholder/AlbtraumWelten/Welt1_Niemandsland/2D_Pixel_Art_Background_Sprite_Nano_Banana_77469.jpg" id="1_1umlh"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 [ext_resource type="PackedScene" uid="uid://6kwthd3m82gc" path="res://environment/pickups/testpickup.tscn" id="2_c32y6"]
 
@@ -31,8 +31,15 @@ offset_bottom = 1080.0
 color = Color(0.2, 0.05, 0.05, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(4835, -1118)
+position = Vector2(6476.75, 244)
+scale = Vector2(3.35026, 3.35026)
 texture = ExtResource("1_1umlh")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(1971.37, 242.5)
+scale = Vector2(3.35026, 3.35026)
+texture = ExtResource("1_1umlh")
+flip_h = true
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(5200, 820)

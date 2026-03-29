@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=9 format=3 uid="uid://cxwmc07tupq6m"]
 
+[ext_resource type="Texture2D" uid="uid://bwodr6gfcdfgy" path="res://Assets/AIPlaceholder/AlbtraumWelten/Welt1_Niemandsland/2D_Pixel_Art_Background_Sprite_GPT_Image_15_35118.jpg" id="1_jk6wc"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
-[ext_resource type="PackedScene" uid="uid://arrow_trap_001" path="res://traps/scenes/arrow_trap.tscn" id="2_arrow_trap"]
+[ext_resource type="PackedScene" path="res://traps/scenes/arrow_trap.tscn" id="2_arrow_trap"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="3_platform"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
@@ -20,15 +21,23 @@ size = Vector2(6400, 40)
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 6400.0
-offset_bottom = 800.0
+offset_left = -1352.0
+offset_top = -728.0
+offset_right = 5048.0
+offset_bottom = 72.0
+scale = Vector2(2.70124, 2.70124)
 color = Color(0.05, 0.07, 0.05, 1)
 
-[node name="GroundVisual" type="ColorRect" parent="."]
-offset_top = 800.0
-offset_right = 6400.0
-offset_bottom = 1080.0
-color = Color(0.1, 0.13, 0.1, 1)
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(1184, 160)
+scale = Vector2(2.21357, 2.21357)
+texture = ExtResource("1_jk6wc")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(4614, 147)
+scale = Vector2(2.21357, 2.21357)
+texture = ExtResource("1_jk6wc")
+flip_h = true
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(3200, 820)
@@ -43,7 +52,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(6420, 540)
+position = Vector2(6352, 510)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -95,6 +104,7 @@ position = Vector2(5120, 700)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
 position = Vector2(5760, 700)
+
 [node name="ArrowTrap1" parent="." instance=ExtResource("2_arrow_trap")]
 position = Vector2(200, 500)
 

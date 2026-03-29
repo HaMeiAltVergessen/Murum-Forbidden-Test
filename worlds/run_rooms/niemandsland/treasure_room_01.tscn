@@ -18,8 +18,15 @@ size = Vector2(5600, 40)
 [node name="TreasureRoom01" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(3192, 526)
+position = Vector2(3438.5, 238.5)
+scale = Vector2(1.59082, 1.59082)
 texture = ExtResource("1_w77aw")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(981.75, 239)
+scale = Vector2(1.59082, 1.59082)
+texture = ExtResource("1_w77aw")
+flip_h = true
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
@@ -28,10 +35,11 @@ offset_bottom = 800.0
 color = Color(0.04, 0.08, 0.05, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
-offset_top = 800.0
-offset_right = 5600.0
-offset_bottom = 1080.0
-color = Color(0.08, 0.15, 0.1, 1)
+offset_left = -425.0
+offset_top = 820.0
+offset_right = 5175.0
+offset_bottom = 1100.0
+color = Color(0.13151, 0.0360175, 0.0144393, 1)
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(2800, 820)
@@ -49,6 +57,7 @@ shape = SubResource("wall_left_shape")
 position = Vector2(5620, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
+position = Vector2(-1425, 0)
 shape = SubResource("wall_right_shape")
 
 [node name="Ceiling" type="StaticBody2D" parent="."]
@@ -83,10 +92,11 @@ position = Vector2(2240, 700)
 position = Vector2(3360, 700)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(4480, 700)
+position = Vector2(1922, 680)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(5040, 700)
+position = Vector2(3812, 660)
+
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
 offset_top = 20.0

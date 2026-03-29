@@ -1,8 +1,10 @@
-[gd_scene load_steps=10 format=3 uid="uid://c6g7gkrnw1f72"]
+[gd_scene load_steps=12 format=3 uid="uid://c6g7gkrnw1f72"]
 
+[ext_resource type="Texture2D" uid="uid://dgoqciw5hx2m0" path="res://Assets/AIAssets/8f3db250-9684-4ef9-9483-7fb1e18eebc1.jpg" id="1_61u4v"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="Texture2D" uid="uid://ra4sbnoii35r" path="res://Assets/AIAssets/0b1bef95-fa79-46b5-920d-1039c84dc1c8.jpg" id="2_2woiw"]
 [ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="2_spike_trap"]
-[ext_resource type="Script" path="res://puzzles/controllers/sequence_puzzle_controller.gd" id="3_seq_controller"]
+[ext_resource type="Script" uid="uid://colcvd1p8clki" path="res://puzzles/controllers/sequence_puzzle_controller.gd" id="3_seq_controller"]
 [ext_resource type="PackedScene" uid="uid://blta5m8ixhcu8" path="res://puzzles/scenes/components/puzzle_switch.tscn" id="4_switch"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
@@ -22,10 +24,29 @@ size = Vector2(50, 300)
 
 [node name="EliteRoom02" type="Node2D"]
 
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(1155, 337)
+scale = Vector2(1.78935, 1.78935)
+texture = ExtResource("1_61u4v")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(3564, 346)
+scale = Vector2(1.78935, 1.78935)
+texture = ExtResource("1_61u4v")
+flip_h = true
+
+[node name="Sprite2D3" type="Sprite2D" parent="."]
+position = Vector2(5895, 375)
+scale = Vector2(1.45428, 1.45428)
+texture = ExtResource("2_2woiw")
+
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 8000.0
-offset_bottom = 800.0
+offset_left = -2086.0
+offset_top = -725.0
+offset_right = 5914.0
+offset_bottom = 75.0
+scale = Vector2(2.80881, 2.80881)
 color = Color(0.08, 0.04, 0.04, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
@@ -47,7 +68,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(8020, 540)
+position = Vector2(7030, 520)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -72,7 +93,7 @@ offset_bottom = 150.0
 color = Color(0.22, 0.15, 0.12, 1)
 
 [node name="Pillar2" type="StaticBody2D" parent="."]
-position = Vector2(7592, 652)
+position = Vector2(6969, 671)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Pillar2"]
 shape = SubResource("pillar_shape")
@@ -104,7 +125,7 @@ position = Vector2(4600, 760)
 position = Vector2(6000, 760)
 
 [node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(7200, 760)
+position = Vector2(5933, 694)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
@@ -121,17 +142,16 @@ position = Vector2(4800, 700)
 position = Vector2(6400, 700)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(7200, 700)
+position = Vector2(6053, 520)
+
 [node name="SpikeTrap1" parent="." instance=ExtResource("2_spike_trap")]
 position = Vector2(4000, 790)
 
 [node name="PuzzleGate" type="Node" parent="." groups=["puzzle_gate"]]
 script = ExtResource("3_seq_controller")
-correct_sequence = PackedInt32Array(1, 2, 3)
 
 [node name="Switch1" parent="PuzzleGate" instance=ExtResource("4_switch")]
 position = Vector2(1600, 700)
-switch_id = 1
 
 [node name="Switch2" parent="PuzzleGate" instance=ExtResource("4_switch")]
 position = Vector2(4000, 700)

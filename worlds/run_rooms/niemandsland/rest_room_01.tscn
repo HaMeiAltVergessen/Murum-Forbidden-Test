@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://cryb5ora5olsa"]
+[gd_scene load_steps=8 format=3 uid="uid://cryb5ora5olsa"]
 
 [ext_resource type="Texture2D" uid="uid://cuimle8ymyug4" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_Dorf/Create_a_single_high-resolutio_GPT_Image_15_99523.jpg" id="1_55bvd"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="Texture2D" uid="uid://b5ylomvu8bkb" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_Dorf/Create_a_single_high-resolutio_GPT_Image_15_09321.jpg" id="2_vq2el"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(6400, 40)
@@ -18,8 +19,17 @@ size = Vector2(6400, 40)
 [node name="RestRoom01" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(3192, 526)
+position = Vector2(2337, 508)
 texture = ExtResource("1_55bvd")
+
+[node name="Sprite2D3" type="Sprite2D" parent="."]
+position = Vector2(790, 505)
+texture = ExtResource("1_55bvd")
+flip_h = true
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(3878, 498)
+texture = ExtResource("2_vq2el")
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
@@ -46,7 +56,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(6420, 540)
+position = Vector2(4678, 504)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -88,13 +98,14 @@ position = Vector2(1280, 700)
 position = Vector2(2560, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(3840, 700)
+position = Vector2(3443, 724)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(5120, 700)
+position = Vector2(1917, 718)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(5760, 700)
+position = Vector2(4048, 728)
+
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
 offset_top = 20.0

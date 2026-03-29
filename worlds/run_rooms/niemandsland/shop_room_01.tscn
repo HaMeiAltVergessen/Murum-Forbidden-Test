@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://f6leqnj0redy"]
+[gd_scene load_steps=9 format=3 uid="uid://f6leqnj0redy"]
 
 [ext_resource type="Texture2D" uid="uid://g6in3b3hgedl" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_Dorf/Create_a_single_high-resolutio_GPT_Image_15_57677.jpg" id="1_n5fsk"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="Texture2D" uid="uid://b5ylomvu8bkb" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_Dorf/Create_a_single_high-resolutio_GPT_Image_15_09321.jpg" id="2_6babt"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(5600, 40)
@@ -21,8 +22,15 @@ size = Vector2(120, 140)
 [node name="ShopRoom01" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(3192, 526)
+position = Vector2(3075, 407)
+scale = Vector2(1.37012, 1.37012)
 texture = ExtResource("1_n5fsk")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(952, 412)
+scale = Vector2(1.37012, 1.37012)
+texture = ExtResource("2_6babt")
+flip_h = true
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
@@ -49,7 +57,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(5620, 540)
+position = Vector2(4154, 510)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -86,26 +94,21 @@ shape = SubResource("merchant_shape")
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Default" parent="SpawnPoints" instance=ExtResource("1_spawn")]
-position = Vector2(800, 760)
+position = Vector2(2281, 770)
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1120, 700)
+position = Vector2(2494, 68)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(2240, 700)
+position = Vector2(758, 710)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(3360, 700)
+position = Vector2(3769, 584)
 
-[node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(4480, 700)
-
-[node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(5040, 700)
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
 offset_top = 20.0

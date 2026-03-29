@@ -1,8 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://b0dxt136ulgax"]
+[gd_scene load_steps=9 format=3 uid="uid://b0dxt136ulgax"]
 
+[ext_resource type="Texture2D" uid="uid://dp5u78xhbo2pa" path="res://Assets/AIPlaceholder/From_this_rough_level_layout_m_GPT_Image_15_55020.jpg" id="1_mbism"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="2_platform"]
-[ext_resource type="PackedScene" uid="uid://falling_rock_001" path="res://traps/scenes/falling_rock.tscn" id="3_falling_rock"]
+[ext_resource type="PackedScene" path="res://traps/scenes/falling_rock.tscn" id="3_falling_rock"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(7680, 40)
@@ -20,9 +21,23 @@ size = Vector2(7680, 40)
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 7680.0
-offset_bottom = 800.0
+offset_left = -954.0
+offset_top = -826.0
+offset_right = 6726.0
+offset_bottom = -26.0
+scale = Vector2(1.90443, 3.56489)
 color = Color(0.07, 0.06, 0.04, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="Background"]
+position = Vector2(1507.01, 289.209)
+scale = Vector2(0.948933, 0.506938)
+texture = ExtResource("1_mbism")
+
+[node name="Sprite2D2" type="Sprite2D" parent="Background"]
+position = Vector2(4579.32, 289.209)
+scale = Vector2(0.948933, 0.506938)
+texture = ExtResource("1_mbism")
+flip_h = true
 
 [node name="GroundVisual" type="ColorRect" parent="."]
 offset_top = 800.0
@@ -92,6 +107,7 @@ position = Vector2(6144, 700)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
 position = Vector2(6912, 700)
+
 [node name="Platform1" parent="." instance=ExtResource("2_platform")]
 position = Vector2(3840, 550)
 
