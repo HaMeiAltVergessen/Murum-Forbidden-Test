@@ -27,8 +27,11 @@ texture = ExtResource("1_idxwa")
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 5600.0
-offset_bottom = 800.0
+offset_left = -1434.0
+offset_top = -2175.0
+offset_right = 4166.0
+offset_bottom = -1375.0
+scale = Vector2(1.61463, 4.97463)
 color = Color(0.06, 0.04, 0.08, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]

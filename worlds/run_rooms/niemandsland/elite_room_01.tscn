@@ -45,8 +45,11 @@ flip_h = true
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 8800.0
-offset_bottom = 800.0
+offset_left = -6767.0
+offset_top = -2270.0
+offset_right = 2033.0
+offset_bottom = -1470.0
+scale = Vector2(2.37792, 7.12391)
 color = Color(0.1, 0.06, 0.02, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]

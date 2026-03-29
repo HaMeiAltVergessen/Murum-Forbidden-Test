@@ -33,9 +33,12 @@ texture = ExtResource("2_vq2el")
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 6400.0
-offset_bottom = 800.0
-color = Color(0.04, 0.06, 0.1, 1)
+offset_left = -377.0
+offset_top = -599.0
+offset_right = 6023.0
+offset_bottom = 201.0
+scale = Vector2(0.925026, 3.13982)
+color = Color(0, 0, 0, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
 offset_top = 800.0
