@@ -116,6 +116,7 @@ var node_data: RunMapData.MapNode = null
 # ============ INTERNAL STATE ============
 var arena_controller: ArenaController = null
 var doors_spawned: bool = false
+var _node_cleared: bool = false
 
 # ============ DEATH ZONE ============
 const DEATH_ZONE_MARGIN: float = 500.0  # How far outside the room walls before killing
@@ -539,7 +540,8 @@ func _on_combat_completed() -> void:
 	# 25% chance: spawn stat pickup (HP or Mana)
 	_try_spawn_stat_pickup()
 
-	get_tree().create_timer(2.0).timeout.connect(_on_node_cleared)
+	# Pachron altar after combat (same as elite/boss)
+	get_tree().create_timer(1.5).timeout.connect(_setup_boon_selection)
 
 
 # ============ TREASURE SETUP ============
@@ -669,13 +671,25 @@ func _confirm_treasure_choice() -> void:
 	_on_node_cleared()
 
 
-# ============ BOON SELECTION (Elite/Boss rooms — Pachron Altar) ============
+# ============ BOON SELECTION (Combat/Elite/Boss rooms — Pachron Altar) ============
 var boon_choice_made: bool = false
 var _player_in_altar: bool = false
 var _pachron_screen: Node = null
 
+func _cleanup_pachron_altar() -> void:
+	"""Remove Pachron altar and screen if still present"""
+	if _pachron_screen:
+		_pachron_screen.queue_free()
+		_pachron_screen = null
+		get_tree().paused = false
+	var altar = get_node_or_null("PachronAltar")
+	if altar:
+		altar.queue_free()
+	_player_in_altar = false
+
+
 func _setup_boon_selection() -> void:
-	"""After elite/boss combat: spawn Pachron altar interactable"""
+	"""After combat: spawn Pachron altar interactable"""
 	# Check if any boons are available at all
 	var any_available: bool = false
 	for path_id in BoonManager.PATH_IDS:
@@ -741,6 +755,9 @@ func _setup_boon_selection() -> void:
 	add_child(altar)
 	_show_completion_ui("Pachron-Altar erschienen!")
 
+	# Mark node as cleared immediately so doors work — altar is optional
+	_on_node_cleared()
+
 
 func _open_pachron_selection() -> void:
 	"""Opens the Pachron selection screen UI"""
@@ -772,12 +789,9 @@ func _on_pachron_flow_completed() -> void:
 	get_tree().paused = false
 
 	# Remove altar
-	var altar = get_node_or_null("PachronAltar")
-	if altar:
-		altar.queue_free()
+	_cleanup_pachron_altar()
 
 	_show_completion_ui("Pachron-Segen erhalten!")
-	_on_node_cleared()
 
 
 func _on_pachron_cancelled() -> void:
@@ -1388,6 +1402,12 @@ func _get_boss_name() -> String:
 # ============ NODE COMPLETION + HADES-STYLE DOORS ============
 func _on_node_cleared() -> void:
 	"""Node is cleared — unlock doors for next choices"""
+	_cleanup_pachron_altar()
+
+	if _node_cleared:
+		return
+	_node_cleared = true
+
 	if not RunManager or not RunManager.current_map:
 		return
 
@@ -1633,8 +1653,8 @@ func _process(_delta: float) -> void:
 		_confirm_treasure_choice()
 		return
 
-	# Pachron altar interaction (Elite + Boss rooms)
-	if node_type in [RunMapData.NodeType.ELITE, RunMapData.NodeType.BOSS] and not boon_choice_made and _player_in_altar:
+	# Pachron altar interaction (Combat + Elite + Boss rooms)
+	if node_type in [RunMapData.NodeType.COMBAT, RunMapData.NodeType.ELITE, RunMapData.NodeType.BOSS] and not boon_choice_made and _player_in_altar:
 		_open_pachron_selection()
 		return
 
@@ -1656,6 +1676,7 @@ func _process(_delta: float) -> void:
 		if door.has_meta("player_inside") and door.get_meta("player_inside"):
 			# World transition door (after boss)
 			if door.has_meta("world_transition"):
+				_cleanup_pachron_altar()
 				var next_world: int = door.get_meta("world_transition")
 				RunManager.transition_to_next_world(next_world as RunMapData.WorldId)
 				return
@@ -1667,6 +1688,7 @@ func _process(_delta: float) -> void:
 
 func _enter_door(node_id: int) -> void:
 	"""Player entered a door — load the next node"""
+	_cleanup_pachron_altar()
 	print("[RunNodeRoom] Entering door -> node %d" % node_id)
 	RunManager.current_state = RunManager.RunState.MAP_VIEW
 	RunManager.select_map_node(node_id)
