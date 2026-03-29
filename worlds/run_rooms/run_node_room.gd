@@ -1395,8 +1395,6 @@ func _get_boss_name() -> String:
 # ============ NODE COMPLETION + HADES-STYLE DOORS ============
 func _on_node_cleared() -> void:
 	"""Node is cleared — unlock doors for next choices"""
-	_cleanup_pachron_altar()
-
 	if _node_cleared:
 		return
 	_node_cleared = true

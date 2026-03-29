@@ -425,8 +425,14 @@ func _check_stuck_enemies() -> void:
 
 
 func _force_kill_enemy(enemy: Node) -> void:
-	"""Force-kills a stuck enemy, trying proper death first."""
-	if enemy.has_method("die") and enemy.get("is_dead") != true:
+	"""Force-kills a stuck enemy, trying proper death path for gold drops."""
+	if enemy.get("is_dead") == true:
+		enemy.queue_free()
+		return
+	# Prefer take_damage so health_component triggers full death (coins, signals)
+	if enemy.has_method("take_damage"):
+		enemy.take_damage(99999)
+	elif enemy.has_method("die"):
 		enemy.die()
 	else:
 		EventBus.enemy_died.emit(enemy, enemy.global_position)
@@ -434,15 +440,18 @@ func _force_kill_enemy(enemy: Node) -> void:
 
 
 func _get_room_center() -> Vector2:
-	"""Gets approximate room center from the spawn parent or viewport."""
+	"""Gets approximate room center from wall/ground positions."""
 	if is_instance_valid(_spawn_parent) and _spawn_parent is Node2D:
-		# Try to find Background ColorRect for room dimensions
-		var bg: ColorRect = _spawn_parent.get_node_or_null("Background") as ColorRect
-		if bg:
-			return Vector2(
-				(bg.offset_left + bg.offset_right) / 2.0,
-				(bg.offset_top + bg.offset_bottom) / 2.0
-			)
+		# Use wall/ground StaticBody2D positions for accurate bounds
+		var wall_left = _spawn_parent.get_node_or_null("WallLeft") as StaticBody2D
+		var wall_right = _spawn_parent.get_node_or_null("WallRight") as StaticBody2D
+		var ground = _spawn_parent.get_node_or_null("Ground") as StaticBody2D
+		var ceiling = _spawn_parent.get_node_or_null("Ceiling") as StaticBody2D
+		if wall_left and wall_right and ground:
+			var cx: float = (wall_left.position.x + wall_right.position.x) / 2.0
+			var top_y: float = ceiling.position.y if ceiling else -100.0
+			var cy: float = (top_y + ground.position.y) / 2.0
+			return Vector2(cx, cy)
 		# Fallback: use spawn parent position + offset
 		return _spawn_parent.global_position + Vector2(960, 540)
 	return Vector2(960, 540)
