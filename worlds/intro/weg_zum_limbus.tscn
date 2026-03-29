@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://bm2un8jakbwo4"]
+[gd_scene load_steps=9 format=3 uid="uid://bm2un8jakbwo4"]
 
 [ext_resource type="Script" uid="uid://dyrur52n181la" path="res://worlds/intro/weg_zum_limbus.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://c1cgiwqc3syar" path="res://Assets/AIPlaceholder/AlbtraumWelten/world0limbus/2D_dark_fantasy_background_for_GPT_Image_10_Mini__00511.jpg" id="2_pv34p"]
+[ext_resource type="Texture2D" uid="uid://dmrrgoo1siqva" path="res://Assets/Placeholder/Background/farbverlauf.png" id="3_id8py"]
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="3_jlac6"]
 [ext_resource type="Texture2D" uid="uid://de17b4ymmy0ir" path="res://Assets/AIAssets/AIStuff/Door.png" id="3_xl4w6"]
 
@@ -122,3 +123,9 @@ grow_vertical = 0
 theme_override_colors/font_color = Color(1, 1, 1, 0.9)
 theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
+
+[node name="Sprite2D3" type="Sprite2D" parent="UI"]
+position = Vector2(45, 2346)
+rotation = -0.0852798
+scale = Vector2(1.85141, 1.85141)
+texture = ExtResource("3_id8py")

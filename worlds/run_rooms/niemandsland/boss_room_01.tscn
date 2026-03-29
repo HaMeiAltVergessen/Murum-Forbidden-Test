@@ -31,7 +31,7 @@ offset_bottom = 1080.0
 color = Color(0.2, 0.05, 0.05, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(4778, -1150)
+position = Vector2(4835, -1118)
 texture = ExtResource("1_1umlh")
 
 [node name="Ground" type="StaticBody2D" parent="."]
@@ -44,7 +44,7 @@ shape = SubResource("ground_shape")
 position = Vector2(-20, 500)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
-position = Vector2(1682, -322)
+position = Vector2(22, -322)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
