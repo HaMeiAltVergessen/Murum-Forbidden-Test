@@ -218,13 +218,8 @@ func _setup_death_zone() -> void:
 
 
 func _detect_room_bounds() -> Rect2:
-	"""Detects room bounds from Background ColorRect or wall positions."""
-	# Method 1: Use Background ColorRect dimensions
-	var bg: ColorRect = get_node_or_null("Background") as ColorRect
-	if bg:
-		return Rect2(bg.offset_left, bg.offset_top, bg.offset_right - bg.offset_left, bg.offset_bottom - bg.offset_top)
-
-	# Method 2: Use wall StaticBody2D positions
+	"""Detects room bounds from wall/ground StaticBody2D positions."""
+	# Prefer wall/ground positions — they define actual collision bounds
 	var wall_left: StaticBody2D = get_node_or_null("WallLeft") as StaticBody2D
 	var wall_right: StaticBody2D = get_node_or_null("WallRight") as StaticBody2D
 	var ground: StaticBody2D = get_node_or_null("Ground") as StaticBody2D
@@ -785,10 +780,8 @@ func _open_pachron_selection() -> void:
 func _on_pachron_flow_completed() -> void:
 	"""Called when the full Pachron flow is done (dialog + boon choice)"""
 	boon_choice_made = true
-	_pachron_screen = null
-	get_tree().paused = false
 
-	# Remove altar
+	# Remove altar + screen
 	_cleanup_pachron_altar()
 
 	_show_completion_ui("Pachron-Segen erhalten!")
