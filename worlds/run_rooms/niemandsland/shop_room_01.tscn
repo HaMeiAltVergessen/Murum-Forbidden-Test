@@ -1,8 +1,7 @@
-[gd_scene load_steps=9 format=3 uid="uid://f6leqnj0redy"]
+[gd_scene load_steps=8 format=3 uid="uid://f6leqnj0redy"]
 
-[ext_resource type="Texture2D" uid="uid://g6in3b3hgedl" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_Dorf/Create_a_single_high-resolutio_GPT_Image_15_57677.jpg" id="1_n5fsk"]
+[ext_resource type="Texture2D" uid="uid://cotqw6ypcpuhh" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_TempelUnten/prebossroombackground.png" id="1_n5fsk"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
-[ext_resource type="Texture2D" uid="uid://b5ylomvu8bkb" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_Dorf/Create_a_single_high-resolutio_GPT_Image_15_09321.jpg" id="2_6babt"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(5600, 40)
@@ -21,17 +20,6 @@ size = Vector2(120, 140)
 
 [node name="ShopRoom01" type="Node2D"]
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(3075, 407)
-scale = Vector2(1.37012, 1.37012)
-texture = ExtResource("1_n5fsk")
-
-[node name="Sprite2D2" type="Sprite2D" parent="."]
-position = Vector2(952, 412)
-scale = Vector2(1.37012, 1.37012)
-texture = ExtResource("2_6babt")
-flip_h = true
-
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
 offset_left = -1164.0
@@ -46,6 +34,11 @@ offset_top = 800.0
 offset_right = 5600.0
 offset_bottom = 1080.0
 color = Color(0.14, 0.1, 0.07, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(1970, -153)
+scale = Vector2(2.94545, 2.94545)
+texture = ExtResource("1_n5fsk")
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(2800, 820)
@@ -104,13 +97,13 @@ position = Vector2(2281, 770)
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(2494, 68)
+position = Vector2(247, 106)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(758, 710)
+position = Vector2(3591, 288)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(3769, 584)
+position = Vector2(966, 768)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

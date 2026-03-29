@@ -1,9 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://c63lunvn2u038"]
+[gd_scene load_steps=9 format=3 uid="uid://c63lunvn2u038"]
 
-[ext_resource type="Texture2D" uid="uid://glwjwi8tdngy" path="res://Assets/AIPlaceholder/AlbtraumWelten/Welt1_Niemandsland/Dark_fantasy_battlefield_backg_GPT_Image_15_91400.jpg" id="1_6crx3"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="Texture2D" uid="uid://dp5u78xhbo2pa" path="res://Assets/AIPlaceholder/From_this_rough_level_layout_m_GPT_Image_15_55020.jpg" id="1_y3rj3"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="2_platform"]
-[ext_resource type="Texture2D" uid="uid://l5ve6obwkoeq" path="res://Assets/AIPlaceholder/AlbtraumWelten/Welt1_Niemandsland/Dark_fantasy_battlefield_backg_GPT_Image_15_73838.jpg" id="2_sms0s"]
 [ext_resource type="PackedScene" path="res://traps/scenes/falling_rock.tscn" id="3_falling_rock"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
@@ -20,15 +19,11 @@ size = Vector2(7680, 40)
 
 [node name="CombatRoom01" type="Node2D"]
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(1724, 20)
-scale = Vector2(2.69915, 2.69915)
-texture = ExtResource("1_6crx3")
-
-[node name="Sprite2D2" type="Sprite2D" parent="."]
-position = Vector2(5870, 140)
-scale = Vector2(2.69915, 2.69915)
-texture = ExtResource("2_sms0s")
+[node name="Sprite2D3" type="Sprite2D" parent="."]
+position = Vector2(3895, 39.0001)
+scale = Vector2(2.50515, 2.50515)
+texture = ExtResource("1_y3rj3")
+flip_h = true
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10

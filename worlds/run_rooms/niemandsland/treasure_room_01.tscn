@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://bfwkbrixqj4m2"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
-[ext_resource type="Texture2D" uid="uid://c7jg42u2uhrkh" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_Dorf/Transformiere_dieses_Bild_zu_e_GPT_Image_15_30590.jpg" id="1_w77aw"]
+[ext_resource type="Texture2D" uid="uid://dwaw2dibcqveu" path="res://Assets/AIPlaceholder/AlbtraumWelten/Welt1_Niemandsland/2D_Pixel_Art_Background_Sprite_GPT_Image_15_66208.jpg" id="1_w77aw"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(5600, 40)
@@ -16,17 +16,6 @@ size = Vector2(40, 1080)
 size = Vector2(5600, 40)
 
 [node name="TreasureRoom01" type="Node2D"]
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(3438.5, 238.5)
-scale = Vector2(1.59082, 1.59082)
-texture = ExtResource("1_w77aw")
-
-[node name="Sprite2D2" type="Sprite2D" parent="."]
-position = Vector2(981.75, 239)
-scale = Vector2(1.59082, 1.59082)
-texture = ExtResource("1_w77aw")
-flip_h = true
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
@@ -43,6 +32,12 @@ offset_top = 820.0
 offset_right = 5175.0
 offset_bottom = 1100.0
 color = Color(0.13151, 0.0360175, 0.0144393, 1)
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(2016, -559)
+scale = Vector2(3.48769, 3.48769)
+texture = ExtResource("1_w77aw")
+flip_h = true
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(2800, 820)

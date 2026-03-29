@@ -1,7 +1,7 @@
 [gd_scene load_steps=21 format=3 uid="uid://cflab5qpgvjwd"]
 
+[ext_resource type="Texture2D" uid="uid://bcf1bvmbq8p8g" path="res://Assets/AIPlaceholder/world1preTempel.png" id="1_ghxj8"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
-[ext_resource type="Texture2D" uid="uid://8dckngarxpti" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_PreDorf/world1predorfbackground.png" id="1_sw7mi"]
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="3_gy43q"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="4_0o1q2"]
 [ext_resource type="Texture2D" uid="uid://dbecpug8upc2v" path="res://Assets/Placeholder/Background/Environments/ships-graveyard/PNG/layers/boat-front.png" id="5_mdg47"]
@@ -51,8 +51,8 @@ color = Color(0.0562916, 0.0562916, 0.0562916, 1)
 [node name="World1Predorfbackground" type="Sprite2D" parent="."]
 z_index = -4
 position = Vector2(8782, -587)
-scale = Vector2(2.59096, 2.59096)
-texture = ExtResource("1_sw7mi")
+scale = Vector2(2.32321, 2.32321)
+texture = ExtResource("1_ghxj8")
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
@@ -97,10 +97,10 @@ position = Vector2(672, 472)
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(482, 2145)
+position = Vector2(12591, -2581)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(17241, 1623)
+position = Vector2(1658, 756)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
@@ -112,6 +112,13 @@ text = "Das Niemandsland - Eingang"
 [node name="ClimbableArea" parent="." instance=ExtResource("3_gy43q")]
 position = Vector2(5155.75, -1866)
 rotation = -0.0437175
+climb_speed = 600.0
+area_width = 222.0
+area_height = 1511.0
+
+[node name="ClimbableArea9" parent="." instance=ExtResource("3_gy43q")]
+position = Vector2(12404, -2494)
+rotation = 0.58746
 climb_speed = 600.0
 area_width = 222.0
 area_height = 1511.0
@@ -446,6 +453,24 @@ shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D10" type="CollisionShape2D" parent="Ground2"]
 position = Vector2(10066, -389)
+rotation = 0.00196817
+scale = Vector2(0.189543, 0.281319)
+shape = SubResource("RectangleShape2D_02d11")
+
+[node name="CollisionShape2D11" type="CollisionShape2D" parent="Ground2"]
+position = Vector2(11518, -996)
+rotation = 0.00196817
+scale = Vector2(0.189543, 0.281319)
+shape = SubResource("RectangleShape2D_02d11")
+
+[node name="CollisionShape2D28" type="CollisionShape2D" parent="Ground2"]
+position = Vector2(9893, -1614)
+rotation = 0.00196817
+scale = Vector2(0.189543, 0.281319)
+shape = SubResource("RectangleShape2D_02d11")
+
+[node name="CollisionShape2D43" type="CollisionShape2D" parent="Ground2"]
+position = Vector2(10631, -2600)
 rotation = 0.00196817
 scale = Vector2(0.189543, 0.281319)
 shape = SubResource("RectangleShape2D_02d11")

@@ -1,9 +1,8 @@
-[gd_scene load_steps=13 format=3 uid="uid://baq4dv003l8ry"]
+[gd_scene load_steps=12 format=3 uid="uid://baq4dv003l8ry"]
 
-[ext_resource type="Texture2D" uid="uid://dgoqciw5hx2m0" path="res://Assets/AIAssets/8f3db250-9684-4ef9-9483-7fb1e18eebc1.jpg" id="1_iggym"]
+[ext_resource type="Texture2D" uid="uid://dp5u78xhbo2pa" path="res://Assets/AIPlaceholder/From_this_rough_level_layout_m_GPT_Image_15_55020.jpg" id="1_k83fx"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 [ext_resource type="PackedScene" path="res://traps/scenes/arrow_trap.tscn" id="2_arrow_trap"]
-[ext_resource type="Texture2D" uid="uid://ra4sbnoii35r" path="res://Assets/AIAssets/0b1bef95-fa79-46b5-920d-1039c84dc1c8.jpg" id="2_ci0rk"]
 [ext_resource type="PackedScene" path="res://traps/scenes/falling_rock.tscn" id="3_falling_rock"]
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="4_climbable"]
 
@@ -36,26 +35,16 @@ offset_bottom = 75.0
 scale = Vector2(2.80881, 2.80881)
 color = Color(0.08, 0.04, 0.04, 1)
 
-[node name="Sprite2D4" type="Sprite2D" parent="."]
-position = Vector2(1189.06, 206.652)
-scale = Vector2(2.64741, 2.64741)
-texture = ExtResource("1_iggym")
-
-[node name="Sprite2D5" type="Sprite2D" parent="."]
-position = Vector2(4767.06, 215.652)
-scale = Vector2(2.64741, 2.64741)
-texture = ExtResource("1_iggym")
-flip_h = true
-
 [node name="Sprite2D6" type="Sprite2D" parent="."]
-position = Vector2(8223.06, 274.652)
+position = Vector2(3361, -1157)
 scale = Vector2(2.15166, 2.15166)
-texture = ExtResource("2_ci0rk")
+texture = ExtResource("1_k83fx")
 
 [node name="GroundVisual" type="ColorRect" parent="."]
-offset_top = 800.0
-offset_right = 8800.0
-offset_bottom = 1080.0
+offset_left = -36.0
+offset_top = 818.0
+offset_right = 8764.0
+offset_bottom = 1098.0
 color = Color(0.2, 0.12, 0.05, 1)
 
 [node name="Ground" type="StaticBody2D" parent="."]

@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://b0dxt136ulgax"]
 
-[ext_resource type="Texture2D" uid="uid://dp5u78xhbo2pa" path="res://Assets/AIPlaceholder/From_this_rough_level_layout_m_GPT_Image_15_55020.jpg" id="1_mbism"]
+[ext_resource type="Texture2D" uid="uid://ddshbf3nio6lw" path="res://Assets/AIAssets/8d33fd80-90de-40ba-a387-b68c6792874b.jpg" id="1_mbism"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="2_platform"]
 [ext_resource type="PackedScene" path="res://traps/scenes/falling_rock.tscn" id="3_falling_rock"]
@@ -19,16 +19,16 @@ size = Vector2(7680, 40)
 
 [node name="CombatRoom03" type="Node2D"]
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(1700, 200)
-scale = Vector2(2.5, 2.5)
-texture = ExtResource("1_mbism")
-
 [node name="Sprite2D2" type="Sprite2D" parent="."]
-position = Vector2(5900, 200)
-scale = Vector2(2.5, 2.5)
+position = Vector2(2021, 229)
+scale = Vector2(2.95745, 2.95745)
 texture = ExtResource("1_mbism")
 flip_h = true
+
+[node name="Sprite2D3" type="Sprite2D" parent="."]
+position = Vector2(6570, 220)
+scale = Vector2(2.95745, 2.95745)
+texture = ExtResource("1_mbism")
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
@@ -43,6 +43,7 @@ color = Color(0.07, 0.06, 0.04, 1)
 offset_top = 800.0
 offset_right = 7680.0
 offset_bottom = 1080.0
+scale = Vector2(1, 0.479999)
 color = Color(0.14, 0.12, 0.08, 1)
 
 [node name="Ground" type="StaticBody2D" parent="."]

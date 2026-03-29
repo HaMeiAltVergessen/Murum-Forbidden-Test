@@ -1,6 +1,6 @@
 [gd_scene load_steps=11 format=3 uid="uid://s2ypavga1dmo"]
 
-[ext_resource type="Texture2D" uid="uid://cvdmut0lxbs38" path="res://Assets/AIPlaceholder/AlbtraumWelten/Welt1_Niemandsland/Dark_fantasy_battlefield_backg_GPT_Image_15_65828.jpg" id="1_mhaxh"]
+[ext_resource type="Texture2D" uid="uid://bwodr6gfcdfgy" path="res://Assets/AIPlaceholder/AlbtraumWelten/Welt1_Niemandsland/2D_Pixel_Art_Background_Sprite_GPT_Image_15_35118.jpg" id="1_mhaxh"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 [ext_resource type="PackedScene" path="res://traps/scenes/arrow_trap.tscn" id="2_arrow_trap"]
 [ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="3_spike_trap"]
@@ -23,25 +23,36 @@ size = Vector2(300, 20)
 
 [node name="CombatRoom02" type="Node2D"]
 
+[node name="Background" type="ColorRect" parent="."]
+z_index = -10
+offset_left = -367.0
+offset_top = -1295.0
+offset_right = 6033.0
+offset_bottom = -495.0
+scale = Vector2(1.50124, 4.30124)
+color = Color(0.05, 0.07, 0.05, 1)
+
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(1675, 363)
-scale = Vector2(2.50502, 2.50502)
+position = Vector2(2169, 429)
+scale = Vector2(2.21357, 2.21357)
 texture = ExtResource("1_mhaxh")
 
 [node name="Sprite2D2" type="Sprite2D" parent="."]
-position = Vector2(5523, 350)
-scale = Vector2(2.50502, 2.50502)
+position = Vector2(5599, 416)
+scale = Vector2(2.21357, 2.21357)
 texture = ExtResource("1_mhaxh")
 flip_h = true
 
-[node name="Background" type="ColorRect" parent="."]
-z_index = -10
-offset_left = -881.0
-offset_top = -861.0
-offset_right = 8719.0
-offset_bottom = -61.0
-scale = Vector2(2.20119, 3.7559)
-color = Color(0.06, 0.04, 0.06, 1)
+[node name="Sprite2D3" type="Sprite2D" parent="."]
+position = Vector2(-1234, 393)
+scale = Vector2(2.21357, 2.21357)
+texture = ExtResource("1_mhaxh")
+
+[node name="Sprite2D4" type="Sprite2D" parent="."]
+position = Vector2(9020, 416)
+scale = Vector2(2.21357, 2.21357)
+texture = ExtResource("1_mhaxh")
+flip_h = true
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(4800, 820)
