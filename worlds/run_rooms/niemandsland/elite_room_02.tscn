@@ -1,8 +1,7 @@
-[gd_scene load_steps=12 format=3 uid="uid://c6g7gkrnw1f72"]
+[gd_scene load_steps=11 format=3 uid="uid://c6g7gkrnw1f72"]
 
-[ext_resource type="Texture2D" uid="uid://dgoqciw5hx2m0" path="res://Assets/AIAssets/8f3db250-9684-4ef9-9483-7fb1e18eebc1.jpg" id="1_61u4v"]
+[ext_resource type="Texture2D" uid="uid://ddshbf3nio6lw" path="res://Assets/AIAssets/8d33fd80-90de-40ba-a387-b68c6792874b.jpg" id="1_4j833"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
-[ext_resource type="Texture2D" uid="uid://ra4sbnoii35r" path="res://Assets/AIAssets/0b1bef95-fa79-46b5-920d-1039c84dc1c8.jpg" id="2_2woiw"]
 [ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="2_spike_trap"]
 [ext_resource type="Script" uid="uid://colcvd1p8clki" path="res://puzzles/controllers/sequence_puzzle_controller.gd" id="3_seq_controller"]
 [ext_resource type="PackedScene" uid="uid://blta5m8ixhcu8" path="res://puzzles/scenes/components/puzzle_switch.tscn" id="4_switch"]
@@ -25,29 +24,35 @@ size = Vector2(50, 300)
 [node name="EliteRoom02" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(1155, 337)
-scale = Vector2(1.78935, 1.78935)
-texture = ExtResource("1_61u4v")
+position = Vector2(1600, 191)
+scale = Vector2(2.09375, 2.09375)
+texture = ExtResource("1_4j833")
 
 [node name="Sprite2D2" type="Sprite2D" parent="."]
-position = Vector2(3564, 346)
-scale = Vector2(1.78935, 1.78935)
-texture = ExtResource("1_61u4v")
+position = Vector2(-1614, 169)
+scale = Vector2(2.09375, 2.09375)
+texture = ExtResource("1_4j833")
 flip_h = true
 
+[node name="Sprite2D4" type="Sprite2D" parent="."]
+position = Vector2(8027, 196)
+scale = Vector2(2.09375, 2.09375)
+texture = ExtResource("1_4j833")
+
 [node name="Sprite2D3" type="Sprite2D" parent="."]
-position = Vector2(5895, 375)
-scale = Vector2(1.45428, 1.45428)
-texture = ExtResource("2_2woiw")
+position = Vector2(4809, 197)
+scale = Vector2(2.09375, 2.09375)
+texture = ExtResource("1_4j833")
+flip_h = true
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_left = -2086.0
-offset_top = -725.0
-offset_right = 5914.0
-offset_bottom = 75.0
-scale = Vector2(2.80881, 2.80881)
-color = Color(0.08, 0.04, 0.04, 1)
+offset_left = -6767.0
+offset_top = -2270.0
+offset_right = 2033.0
+offset_bottom = -1470.0
+scale = Vector2(2.37792, 7.12391)
+color = Color(0.1, 0.06, 0.02, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
 offset_top = 800.0
