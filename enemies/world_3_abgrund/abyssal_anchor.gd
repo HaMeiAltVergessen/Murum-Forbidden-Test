@@ -89,7 +89,7 @@ func _apply_gravity_well(delta: float) -> void:
 		if dist > active_radius or dist < 10.0:
 			continue
 		# Pull toward center
-		var pull_dir := (global_position - player.global_position).normalized()
+		var pull_dir: Vector2 = (global_position - player.global_position).normalized()
 		var strength := PULL_FORCE * (1.0 - dist / active_radius)
 		if "velocity" in player:
 			player.velocity += pull_dir * strength * delta * 60.0
@@ -114,8 +114,8 @@ func _update_ai(delta: float) -> void:
 	# Try to position between players
 	var players := get_tree().get_nodes_in_group("player")
 	if players.size() >= 2:
-		var midpoint := (players[0].global_position + players[1].global_position) / 2.0
-		var dir := (midpoint - global_position).normalized()
+		var midpoint: Vector2 = (players[0].global_position + players[1].global_position) / 2.0
+		var dir: Vector2 = (midpoint - global_position).normalized()
 		velocity.x = dir.x * MOVE_SPEED
 	else:
 		var dist := get_distance_to_target()

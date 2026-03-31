@@ -144,8 +144,7 @@ func _do_scream() -> void:
 			continue
 		var dist := global_position.distance_to(player.global_position)
 		if dist <= SCREAM_RADIUS:
-			if EventBus.has_signal("controls_inverted"):
-					EventBus.emit_signal("controls_inverted", player, INVERT_DURATION)
+				EventBus.controls_inverted.emit(player, INVERT_DURATION)
 
 func _do_melee() -> void:
 	if hitbox:

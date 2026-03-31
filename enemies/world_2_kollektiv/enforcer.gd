@@ -254,3 +254,6 @@ func get_direction_to_target() -> Vector2:
 	if not target:
 		return Vector2.ZERO
 	return (target.global_position - global_position).normalized()
+
+func is_alive() -> bool:
+	return current_hp > 0

@@ -129,13 +129,11 @@ func _update_ai(delta: float) -> void:
 
 func _start_beam() -> void:
 	beam_target = target
-	if EventBus.has_signal("anti_heal_applied"):
-		EventBus.emit_signal("anti_heal_applied", beam_target, true)
+	EventBus.anti_heal_applied.emit(beam_target, true)
 
 func _stop_beam() -> void:
 	if beam_target and is_instance_valid(beam_target):
-		if EventBus.has_signal("anti_heal_applied"):
-			EventBus.emit_signal("anti_heal_applied", beam_target, false)
+		EventBus.anti_heal_applied.emit(beam_target, false)
 	beam_target = null
 
 func _do_melee() -> void:
