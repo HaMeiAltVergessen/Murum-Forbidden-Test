@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://chevnq2148ut0"]
+[gd_scene load_steps=10 format=3 uid="uid://chevnq2148ut0"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
-[ext_resource type="Script" path="res://puzzles/controllers/sequence_puzzle_controller.gd" id="2_seq_controller"]
+[ext_resource type="Texture2D" uid="uid://blp2gecccpxe" path="res://Assets/AIPlaceholder/world 2/w2CombatElite01.jpg" id="1_xq23x"]
+[ext_resource type="Script" uid="uid://colcvd1p8clki" path="res://puzzles/controllers/sequence_puzzle_controller.gd" id="2_seq_controller"]
 [ext_resource type="PackedScene" uid="uid://blta5m8ixhcu8" path="res://puzzles/scenes/components/puzzle_switch.tscn" id="3_switch"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
@@ -23,8 +24,11 @@ size = Vector2(40, 250)
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 8800.0
-offset_bottom = 800.0
+offset_left = -1528.0
+offset_top = -975.0
+offset_right = 7272.0
+offset_bottom = -175.0
+scale = Vector2(3.25968, 3.25968)
 color = Color(0.04, 0.03, 0.08, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
@@ -32,6 +36,28 @@ offset_top = 800.0
 offset_right = 8800.0
 offset_bottom = 1080.0
 color = Color(0.1, 0.08, 0.15, 1)
+
+[node name="W2CombatElite01" type="Sprite2D" parent="."]
+position = Vector2(873, 385)
+scale = Vector2(1.29406, 1.29406)
+texture = ExtResource("1_xq23x")
+
+[node name="W2CombatElite02" type="Sprite2D" parent="."]
+position = Vector2(2861, 385)
+scale = Vector2(1.29406, 1.29406)
+texture = ExtResource("1_xq23x")
+flip_h = true
+
+[node name="W2CombatElite03" type="Sprite2D" parent="."]
+position = Vector2(4857.84, 385)
+scale = Vector2(1.29406, 1.29406)
+texture = ExtResource("1_xq23x")
+
+[node name="W2CombatElite04" type="Sprite2D" parent="."]
+position = Vector2(6845.84, 385)
+scale = Vector2(1.29406, 1.29406)
+texture = ExtResource("1_xq23x")
+flip_h = true
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(4400, 820)
@@ -46,7 +72,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(8820, 540)
+position = Vector2(7848, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -71,7 +97,7 @@ offset_bottom = 125.0
 color = Color(0.18, 0.15, 0.28, 1)
 
 [node name="Column3" type="StaticBody2D" parent="."]
-position = Vector2(8712, 698)
+position = Vector2(7689, 654)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Column3"]
 shape = SubResource("column_shape")
@@ -120,14 +146,13 @@ position = Vector2(5280, 700)
 position = Vector2(7040, 700)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(7920, 700)
+position = Vector2(7459, 706)
+
 [node name="PuzzleGate" type="Node" parent="." groups=["puzzle_gate"]]
 script = ExtResource("2_seq_controller")
-correct_sequence = PackedInt32Array(1, 2, 3)
 
 [node name="Switch1" parent="PuzzleGate" instance=ExtResource("3_switch")]
 position = Vector2(2000, 700)
-switch_id = 1
 
 [node name="Switch2" parent="PuzzleGate" instance=ExtResource("3_switch")]
 position = Vector2(4400, 700)

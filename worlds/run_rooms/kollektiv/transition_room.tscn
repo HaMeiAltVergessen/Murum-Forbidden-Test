@@ -1,6 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=8 format=3 uid="uid://cei31f31pxjkg"]
 
+[ext_resource type="Texture2D" uid="uid://dv6ur4brs6376" path="res://Assets/AIPlaceholder/AlbtraumWelten/world0limbus/2D_pixel_art_minimal_cosmic_ho_GPT_Image_15_89422.jpg" id="1_f8cff"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="Texture2D" uid="uid://cct32xke7cm8m" path="res://Assets/AIPlaceholder/world 3/2D_Pixel_Art_Background_Sprite_GPT_Image_15_10786.jpg" id="2_klkyh"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(8000, 40)
@@ -28,6 +30,21 @@ offset_right = 8000.0
 offset_bottom = 1080.0
 color = Color(0.06, 0.06, 0.12, 1)
 
+[node name="2dPixelArtMinimalCosmicHoGptImage1589422" type="Sprite2D" parent="."]
+position = Vector2(357.5, 912)
+scale = Vector2(2.70117, 2.70117)
+texture = ExtResource("1_f8cff")
+
+[node name="2dPixelArtMinimalCosmicHoGptImage1589423" type="Sprite2D" parent="."]
+position = Vector2(4109.5, 880)
+scale = Vector2(2.70117, 2.70117)
+texture = ExtResource("1_f8cff")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1510786" type="Sprite2D" parent="."]
+position = Vector2(2167.5, 460)
+scale = Vector2(1.17287, 1.17287)
+texture = ExtResource("2_klkyh")
+
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(4000, 820)
 
@@ -41,7 +58,7 @@ position = Vector2(-20, 500)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(8020, 500)
+position = Vector2(5051, 556)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -53,18 +70,18 @@ position = Vector2(4000, -20)
 shape = SubResource("ceiling_shape")
 
 [node name="PortalFrame" type="ColorRect" parent="."]
-offset_left = 3880.0
-offset_top = 500.0
-offset_right = 4120.0
-offset_bottom = 800.0
-color = Color(0.15, 0.05, 0.25, 0.8)
+offset_left = 2015.0
+offset_top = 420.0
+offset_right = 2255.0
+offset_bottom = 720.0
+color = Color(0.14902, 0.0509804, 0.25098, 0.258824)
 
 [node name="PortalCore" type="ColorRect" parent="."]
-offset_left = 3920.0
-offset_top = 540.0
-offset_right = 4080.0
-offset_bottom = 780.0
-color = Color(0.3, 0.1, 0.5, 0.9)
+offset_left = 2058.0
+offset_top = 489.0
+offset_right = 2218.0
+offset_bottom = 729.0
+color = Color(0.301961, 0.101961, 0.501961, 0.0509804)
 
 [node name="SpawnPoints" type="Node2D" parent="."]
 
@@ -75,12 +92,12 @@ position = Vector2(1200, 760)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
-
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
 position = Vector2(2000, 700)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(6000, 700)
+position = Vector2(2269, 694)
+
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
 offset_top = 20.0

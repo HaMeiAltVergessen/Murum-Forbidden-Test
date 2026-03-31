@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3 uid="uid://y6do0v4l1wii"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
-[ext_resource type="PackedScene" uid="uid://falling_rock_001" path="res://traps/scenes/falling_rock.tscn" id="2_falling_rock"]
+[ext_resource type="PackedScene" path="res://traps/scenes/falling_rock.tscn" id="2_falling_rock"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="3_platform"]
 [ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="4_spike_trap"]
 
@@ -122,6 +122,7 @@ position = Vector2(7680, 700)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
 position = Vector2(8640, 700)
+
 [node name="FallingRock1" parent="." instance=ExtResource("2_falling_rock")]
 position = Vector2(3200, 100)
 

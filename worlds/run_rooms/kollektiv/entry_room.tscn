@@ -1,6 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://caelaaw041wmf"]
+[gd_scene load_steps=9 format=3 uid="uid://caelaaw041wmf"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="Texture2D" uid="uid://c1ix6dju185qc" path="res://Assets/AIPlaceholder/world 2/w2City.jpg" id="1_syavp"]
+[ext_resource type="Texture2D" uid="uid://clvqt5ofm4ffh" path="res://Assets/AIPlaceholder/world 2/2D_Pixel_Art_Background_Sprite_GPT_Image_15_75560.jpg" id="2_rda1q"]
+[ext_resource type="Texture2D" uid="uid://bq2ntabutrlsw" path="res://Assets/AIPlaceholder/world 2/2D_Pixel_Art_Background_Sprite_GPT_Image_15_95464.jpg" id="3_u7f47"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(7680, 40)
@@ -27,6 +30,28 @@ offset_top = 800.0
 offset_right = 7680.0
 offset_bottom = 1080.0
 color = Color(0.08, 0.1, 0.14, 1)
+
+[node name="W2City" type="Sprite2D" parent="."]
+position = Vector2(5376, 499)
+texture = ExtResource("1_syavp")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1575560" type="Sprite2D" parent="."]
+position = Vector2(3847, 496)
+texture = ExtResource("2_rda1q")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1595464" type="Sprite2D" parent="."]
+position = Vector2(832, 506)
+texture = ExtResource("3_u7f47")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1595465" type="Sprite2D" parent="."]
+position = Vector2(6865, 502)
+texture = ExtResource("3_u7f47")
+flip_h = true
+
+[node name="2dPixelArtBackgroundSpriteGptImage1595466" type="Sprite2D" parent="."]
+position = Vector2(2293, 534)
+texture = ExtResource("3_u7f47")
+flip_h = true
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(3840, 820)

@@ -1,5 +1,6 @@
-[gd_scene load_steps=7 format=3 uid="uid://d1aqc0q3ye42r"]
+[gd_scene load_steps=8 format=3 uid="uid://d1aqc0q3ye42r"]
 
+[ext_resource type="Texture2D" uid="uid://crlqhidojp78b" path="res://Assets/AIPlaceholder/world 2/W2Event.jpg" id="1_hhfno"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
@@ -19,10 +20,18 @@ size = Vector2(160, 120)
 
 [node name="EventRoom01" type="Node2D"]
 
+[node name="w2Event" type="Sprite2D" parent="."]
+position = Vector2(893, 445)
+scale = Vector2(1.23481, 1.23481)
+texture = ExtResource("1_hhfno")
+
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 5600.0
-offset_bottom = 800.0
+offset_left = -3316.0
+offset_top = -1995.0
+offset_right = 2284.0
+offset_bottom = -1195.0
+scale = Vector2(1.9053, 7.68555)
 color = Color(0.04, 0.04, 0.08, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
@@ -44,7 +53,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(5620, 540)
+position = Vector2(1824, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -56,16 +65,16 @@ position = Vector2(2800, -20)
 shape = SubResource("ceiling_shape")
 
 [node name="Hologram" type="ColorRect" parent="."]
-offset_left = 2750.0
-offset_top = 600.0
-offset_right = 2850.0
-offset_bottom = 800.0
+offset_left = 844.0
+offset_top = 577.0
+offset_right = 944.0
+offset_bottom = 777.0
 color = Color(0.2, 0.4, 0.8, 0.6)
 
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Default" parent="SpawnPoints" instance=ExtResource("1_spawn")]
-position = Vector2(2800, 760)
+position = Vector2(900, 737)
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 
@@ -75,16 +84,17 @@ position = Vector2(2800, 760)
 position = Vector2(1120, 700)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(2240, 700)
+position = Vector2(1524, 746)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(3360, 700)
+position = Vector2(1762, 686)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(4480, 700)
+position = Vector2(118, 766)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(5040, 700)
+position = Vector2(410, 745)
+
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
 offset_top = 20.0
@@ -103,7 +113,7 @@ horizontal_alignment = 1
 [node name="EventChoices" type="Node2D" parent="."]
 
 [node name="ChoiceA" type="Area2D" parent="EventChoices"]
-position = Vector2(1856, 567)
+position = Vector2(1220, 541)
 collision_layer = 0
 collision_mask = 2
 

@@ -1,5 +1,6 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=7 format=3 uid="uid://cck75td4iajb"]
 
+[ext_resource type="Texture2D" uid="uid://bfhr7yf5lf28l" path="res://Assets/AIPlaceholder/world 2/W2NpcRoom.jpg" id="1_b4td7"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
@@ -18,8 +19,11 @@ size = Vector2(6400, 40)
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 6400.0
-offset_bottom = 800.0
+offset_left = -2055.0
+offset_top = -1248.0
+offset_right = 4345.0
+offset_bottom = -448.0
+scale = Vector2(1.26436, 3.64756)
 color = Color(0.02, 0.04, 0.06, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
@@ -27,6 +31,10 @@ offset_top = 800.0
 offset_right = 6400.0
 offset_bottom = 1080.0
 color = Color(0.06, 0.1, 0.14, 1)
+
+[node name="W2NpcRoom" type="Sprite2D" parent="."]
+position = Vector2(760, 450)
+texture = ExtResource("1_b4td7")
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(3200, 820)
@@ -41,7 +49,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(6420, 540)
+position = Vector2(1499, 501)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -53,18 +61,18 @@ position = Vector2(3200, -20)
 shape = SubResource("ceiling_shape")
 
 [node name="HealStation" type="ColorRect" parent="."]
-offset_left = 3140.0
+offset_left = 588.0
 offset_top = 720.0
-offset_right = 3260.0
+offset_right = 708.0
 offset_bottom = 800.0
 color = Color(0.2, 0.6, 0.8, 1)
 
 [node name="HealGlow" type="ColorRect" parent="."]
 z_index = -1
-offset_left = 3100.0
-offset_top = 680.0
-offset_right = 3300.0
-offset_bottom = 810.0
+offset_left = 564.0
+offset_top = 634.0
+offset_right = 764.0
+offset_bottom = 764.0
 color = Color(0.1, 0.3, 0.5, 0.3)
 
 [node name="SpawnPoints" type="Node2D" parent="."]
@@ -77,19 +85,20 @@ position = Vector2(800, 760)
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1280, 700)
+position = Vector2(85, 738)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(2560, 700)
+position = Vector2(359, 750)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(3840, 700)
+position = Vector2(979, 767)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(5120, 700)
+position = Vector2(1360, 733)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(5760, 700)
+position = Vector2(1168, 744)
+
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
 offset_top = 20.0

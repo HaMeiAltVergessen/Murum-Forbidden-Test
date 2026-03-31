@@ -1,5 +1,6 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=8 format=3 uid="uid://b2spgffe7kfs8"]
 
+[ext_resource type="Texture2D" uid="uid://drtkdxgl6le7i" path="res://Assets/AIPlaceholder/world 2/2D_Pixel_Art_Background_Sprite_GPT_Image_15_22807.jpg" id="1_onndw"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
@@ -19,10 +20,18 @@ size = Vector2(120, 140)
 
 [node name="ShopRoom01" type="Node2D"]
 
+[node name="2dPixelArtBackgroundSpriteGptImage1522807" type="Sprite2D" parent="."]
+position = Vector2(1083, 351)
+scale = Vector2(1.57107, 1.57107)
+texture = ExtResource("1_onndw")
+
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 5600.0
-offset_bottom = 800.0
+offset_left = -2575.0
+offset_top = -740.0
+offset_right = 3025.0
+offset_bottom = 60.0001
+scale = Vector2(2.7221, 2.7221)
 color = Color(0.04, 0.04, 0.08, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
@@ -44,7 +53,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(5620, 540)
+position = Vector2(2301, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -56,21 +65,21 @@ position = Vector2(2800, -20)
 shape = SubResource("ceiling_shape")
 
 [node name="MerchantStall" type="ColorRect" parent="."]
-offset_left = 2740.0
-offset_top = 620.0
-offset_right = 2860.0
-offset_bottom = 800.0
+offset_left = 277.0
+offset_top = 627.0
+offset_right = 397.0
+offset_bottom = 807.0
 color = Color(0.2, 0.3, 0.6, 1)
 
 [node name="MerchantFigure" type="ColorRect" parent="."]
-offset_left = 2770.0
-offset_top = 550.0
-offset_right = 2830.0
-offset_bottom = 620.0
+offset_left = 307.0
+offset_top = 557.0
+offset_right = 367.0
+offset_bottom = 627.0
 color = Color(0.3, 0.5, 0.8, 1)
 
 [node name="MerchantArea" type="Area2D" parent="."]
-position = Vector2(2800, 700)
+position = Vector2(352, 700)
 collision_layer = 0
 collision_mask = 2
 
@@ -94,13 +103,14 @@ position = Vector2(1120, 700)
 position = Vector2(2240, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(3360, 700)
+position = Vector2(152, 700)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(4480, 700)
+position = Vector2(1974, 700)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(5040, 700)
+position = Vector2(1824, 650)
+
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
 offset_top = 20.0

@@ -1,5 +1,6 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=7 format=3 uid="uid://drtls7ud6qecr"]
 
+[ext_resource type="Texture2D" uid="uid://d7c1k2br0iml" path="res://Assets/AIPlaceholder/world 2/w2Schatzkammer.jpg" id="1_hifck"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
@@ -16,17 +17,25 @@ size = Vector2(5600, 40)
 
 [node name="TreasureRoom01" type="Node2D"]
 
+[node name="W2Schatzkammer" type="Sprite2D" parent="."]
+position = Vector2(866, 492)
+scale = Vector2(1.20215, 1.20215)
+texture = ExtResource("1_hifck")
+
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 5600.0
-offset_bottom = 800.0
+offset_left = -464.0
+offset_top = -377.0
+offset_right = 5136.0
+offset_bottom = 423.0
+scale = Vector2(0.520251, 2.1399)
 color = Color(0.03, 0.06, 0.05, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
 offset_top = 800.0
 offset_right = 5600.0
 offset_bottom = 1080.0
-color = Color(0.06, 0.12, 0.1, 1)
+color = Color(0.0588235, 0.121569, 0.101961, 0.647059)
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(2800, 820)
@@ -41,7 +50,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(5620, 540)
+position = Vector2(1804, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -53,9 +62,9 @@ position = Vector2(2800, -20)
 shape = SubResource("ceiling_shape")
 
 [node name="DataTerminal" type="ColorRect" parent="."]
-offset_left = 2740.0
+offset_left = 844.0
 offset_top = 700.0
-offset_right = 2860.0
+offset_right = 964.0
 offset_bottom = 800.0
 color = Color(0.1, 0.5, 0.4, 1)
 
@@ -72,16 +81,17 @@ position = Vector2(800, 760)
 position = Vector2(1120, 700)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(2240, 700)
+position = Vector2(448, 767)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(3360, 700)
+position = Vector2(296, 663)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(4480, 700)
+position = Vector2(1073, 700)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(5040, 700)
+position = Vector2(1621, 737)
+
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
 offset_top = 20.0
