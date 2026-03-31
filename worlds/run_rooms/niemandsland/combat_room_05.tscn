@@ -1,0 +1,125 @@
+[gd_scene load_steps=9 format=3 uid="uid://dk7mw2pq5n3xf"]
+
+[ext_resource type="Texture2D" uid="uid://ddshbf3nio6lw" path="res://Assets/AIAssets/8d33fd80-90de-40ba-a387-b68c6792874b.jpg" id="1_bg"]
+[ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="2_spike_trap"]
+[ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="3_climbable"]
+
+[sub_resource type="RectangleShape2D" id="ground_shape"]
+size = Vector2(7200, 40)
+
+[sub_resource type="RectangleShape2D" id="wall_left_shape"]
+size = Vector2(40, 1080)
+
+[sub_resource type="RectangleShape2D" id="wall_right_shape"]
+size = Vector2(40, 1080)
+
+[sub_resource type="RectangleShape2D" id="ceiling_shape"]
+size = Vector2(7200, 40)
+
+[node name="CombatRoom05" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(1800, 320)
+scale = Vector2(2.8, 2.8)
+texture = ExtResource("1_bg")
+flip_h = true
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(5400, 310)
+scale = Vector2(2.8, 2.8)
+texture = ExtResource("1_bg")
+
+[node name="Background" type="ColorRect" parent="."]
+z_index = -10
+offset_left = -800.0
+offset_top = -900.0
+offset_right = 7400.0
+offset_bottom = -100.0
+scale = Vector2(1.6, 3.8)
+color = Color(0.06, 0.05, 0.07, 1)
+
+[node name="GroundVisual" type="ColorRect" parent="."]
+offset_top = 820.0
+offset_right = 7200.0
+offset_bottom = 1080.0
+color = Color(0.15, 0.1, 0.08, 1)
+
+[node name="Ground" type="StaticBody2D" parent="."]
+position = Vector2(3600, 820)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
+shape = SubResource("ground_shape")
+
+[node name="WallLeft" type="StaticBody2D" parent="."]
+position = Vector2(-20, 540)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
+shape = SubResource("wall_left_shape")
+
+[node name="WallRight" type="StaticBody2D" parent="."]
+position = Vector2(7220, 540)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
+shape = SubResource("wall_right_shape")
+
+[node name="Ceiling" type="StaticBody2D" parent="."]
+position = Vector2(3600, -20)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling"]
+shape = SubResource("ceiling_shape")
+
+[node name="SpawnPoints" type="Node2D" parent="."]
+
+[node name="Default" parent="SpawnPoints" instance=ExtResource("1_spawn")]
+position = Vector2(700, 760)
+
+[node name="EnemySpawnPoints" type="Node2D" parent="."]
+
+[node name="EnemySpawn1" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(2200, 760)
+
+[node name="EnemySpawn2" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(3600, 760)
+
+[node name="EnemySpawn3" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(5000, 760)
+
+[node name="EnemySpawn4" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(6400, 760)
+
+[node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(4300, 560)
+
+[node name="DoorPositions" type="Node2D" parent="."]
+
+[node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
+position = Vector2(1440, 700)
+
+[node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
+position = Vector2(2880, 700)
+
+[node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
+position = Vector2(4320, 700)
+
+[node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
+position = Vector2(5760, 700)
+
+[node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
+position = Vector2(6600, 700)
+
+[node name="SpikeTrap1" parent="." instance=ExtResource("2_spike_trap")]
+position = Vector2(3000, 790)
+
+[node name="SpikeTrap2" parent="." instance=ExtResource("2_spike_trap")]
+position = Vector2(4200, 790)
+
+[node name="ClimbableArea1" parent="." instance=ExtResource("3_climbable")]
+position = Vector2(180, 400)
+
+[node name="RoomLabel" type="Label" parent="."]
+offset_left = 40.0
+offset_top = 20.0
+offset_right = 400.0
+offset_bottom = 50.0
+text = "Kampf - Vergessener Pfad"

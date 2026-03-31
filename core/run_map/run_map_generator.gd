@@ -48,63 +48,79 @@ static func _connect(node: RunMapData.MapNode, target_ids: Array) -> void:
 
 
 # ============ WELT 1: DAS NIEMANDSLAND ============
-# Row 0: [Verfallene Ruinen] [Tempelvorplatz]                                (Wahl)
-# Row 1: [Dorf der Verlorenen]                                               (Optional — skip to Row 2)
-# Row 2: [Tempeltor]                                                          (Elite, Pflicht)
-# Row 3: [Versteckte Kammer] [Schatzkammer] [Tempelhalle] [Mittlere Ebene]   (Tempel-Hub, Wahl)
-# Row 4: [Tiefer Tempel] [Letzter Haendler]                                  (Wahl)
-# Row 5: [Heldengruppe-Arena]                                                 (Boss)
+# Row 0: [Vergessener Pfad] [Nebellichtung]                                  (Kampf-Wahl)
+# Row 1: [Tempelvorplatz] [Verfallene Ruinen] [Verborgener Schrein]          (Kampf/Schatz-Wahl)
+# Row 2: [Dorf der Verlorenen]                                               (Rast, Pflicht)
+# Row 3: [Waechter der Schwelle]                                             (Elite NEU, Pflicht)
+# Row 4: [Tempeltor]                                                          (Elite, Pflicht)
+# Row 5: [Versteckte Kammer] [Schatzkammer] [Tempelhalle] [Mittlere Ebene]   (Tempel-Hub, Wahl)
+# Row 6: [Tiefer Tempel] [Letzter Haendler]                                  (Wahl)
+# Row 7: [Heldengruppe-Arena]                                                 (Boss)
 
 static func _generate_fixed_w1() -> RunMapData.Map:
 	var map = RunMapData.Map.new()
 	map.world_id = RunMapData.WorldId.NIEMANDSLAND
 	var P = "res://worlds/run_rooms/niemandsland/"
 
-	# Row 0: Combat choices (Pre-Tempel)
-	var n0 = _make_node(0, 0, 0, RunMapData.NodeType.COMBAT, P + "combat_room_04.tscn")   # Verfallene Ruinen
-	var n1 = _make_node(1, 0, 1, RunMapData.NodeType.COMBAT, P + "combat_room_03.tscn")   # Tempelvorplatz
+	# Row 0: Combat choices (Einstieg)
+	var n0 = _make_node(0, 0, 0, RunMapData.NodeType.COMBAT, P + "combat_room_05.tscn")   # Vergessener Pfad
+	var n1 = _make_node(1, 0, 1, RunMapData.NodeType.COMBAT, P + "combat_room_06.tscn")   # Nebellichtung
 
-	# Row 1: Optional rest (skippable)
-	var n2 = _make_node(2, 1, 0, RunMapData.NodeType.REST, P + "rest_room_01.tscn")       # Dorf der Verlorenen
+	# Row 1: Combat + Treasure choices
+	var n2 = _make_node(2, 1, 0, RunMapData.NodeType.COMBAT, P + "combat_room_03.tscn")   # Tempelvorplatz
+	var n3 = _make_node(3, 1, 1, RunMapData.NodeType.COMBAT, P + "combat_room_04.tscn")   # Verfallene Ruinen
+	var n4 = _make_node(4, 1, 2, RunMapData.NodeType.TREASURE, P + "treasure_room_02.tscn") # Verborgener Schrein
 
-	# Row 2: Mandatory elite
-	var n3 = _make_node(3, 2, 0, RunMapData.NodeType.ELITE, P + "elite_room_02.tscn")     # Tempeltor
+	# Row 2: Mandatory rest
+	var n5 = _make_node(5, 2, 0, RunMapData.NodeType.REST, P + "rest_room_01.tscn")       # Dorf der Verlorenen
 
-	# Row 3: Temple hub (non-combat → same-row combat)
-	var n4 = _make_node(4, 3, 0, RunMapData.NodeType.EVENT, P + "event_room_01.tscn")     # Versteckte Kammer
-	var n5 = _make_node(5, 3, 1, RunMapData.NodeType.TREASURE, P + "treasure_room_01.tscn") # Schatzkammer
-	var n6 = _make_node(6, 3, 2, RunMapData.NodeType.COMBAT, P + "combat_room_01.tscn")   # Tempelhalle
-	var n7 = _make_node(7, 3, 3, RunMapData.NodeType.COMBAT, P + "combat_room_02.tscn")   # Mittlere Ebene
+	# Row 3: New elite
+	var n6 = _make_node(6, 3, 0, RunMapData.NodeType.ELITE, P + "elite_room_03.tscn")     # Waechter der Schwelle
 
-	# Row 4: Pre-boss choices
-	var n8 = _make_node(8, 4, 0, RunMapData.NodeType.ELITE, P + "elite_room_01.tscn")     # Tiefer Tempel
-	var n9 = _make_node(9, 4, 1, RunMapData.NodeType.SHOP, P + "shop_room_01.tscn")       # Letzter Haendler
+	# Row 4: Existing elite
+	var n7 = _make_node(7, 4, 0, RunMapData.NodeType.ELITE, P + "elite_room_02.tscn")     # Tempeltor
 
-	# Row 5: Boss
-	var n10 = _make_node(10, 5, 0, RunMapData.NodeType.BOSS, P + "boss_room_01.tscn")     # Heldengruppe-Arena
+	# Row 5: Temple hub (non-combat → same-row combat)
+	var n8 = _make_node(8, 5, 0, RunMapData.NodeType.EVENT, P + "event_room_01.tscn")     # Versteckte Kammer
+	var n9 = _make_node(9, 5, 1, RunMapData.NodeType.TREASURE, P + "treasure_room_01.tscn") # Schatzkammer
+	var n10 = _make_node(10, 5, 2, RunMapData.NodeType.COMBAT, P + "combat_room_01.tscn") # Tempelhalle
+	var n11 = _make_node(11, 5, 3, RunMapData.NodeType.COMBAT, P + "combat_room_02.tscn") # Mittlere Ebene
+
+	# Row 6: Pre-boss choices
+	var n12 = _make_node(12, 6, 0, RunMapData.NodeType.ELITE, P + "elite_room_01.tscn")   # Tiefer Tempel
+	var n13 = _make_node(13, 6, 1, RunMapData.NodeType.SHOP, P + "shop_room_01.tscn")     # Letzter Haendler
+
+	# Row 7: Boss
+	var n14 = _make_node(14, 7, 0, RunMapData.NodeType.BOSS, P + "boss_room_01.tscn")     # Heldengruppe-Arena
 
 	# ---- Connections ----
-	# Row 0 → Rest (optional) or Elite (skip rest)
-	_connect(n0, [2, 3])
-	_connect(n1, [2, 3])
-	# Row 1 → Elite
-	_connect(n2, [3])
-	# Row 2 → Temple hub (all 4 doors)
-	_connect(n3, [4, 5, 6, 7])
+	# Row 0 → Row 1 (all choices)
+	_connect(n0, [2, 3, 4])
+	_connect(n1, [2, 3, 4])
+	# Row 1 → Rest
+	_connect(n2, [5])
+	_connect(n3, [5])
+	_connect(n4, [5])
+	# Row 2 → New elite
+	_connect(n5, [6])
+	# Row 3 → Existing elite
+	_connect(n6, [7])
+	# Row 4 → Temple hub (all 4 doors)
+	_connect(n7, [8, 9, 10, 11])
 	# Temple hub: non-combat → same-row combat
-	_connect(n4, [6, 7])
-	_connect(n5, [6, 7])
+	_connect(n8, [10, 11])
+	_connect(n9, [10, 11])
 	# Temple hub: combat → pre-boss
-	_connect(n6, [8, 9])
-	_connect(n7, [8, 9])
+	_connect(n10, [12, 13])
+	_connect(n11, [12, 13])
 	# Pre-boss → Boss
-	_connect(n8, [10])
-	_connect(n9, [10])
+	_connect(n12, [14])
+	_connect(n13, [14])
 
 	# Build map
-	for n in [n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, n10]:
+	for n in [n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12, n13, n14]:
 		map.nodes[n.id] = n
-	map.rows = [[0, 1], [2], [3], [4, 5, 6, 7], [8, 9], [10]]
+	map.rows = [[0, 1], [2, 3, 4], [5], [6], [7], [8, 9, 10, 11], [12, 13], [14]]
 
 	return map
 
