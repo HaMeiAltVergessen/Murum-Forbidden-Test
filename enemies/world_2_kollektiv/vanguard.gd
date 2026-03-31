@@ -141,7 +141,7 @@ func _rally_cry() -> void:
 		if global_position.distance_to(enemy.global_position) <= RALLY_RANGE:
 			# Visual feedback: orange flash
 			if "sprite" in enemy and enemy.sprite:
-				var orig := enemy.sprite.modulate
+				var orig: Color = enemy.sprite.modulate
 				enemy.sprite.modulate = Color(1.5, 0.8, 0.3, orig.a)
 				get_tree().create_timer(RALLY_DURATION).timeout.connect(
 					func():
@@ -223,7 +223,7 @@ func _on_damage_received(damage: int, knockback: Vector2, hitstun: float) -> voi
 		var attack_from_right := knockback.x < 0
 		var is_front := (facing_right and attack_from_right) or (not facing_right and not attack_from_right)
 		if is_front:
-			var absorbed := min(shield_hp, damage)
+			var absorbed: int = mini(shield_hp, damage)
 			shield_hp -= absorbed
 			actual_damage = damage - absorbed
 			shield_regen_timer = SHIELD_REGEN_DELAY
