@@ -1,8 +1,9 @@
-[gd_scene load_steps=10 format=3 uid="uid://ko00aykkdg6y"]
+[gd_scene load_steps=11 format=3 uid="uid://ko00aykkdg6y"]
 
+[ext_resource type="Texture2D" uid="uid://delkpy6of4mls" path="res://Assets/AIPlaceholder/world 3/2D_Pixel_Art_Background_Sprite_GPT_Image_15_81992.jpg" id="1_ha7qr"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
-[ext_resource type="PackedScene" uid="uid://arrow_trap_001" path="res://traps/scenes/arrow_trap.tscn" id="2_arrow_trap"]
-[ext_resource type="PackedScene" uid="uid://falling_rock_001" path="res://traps/scenes/falling_rock.tscn" id="3_falling_rock"]
+[ext_resource type="PackedScene" path="res://traps/scenes/arrow_trap.tscn" id="2_arrow_trap"]
+[ext_resource type="PackedScene" path="res://traps/scenes/falling_rock.tscn" id="3_falling_rock"]
 [ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="4_spike_trap"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
@@ -24,15 +25,45 @@ size = Vector2(60, 260)
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 8800.0
-offset_bottom = 800.0
+offset_left = -2548.0
+offset_top = -497.0
+offset_right = 6252.0
+offset_bottom = 303.0
+scale = Vector2(2.5342, 2.5342)
 color = Color(0.06, 0.02, 0.06, 1)
+
+[node name="2dPixelArtBackgroundSpriteGptImage1581992" type="Sprite2D" parent="."]
+position = Vector2(709, 402)
+texture = ExtResource("1_ha7qr")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1581993" type="Sprite2D" parent="."]
+position = Vector2(2231, 402)
+texture = ExtResource("1_ha7qr")
+flip_h = true
+
+[node name="2dPixelArtBackgroundSpriteGptImage1581994" type="Sprite2D" parent="."]
+position = Vector2(3762, 402)
+texture = ExtResource("1_ha7qr")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1581995" type="Sprite2D" parent="."]
+position = Vector2(5284, 402)
+texture = ExtResource("1_ha7qr")
+flip_h = true
+
+[node name="2dPixelArtBackgroundSpriteGptImage1581996" type="Sprite2D" parent="."]
+position = Vector2(6798, 402)
+texture = ExtResource("1_ha7qr")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1581997" type="Sprite2D" parent="."]
+position = Vector2(8320, 402)
+texture = ExtResource("1_ha7qr")
+flip_h = true
 
 [node name="GroundVisual" type="ColorRect" parent="."]
 offset_top = 800.0
 offset_right = 8800.0
 offset_bottom = 1080.0
-color = Color(0.12, 0.05, 0.1, 1)
+color = Color(0.121569, 0.0509804, 0.101961, 0.294118)
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(4400, 820)
@@ -106,6 +137,7 @@ position = Vector2(7040, 700)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
 position = Vector2(7920, 700)
+
 [node name="ArrowTrap1" parent="." instance=ExtResource("2_arrow_trap")]
 position = Vector2(200, 500)
 

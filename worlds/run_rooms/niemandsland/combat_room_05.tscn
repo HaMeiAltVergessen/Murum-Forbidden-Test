@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://dk7mw2pq5n3xf"]
 
-[ext_resource type="Texture2D" uid="uid://ddshbf3nio6lw" path="res://Assets/AIAssets/8d33fd80-90de-40ba-a387-b68c6792874b.jpg" id="1_bg"]
+[ext_resource type="Texture2D" uid="uid://bcf1bvmbq8p8g" path="res://Assets/AIPlaceholder/world1preTempel.png" id="1_lo6we"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 [ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="2_spike_trap"]
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="3_climbable"]
@@ -20,15 +20,10 @@ size = Vector2(7200, 40)
 [node name="CombatRoom05" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(1800, 320)
-scale = Vector2(2.8, 2.8)
-texture = ExtResource("1_bg")
+position = Vector2(1799, -2283)
+scale = Vector2(1.4171, 1.4171)
+texture = ExtResource("1_lo6we")
 flip_h = true
-
-[node name="Sprite2D2" type="Sprite2D" parent="."]
-position = Vector2(5400, 310)
-scale = Vector2(2.8, 2.8)
-texture = ExtResource("1_bg")
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10

@@ -1,5 +1,6 @@
-[gd_scene load_steps=10 format=3 uid="uid://dshdcti0uu8t0"]
+[gd_scene load_steps=11 format=3 uid="uid://dshdcti0uu8t0"]
 
+[ext_resource type="Texture2D" uid="uid://diye3j0dnk55g" path="res://Assets/AIPlaceholder/world 2/2D_Pixel_Art_Background_Sprite_GPT_Image_15_97145.jpg" id="1_ec564"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 [ext_resource type="PackedScene" path="res://traps/scenes/arrow_trap.tscn" id="2_arrow_trap"]
 [ext_resource type="PackedScene" path="res://traps/scenes/falling_rock.tscn" id="3_falling_rock"]
@@ -22,10 +23,40 @@ size = Vector2(80, 80)
 
 [node name="CombatRoom02" type="Node2D"]
 
+[node name="2dPixelArtBackgroundSpriteGptImage1597145" type="Sprite2D" parent="."]
+position = Vector2(733, 428)
+texture = ExtResource("1_ec564")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1597146" type="Sprite2D" parent="."]
+position = Vector2(2276, 428)
+texture = ExtResource("1_ec564")
+flip_h = true
+
+[node name="2dPixelArtBackgroundSpriteGptImage1597147" type="Sprite2D" parent="."]
+position = Vector2(3812, 428)
+texture = ExtResource("1_ec564")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1597148" type="Sprite2D" parent="."]
+position = Vector2(5355, 428)
+texture = ExtResource("1_ec564")
+flip_h = true
+
+[node name="2dPixelArtBackgroundSpriteGptImage1597149" type="Sprite2D" parent="."]
+position = Vector2(6895, 428)
+texture = ExtResource("1_ec564")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1597150" type="Sprite2D" parent="."]
+position = Vector2(8438, 428)
+texture = ExtResource("1_ec564")
+flip_h = true
+
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 8800.0
-offset_bottom = 800.0
+offset_left = -3432.0
+offset_top = -834.0
+offset_right = 5368.0
+offset_bottom = -33.9999
+scale = Vector2(3.65393, 3.65393)
 color = Color(0.03, 0.04, 0.08, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]

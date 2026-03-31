@@ -1,6 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://c7f2xk3hxk8lf"]
+[gd_scene load_steps=10 format=3 uid="uid://c7f2xk3hxk8lf"]
 
+[ext_resource type="Texture2D" uid="uid://bq2ntabutrlsw" path="res://Assets/AIPlaceholder/world 2/2D_Pixel_Art_Background_Sprite_GPT_Image_15_95464.jpg" id="1_p51p5"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="Texture2D" uid="uid://clvqt5ofm4ffh" path="res://Assets/AIPlaceholder/world 2/2D_Pixel_Art_Background_Sprite_GPT_Image_15_75560.jpg" id="2_7jxoq"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="2_platform"]
 [ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="3_spike_trap"]
 
@@ -20,8 +22,11 @@ size = Vector2(8000, 40)
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 8000.0
-offset_bottom = 800.0
+offset_left = -4258.0
+offset_top = -2622.0
+offset_right = 3742.0
+offset_bottom = -1822.0
+scale = Vector2(8.31231, 8.31231)
 color = Color(0.04, 0.06, 0.1, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
@@ -29,6 +34,23 @@ offset_top = 800.0
 offset_right = 8000.0
 offset_bottom = 1080.0
 color = Color(0.1, 0.12, 0.18, 1)
+
+[node name="2dPixelArtBackgroundSpriteGptImage1595464" type="Sprite2D" parent="."]
+position = Vector2(2282, 532)
+texture = ExtResource("1_p51p5")
+
+[node name="W2City" type="Sprite2D" parent="."]
+position = Vector2(754, 520)
+texture = ExtResource("2_7jxoq")
+flip_h = true
+
+[node name="2dPixelArtBackgroundSpriteGptImage1595465" type="Sprite2D" parent="."]
+position = Vector2(5316, 532)
+texture = ExtResource("1_p51p5")
+
+[node name="W2City2" type="Sprite2D" parent="."]
+position = Vector2(3788, 520)
+texture = ExtResource("2_7jxoq")
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(4000, 820)
@@ -43,7 +65,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(8020, 540)
+position = Vector2(6029, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -71,7 +93,7 @@ position = Vector2(4000, 760)
 position = Vector2(5600, 760)
 
 [node name="EnemySpawn4" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(7200, 760)
+position = Vector2(5547, 760)
 
 [node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
 position = Vector2(2400, 510)
@@ -91,10 +113,10 @@ position = Vector2(3200, 700)
 position = Vector2(4800, 700)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(6400, 700)
+position = Vector2(5232, 700)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(7200, 700)
+position = Vector2(5805, 700)
 
 [node name="Platform1" parent="." instance=ExtResource("2_platform")]
 position = Vector2(2400, 550)

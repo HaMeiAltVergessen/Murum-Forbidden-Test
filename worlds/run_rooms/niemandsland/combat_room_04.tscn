@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://cxwmc07tupq6m"]
 
-[ext_resource type="Texture2D" uid="uid://ddshbf3nio6lw" path="res://Assets/AIAssets/8d33fd80-90de-40ba-a387-b68c6792874b.jpg" id="1_jk6wc"]
+[ext_resource type="Texture2D" uid="uid://bcf1bvmbq8p8g" path="res://Assets/AIPlaceholder/world1preTempel.png" id="1_jk6wc"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 [ext_resource type="PackedScene" path="res://traps/scenes/arrow_trap.tscn" id="2_arrow_trap"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="3_platform"]
@@ -19,23 +19,17 @@ size = Vector2(6400, 40)
 
 [node name="CombatRoom04" type="Node2D"]
 
-[node name="Tempel02" type="Sprite2D" parent="."]
-position = Vector2(1308, 357)
-scale = Vector2(2.65832, 2.65832)
-texture = ExtResource("1_jk6wc")
-flip_h = true
-
 [node name="Tempel03" type="Sprite2D" parent="."]
-position = Vector2(5388, 351)
-scale = Vector2(2.65832, 2.65832)
+position = Vector2(6300, 3391)
+scale = Vector2(1.61943, 1.61943)
 texture = ExtResource("1_jk6wc")
 
 [node name="Background2" type="ColorRect" parent="."]
 z_index = -10
 offset_left = -881.0
-offset_top = -861.0
+offset_top = -867.0
 offset_right = 8719.0
-offset_bottom = -61.0
+offset_bottom = -67.0
 scale = Vector2(2.20119, 3.7559)
 color = Color(0.06, 0.04, 0.06, 1)
 

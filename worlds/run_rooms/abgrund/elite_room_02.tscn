@@ -1,8 +1,9 @@
-[gd_scene load_steps=10 format=3 uid="uid://bogiv30iwepl0"]
+[gd_scene load_steps=11 format=3 uid="uid://bogiv30iwepl0"]
 
+[ext_resource type="Texture2D" uid="uid://dn4vosvm8d330" path="res://Assets/AIPlaceholder/world 3/2D_Pixel_Art_Background_Sprite_GPT_Image_15_17810.jpg" id="1_r0xhn"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
-[ext_resource type="PackedScene" uid="uid://arrow_trap_001" path="res://traps/scenes/arrow_trap.tscn" id="2_arrow_trap"]
-[ext_resource type="Script" path="res://puzzles/controllers/sequence_puzzle_controller.gd" id="3_seq_controller"]
+[ext_resource type="PackedScene" path="res://traps/scenes/arrow_trap.tscn" id="2_arrow_trap"]
+[ext_resource type="Script" uid="uid://colcvd1p8clki" path="res://puzzles/controllers/sequence_puzzle_controller.gd" id="3_seq_controller"]
 [ext_resource type="PackedScene" uid="uid://blta5m8ixhcu8" path="res://puzzles/scenes/components/puzzle_switch.tscn" id="4_switch"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
@@ -24,9 +25,34 @@ size = Vector2(40, 250)
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 10400.0
-offset_bottom = 800.0
+offset_left = -1286.0
+offset_top = -708.0
+offset_right = 9114.0
+offset_bottom = 92.0
+scale = Vector2(3.79276, 3.79276)
 color = Color(0.04, 0.01, 0.05, 1)
+
+[node name="2dPixelArtBackgroundSpriteGptImage1517810" type="Sprite2D" parent="."]
+position = Vector2(904, 473)
+scale = Vector2(1.30546, 1.30546)
+texture = ExtResource("1_r0xhn")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1517811" type="Sprite2D" parent="."]
+position = Vector2(2926, 473)
+scale = Vector2(1.30546, 1.30546)
+texture = ExtResource("1_r0xhn")
+flip_h = true
+
+[node name="2dPixelArtBackgroundSpriteGptImage1517812" type="Sprite2D" parent="."]
+position = Vector2(4929.59, 473)
+scale = Vector2(1.30546, 1.30546)
+texture = ExtResource("1_r0xhn")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1517813" type="Sprite2D" parent="."]
+position = Vector2(6933, 473)
+scale = Vector2(1.30546, 1.30546)
+texture = ExtResource("1_r0xhn")
+flip_h = true
 
 [node name="GroundVisual" type="ColorRect" parent="."]
 offset_top = 800.0
@@ -47,7 +73,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(10420, 540)
+position = Vector2(7916, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -72,7 +98,7 @@ offset_bottom = 125.0
 color = Color(0.2, 0.1, 0.18, 1)
 
 [node name="Column2" type="StaticBody2D" parent="."]
-position = Vector2(10360, 663)
+position = Vector2(1924, 686)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Column2"]
 shape = SubResource("column_shape")
@@ -85,7 +111,7 @@ offset_bottom = 125.0
 color = Color(0.2, 0.1, 0.18, 1)
 
 [node name="Column3" type="StaticBody2D" parent="."]
-position = Vector2(10248, 320)
+position = Vector2(7294, 711)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Column3"]
 shape = SubResource("column_shape")
@@ -117,10 +143,10 @@ position = Vector2(4800, 760)
 position = Vector2(6400, 760)
 
 [node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(8000, 760)
+position = Vector2(3566, 714)
 
 [node name="EnemySpawn6" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(8800, 760)
+position = Vector2(4674, 723)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
@@ -134,24 +160,23 @@ position = Vector2(4160, 700)
 position = Vector2(6240, 700)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(8320, 700)
+position = Vector2(6965, 680)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(9360, 700)
+position = Vector2(5675, 723)
+
 [node name="ArrowTrap1" parent="." instance=ExtResource("2_arrow_trap")]
 position = Vector2(200, 500)
 
 [node name="ArrowTrap2" parent="." instance=ExtResource("2_arrow_trap")]
-position = Vector2(10200, 500)
+position = Vector2(6547, 789)
 arrow_direction = Vector2(-1, 0)
 
 [node name="PuzzleGate" type="Node" parent="." groups=["puzzle_gate"]]
 script = ExtResource("3_seq_controller")
-correct_sequence = PackedInt32Array(1, 2, 3)
 
 [node name="Switch1" parent="PuzzleGate" instance=ExtResource("4_switch")]
 position = Vector2(2600, 700)
-switch_id = 1
 
 [node name="Switch2" parent="PuzzleGate" instance=ExtResource("4_switch")]
 position = Vector2(5200, 700)

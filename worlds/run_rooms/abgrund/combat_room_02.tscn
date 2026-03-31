@@ -1,7 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://c84j2nwugq88b"]
+[gd_scene load_steps=11 format=3 uid="uid://c84j2nwugq88b"]
 
+[ext_resource type="Texture2D" uid="uid://psudb2jv4e18" path="res://Assets/AIPlaceholder/world 3/2D_Pixel_Art_Background_Sprite_GPT_Image_15_21736.jpg" id="1_rf88h"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
-[ext_resource type="PackedScene" uid="uid://quicksand_pit_001" path="res://traps/scenes/quicksand_pit.tscn" id="2_quicksand"]
+[ext_resource type="PackedScene" path="res://traps/scenes/quicksand_pit.tscn" id="2_quicksand"]
 [ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="3_spike_trap"]
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="4_climbable"]
 
@@ -24,9 +25,34 @@ size = Vector2(100, 60)
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 9600.0
-offset_bottom = 800.0
+offset_left = -1299.0
+offset_top = -932.0
+offset_right = 8301.0
+offset_bottom = -132.0
+scale = Vector2(3.40332, 3.40332)
 color = Color(0.04, 0.01, 0.04, 1)
+
+[node name="2dPixelArtBackgroundSpriteGptImage1521736" type="Sprite2D" parent="."]
+position = Vector2(1024, 443)
+scale = Vector2(1.5197, 1.5197)
+texture = ExtResource("1_rf88h")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1521737" type="Sprite2D" parent="."]
+position = Vector2(3375, 443)
+scale = Vector2(1.5197, 1.5197)
+texture = ExtResource("1_rf88h")
+flip_h = true
+
+[node name="2dPixelArtBackgroundSpriteGptImage1521738" type="Sprite2D" parent="."]
+position = Vector2(5698.13, 443)
+scale = Vector2(1.5197, 1.5197)
+texture = ExtResource("1_rf88h")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1521739" type="Sprite2D" parent="."]
+position = Vector2(8049.13, 443)
+scale = Vector2(1.5197, 1.5197)
+texture = ExtResource("1_rf88h")
+flip_h = true
 
 [node name="GroundVisual" type="ColorRect" parent="."]
 offset_top = 800.0
@@ -47,7 +73,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(9620, 540)
+position = Vector2(9232, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -109,6 +135,7 @@ position = Vector2(7680, 700)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
 position = Vector2(8640, 700)
+
 [node name="QuicksandPit1" parent="." instance=ExtResource("2_quicksand")]
 position = Vector2(4800, 790)
 

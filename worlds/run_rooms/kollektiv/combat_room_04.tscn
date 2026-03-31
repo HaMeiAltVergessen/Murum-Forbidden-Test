@@ -1,5 +1,6 @@
-[gd_scene load_steps=8 format=3 uid="uid://tx7y5kxpptv6"]
+[gd_scene load_steps=9 format=3 uid="uid://tx7y5kxpptv6"]
 
+[ext_resource type="Texture2D" uid="uid://cktbn3c68k1tn" path="res://Assets/AIPlaceholder/world 2/W2Combat04.jpg" id="1_3cdra"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 [ext_resource type="PackedScene" path="res://traps/scenes/quicksand_pit.tscn" id="2_quicksand"]
 [ext_resource type="PackedScene" path="res://traps/scenes/arrow_trap.tscn" id="3_arrow_trap"]
@@ -18,10 +19,31 @@ size = Vector2(6400, 40)
 
 [node name="CombatRoom04" type="Node2D"]
 
+[node name="W2Combat04" type="Sprite2D" parent="."]
+position = Vector2(824, 462)
+texture = ExtResource("1_3cdra")
+
+[node name="W2Combat05" type="Sprite2D" parent="."]
+position = Vector2(2359, 462)
+texture = ExtResource("1_3cdra")
+flip_h = true
+
+[node name="W2Combat06" type="Sprite2D" parent="."]
+position = Vector2(3887, 462)
+texture = ExtResource("1_3cdra")
+
+[node name="W2Combat07" type="Sprite2D" parent="."]
+position = Vector2(5422, 462)
+texture = ExtResource("1_3cdra")
+flip_h = true
+
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 6400.0
-offset_bottom = 800.0
+offset_left = -4626.0
+offset_top = -672.0
+offset_right = 1774.0
+offset_bottom = 128.0
+scale = Vector2(2.56112, 3.65454)
 color = Color(0.04, 0.05, 0.09, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
@@ -46,6 +68,7 @@ shape = SubResource("wall_left_shape")
 position = Vector2(6420, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
+position = Vector2(-1768, 0)
 shape = SubResource("wall_right_shape")
 
 [node name="Ceiling" type="StaticBody2D" parent="."]
@@ -65,13 +88,13 @@ position = Vector2(600, 760)
 position = Vector2(1800, 760)
 
 [node name="EnemySpawn2" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(3200, 760)
+position = Vector2(3877, 770)
 
 [node name="EnemySpawn3" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(4600, 760)
+position = Vector2(3589, 677)
 
 [node name="EnemySpawn4" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(5800, 760)
+position = Vector2(2073, 769)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
@@ -82,22 +105,22 @@ position = Vector2(1280, 700)
 position = Vector2(2560, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(3840, 700)
+position = Vector2(3022, 640)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(5120, 700)
+position = Vector2(3792, 741)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(5760, 700)
+position = Vector2(3885, 746)
 
 [node name="QuicksandPit1" parent="." instance=ExtResource("2_quicksand")]
-position = Vector2(3200, 790)
+position = Vector2(953, 755)
 
 [node name="ArrowTrap1" parent="." instance=ExtResource("3_arrow_trap")]
 position = Vector2(200, 500)
 
 [node name="ArrowTrap2" parent="." instance=ExtResource("3_arrow_trap")]
-position = Vector2(6200, 500)
+position = Vector2(2202, 767)
 arrow_direction = Vector2(-1, 0)
 
 [node name="RoomLabel" type="Label" parent="."]

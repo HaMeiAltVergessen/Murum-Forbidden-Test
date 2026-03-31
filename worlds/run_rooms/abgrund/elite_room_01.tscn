@@ -1,8 +1,10 @@
-[gd_scene load_steps=11 format=3 uid="uid://t00dle8a5dkv"]
+[gd_scene load_steps=13 format=3 uid="uid://t00dle8a5dkv"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
-[ext_resource type="PackedScene" uid="uid://arrow_trap_001" path="res://traps/scenes/arrow_trap.tscn" id="2_arrow_trap"]
-[ext_resource type="PackedScene" uid="uid://falling_rock_001" path="res://traps/scenes/falling_rock.tscn" id="3_falling_rock"]
+[ext_resource type="Texture2D" uid="uid://b8y3dpe062vm1" path="res://Assets/AIPlaceholder/world 3/2D_Pixel_Art_Background_Sprite_GPT_Image_15_71242.jpg" id="1_x0nrc"]
+[ext_resource type="Texture2D" uid="uid://dgpt4mekntday" path="res://Assets/AIPlaceholder/world 3/2D_Pixel_Art_Background_Sprite_GPT_Image_15_20547.jpg" id="2_4jjj3"]
+[ext_resource type="PackedScene" path="res://traps/scenes/arrow_trap.tscn" id="2_arrow_trap"]
+[ext_resource type="PackedScene" path="res://traps/scenes/falling_rock.tscn" id="3_falling_rock"]
 [ext_resource type="PackedScene" uid="uid://c8jvg5x7m3nqd" path="res://environment/hazards/spike_trap.tscn" id="4_spike_trap"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="5_platform"]
 
@@ -25,9 +27,31 @@ size = Vector2(280, 20)
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 9600.0
-offset_bottom = 800.0
+offset_left = -4291.0
+offset_top = -2658.0
+offset_right = 5309.0
+offset_bottom = -1858.0
+scale = Vector2(8.14089, 8.14089)
 color = Color(0.05, 0.02, 0.06, 1)
+
+[node name="2dPixelArtBackgroundSpriteGptImage1571242" type="Sprite2D" parent="."]
+position = Vector2(1094, 550)
+scale = Vector2(1.60216, 1.60216)
+texture = ExtResource("1_x0nrc")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1571243" type="Sprite2D" parent="."]
+position = Vector2(5072, 550)
+scale = Vector2(1.60216, 1.60216)
+texture = ExtResource("1_x0nrc")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1520547" type="Sprite2D" parent="."]
+position = Vector2(3077, 421)
+texture = ExtResource("2_4jjj3")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1520548" type="Sprite2D" parent="."]
+position = Vector2(7065, 512)
+texture = ExtResource("2_4jjj3")
+flip_h = true
 
 [node name="GroundVisual" type="ColorRect" parent="."]
 offset_top = 800.0
@@ -48,7 +72,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(9620, 540)
+position = Vector2(7837, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -108,7 +132,16 @@ position = Vector2(5600, 760)
 position = Vector2(7200, 760)
 
 [node name="EnemySpawn6" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(8400, 760)
+position = Vector2(6232, 760)
+
+[node name="EnemySpawn7" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(2400, 580)
+
+[node name="EnemySpawn8" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(7200, 580)
+
+[node name="EnemySpawn9" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(4800, 360)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
@@ -125,12 +158,13 @@ position = Vector2(5760, 700)
 position = Vector2(7680, 700)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(8640, 700)
+position = Vector2(6654, 700)
+
 [node name="ArrowTrap1" parent="." instance=ExtResource("2_arrow_trap")]
 position = Vector2(200, 450)
 
 [node name="ArrowTrap2" parent="." instance=ExtResource("2_arrow_trap")]
-position = Vector2(9400, 450)
+position = Vector2(4512, 784)
 arrow_direction = Vector2(-1, 0)
 
 [node name="FallingRock1" parent="." instance=ExtResource("3_falling_rock")]
@@ -144,15 +178,6 @@ position = Vector2(4800, 790)
 
 [node name="Platform3" parent="." instance=ExtResource("5_platform")]
 position = Vector2(4800, 400)
-
-[node name="EnemySpawn7" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(2400, 580)
-
-[node name="EnemySpawn8" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(7200, 580)
-
-[node name="EnemySpawn9" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(4800, 360)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://pre_boss_room_abgrund"]
+[gd_scene load_steps=9 format=3 uid="uid://ex8l5l5wtp32"]
 
-[ext_resource type="Script" path="res://worlds/run_rooms/abgrund/pre_boss_room.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://7dwm30b5dch0" path="res://worlds/run_rooms/abgrund/pre_boss_room.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="2_spawn"]
+[ext_resource type="Texture2D" uid="uid://cct32xke7cm8m" path="res://Assets/AIPlaceholder/world 3/2D_Pixel_Art_Background_Sprite_GPT_Image_15_10786.jpg" id="2_uxjdi"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(8560, 40)
@@ -23,10 +24,21 @@ script = ExtResource("1_script")
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_left = -240.0
-offset_right = 8560.0
-offset_bottom = 1400.0
+offset_left = -4249.0
+offset_top = -1024.0
+offset_right = 4551.0
+offset_bottom = 376.0
+scale = Vector2(2.26747, 2.26747)
 color = Color(0.04, 0.01, 0.06, 1)
+
+[node name="2dPixelArtBackgroundSpriteGptImage1510786" type="Sprite2D" parent="."]
+position = Vector2(351, 534)
+texture = ExtResource("2_uxjdi")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1510787" type="Sprite2D" parent="."]
+position = Vector2(1886, 534)
+texture = ExtResource("2_uxjdi")
+flip_h = true
 
 [node name="Ground" type="StaticBody2D" parent="."]
 position = Vector2(4280, 820)
@@ -51,6 +63,7 @@ shape = SubResource("wall_left_shape")
 position = Vector2(8580, 420)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
+position = Vector2(-5920, 0)
 shape = SubResource("wall_right_shape")
 
 [node name="SpawnPoints" type="Node2D" parent="."]
@@ -77,30 +90,29 @@ shape = SubResource("lythrun_door_shape")
 offset_left = -40.0
 offset_top = -120.0
 offset_right = 40.0
-offset_bottom = 0.0
-color = Color(0.3, 0.0, 0.5, 0.9)
+color = Color(0.3, 0, 0.5, 0.9)
 
 [node name="Label" type="Label" parent="Doors/LythrunDoor"]
 offset_left = -80.0
 offset_top = -160.0
 offset_right = 80.0
 offset_bottom = -120.0
-horizontal_alignment = 1
-text = "Lythrun"
 theme_override_font_sizes/font_size = 16
+text = "Lythrun"
+horizontal_alignment = 1
 
 [node name="SubLabel" type="Label" parent="Doors/LythrunDoor"]
 offset_left = -100.0
 offset_top = -180.0
 offset_right = 100.0
 offset_bottom = -160.0
-horizontal_alignment = 1
-text = "[E] Betreten"
-theme_override_font_sizes/font_size = 12
 theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "[E] Betreten"
+horizontal_alignment = 1
 
 [node name="MirrorDoor" type="Area2D" parent="Doors"]
-position = Vector2(1620, 700)
+position = Vector2(1917, 700)
 collision_layer = 0
 collision_mask = 2
 
@@ -111,32 +123,31 @@ shape = SubResource("mirror_door_shape")
 offset_left = -40.0
 offset_top = -120.0
 offset_right = 40.0
-offset_bottom = 0.0
-color = Color(0.0, 0.3, 0.5, 0.9)
+color = Color(0, 0.3, 0.5, 0.9)
 
 [node name="Label" type="Label" parent="Doors/MirrorDoor"]
 offset_left = -100.0
 offset_top = -160.0
 offset_right = 100.0
 offset_bottom = -120.0
-horizontal_alignment = 1
-text = "Murum (Spiegel)"
 theme_override_font_sizes/font_size = 16
+text = "Murum (Spiegel)"
+horizontal_alignment = 1
 
 [node name="SubLabel" type="Label" parent="Doors/MirrorDoor"]
 offset_left = -100.0
 offset_top = -180.0
 offset_right = 100.0
 offset_bottom = -160.0
-horizontal_alignment = 1
-text = "[E] Betreten"
-theme_override_font_sizes/font_size = 12
 theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "[E] Betreten"
+horizontal_alignment = 1
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
 offset_top = 20.0
 offset_right = 800.0
 offset_bottom = 50.0
-text = "Der letzte Abgrund — Wähle deinen Feind"
 theme_override_font_sizes/font_size = 20
+text = "Der letzte Abgrund — Wähle deinen Feind"

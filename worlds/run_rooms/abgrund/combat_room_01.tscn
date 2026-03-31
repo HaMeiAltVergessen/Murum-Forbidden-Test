@@ -1,9 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://c5nk0foqkwlps"]
+[gd_scene load_steps=11 format=3 uid="uid://c5nk0foqkwlps"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="Texture2D" uid="uid://bhthf48cj3y7h" path="res://Assets/AIPlaceholder/world 3/2D_Pixel_Art_Background_Sprite_GPT_Image_15_07032.jpg" id="1_tyugk"]
+[ext_resource type="Texture2D" uid="uid://cp3wrgl60sbpc" path="res://Assets/AIPlaceholder/world 3/2D_Pixel_Art_Background_Sprite_GPT_Image_15_21488.jpg" id="2_n73yh"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="2_platform"]
-[ext_resource type="PackedScene" uid="uid://arrow_trap_001" path="res://traps/scenes/arrow_trap.tscn" id="3_arrow_trap"]
-[ext_resource type="PackedScene" uid="uid://falling_rock_001" path="res://traps/scenes/falling_rock.tscn" id="4_falling_rock"]
+[ext_resource type="PackedScene" path="res://traps/scenes/arrow_trap.tscn" id="3_arrow_trap"]
+[ext_resource type="PackedScene" path="res://traps/scenes/falling_rock.tscn" id="4_falling_rock"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(8000, 40)
@@ -21,9 +23,32 @@ size = Vector2(8000, 40)
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 8000.0
-offset_bottom = 800.0
+offset_left = -1237.0
+offset_top = -578.0
+offset_right = 6763.0
+offset_bottom = 222.0
+scale = Vector2(2.78929, 2.78929)
 color = Color(0.05, 0.02, 0.05, 1)
+
+[node name="2dPixelArtBackgroundSpriteGptImage1507032" type="Sprite2D" parent="."]
+position = Vector2(749, 434)
+texture = ExtResource("1_tyugk")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1507033" type="Sprite2D" parent="."]
+position = Vector2(2286, 434)
+texture = ExtResource("1_tyugk")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1507034" type="Sprite2D" parent="."]
+position = Vector2(5330, 475)
+texture = ExtResource("1_tyugk")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1507035" type="Sprite2D" parent="."]
+position = Vector2(6867, 475)
+texture = ExtResource("1_tyugk")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1521488" type="Sprite2D" parent="."]
+position = Vector2(3823, 341)
+texture = ExtResource("2_n73yh")
 
 [node name="GroundVisual" type="ColorRect" parent="."]
 offset_top = 800.0
@@ -44,7 +69,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(8020, 540)
+position = Vector2(7658, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -74,6 +99,12 @@ position = Vector2(1400, 760)
 [node name="EnemySpawn4" type="Marker2D" parent="EnemySpawnPoints"]
 position = Vector2(1800, 760)
 
+[node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(600, 510)
+
+[node name="EnemySpawn6" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(1400, 410)
+
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
@@ -100,12 +131,6 @@ arrow_direction = Vector2(-1, 0)
 
 [node name="FallingRock1" parent="." instance=ExtResource("4_falling_rock")]
 position = Vector2(1000, 100)
-
-[node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(600, 510)
-
-[node name="EnemySpawn6" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1400, 410)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

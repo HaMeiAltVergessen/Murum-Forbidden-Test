@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://b0dxt136ulgax"]
 
-[ext_resource type="Texture2D" uid="uid://ddshbf3nio6lw" path="res://Assets/AIAssets/8d33fd80-90de-40ba-a387-b68c6792874b.jpg" id="1_mbism"]
+[ext_resource type="Texture2D" uid="uid://bcf1bvmbq8p8g" path="res://Assets/AIPlaceholder/world1preTempel.png" id="1_mbism"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="2_platform"]
 [ext_resource type="PackedScene" path="res://traps/scenes/falling_rock.tscn" id="3_falling_rock"]
@@ -19,15 +19,9 @@ size = Vector2(7680, 40)
 
 [node name="CombatRoom03" type="Node2D"]
 
-[node name="Sprite2D2" type="Sprite2D" parent="."]
-position = Vector2(2021, 229)
-scale = Vector2(2.95745, 2.95745)
-texture = ExtResource("1_mbism")
-flip_h = true
-
 [node name="Sprite2D3" type="Sprite2D" parent="."]
-position = Vector2(6570, 220)
-scale = Vector2(2.95745, 2.95745)
+position = Vector2(4097, -1428)
+scale = Vector2(1.0174, 1.0174)
 texture = ExtResource("1_mbism")
 
 [node name="Background" type="ColorRect" parent="."]
@@ -53,13 +47,13 @@ position = Vector2(3840, 820)
 shape = SubResource("ground_shape")
 
 [node name="WallLeft" type="StaticBody2D" parent="."]
-position = Vector2(-20, 540)
+position = Vector2(246, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(7700, 540)
+position = Vector2(7394, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")

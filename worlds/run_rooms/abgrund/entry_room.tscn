@@ -1,5 +1,6 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=7 format=3 uid="uid://d3v1uhquio34p"]
 
+[ext_resource type="Texture2D" uid="uid://dqypijvmtewdq" path="res://Assets/AIPlaceholder/world 3/2D_Pixel_Art_Background_Sprite_GPT_Image_15_51290.jpg" id="1_2daly"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
@@ -22,6 +23,39 @@ offset_right = 7680.0
 offset_bottom = 800.0
 color = Color(0.04, 0.02, 0.06, 1)
 
+[node name="2dPixelArtBackgroundSpriteGptImage1551290" type="Sprite2D" parent="."]
+position = Vector2(715, 426)
+scale = Vector2(0.968904, 0.968904)
+texture = ExtResource("1_2daly")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1551291" type="Sprite2D" parent="."]
+position = Vector2(2203, 426)
+scale = Vector2(0.968904, 0.968904)
+texture = ExtResource("1_2daly")
+flip_h = true
+
+[node name="2dPixelArtBackgroundSpriteGptImage1551292" type="Sprite2D" parent="."]
+position = Vector2(3700.12, 426)
+scale = Vector2(0.968904, 0.968904)
+texture = ExtResource("1_2daly")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1551293" type="Sprite2D" parent="."]
+position = Vector2(5188.12, 426)
+scale = Vector2(0.968904, 0.968904)
+texture = ExtResource("1_2daly")
+flip_h = true
+
+[node name="2dPixelArtBackgroundSpriteGptImage1551294" type="Sprite2D" parent="."]
+position = Vector2(6678.12, 426)
+scale = Vector2(0.968904, 0.968904)
+texture = ExtResource("1_2daly")
+
+[node name="2dPixelArtBackgroundSpriteGptImage1551295" type="Sprite2D" parent="."]
+position = Vector2(8166.12, 426)
+scale = Vector2(0.968904, 0.968904)
+texture = ExtResource("1_2daly")
+flip_h = true
+
 [node name="GroundVisual" type="ColorRect" parent="."]
 offset_top = 800.0
 offset_right = 7680.0
@@ -41,7 +75,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(7700, 540)
+position = Vector2(7491, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -71,23 +105,23 @@ color = Color(0.15, 0.05, 0.2, 0.4)
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Default" parent="SpawnPoints" instance=ExtResource("1_spawn")]
-position = Vector2(3840, 760)
+position = Vector2(707, 681)
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1536, 700)
+position = Vector2(2221, 587)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(3072, 700)
+position = Vector2(3682, 550)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(4608, 700)
+position = Vector2(5205, 566)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(6144, 700)
+position = Vector2(6666, 591)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

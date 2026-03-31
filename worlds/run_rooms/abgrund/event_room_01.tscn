@@ -1,5 +1,6 @@
-[gd_scene load_steps=7 format=3 uid="uid://ct4od1i44bvqe"]
+[gd_scene load_steps=8 format=3 uid="uid://ct4od1i44bvqe"]
 
+[ext_resource type="Texture2D" uid="uid://batrac8kv803w" path="res://Assets/AIPlaceholder/world 3/2D_Pixel_Art_Background_Sprite_GPT_Image_15_53166.jpg" id="1_0wlf7"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
@@ -18,6 +19,11 @@ size = Vector2(5600, 40)
 size = Vector2(160, 120)
 
 [node name="EventRoom01" type="Node2D"]
+
+[node name="2dPixelArtBackgroundSpriteGptImage1553166" type="Sprite2D" parent="."]
+position = Vector2(1444, 297)
+scale = Vector2(2.6359, 2.6359)
+texture = ExtResource("1_0wlf7")
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
@@ -44,7 +50,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(5620, 540)
+position = Vector2(3479, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -66,7 +72,7 @@ color = Color(0.15, 0.05, 0.15, 0.7)
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Default" parent="SpawnPoints" instance=ExtResource("1_spawn")]
-position = Vector2(2800, 760)
+position = Vector2(1423, 760)
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 
@@ -79,13 +85,14 @@ position = Vector2(1120, 700)
 position = Vector2(2240, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(3360, 700)
+position = Vector2(2663, 372)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(4480, 700)
+position = Vector2(2748, 378)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(5040, 700)
+position = Vector2(87, 700)
+
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
 offset_top = 20.0
@@ -143,7 +150,7 @@ text = "+20 HP, -10 Mana"
 horizontal_alignment = 1
 
 [node name="ChoiceB" type="Area2D" parent="EventChoices"]
-position = Vector2(4236, 490)
+position = Vector2(1842, 490)
 collision_layer = 0
 collision_mask = 2
 
