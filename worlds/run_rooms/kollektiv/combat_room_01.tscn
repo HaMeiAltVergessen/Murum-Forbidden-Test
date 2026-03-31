@@ -73,6 +73,12 @@ position = Vector2(5600, 760)
 [node name="EnemySpawn4" type="Marker2D" parent="EnemySpawnPoints"]
 position = Vector2(7200, 760)
 
+[node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(2400, 510)
+
+[node name="EnemySpawn6" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(5600, 410)
+
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
@@ -89,6 +95,7 @@ position = Vector2(6400, 700)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
 position = Vector2(7200, 700)
+
 [node name="Platform1" parent="." instance=ExtResource("2_platform")]
 position = Vector2(2400, 550)
 
@@ -100,12 +107,6 @@ position = Vector2(3200, 790)
 
 [node name="SpikeTrap2" parent="." instance=ExtResource("3_spike_trap")]
 position = Vector2(4800, 790)
-
-[node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(2400, 510)
-
-[node name="EnemySpawn6" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(5600, 410)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

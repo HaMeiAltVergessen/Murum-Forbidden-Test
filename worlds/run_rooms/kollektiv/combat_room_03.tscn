@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=8 format=3 uid="uid://bh83hyea00e5x"]
 
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="2_platform"]
@@ -88,6 +88,15 @@ position = Vector2(5200, 760)
 [node name="EnemySpawn4" type="Marker2D" parent="EnemySpawnPoints"]
 position = Vector2(6400, 760)
 
+[node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(1600, 410)
+
+[node name="EnemySpawn6" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(5600, 310)
+
+[node name="EnemySpawn7" type="Marker2D" parent="EnemySpawnPoints"]
+position = Vector2(3600, 580)
+
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
@@ -104,20 +113,12 @@ position = Vector2(5760, 700)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
 position = Vector2(6480, 700)
+
 [node name="Platform2" parent="." instance=ExtResource("2_platform")]
 position = Vector2(1600, 450)
 
 [node name="Platform3" parent="." instance=ExtResource("2_platform")]
 position = Vector2(5600, 350)
-
-[node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(1600, 410)
-
-[node name="EnemySpawn6" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(5600, 310)
-
-[node name="EnemySpawn7" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(3600, 580)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
