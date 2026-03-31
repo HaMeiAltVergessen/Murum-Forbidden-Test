@@ -14,20 +14,31 @@ const ENEMY_SCENES_W1: Dictionary = {
 }
 
 const ENEMY_SCENES_W2: Dictionary = {
-	"monster_creature": "res://enemies/placeholder/monster_creature.tscn",
-	"fire_worm": "res://enemies/placeholder/fire_worm.tscn",
-	"golem": "res://enemies/placeholder/golem.tscn",
+	"sentinel_drone": "res://enemies/world_2_kollektiv/sentinel_drone.tscn",
+	"enforcer": "res://enemies/world_2_kollektiv/enforcer.tscn",
+	"mender": "res://enemies/world_2_kollektiv/mender.tscn",
+	"disruptor": "res://enemies/world_2_kollektiv/disruptor.tscn",
+	"vanguard": "res://enemies/world_2_kollektiv/vanguard.tscn",
+	"hivemind_nexus": "res://enemies/world_2_kollektiv/hivemind_nexus.tscn",
 }
 
 const ENEMY_SCENES_W3: Dictionary = {
-	"dark_fantasy": "res://enemies/placeholder/dark_fantasy.tscn",
-	"fire_worm": "res://enemies/placeholder/fire_worm.tscn",
-	"untote": "res://enemies/untote.tscn",
+	# W3 neue Gegner
+	"phase_wraith": "res://enemies/world_3_abgrund/phase_wraith.tscn",
+	"hollow_vessel": "res://enemies/world_3_abgrund/hollow_vessel.tscn",
+	"abyssal_anchor": "res://enemies/world_3_abgrund/abyssal_anchor.tscn",
+	"breach_hulk": "res://enemies/world_3_abgrund/breach_hulk.tscn",
+	"echo_siren": "res://enemies/world_3_abgrund/echo_siren.tscn",
+	"hollow_mender": "res://enemies/world_3_abgrund/hollow_mender.tscn",
+	"tethered_warden": "res://enemies/world_3_abgrund/the_tethered.tscn",
+	"tethered_beast": "res://enemies/world_3_abgrund/tethered_beast.tscn",
+	"the_witness": "res://enemies/world_3_abgrund/the_witness.tscn",
+	# W1+W2 Gegner (gemischt laut Design)
 	"geist": "res://enemies/world_1_ruins/geist.tscn",
-	"monster_creature": "res://enemies/placeholder/monster_creature.tscn",
-	"cthulu": "res://enemies/placeholder/cthulu.tscn",
-	"corpse_trap": "res://enemies/world_1_ruins/corpse_trap.tscn",
+	"untote": "res://enemies/untote.tscn",
 	"glimmerseed": "res://enemies/world_1_ruins/glimmerseed.tscn",
+	"sentinel_drone": "res://enemies/world_2_kollektiv/sentinel_drone.tscn",
+	"enforcer": "res://enemies/world_2_kollektiv/enforcer.tscn",
 }
 
 # ============ ENCOUNTER TEMPLATES ============
@@ -51,34 +62,41 @@ const ELITE_ENCOUNTERS_W1: Array = [
 	[{"key": "guardian_statue", "count": 1}, {"key": "geist", "count": 2}],
 ]
 
-# === WELT 2: Kollektiv (Monster Creature + Fire Worm, Elite: Golem x2) ===
+# === WELT 2: Kollektiv (Sentinel Drone, Enforcer, Mender, Disruptor; Elite: Vanguard, Hivemind Nexus) ===
 const COMBAT_ENCOUNTERS_W2: Array = [
-	[{"key": "monster_creature", "count": 2}, {"key": "fire_worm", "count": 1}],
-	[{"key": "fire_worm", "count": 2}, {"key": "monster_creature", "count": 1}],
-	[{"key": "monster_creature", "count": 3}],
-	[{"key": "fire_worm", "count": 2}, {"key": "monster_creature", "count": 2}],
+	[{"key": "sentinel_drone", "count": 2}, {"key": "enforcer", "count": 1}],
+	[{"key": "enforcer", "count": 2}, {"key": "mender", "count": 1}],
+	[{"key": "sentinel_drone", "count": 3}, {"key": "mender", "count": 1}],
+	[{"key": "disruptor", "count": 1}, {"key": "sentinel_drone", "count": 2}],
+	[{"key": "enforcer", "count": 1}, {"key": "disruptor", "count": 1}, {"key": "mender", "count": 1}],
+	[{"key": "sentinel_drone", "count": 2}, {"key": "disruptor", "count": 1}, {"key": "enforcer", "count": 1}],
 ]
 
 const ELITE_ENCOUNTERS_W2: Array = [
-	[{"key": "golem", "count": 2}, {"key": "monster_creature", "count": 1}],
-	[{"key": "golem", "count": 2}, {"key": "fire_worm", "count": 1}],
+	[{"key": "vanguard", "count": 1}, {"key": "enforcer", "count": 2}],
+	[{"key": "vanguard", "count": 1}, {"key": "sentinel_drone", "count": 3}],
+	[{"key": "hivemind_nexus", "count": 1}, {"key": "disruptor", "count": 1}],
+	[{"key": "hivemind_nexus", "count": 1}, {"key": "enforcer", "count": 1}],
 ]
 
-# === WELT 3: Abgrund (Alle Gegner gemischt, Elite: Cthulu x3) ===
+# === WELT 3: Abgrund (W3-Gegner + W1/W2 gemischt; Elite: Tethered-Paar, Witness) ===
 const COMBAT_ENCOUNTERS_W3: Array = [
-	[{"key": "dark_fantasy", "count": 2}, {"key": "geist", "count": 2}],
-	[{"key": "fire_worm", "count": 2}, {"key": "untote", "count": 2}],
-	[{"key": "monster_creature", "count": 2}, {"key": "dark_fantasy", "count": 1}],
-	[{"key": "geist", "count": 2}, {"key": "fire_worm", "count": 1}, {"key": "untote", "count": 1}],
-	[{"key": "dark_fantasy", "count": 3}, {"key": "monster_creature", "count": 1}],
-	[{"key": "corpse_trap", "count": 3}, {"key": "dark_fantasy", "count": 1}],
-	[{"key": "glimmerseed", "count": 3}, {"key": "geist", "count": 2}],
+	[{"key": "phase_wraith", "count": 2}, {"key": "hollow_vessel", "count": 1}],
+	[{"key": "hollow_vessel", "count": 2}, {"key": "echo_siren", "count": 1}],
+	[{"key": "abyssal_anchor", "count": 1}, {"key": "phase_wraith", "count": 2}],
+	[{"key": "breach_hulk", "count": 1}, {"key": "hollow_mender", "count": 1}],
+	[{"key": "echo_siren", "count": 1}, {"key": "hollow_vessel", "count": 2}, {"key": "geist", "count": 1}],
+	[{"key": "phase_wraith", "count": 1}, {"key": "sentinel_drone", "count": 2}, {"key": "hollow_mender", "count": 1}],
+	[{"key": "abyssal_anchor", "count": 1}, {"key": "enforcer", "count": 1}, {"key": "hollow_vessel", "count": 1}],
+	[{"key": "breach_hulk", "count": 1}, {"key": "echo_siren", "count": 1}, {"key": "phase_wraith", "count": 1}],
+	[{"key": "hollow_mender", "count": 1}, {"key": "glimmerseed", "count": 3}, {"key": "untote", "count": 1}],
 ]
 
 const ELITE_ENCOUNTERS_W3: Array = [
-	[{"key": "cthulu", "count": 3}],
-	[{"key": "cthulu", "count": 3}, {"key": "dark_fantasy", "count": 1}],
-	[{"key": "cthulu", "count": 3}, {"key": "geist", "count": 2}],
+	[{"key": "tethered_warden", "count": 1}, {"key": "tethered_beast", "count": 1}],
+	[{"key": "tethered_warden", "count": 1}, {"key": "tethered_beast", "count": 1}, {"key": "phase_wraith", "count": 1}],
+	[{"key": "the_witness", "count": 1}, {"key": "hollow_vessel", "count": 2}],
+	[{"key": "the_witness", "count": 1}, {"key": "echo_siren", "count": 1}],
 ]
 
 # ============ REWARD POOLS ============

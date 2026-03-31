@@ -1,0 +1,57 @@
+[gd_scene load_steps=7 format=3 uid="uid://brm6kw3qt8n5x"]
+
+[ext_resource type="Script" path="res://enemies/world_3_abgrund/echo_siren.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://be8au7dl6rc4k" path="res://components/hurtbox_component.gd" id="2_hurtbox"]
+[ext_resource type="Script" uid="uid://ccjbelb33h57n" path="res://components/hitbox_component.gd" id="3_hitbox"]
+
+[sub_resource type="CapsuleShape2D" id="body_shape"]
+radius = 24.0
+height = 64.0
+
+[sub_resource type="RectangleShape2D" id="hurtbox_shape"]
+size = Vector2(48, 64)
+
+[sub_resource type="CircleShape2D" id="detection_shape"]
+radius = 400.0
+
+[node name="EchoSiren" type="CharacterBody2D" groups=["enemies", "echo_siren"]]
+collision_layer = 8
+collision_mask = 7
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.7, 0.4, 0.9, 0.8)
+scale = Vector2(3, 3)
+
+[node name="PlaceholderVisual" type="ColorRect" parent="."]
+offset_left = -24.0
+offset_top = -32.0
+offset_right = 24.0
+offset_bottom = 32.0
+color = Color(0.7, 0.4, 0.9, 0.7)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("body_shape")
+
+[node name="HurtboxComponent" type="Area2D" parent="."]
+collision_layer = 1024
+collision_mask = 48
+script = ExtResource("2_hurtbox")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]
+shape = SubResource("hurtbox_shape")
+
+[node name="HitboxComponent" type="Area2D" parent="."]
+collision_layer = 128
+collision_mask = 1030
+script = ExtResource("3_hitbox")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
+shape = SubResource("hurtbox_shape")
+
+[node name="DetectionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource("detection_shape")
