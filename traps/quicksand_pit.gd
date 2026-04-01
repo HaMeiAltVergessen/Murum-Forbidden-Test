@@ -70,8 +70,8 @@ func _ready() -> void:
 	damage_timer.start()
 
 	# Start animation if present
-	if animated_sprite:
-		animated_sprite.play("default")
+	if sprite:
+		sprite.play("default")
 
 	# Start particles
 	if pull_particles:
