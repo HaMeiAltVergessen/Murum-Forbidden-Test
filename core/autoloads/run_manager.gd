@@ -382,6 +382,10 @@ func _load_brainroom_transition(next_world_id: RunMapData.WorldId) -> void:
 	if spawn and GameManager.player and is_instance_valid(GameManager.player):
 		GameManager.player.global_position = spawn.global_position
 
+	# Musik fuer Brainroom-Transition
+	if MusicScenePlayer:
+		MusicScenePlayer.play_for_run_room(RunMapData.WorldId.KOLLEKTIV, RunMapData.NodeType.EVENT)
+
 	# Create portal interaction to proceed to W3
 	_create_brainroom_portal(room, next_world_id)
 

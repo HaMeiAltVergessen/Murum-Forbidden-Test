@@ -5,95 +5,6 @@ extends Node2D
 class_name RunNodeRoom
 
 # ============ DOOR COLORS ============
-# ============ BACKGROUND POOLS (per world, keyed by usage) ============
-const BG_BASE := "res://Assets/AIPlaceholder/AlbtraumWelten/"
-
-const BG_POOL_W1: Dictionary = {
-	"combat": [
-		BG_BASE + "Welt1_Niemandsland/Dark_fantasy_battlefield_backg_GPT_Image_15_55624.jpg",
-		BG_BASE + "Welt1_Niemandsland/Dark_fantasy_battlefield_backg_GPT_Image_15_65828.jpg",
-		BG_BASE + "Welt1_Niemandsland/Dark_fantasy_battlefield_backg_GPT_Image_15_73838.jpg",
-		BG_BASE + "Welt1_Niemandsland/Dark_fantasy_battlefield_backg_GPT_Image_15_91400.jpg",
-		BG_BASE + "Welt1_Niemandsland/Dark_fantasy_battlefield_backg_GPT_Image_15_98539.jpg",
-	],
-}
-
-const BG_POOL_W2: Dictionary = {
-	"combat": [
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_cyberpunk_slum_en_GPT_Image_15_18921.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_cyberpunk_slum_en_GPT_Image_15_35710.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_cyberpunk_slum_en_GPT_Image_15_56628.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_cyberpunk_slum_en_GPT_Image_15_69591.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_sci-fi_battlefiel_GPT_Image_15_36535.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_sci-fi_battlefiel_GPT_Image_15_42145.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_sci-fi_battlefiel_GPT_Image_15_64619.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_sci-fi_battlefiel_GPT_Image_15_87409.jpg",
-	],
-	"calm": [
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_quiet_orbital_mai_GPT_Image_15_08434.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_quiet_orbital_mai_GPT_Image_15_16362.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_quiet_orbital_mai_GPT_Image_15_35464.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_sci-fi_background_GPT_Image_15_13943.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_sci-fi_background_GPT_Image_15_34442.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_sci-fi_background_GPT_Image_15_64929.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_sci-fi_background_GPT_Image_15_90257.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_sci-fi_background_GPT_Image_15_90607.jpg",
-	],
-	"shop": [
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_cyberpunk_market__GPT_Image_15_52087.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_cyberpunk_market__GPT_Image_15_59630.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_cyberpunk_market__GPT_Image_15_64088.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_cyberpunk_market__GPT_Image_15_73948.jpg",
-	],
-	"event": [
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_cosmic_transition_GPT_Image_15_13643.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_cosmic_transition_GPT_Image_15_56631.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_cosmic_transition_GPT_Image_15_76179.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_cosmic_transition_GPT_Image_15_95897.jpg",
-	],
-	"boss": [
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_massive_sci-fi_bo_GPT_Image_15_83056.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_sci-fi_orbital_do_GPT_Image_15_34768.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_sci-fi_orbital_do_GPT_Image_15_41097.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_sci-fi_orbital_do_GPT_Image_15_57277.jpg",
-		BG_BASE + "Welt2_Kollektiv/2D_pixel_art_sci-fi_orbital_do_GPT_Image_15_61592.jpg",
-	],
-}
-
-const BG_POOL_W3: Dictionary = {
-	"combat": [
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_cosmic_horror_bac_GPT_Image_15_29025.jpg",
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_cosmic_horror_bac_GPT_Image_15_45960.jpg",
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_cosmic_horror_bac_GPT_Image_15_72404.jpg",
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_cosmic_horror_bac_GPT_Image_15_79074.jpg",
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_cosmic_horror_env_GPT_Image_15_03661.jpg",
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_cosmic_horror_env_GPT_Image_15_09903.jpg",
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_cosmic_horror_env_GPT_Image_15_35905.jpg",
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_cosmic_horror_env_GPT_Image_15_84370.jpg",
-	],
-	"calm": [
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_minimal_cosmic_ho_GPT_Image_15_44077.jpg",
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_minimal_cosmic_ho_GPT_Image_15_87340.jpg",
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_minimal_cosmic_ho_GPT_Image_15_88414.jpg",
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_minimal_cosmic_ho_GPT_Image_15_89422.jpg",
-	],
-	"event": [
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_surreal_void_cham_GPT_Image_15_25602.jpg",
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_surreal_void_cham_GPT_Image_15_89156.jpg",
-	],
-	"elite": [
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_massive_spiral_ab_GPT_Image_15_07174.jpg",
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_massive_spiral_ab_GPT_Image_15_20807.jpg",
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_massive_spiral_ab_GPT_Image_15_37001.jpg",
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_massive_spiral_ab_GPT_Image_15_70264.jpg",
-	],
-	"boss": [
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_cosmic_horror_bos_GPT_Image_15_12927.jpg",
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_cosmic_horror_bos_GPT_Image_15_15505.jpg",
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_cosmic_horror_bos_GPT_Image_15_44765.jpg",
-		BG_BASE + "Welt3_Abgrund/2D_pixel_art_cosmic_horror_bos_GPT_Image_15_93186.jpg",
-	],
-}
 
 const DOOR_TEXTURE: Texture2D = preload("res://Assets/AIAssets/AIStuff/Interact_Dialog.png")
 
@@ -137,7 +48,6 @@ func _activate() -> void:
 		GameManager.register_room(self)
 		GameManager.current_state = GameManager.GameState.PLAYING
 
-	_setup_background()
 	_setup_death_zone()
 	_setup_player()
 	_spawn_exit_doors()
@@ -256,72 +166,6 @@ func _on_death_zone_body_entered(body: Node) -> void:
 		# Last resort: emit death signal manually and free
 		EventBus.enemy_died.emit(body, body.global_position)
 		body.queue_free()
-
-
-# ============ BACKGROUND SETUP ============
-func _setup_background() -> void:
-	var bg_key: String = _get_bg_key()
-	var pool: Array = _get_bg_pool(bg_key)
-	if pool.is_empty():
-		return
-
-	var tex_path: String = pool[randi() % pool.size()]
-	var tex: Texture2D = load(tex_path) as Texture2D
-	if not tex:
-		push_warning("[RunNodeRoom] Failed to load background: %s" % tex_path)
-		return
-
-	# Find and replace the existing Background ColorRect
-	var old_bg: ColorRect = get_node_or_null("Background") as ColorRect
-	if old_bg:
-		old_bg.queue_free()
-
-	var tex_rect := TextureRect.new()
-	tex_rect.name = "BackgroundSprite"
-	tex_rect.texture = tex
-	tex_rect.z_index = -10
-	tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	tex_rect.size = Vector2(1920, 800)
-	tex_rect.position = Vector2.ZERO
-	add_child(tex_rect)
-	move_child(tex_rect, 0)
-
-	print("[RunNodeRoom] Background: %s" % tex_path.get_file())
-
-
-func _get_bg_key() -> String:
-	match node_type:
-		RunMapData.NodeType.COMBAT:
-			return "combat"
-		RunMapData.NodeType.ELITE:
-			return "elite"
-		RunMapData.NodeType.TREASURE, RunMapData.NodeType.REST:
-			return "calm"
-		RunMapData.NodeType.EVENT:
-			return "event"
-		RunMapData.NodeType.BOSS:
-			return "boss"
-		RunMapData.NodeType.SHOP:
-			return "shop"
-	return "combat"
-
-
-func _get_bg_pool(key: String) -> Array:
-	var world_pool: Dictionary = {}
-	match world_id:
-		RunMapData.WorldId.NIEMANDSLAND:
-			world_pool = BG_POOL_W1
-		RunMapData.WorldId.KOLLEKTIV:
-			world_pool = BG_POOL_W2
-		RunMapData.WorldId.ABGRUND:
-			world_pool = BG_POOL_W3
-
-	if world_pool.has(key):
-		return world_pool[key]
-	# Fallback to combat pool
-	if world_pool.has("combat"):
-		return world_pool["combat"]
-	return []
 
 
 # ============ PLAYER SETUP ============

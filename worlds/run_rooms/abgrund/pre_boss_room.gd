@@ -130,7 +130,7 @@ func start_lythrun_fight() -> void:
 
 	# Lythrun Boss-Musik starten
 	if MusicScenePlayer:
-		MusicScenePlayer.force_play_scene("LythrunBoss")
+		MusicScenePlayer.force_play_scene("LythrunBossP1")
 
 	get_tree().create_timer(1.0).timeout.connect(func():
 		if _lythrun_boss and is_instance_valid(_lythrun_boss) and _lythrun_boss.has_method("start_fight"):
