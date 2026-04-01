@@ -1,6 +1,6 @@
-[gd_resource type="SpriteFrames" load_steps=5 format=3]
+[gd_resource type="SpriteFrames" load_steps=5 format=3 uid="uid://bf8u750g7ihkw"]
 
-[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/pendulum_blade_sheet.png" id="1_sheet"]
+[ext_resource type="Texture2D" uid="uid://csk8cq1wvtco3" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/pendulum_blade_sheet.png" id="1_sheet"]
 
 [sub_resource type="AtlasTexture" id="frame_0"]
 atlas = ExtResource("1_sheet")

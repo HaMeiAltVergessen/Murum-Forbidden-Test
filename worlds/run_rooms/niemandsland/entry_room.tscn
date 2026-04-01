@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://cflab5qpgvjwd"]
+[gd_scene load_steps=36 format=3 uid="uid://cflab5qpgvjwd"]
 
 [ext_resource type="Texture2D" uid="uid://bcf1bvmbq8p8g" path="res://Assets/AIPlaceholder/world1preTempel.png" id="1_ghxj8"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
@@ -23,6 +23,10 @@
 [ext_resource type="PackedScene" path="res://traps/world_2/scenes/laser_wall.tscn" id="12_8tws0"]
 [ext_resource type="PackedScene" uid="uid://bx7k2qn8nav4p" path="res://enemies/world_1_ruins/geist.tscn" id="12_nwvau"]
 [ext_resource type="PackedScene" path="res://traps/world_2/scenes/security_drone.tscn" id="13_yqugh"]
+[ext_resource type="PackedScene" path="res://traps/scenes/arrow_trap.tscn" id="14_wa02y"]
+[ext_resource type="PackedScene" path="res://traps/scenes/falling_rock.tscn" id="15_jeaoy"]
+[ext_resource type="PackedScene" path="res://traps/scenes/pendulum_blade.tscn" id="16_nqgum"]
+[ext_resource type="PackedScene" path="res://traps/scenes/quicksand_pit.tscn" id="17_ni6hl"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(1920, 40)
@@ -146,6 +150,19 @@ position = Vector2(5588, -1984)
 
 [node name="SecurityDrone" parent="DoorPositions" instance=ExtResource("13_yqugh")]
 position = Vector2(3507, -1698)
+
+[node name="ArrowTrap" parent="DoorPositions" instance=ExtResource("14_wa02y")]
+position = Vector2(5313, -1334)
+
+[node name="FallingRock" parent="DoorPositions" instance=ExtResource("15_jeaoy")]
+position = Vector2(4270, -1761)
+
+[node name="PendulumBlade" parent="DoorPositions" instance=ExtResource("16_nqgum")]
+position = Vector2(4315, -1098)
+scale = Vector2(6.17943, 6.17943)
+
+[node name="QuicksandPit" parent="DoorPositions" instance=ExtResource("17_ni6hl")]
+position = Vector2(2909, -242)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

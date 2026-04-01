@@ -1,14 +1,14 @@
-[gd_resource type="SpriteFrames" load_steps=5 format=3]
+[gd_resource type="SpriteFrames" load_steps=5 format=3 uid="uid://d23mklguo4yq"]
 
-[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/quicksand_sheet.png" id="1_sheet"]
-
-[sub_resource type="AtlasTexture" id="frame_0"]
-atlas = ExtResource("1_sheet")
-region = Rect2(0, 0, 512, 324)
+[ext_resource type="Texture2D" uid="uid://clhdvfa4i6vjy" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/quicksand_sheet.png" id="1_sheet"]
 
 [sub_resource type="AtlasTexture" id="frame_1"]
 atlas = ExtResource("1_sheet")
 region = Rect2(512, 0, 512, 324)
+
+[sub_resource type="AtlasTexture" id="frame_0"]
+atlas = ExtResource("1_sheet")
+region = Rect2(0, 0, 512, 324)
 
 [sub_resource type="AtlasTexture" id="frame_2"]
 atlas = ExtResource("1_sheet")
@@ -18,18 +18,18 @@ region = Rect2(1024, 0, 512, 324)
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("frame_0")
-}],
-"loop": true,
-"name": &"idle",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
 "texture": SubResource("frame_1")
 }],
 "loop": true,
 "name": &"active",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_0")
+}],
+"loop": true,
+"name": &"idle",
 "speed": 5.0
 }, {
 "frames": [{
