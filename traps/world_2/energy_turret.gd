@@ -58,8 +58,8 @@ var turret_height: float = 48.0  # Visual height for retract animation
 @onready var fire_point: Marker2D = $TurretHead/FirePoint if has_node("TurretHead/FirePoint") else null
 @onready var detection_area: Area2D = $DetectionArea if has_node("DetectionArea") else null
 @onready var hurtbox: Area2D = $HurtboxArea if has_node("HurtboxArea") else null
-@onready var turret_visual: ColorRect = $TurretVisual if has_node("TurretVisual") else null
-@onready var head_visual: ColorRect = $TurretHead/HeadVisual if has_node("TurretHead/HeadVisual") else null
+@onready var turret_visual: AnimatedSprite2D = $TurretVisual if has_node("TurretVisual") else null
+@onready var head_visual: Sprite2D = $TurretHead/HeadVisual if has_node("TurretHead/HeadVisual") else null
 
 var fire_timer: Timer = null
 var retract_timer: Timer = null

@@ -57,7 +57,7 @@ var hit_entities: Array[Node2D] = []  # Prevent multi-hit per swing
 @onready var blade_hitbox: Area2D = $Pivot/BladeHitbox if has_node("Pivot/BladeHitbox") else null
 @onready var proximity_detector: Area2D = $ProximityDetector if has_node("ProximityDetector") else null
 @onready var chain_visual: Line2D = $ChainVisual if has_node("ChainVisual") else null
-@onready var blade_visual: ColorRect = $Pivot/BladeVisual if has_node("Pivot/BladeVisual") else null
+@onready var blade_visual: AnimatedSprite2D = $Pivot/BladeVisual if has_node("Pivot/BladeVisual") else null
 @onready var trail_particles: GPUParticles2D = $Pivot/TrailParticles if has_node("Pivot/TrailParticles") else null
 
 var reset_timer: Timer = null

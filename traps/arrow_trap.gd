@@ -40,7 +40,7 @@ var is_active: bool = false
 # REFERENCES
 # ============================================================================
 
-@onready var sprite: Sprite2D = $Sprite2D if has_node("Sprite2D") else null
+@onready var sprite: AnimatedSprite2D = $Sprite2D if has_node("Sprite2D") else null
 @onready var fire_point: Marker2D = $FirePoint if has_node("FirePoint") else null
 @onready var pressure_plate: Area2D = $PressurePlate if has_node("PressurePlate") else null
 @onready var proximity_detector: Area2D = $ProximityDetector if has_node("ProximityDetector") else null

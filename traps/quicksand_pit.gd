@@ -38,8 +38,7 @@ var players_inside: Dictionary = {}  # player -> time_inside
 # REFERENCES
 # ============================================================================
 
-@onready var sprite: Sprite2D = $Sprite2D if has_node("Sprite2D") else null
-@onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D if has_node("AnimatedSprite2D") else null
+@onready var sprite: AnimatedSprite2D = $Sprite2D if has_node("Sprite2D") else null
 @onready var pull_particles: GPUParticles2D = $PullParticles if has_node("PullParticles") else null
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D if has_node("CollisionShape2D") else null
 

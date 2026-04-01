@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" load_steps=4 format=3]
+
+[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/time_distortion_sheet.png" id="1_sheet"]
+
+[sub_resource type="AtlasTexture" id="frame_0"]
+atlas = ExtResource("1_sheet")
+region = Rect2(0, 0, 675, 569)
+
+[sub_resource type="AtlasTexture" id="frame_1"]
+atlas = ExtResource("1_sheet")
+region = Rect2(675, 0, 675, 569)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_0")
+}],
+"loop": false,
+"name": &"inactive",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_1")
+}],
+"loop": false,
+"name": &"active",
+"speed": 5.0
+}]

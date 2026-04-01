@@ -35,7 +35,7 @@ var pulse_time: float = 0.0
 # REFERENCES
 # ============================================================================
 
-@onready var zone_visual: ColorRect = $ZoneVisual if has_node("ZoneVisual") else null
+@onready var zone_visual: AnimatedSprite2D = $ZoneVisual if has_node("ZoneVisual") else null
 @onready var edge_particles: GPUParticles2D = $EdgeParticles if has_node("EdgeParticles") else null
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D if has_node("CollisionShape2D") else null
 

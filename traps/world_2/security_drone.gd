@@ -58,11 +58,11 @@ var spawn_position: Vector2 = Vector2.ZERO
 # REFERENCES
 # ============================================================================
 
-@onready var drone_visual: ColorRect = $DroneVisual if has_node("DroneVisual") else null
+@onready var drone_visual: AnimatedSprite2D = $DroneVisual if has_node("DroneVisual") else null
 @onready var detection_area: Area2D = $DetectionArea if has_node("DetectionArea") else null
 @onready var hurtbox_area: Area2D = $HurtboxArea if has_node("HurtboxArea") else null
 @onready var fire_point: Marker2D = $FirePoint if has_node("FirePoint") else null
-@onready var alert_indicator: ColorRect = $AlertIndicator if has_node("AlertIndicator") else null
+@onready var alert_indicator: Node2D = $AlertIndicator if has_node("AlertIndicator") else null
 
 var stun_timer: Timer = null
 var respawn_timer: Timer = null

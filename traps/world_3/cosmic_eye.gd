@@ -46,9 +46,9 @@ var damage_accumulator: float = 0.0
 # REFERENCES
 # ============================================================================
 
-@onready var eye_visual: ColorRect = $EyeVisual if has_node("EyeVisual") else null
-@onready var pupil_visual: ColorRect = $PupilVisual if has_node("PupilVisual") else null
-@onready var iris_visual: ColorRect = $IrisVisual if has_node("IrisVisual") else null
+@onready var eye_visual: AnimatedSprite2D = $EyeVisual if has_node("EyeVisual") else null
+@onready var pupil_visual: Node2D = $PupilVisual if has_node("PupilVisual") else null
+@onready var iris_visual: Node2D = $IrisVisual if has_node("IrisVisual") else null
 @onready var beam_visual: Line2D = $BeamVisual if has_node("BeamVisual") else null
 @onready var raycast: RayCast2D = $RayCast2D if has_node("RayCast2D") else null
 @onready var detection_area: Area2D = $DetectionArea if has_node("DetectionArea") else null

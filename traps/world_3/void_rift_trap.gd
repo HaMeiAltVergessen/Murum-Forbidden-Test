@@ -40,7 +40,7 @@ var pulse_time: float = 0.0
 # REFERENCES
 # ============================================================================
 
-@onready var rift_visual: ColorRect = $RiftVisual if has_node("RiftVisual") else null
+@onready var rift_visual: AnimatedSprite2D = $RiftVisual if has_node("RiftVisual") else null
 @onready var vortex_particles: GPUParticles2D = $VortexParticles if has_node("VortexParticles") else null
 
 var cooldown_timer: Timer = null

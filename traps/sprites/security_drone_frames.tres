@@ -1,0 +1,66 @@
+[gd_resource type="SpriteFrames" load_steps=7 format=3]
+
+[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/security_drone_sheet.png" id="1_sheet"]
+
+[sub_resource type="AtlasTexture" id="frame_0"]
+atlas = ExtResource("1_sheet")
+region = Rect2(0, 0, 368, 345)
+
+[sub_resource type="AtlasTexture" id="frame_1"]
+atlas = ExtResource("1_sheet")
+region = Rect2(368, 0, 368, 345)
+
+[sub_resource type="AtlasTexture" id="frame_2"]
+atlas = ExtResource("1_sheet")
+region = Rect2(736, 0, 368, 345)
+
+[sub_resource type="AtlasTexture" id="frame_3"]
+atlas = ExtResource("1_sheet")
+region = Rect2(1104, 0, 368, 345)
+
+[sub_resource type="AtlasTexture" id="frame_4"]
+atlas = ExtResource("1_sheet")
+region = Rect2(1472, 0, 368, 345)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_0")
+}],
+"loop": false,
+"name": &"patrol",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_1")
+}],
+"loop": false,
+"name": &"firing",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_2")
+}],
+"loop": false,
+"name": &"alert",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_3")
+}],
+"loop": false,
+"name": &"stunned",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_4")
+}],
+"loop": false,
+"name": &"destroyed",
+"speed": 5.0
+}]

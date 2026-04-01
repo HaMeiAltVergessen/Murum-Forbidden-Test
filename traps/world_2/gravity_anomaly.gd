@@ -34,8 +34,7 @@ var pulse_time: float = 0.0
 # REFERENCES
 # ============================================================================
 
-@onready var field_visual: ColorRect = $FieldVisual if has_node("FieldVisual") else null
-@onready var core_visual: ColorRect = $CoreVisual if has_node("CoreVisual") else null
+@onready var field_visual: AnimatedSprite2D = $FieldVisual if has_node("FieldVisual") else null
 @onready var pull_particles: GPUParticles2D = $PullParticles if has_node("PullParticles") else null
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D if has_node("CollisionShape2D") else null
 
@@ -186,9 +185,6 @@ func _update_visual_pulse() -> void:
 		var pulse = sin(pulse_time * 2.0) * 0.15 + 0.55
 		field_visual.modulate.a = pulse
 
-	if core_visual:
-		var core_pulse = sin(pulse_time * 3.0) * 0.2 + 0.8
-		core_visual.modulate.a = core_pulse
 
 # ============================================================================
 # HELPERS

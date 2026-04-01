@@ -43,9 +43,7 @@ var contact_players: Dictionary = {}  # player -> true
 
 @onready var blocker: StaticBody2D = $Blocker if has_node("Blocker") else null
 @onready var damage_area: Area2D = $DamageArea if has_node("DamageArea") else null
-@onready var field_visual: ColorRect = $FieldVisual if has_node("FieldVisual") else null
-@onready var border_visual_top: ColorRect = $BorderTop if has_node("BorderTop") else null
-@onready var border_visual_bottom: ColorRect = $BorderBottom if has_node("BorderBottom") else null
+@onready var field_visual: AnimatedSprite2D = $FieldVisual if has_node("FieldVisual") else null
 
 var damage_timer: Timer = null
 var reactivate_timer: Timer = null
@@ -187,7 +185,7 @@ func _reactivate() -> void:
 		tween.finished.connect(activate)
 
 		# Green → Red transition
-		field_visual.color = Color(0.2, 0.8, 0.2, 0.6)
+		field_visual.modulate = Color(0.2, 0.8, 0.2, 0.6)
 	else:
 		activate()
 
@@ -241,8 +239,7 @@ func _update_visual() -> void:
 	match current_state:
 		State.ACTIVE:
 			field_visual.visible = true
-			field_visual.color = Color(1.0, 0.2, 0.2, 0.6)  # Red
-			field_visual.modulate.a = 1.0
+			field_visual.modulate = Color(1.0, 0.2, 0.2, 0.6)  # Red
 		State.INACTIVE:
 			field_visual.visible = false
 

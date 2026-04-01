@@ -55,8 +55,8 @@ var current_grab_hp: int = 0
 # REFERENCES
 # ============================================================================
 
-@onready var tendril_visual: ColorRect = $TendrilVisual if has_node("TendrilVisual") else null
-@onready var crack_visual: ColorRect = $CrackVisual if has_node("CrackVisual") else null
+@onready var tendril_visual: AnimatedSprite2D = $TendrilVisual if has_node("TendrilVisual") else null
+@onready var crack_visual: Node2D = $CrackVisual if has_node("CrackVisual") else null
 @onready var grab_hitbox: Area2D = $GrabHitbox if has_node("GrabHitbox") else null
 @onready var hurtbox_area: Area2D = $HurtboxArea if has_node("HurtboxArea") else null
 @onready var escape_label: Label = $EscapeLabel if has_node("EscapeLabel") else null

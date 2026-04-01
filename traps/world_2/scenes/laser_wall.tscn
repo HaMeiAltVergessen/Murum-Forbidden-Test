@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://laser_wall_trap_001"]
+[gd_scene load_steps=4 format=3 uid="uid://laser_wall_trap_001"]
 
 [ext_resource type="Script" path="res://traps/world_2/laser_wall.gd" id="1"]
+[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/laser_beam.png" id="2_tex"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_laser"]
 size = Vector2(1920, 12)
@@ -21,18 +22,13 @@ collision_mask = 0
 [node name="CollisionShape2D" type="CollisionShape2D" parent="LaserBeam"]
 shape = SubResource("RectangleShape2D_laser")
 
-[node name="LaserVisual" type="ColorRect" parent="LaserBeam"]
+[node name="LaserVisual" type="Sprite2D" parent="LaserBeam"]
 visible = false
-offset_left = -960.0
-offset_top = -6.0
-offset_right = 960.0
-offset_bottom = 6.0
-color = Color(1, 0.2, 0.2, 0.9)
+texture = ExtResource("2_tex")
+scale = Vector2(1.53, 0.32)
 
-[node name="WarningVisual" type="ColorRect" parent="LaserBeam"]
+[node name="WarningVisual" type="Sprite2D" parent="LaserBeam"]
 visible = false
-offset_left = -960.0
-offset_top = -2.0
-offset_right = 960.0
-offset_bottom = 2.0
-color = Color(1, 0.3, 0.3, 0.5)
+texture = ExtResource("2_tex")
+modulate = Color(1, 0.3, 0.3, 0.5)
+scale = Vector2(1.53, 0.1)

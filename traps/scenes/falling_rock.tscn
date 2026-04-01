@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://falling_rock_001"]
+[gd_scene load_steps=5 format=3 uid="uid://falling_rock_001"]
 
 [ext_resource type="Script" path="res://traps/falling_rock.gd" id="1"]
+[ext_resource type="SpriteFrames" path="res://traps/sprites/falling_rock_frames.tres" id="2_frames"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_proximity"]
 radius = 200.0
@@ -17,14 +18,10 @@ trigger_range = 200.0
 warning_duration = 0.5
 damage_radius = 50.0
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-
-[node name="ColorRect" type="ColorRect" parent="Sprite2D"]
-offset_left = -24.0
-offset_top = -24.0
-offset_right = 24.0
-offset_bottom = 24.0
-color = Color(0.4, 0.3, 0.25, 1)
+[node name="Sprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.13, 0.13)
+sprite_frames = ExtResource("2_frames")
+animation = &"ceiling"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_rock")

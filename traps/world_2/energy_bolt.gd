@@ -32,7 +32,7 @@ var is_parried: bool = false
 # REFERENCES
 # ============================================================================
 
-@onready var bolt_visual: ColorRect = $BoltVisual if has_node("BoltVisual") else null
+@onready var bolt_visual: AnimatedSprite2D = $BoltVisual if has_node("BoltVisual") else null
 @onready var trail: GPUParticles2D = $Trail if has_node("Trail") else null
 
 var lifetime_timer: Timer = null
@@ -165,7 +165,7 @@ func _parry(player: Node2D) -> void:
 
 	# Visual: Change color to green (reflected)
 	if bolt_visual:
-		bolt_visual.color = Color(0.2, 1.0, 0.4, 1.0)
+		bolt_visual.modulate = Color(0.2, 1.0, 0.4, 1.0)
 
 	print("[EnergyBolt] Parried! Redirected, damage: %d" % damage)
 

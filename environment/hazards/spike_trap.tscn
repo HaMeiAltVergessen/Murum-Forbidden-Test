@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://c8jvg5x7m3nqd"]
 
 [ext_resource type="Script" uid="uid://cai8mae21lgem" path="res://environment/hazards/spike_trap.gd" id="1_spike_trap"]
-[ext_resource type="Texture2D" uid="uid://cjor06tpoji3k" path="res://Assets/Placeholder/Legacy Collection/Assets/Packs/Gothicvania Church/Stomper Asset Files/environment/spikes.png" id="2_spikes"]
+[ext_resource type="SpriteFrames" path="res://traps/sprites/spike_trap_frames.tres" id="2_frames"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hitbox"]
 size = Vector2(128, 32)
@@ -12,10 +12,10 @@ size = Vector2(128, 32)
 [node name="SpikeTrap" type="Node2D"]
 script = ExtResource("1_spike_trap")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(0, 0)
-scale = Vector2(4, 4)
-texture = ExtResource("2_spikes")
+[node name="Sprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.27, 0.27)
+sprite_frames = ExtResource("2_frames")
+animation = &"off"
 
 [node name="HitboxComponent" type="Area2D" parent="."]
 collision_layer = 0

@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://time_distortion_001"]
+[gd_scene load_steps=4 format=3 uid="uid://time_distortion_001"]
 
 [ext_resource type="Script" path="res://traps/world_3/time_distortion.gd" id="1"]
+[ext_resource type="SpriteFrames" path="res://traps/sprites/time_distortion_frames.tres" id="2_frames"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_zone"]
 radius = 200.0
@@ -15,12 +16,10 @@ affects_attack_speed = true
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_zone")
 
-[node name="ZoneVisual" type="ColorRect" parent="."]
-offset_left = -200.0
-offset_top = -200.0
-offset_right = 200.0
-offset_bottom = 200.0
-color = Color(0.2, 0.1, 0.4, 0.35)
+[node name="ZoneVisual" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.59, 0.59)
+sprite_frames = ExtResource("2_frames")
+animation = &"inactive"
 
 [node name="EdgeParticles" type="GPUParticles2D" parent="."]
 emitting = false

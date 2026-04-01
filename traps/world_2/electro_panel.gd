@@ -45,8 +45,7 @@ var hit_entities_this_cycle: Array[Node2D] = []
 # ============================================================================
 
 @onready var hitbox: Area2D = $Hitbox if has_node("Hitbox") else null
-@onready var panel_visual: ColorRect = $PanelVisual if has_node("PanelVisual") else null
-@onready var glow_visual: ColorRect = $GlowVisual if has_node("GlowVisual") else null
+@onready var panel_visual: AnimatedSprite2D = $PanelVisual if has_node("PanelVisual") else null
 @onready var spark_particles: GPUParticles2D = $SparkParticles if has_node("SparkParticles") else null
 
 # ============================================================================
@@ -204,24 +203,15 @@ func _update_visual() -> void:
 
 	match current_state:
 		State.OFF:
-			panel_visual.color = Color(0.1, 0.15, 0.3, 1.0)  # Dark blue
-			if glow_visual:
-				glow_visual.visible = false
+			panel_visual.modulate = Color(0.1, 0.15, 0.3, 1.0)  # Dark blue
 			if spark_particles:
 				spark_particles.emitting = false
 
 		State.WARNING:
-			panel_visual.color = Color(0.15, 0.3, 0.5, 1.0)  # Medium blue
-			if glow_visual:
-				glow_visual.visible = true
-				glow_visual.color = Color(0.0, 0.8, 1.0, 0.5)  # Cyan glow
+			panel_visual.modulate = Color(0.15, 0.3, 0.5, 1.0)  # Medium blue
 
 		State.ACTIVE:
-			panel_visual.color = Color(0.2, 0.7, 1.0, 1.0)  # Bright cyan
-			if glow_visual:
-				glow_visual.visible = true
-				glow_visual.color = Color(0.0, 0.9, 1.0, 0.8)
-				glow_visual.modulate.a = 1.0
+			panel_visual.modulate = Color(0.2, 0.7, 1.0, 1.0)  # Bright cyan
 
 # ============================================================================
 # HELPERS

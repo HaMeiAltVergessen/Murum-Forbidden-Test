@@ -35,7 +35,7 @@ var current_state: State = State.IDLE
 # REFERENCES
 # ============================================================================
 
-@onready var sprite: Sprite2D = $Sprite2D if has_node("Sprite2D") else null
+@onready var sprite: AnimatedSprite2D = $Sprite2D if has_node("Sprite2D") else null
 @onready var proximity_detector: Area2D = $ProximityDetector if has_node("ProximityDetector") else null
 @onready var damage_area: Area2D = $DamageArea if has_node("DamageArea") else null
 @onready var warning_particles: GPUParticles2D = $WarningParticles if has_node("WarningParticles") else null

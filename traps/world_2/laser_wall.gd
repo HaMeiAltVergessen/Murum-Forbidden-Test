@@ -55,8 +55,8 @@ var has_hit: Dictionary = {}  # Prevent double-hit per sweep
 # ============================================================================
 
 @onready var laser_beam: Area2D = $LaserBeam if has_node("LaserBeam") else null
-@onready var laser_visual: ColorRect = $LaserBeam/LaserVisual if has_node("LaserBeam/LaserVisual") else null
-@onready var warning_visual: ColorRect = $LaserBeam/WarningVisual if has_node("LaserBeam/WarningVisual") else null
+@onready var laser_visual: Sprite2D = $LaserBeam/LaserVisual if has_node("LaserBeam/LaserVisual") else null
+@onready var warning_visual: Sprite2D = $LaserBeam/WarningVisual if has_node("LaserBeam/WarningVisual") else null
 
 var cooldown_timer: Timer = null
 var sweep_tween: Tween = null
@@ -227,27 +227,28 @@ func _position_laser_at_start() -> void:
 
 func _setup_visuals() -> void:
 	"""Setup visual sizes based on laser dimensions"""
+	# Texture is 1255x38, scale to match desired dimensions
+	var tex_w: float = 1255.0
+	var tex_h: float = 38.0
 	if laser_visual:
 		match direction:
 			LaserDirection.HORIZONTAL, LaserDirection.ROTATING:
-				laser_visual.size = Vector2(laser_length, laser_width)
-				laser_visual.position = Vector2(-laser_length / 2.0, -laser_width / 2.0)
+				laser_visual.scale = Vector2(laser_length / tex_w, laser_width / tex_h)
 			LaserDirection.VERTICAL:
-				laser_visual.size = Vector2(laser_width, laser_length)
-				laser_visual.position = Vector2(-laser_width / 2.0, -laser_length / 2.0)
+				laser_visual.rotation_degrees = 90
+				laser_visual.scale = Vector2(laser_length / tex_w, laser_width / tex_h)
 
-		laser_visual.color = Color(1.0, 0.2, 0.2, 0.9)
+		laser_visual.modulate = Color(1.0, 0.2, 0.2, 0.9)
 
 	if warning_visual:
 		match direction:
 			LaserDirection.HORIZONTAL, LaserDirection.ROTATING:
-				warning_visual.size = Vector2(laser_length, 4)
-				warning_visual.position = Vector2(-laser_length / 2.0, -2)
+				warning_visual.scale = Vector2(laser_length / tex_w, 4.0 / tex_h)
 			LaserDirection.VERTICAL:
-				warning_visual.size = Vector2(4, laser_length)
-				warning_visual.position = Vector2(-2, -laser_length / 2.0)
+				warning_visual.rotation_degrees = 90
+				warning_visual.scale = Vector2(laser_length / tex_w, 4.0 / tex_h)
 
-		warning_visual.color = Color(1.0, 0.3, 0.3, 0.5)
+		warning_visual.modulate = Color(1.0, 0.3, 0.3, 0.5)
 
 # ============================================================================
 # DAMAGE

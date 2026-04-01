@@ -1,0 +1,42 @@
+[gd_resource type="SpriteFrames" load_steps=5 format=3]
+
+[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/pendulum_blade_sheet.png" id="1_sheet"]
+
+[sub_resource type="AtlasTexture" id="frame_0"]
+atlas = ExtResource("1_sheet")
+region = Rect2(0, 0, 512, 1024)
+
+[sub_resource type="AtlasTexture" id="frame_1"]
+atlas = ExtResource("1_sheet")
+region = Rect2(512, 0, 512, 1024)
+
+[sub_resource type="AtlasTexture" id="frame_2"]
+atlas = ExtResource("1_sheet")
+region = Rect2(1024, 0, 512, 1024)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_0")
+}],
+"loop": false,
+"name": &"center",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_1")
+}],
+"loop": false,
+"name": &"left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_2")
+}],
+"loop": false,
+"name": &"right",
+"speed": 5.0
+}]

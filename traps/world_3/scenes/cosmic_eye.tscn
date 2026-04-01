@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://cosmic_eye_001"]
+[gd_scene load_steps=6 format=3 uid="uid://cosmic_eye_001"]
 
 [ext_resource type="Script" path="res://traps/world_3/cosmic_eye.gd" id="1"]
+[ext_resource type="SpriteFrames" path="res://traps/sprites/cosmic_eye_frames.tres" id="2_frames"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_detection"]
 radius = 500.0
@@ -19,27 +20,10 @@ damage_per_second = 8.0
 rotation_speed = 60.0
 activation_range = 500.0
 
-[node name="EyeVisual" type="ColorRect" parent="."]
-offset_left = -28.0
-offset_top = -28.0
-offset_right = 28.0
-offset_bottom = 28.0
-color = Color(0.8, 0.7, 0.85, 1)
-
-[node name="IrisVisual" type="ColorRect" parent="."]
-offset_left = -16.0
-offset_top = -16.0
-offset_right = 16.0
-offset_bottom = 16.0
-color = Color(0.5, 0.1, 0.6, 1)
-
-[node name="PupilVisual" type="ColorRect" parent="."]
-visible = false
-offset_left = -6.0
-offset_top = -8.0
-offset_right = 6.0
-offset_bottom = 8.0
-color = Color(0.05, 0, 0.1, 1)
+[node name="EyeVisual" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.19, 0.19)
+sprite_frames = ExtResource("2_frames")
+animation = &"closed"
 
 [node name="BeamVisual" type="Line2D" parent="."]
 visible = false

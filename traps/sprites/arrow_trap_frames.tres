@@ -1,0 +1,56 @@
+[gd_resource type="SpriteFrames" load_steps=7 format=3]
+
+[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/arrow_trap_sheet.png" id="1_sheet"]
+
+[sub_resource type="AtlasTexture" id="frame_0"]
+atlas = ExtResource("1_sheet")
+region = Rect2(0, 0, 499, 256)
+
+[sub_resource type="AtlasTexture" id="frame_1"]
+atlas = ExtResource("1_sheet")
+region = Rect2(499, 0, 499, 256)
+
+[sub_resource type="AtlasTexture" id="frame_2"]
+atlas = ExtResource("1_sheet")
+region = Rect2(998, 0, 499, 256)
+
+[sub_resource type="AtlasTexture" id="frame_3"]
+atlas = ExtResource("1_sheet")
+region = Rect2(1497, 0, 499, 256)
+
+[sub_resource type="AtlasTexture" id="frame_4"]
+atlas = ExtResource("1_sheet")
+region = Rect2(1996, 0, 499, 256)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_0")
+}],
+"loop": false,
+"name": &"idle",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_2")
+}],
+"loop": false,
+"name": &"loaded",
+"speed": 3.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_4")
+}],
+"loop": false,
+"name": &"firing",
+"speed": 8.0
+}]

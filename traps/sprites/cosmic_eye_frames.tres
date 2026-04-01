@@ -1,0 +1,66 @@
+[gd_resource type="SpriteFrames" load_steps=7 format=3]
+
+[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/cosmic_eye_sheet.png" id="1_sheet"]
+
+[sub_resource type="AtlasTexture" id="frame_0"]
+atlas = ExtResource("1_sheet")
+region = Rect2(0, 0, 307, 291)
+
+[sub_resource type="AtlasTexture" id="frame_1"]
+atlas = ExtResource("1_sheet")
+region = Rect2(307, 0, 307, 291)
+
+[sub_resource type="AtlasTexture" id="frame_2"]
+atlas = ExtResource("1_sheet")
+region = Rect2(614, 0, 307, 291)
+
+[sub_resource type="AtlasTexture" id="frame_3"]
+atlas = ExtResource("1_sheet")
+region = Rect2(921, 0, 307, 291)
+
+[sub_resource type="AtlasTexture" id="frame_4"]
+atlas = ExtResource("1_sheet")
+region = Rect2(1228, 0, 307, 291)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_0")
+}],
+"loop": false,
+"name": &"closed",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_1")
+}],
+"loop": false,
+"name": &"opening",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_2")
+}],
+"loop": false,
+"name": &"tracking",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_3")
+}],
+"loop": false,
+"name": &"firing",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_4")
+}],
+"loop": false,
+"name": &"destroyed",
+"speed": 5.0
+}]

@@ -42,7 +42,7 @@ var state_timer: float = 0.0
 # REFERENCES
 # ============================================================================
 
-@onready var platform_visual: ColorRect = $PlatformVisual if has_node("PlatformVisual") else null
+@onready var platform_visual: Sprite2D = $PlatformVisual if has_node("PlatformVisual") else null
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D if has_node("CollisionShape2D") else null
 @onready var phase_particles: GPUParticles2D = $PhaseParticles if has_node("PhaseParticles") else null
 
@@ -168,11 +168,9 @@ func _update_visual() -> void:
 	match current_state:
 		State.SOLID:
 			platform_visual.visible = true
-			platform_visual.color = Color(0.3, 0.2, 0.4, 1.0)  # Dark purple
-			platform_visual.modulate.a = 1.0
+			platform_visual.modulate = Color(0.3, 0.2, 0.4, 1.0)  # Dark purple
 		State.WARNING:
-			platform_visual.color = Color(0.5, 0.2, 0.5, 0.8)  # Purple, flickering
+			platform_visual.modulate = Color(0.5, 0.2, 0.5, 0.8)  # Purple, flickering
 		State.PHASED:
 			platform_visual.visible = true
-			platform_visual.color = Color(0.3, 0.15, 0.4, 0.15)  # Ghost outline
-			platform_visual.modulate.a = 0.15
+			platform_visual.modulate = Color(0.3, 0.15, 0.4, 0.15)  # Ghost outline
