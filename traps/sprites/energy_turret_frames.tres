@@ -1,6 +1,10 @@
-[gd_resource type="SpriteFrames" load_steps=6 format=3]
+[gd_resource type="SpriteFrames" load_steps=6 format=3 uid="uid://d1l0bgi4xjygs"]
 
-[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/energy_turret_sheet.png" id="1_sheet"]
+[ext_resource type="Texture2D" uid="uid://cbisfvdbkt2kk" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/energy_turret_sheet.png" id="1_sheet"]
+
+[sub_resource type="AtlasTexture" id="frame_3"]
+atlas = ExtResource("1_sheet")
+region = Rect2(1152, 0, 384, 360)
 
 [sub_resource type="AtlasTexture" id="frame_0"]
 atlas = ExtResource("1_sheet")
@@ -14,12 +18,16 @@ region = Rect2(384, 0, 384, 360)
 atlas = ExtResource("1_sheet")
 region = Rect2(768, 0, 384, 360)
 
-[sub_resource type="AtlasTexture" id="frame_3"]
-atlas = ExtResource("1_sheet")
-region = Rect2(1152, 0, 384, 360)
-
 [resource]
 animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_3")
+}],
+"loop": false,
+"name": &"emerging",
+"speed": 5.0
+}, {
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("frame_0")
@@ -42,13 +50,5 @@ animations = [{
 }],
 "loop": false,
 "name": &"retracted",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("frame_3")
-}],
-"loop": false,
-"name": &"emerging",
 "speed": 5.0
 }]

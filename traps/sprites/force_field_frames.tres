@@ -1,41 +1,25 @@
-[gd_resource type="SpriteFrames" load_steps=6 format=3]
+[gd_resource type="SpriteFrames" load_steps=6 format=3 uid="uid://o4uabpac87b8"]
 
-[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/force_field_sheet.png" id="1_sheet"]
-
-[sub_resource type="AtlasTexture" id="frame_0"]
-atlas = ExtResource("1_sheet")
-region = Rect2(0, 0, 250, 833)
-
-[sub_resource type="AtlasTexture" id="frame_1"]
-atlas = ExtResource("1_sheet")
-region = Rect2(250, 0, 250, 833)
+[ext_resource type="Texture2D" uid="uid://dugo2nk0m0rw2" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/force_field_sheet.png" id="1_sheet"]
 
 [sub_resource type="AtlasTexture" id="frame_2"]
 atlas = ExtResource("1_sheet")
 region = Rect2(500, 0, 250, 833)
 
+[sub_resource type="AtlasTexture" id="frame_0"]
+atlas = ExtResource("1_sheet")
+region = Rect2(0, 0, 250, 833)
+
 [sub_resource type="AtlasTexture" id="frame_3"]
 atlas = ExtResource("1_sheet")
 region = Rect2(750, 0, 250, 833)
 
+[sub_resource type="AtlasTexture" id="frame_1"]
+atlas = ExtResource("1_sheet")
+region = Rect2(250, 0, 250, 833)
+
 [resource]
 animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("frame_0")
-}],
-"loop": false,
-"name": &"idle",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("frame_1")
-}],
-"loop": false,
-"name": &"warning",
-"speed": 5.0
-}, {
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("frame_2")
@@ -46,9 +30,25 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("frame_0")
+}],
+"loop": false,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("frame_3")
 }],
 "loop": false,
 "name": &"max",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_1")
+}],
+"loop": false,
+"name": &"warning",
 "speed": 5.0
 }]

@@ -1,6 +1,10 @@
-[gd_resource type="SpriteFrames" load_steps=5 format=3]
+[gd_resource type="SpriteFrames" load_steps=5 format=3 uid="uid://ct2ipt2i6mtat"]
 
-[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/electro_panel_sheet.png" id="1_sheet"]
+[ext_resource type="Texture2D" uid="uid://bbkx6lht5kn5r" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/electro_panel_sheet.png" id="1_sheet"]
+
+[sub_resource type="AtlasTexture" id="frame_2"]
+atlas = ExtResource("1_sheet")
+region = Rect2(2670, 0, 1335, 228)
 
 [sub_resource type="AtlasTexture" id="frame_0"]
 atlas = ExtResource("1_sheet")
@@ -10,12 +14,16 @@ region = Rect2(0, 0, 1335, 228)
 atlas = ExtResource("1_sheet")
 region = Rect2(1335, 0, 1335, 228)
 
-[sub_resource type="AtlasTexture" id="frame_2"]
-atlas = ExtResource("1_sheet")
-region = Rect2(2670, 0, 1335, 228)
-
 [resource]
 animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_2")
+}],
+"loop": false,
+"name": &"active",
+"speed": 5.0
+}, {
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("frame_0")
@@ -30,13 +38,5 @@ animations = [{
 }],
 "loop": false,
 "name": &"warning",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("frame_2")
-}],
-"loop": false,
-"name": &"active",
 "speed": 5.0
 }]

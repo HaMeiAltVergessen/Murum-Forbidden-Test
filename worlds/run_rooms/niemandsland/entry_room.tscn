@@ -1,17 +1,28 @@
-[gd_scene load_steps=21 format=3 uid="uid://cflab5qpgvjwd"]
+[gd_scene load_steps=32 format=3 uid="uid://cflab5qpgvjwd"]
 
 [ext_resource type="Texture2D" uid="uid://bcf1bvmbq8p8g" path="res://Assets/AIPlaceholder/world1preTempel.png" id="1_ghxj8"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
+[ext_resource type="PackedScene" path="res://traps/world_3/scenes/cosmic_eye.tscn" id="3_3kaiq"]
 [ext_resource type="PackedScene" uid="uid://b6uvhk5o3fkdx" path="res://environment/interactables/climbable_area.tscn" id="3_gy43q"]
 [ext_resource type="PackedScene" uid="uid://csb81n4bfs72e" path="res://environment/interactables/pass_through_platform.tscn" id="4_0o1q2"]
+[ext_resource type="PackedScene" path="res://traps/world_3/scenes/phase_platform.tscn" id="4_ubdyy"]
+[ext_resource type="PackedScene" path="res://traps/world_3/scenes/shadow_tendril.tscn" id="5_ek2rh"]
 [ext_resource type="Texture2D" uid="uid://dbecpug8upc2v" path="res://Assets/Placeholder/Background/Environments/ships-graveyard/PNG/layers/boat-front.png" id="5_mdg47"]
+[ext_resource type="PackedScene" path="res://traps/world_3/scenes/time_distortion.tscn" id="6_b5ahd"]
 [ext_resource type="PackedScene" uid="uid://fsarw2nqycb6" path="res://environment/WegweiseUP.tscn" id="6_ghxj8"]
 [ext_resource type="PackedScene" uid="uid://dfrjdwjipd0ex" path="res://environment/Wegweise1.tscn" id="7_ieii3"]
+[ext_resource type="PackedScene" path="res://traps/world_3/scenes/void_rift_trap.tscn" id="7_wa02y"]
+[ext_resource type="PackedScene" path="res://traps/world_2/scenes/electro_panel.tscn" id="8_jeaoy"]
 [ext_resource type="Script" uid="uid://j1oq10q530n6" path="res://environment/death_box.gd" id="8_x50rg"]
 [ext_resource type="PackedScene" uid="uid://bxjm0m07w77dm" path="res://enemies/world_1_ruins/guardian_statue.tscn" id="9_ghxj8"]
+[ext_resource type="PackedScene" path="res://traps/world_2/scenes/energy_turret.tscn" id="9_nqgum"]
 [ext_resource type="PackedScene" uid="uid://bp88htlho4s8e" path="res://enemies/world_1_ruins/corpse_trap.tscn" id="10_ieii3"]
+[ext_resource type="PackedScene" path="res://traps/world_2/scenes/force_field.tscn" id="10_ni6hl"]
+[ext_resource type="PackedScene" path="res://traps/world_2/scenes/gravity_anomaly.tscn" id="11_0k7q0"]
 [ext_resource type="PackedScene" uid="uid://dkc8y7x0ij6nw" path="res://enemies/untote.tscn" id="11_x50rg"]
+[ext_resource type="PackedScene" path="res://traps/world_2/scenes/laser_wall.tscn" id="12_8tws0"]
 [ext_resource type="PackedScene" uid="uid://bx7k2qn8nav4p" path="res://enemies/world_1_ruins/geist.tscn" id="12_nwvau"]
+[ext_resource type="PackedScene" path="res://traps/world_2/scenes/security_drone.tscn" id="13_yqugh"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(1920, 40)
@@ -101,6 +112,40 @@ position = Vector2(12591, -2581)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
 position = Vector2(1658, 756)
+
+[node name="CosmicEye" parent="DoorPositions" instance=ExtResource("3_3kaiq")]
+position = Vector2(683, -721)
+
+[node name="PhasePlatform" parent="DoorPositions" instance=ExtResource("4_ubdyy")]
+position = Vector2(1512, -55)
+
+[node name="ShadowTendril" parent="DoorPositions" instance=ExtResource("5_ek2rh")]
+position = Vector2(1981, 135)
+
+[node name="TimeDistortion" parent="DoorPositions" instance=ExtResource("6_b5ahd")]
+position = Vector2(2392, -120)
+
+[node name="VoidRiftTrap" parent="DoorPositions" instance=ExtResource("7_wa02y")]
+position = Vector2(1239, -89)
+scale = Vector2(4.08628, 4.08628)
+
+[node name="ElectroPanel" parent="DoorPositions" instance=ExtResource("8_jeaoy")]
+position = Vector2(4439, -1350)
+
+[node name="EnergyTurret" parent="DoorPositions" instance=ExtResource("9_nqgum")]
+position = Vector2(3695, -1139)
+
+[node name="ForceField" parent="DoorPositions" instance=ExtResource("10_ni6hl")]
+position = Vector2(3507, -1171)
+
+[node name="GravityAnomaly" parent="DoorPositions" instance=ExtResource("11_0k7q0")]
+position = Vector2(2904, -1262)
+
+[node name="LaserWallTrap" parent="DoorPositions" instance=ExtResource("12_8tws0")]
+position = Vector2(5588, -1984)
+
+[node name="SecurityDrone" parent="DoorPositions" instance=ExtResource("13_yqugh")]
+position = Vector2(3507, -1698)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

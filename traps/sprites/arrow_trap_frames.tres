@@ -1,6 +1,14 @@
-[gd_resource type="SpriteFrames" load_steps=7 format=3]
+[gd_resource type="SpriteFrames" load_steps=7 format=3 uid="uid://jewhk2y1ga8g"]
 
-[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/arrow_trap_sheet.png" id="1_sheet"]
+[ext_resource type="Texture2D" uid="uid://p2mp1k7g2ixe" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/arrow_trap_sheet.png" id="1_sheet"]
+
+[sub_resource type="AtlasTexture" id="frame_3"]
+atlas = ExtResource("1_sheet")
+region = Rect2(1497, 0, 499, 256)
+
+[sub_resource type="AtlasTexture" id="frame_4"]
+atlas = ExtResource("1_sheet")
+region = Rect2(1996, 0, 499, 256)
 
 [sub_resource type="AtlasTexture" id="frame_0"]
 atlas = ExtResource("1_sheet")
@@ -14,16 +22,19 @@ region = Rect2(499, 0, 499, 256)
 atlas = ExtResource("1_sheet")
 region = Rect2(998, 0, 499, 256)
 
-[sub_resource type="AtlasTexture" id="frame_3"]
-atlas = ExtResource("1_sheet")
-region = Rect2(1497, 0, 499, 256)
-
-[sub_resource type="AtlasTexture" id="frame_4"]
-atlas = ExtResource("1_sheet")
-region = Rect2(1996, 0, 499, 256)
-
 [resource]
 animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("frame_4")
+}],
+"loop": false,
+"name": &"firing",
+"speed": 8.0
+}, {
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("frame_0")
@@ -42,15 +53,4 @@ animations = [{
 "loop": false,
 "name": &"loaded",
 "speed": 3.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("frame_3")
-}, {
-"duration": 1.0,
-"texture": SubResource("frame_4")
-}],
-"loop": false,
-"name": &"firing",
-"speed": 8.0
 }]

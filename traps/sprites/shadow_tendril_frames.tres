@@ -1,6 +1,6 @@
-[gd_resource type="SpriteFrames" load_steps=6 format=3]
+[gd_resource type="SpriteFrames" load_steps=6 format=3 uid="uid://b1v7d4ghf5ouc"]
 
-[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/shadow_tendril_sheet.png" id="1_sheet"]
+[ext_resource type="Texture2D" uid="uid://35qsyyruc8gj" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/shadow_tendril_sheet.png" id="1_sheet"]
 
 [sub_resource type="AtlasTexture" id="frame_0"]
 atlas = ExtResource("1_sheet")

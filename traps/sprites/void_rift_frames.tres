@@ -1,18 +1,18 @@
-[gd_resource type="SpriteFrames" load_steps=5 format=3]
+[gd_resource type="SpriteFrames" load_steps=5 format=3 uid="uid://dk4ybrlje4eh"]
 
-[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/void_rift_sheet.png" id="1_sheet"]
+[ext_resource type="Texture2D" uid="uid://bsvt6srf1nq5t" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/void_rift_sheet.png" id="1_sheet"]
 
 [sub_resource type="AtlasTexture" id="frame_0"]
 atlas = ExtResource("1_sheet")
 region = Rect2(0, 0, 453, 1024)
 
-[sub_resource type="AtlasTexture" id="frame_1"]
-atlas = ExtResource("1_sheet")
-region = Rect2(453, 0, 453, 1024)
-
 [sub_resource type="AtlasTexture" id="frame_2"]
 atlas = ExtResource("1_sheet")
 region = Rect2(906, 0, 453, 1024)
+
+[sub_resource type="AtlasTexture" id="frame_1"]
+atlas = ExtResource("1_sheet")
+region = Rect2(453, 0, 453, 1024)
 
 [resource]
 animations = [{
@@ -26,17 +26,17 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("frame_1")
-}],
-"loop": false,
-"name": &"teleporting",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
 "texture": SubResource("frame_2")
 }],
 "loop": false,
 "name": &"cooldown",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_1")
+}],
+"loop": false,
+"name": &"teleporting",
 "speed": 5.0
 }]
