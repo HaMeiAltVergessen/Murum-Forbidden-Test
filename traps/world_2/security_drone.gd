@@ -145,7 +145,7 @@ func _ready() -> void:
 
 func _setup_patrol() -> void:
 	"""Setup patrol points from Path2D or default back-and-forth"""
-	if patrol_path != "":
+	if patrol_path != NodePath(""):
 		var path_node = get_node_or_null(patrol_path)
 		if path_node is Path2D:
 			for i in path_node.curve.point_count:
