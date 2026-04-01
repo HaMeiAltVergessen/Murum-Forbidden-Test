@@ -104,9 +104,9 @@ func _process(delta: float) -> void:
 		_advance_state()
 
 	# Warning flicker effect
-	if current_state == State.WARNING and glow_visual:
+	if current_state == State.WARNING and panel_visual:
 		var flicker = sin(Time.get_ticks_msec() * 0.02) * 0.5 + 0.5
-		glow_visual.modulate.a = flicker
+		panel_visual.modulate.a = flicker
 
 func _advance_state() -> void:
 	match current_state:
