@@ -86,7 +86,7 @@ func _ready() -> void:
 	add_child(reactivate_timer)
 
 	# Connect linked switch
-	if linked_switch_path != "":
+	if linked_switch_path != NodePath(""):
 		var switch_node = get_node_or_null(linked_switch_path)
 		if switch_node and switch_node.has_signal("switch_activated"):
 			switch_node.switch_activated.connect(deactivate)
