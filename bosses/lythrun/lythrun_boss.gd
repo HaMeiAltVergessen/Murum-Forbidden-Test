@@ -25,7 +25,7 @@ const CHARGE_COLOR_TELEPORT: Color = Color(0.3, 0.0, 0.5)  # Deep purple for tel
 # DIALOG PORTRAITS
 # ============================================================================
 const LYTHRUN_PORTRAIT := "res://Assets/AIPlaceholder/Char/Lythrun/lythrunVBossSprite.png"
-const MURUM_PORTRAIT := "res://Assets/AIPlaceholder/Char/Murum/Murum.png"
+const MURUM_PORTRAIT := "res://Assets/AIPlaceholder/Char/Murum/Murum02.png"
 
 # ============================================================================
 # SIGNALS

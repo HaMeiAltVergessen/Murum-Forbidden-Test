@@ -65,7 +65,7 @@ color = Color(0.0562916, 0.0562916, 0.0562916, 1)
 
 [node name="World1Predorfbackground" type="Sprite2D" parent="."]
 z_index = -4
-position = Vector2(8782, -587)
+position = Vector2(8816, -731)
 scale = Vector2(2.32321, 2.32321)
 texture = ExtResource("1_ghxj8")
 
@@ -112,7 +112,7 @@ position = Vector2(672, 472)
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(12591, -2581)
+position = Vector2(12709, -2618)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
 position = Vector2(1658, 756)
@@ -373,7 +373,7 @@ position = Vector2(66, 348)
 scale = Vector2(2, 2)
 
 [node name="Wegweise5" parent="Wegweiser" instance=ExtResource("7_ieii3")]
-position = Vector2(221, -2471)
+position = Vector2(51, -1931)
 scale = Vector2(2, 2)
 
 [node name="Wegweise6" parent="Wegweiser" instance=ExtResource("7_ieii3")]
@@ -431,12 +431,12 @@ region_enabled = true
 region_rect = Rect2(0, 0, 256, 16)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(4903.89, 554.262)
+position = Vector2(4900, 410)
 rotation = -0.0437175
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D5" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(6614, 390)
+position = Vector2(7365, 362)
 rotation = -0.0562779
 scale = Vector2(0.607035, -0.494888)
 shape = SubResource("RectangleShape2D_02d11")
@@ -532,7 +532,7 @@ scale = Vector2(0.189543, 0.281319)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D43" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(10631, -2600)
+position = Vector2(10553, -2461)
 rotation = 0.00196817
 scale = Vector2(0.189543, 0.281319)
 shape = SubResource("RectangleShape2D_02d11")
@@ -592,7 +592,7 @@ scale = Vector2(0.178489, 0.424712)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D3" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(750, 238)
+position = Vector2(746, 276)
 rotation = 0.072992
 scale = Vector2(0.641439, 1)
 shape = SubResource("RectangleShape2D_02d11")
@@ -603,32 +603,20 @@ rotation = 0.040256
 scale = Vector2(-0.0352345, 0.515407)
 shape = SubResource("RectangleShape2D_02d11")
 
-[node name="CollisionShape2D20" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(307, -830)
-rotation = 0.147097
-scale = Vector2(0.302602, 0.983598)
-shape = SubResource("RectangleShape2D_02d11")
-
-[node name="CollisionShape2D32" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(28, -1141)
-rotation = 0.147097
-scale = Vector2(0.145436, 0.868487)
-shape = SubResource("RectangleShape2D_02d11")
-
 [node name="CollisionShape2D54" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(150, -2744)
+position = Vector2(416, -1057)
 rotation = 0.0504372
 scale = Vector2(0.145436, 0.868487)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D21" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(1743, -419)
-rotation = -3.0298
-scale = Vector2(0.380381, -0.41828)
+position = Vector2(1541, -833)
+rotation = -3.13938
+scale = Vector2(0.933909, -0.535472)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D22" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(2950, -503)
+position = Vector2(9647, -2454)
 rotation = 0.0464727
 scale = Vector2(0.39018, -0.281567)
 shape = SubResource("RectangleShape2D_02d11")
@@ -640,33 +628,33 @@ scale = Vector2(0.119659, -0.240447)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D23" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(982, -2482)
+position = Vector2(1056, -2193)
 rotation = -3.09512
 scale = Vector2(0.896238, 0.758378)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D24" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(3841.64, -1670.31)
+position = Vector2(7071, -973)
 rotation = -3.11214
 scale = Vector2(0.81354, -0.552552)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D25" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(6046.73, -1617.11)
+position = Vector2(7343, -2308)
 rotation = -3.12698
 scale = Vector2(0.612643, -0.636067)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D27" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(6651, -266)
-rotation = 0.0474441
+position = Vector2(5240, -998)
+rotation = -0.00810148
 scale = Vector2(0.37199, 0.439553)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D49" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(5944, -2002)
+position = Vector2(5789, -1714)
 rotation = -1.56027
-scale = Vector2(0.172802, -1.83972)
+scale = Vector2(0.30027, -1.35426)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D50" type="CollisionShape2D" parent="Ground2"]
@@ -676,25 +664,25 @@ scale = Vector2(0.300247, -2.34585)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D33" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(4434.03, -58.7977)
-rotation = -0.99832
-scale = Vector2(17.4499, -33.612)
+position = Vector2(8691, -1772)
+rotation = -0.0208097
+scale = Vector2(31.7276, -76.1246)
 shape = SubResource("RectangleShape2D_xlch5")
 
 [node name="CollisionShape2D34" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(4182, 107)
+position = Vector2(2939, -174)
 rotation = -1.56143
 scale = Vector2(14.7743, -40.1666)
 shape = SubResource("RectangleShape2D_xlch5")
 
 [node name="CollisionShape2D26" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(4066, -2893)
+position = Vector2(14026, -3019)
 rotation = -3.12698
-scale = Vector2(0.45266, -0.636067)
+scale = Vector2(0.910507, -0.664288)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D4" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(2520, 471)
+position = Vector2(2679, 368)
 rotation = 0.072992
 scale = Vector2(0.641439, 1)
 shape = SubResource("RectangleShape2D_02d11")

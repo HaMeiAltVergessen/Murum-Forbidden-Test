@@ -634,6 +634,9 @@ func _on_pachron_flow_completed() -> void:
 func _on_pachron_cancelled() -> void:
 	"""Player cancelled the selection — return to altar"""
 	if _pachron_screen:
+		# Unfreeze players before freeing the screen
+		if _pachron_screen.has_method("_unfreeze_players"):
+			_pachron_screen._unfreeze_players()
 		_pachron_screen.queue_free()
 		_pachron_screen = null
 	get_tree().paused = false

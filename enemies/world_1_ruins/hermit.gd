@@ -96,14 +96,20 @@ func _ready() -> void:
 	# Connect dialog finish
 	EventBus.dialog_finished.connect(_on_dialog_finished)
 
-	# Start in NPC mode
-	_enter_npc_mode()
+	# Check if already defeated (story mode only)
+	if not RunManager or not RunManager.is_run_active():
+		if WorldManager and WorldManager.is_room_cleared(is_defeated_flag):
+			queue_free()
+			return
 
-	# Check if already defeated
-	if WorldManager and WorldManager.is_room_cleared(is_defeated_flag):
-		queue_free()
+	# In run rooms: skip NPC/dialog, go directly hostile
+	if RunManager and RunManager.is_run_active():
+		print("[Hermit] Run active — starting directly hostile at %v" % global_position)
+		call_deferred("_start_fight")
 		return
 
+	# Story mode: start in NPC mode
+	_enter_npc_mode()
 	print("[Hermit] Initialized as NPC at %v" % global_position)
 
 

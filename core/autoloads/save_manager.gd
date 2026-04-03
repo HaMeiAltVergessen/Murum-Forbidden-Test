@@ -580,15 +580,23 @@ func _apply_save_data(save_data: Dictionary) -> void:
 	if UpgradeManager:
 		UpgradeManager.load_from_save(upgrade_data)
 
-	# Restore BoonManager data (mid-run saves)
+	# Restore BoonManager data — only if a run was active at save time.
+	# Otherwise clear stale boons to prevent them leaking into the next run.
 	var boon_data = save_data.get("boons", {})
 	if BoonManager:
-		BoonManager.load_from_save(boon_data)
+		if RunManager and RunManager.is_run_active():
+			BoonManager.load_from_save(boon_data)
+		else:
+			BoonManager.clear_boons()
+			print("[SaveManager] Cleared stale boons (no active run)")
 
-	# Restore SyncSkillManager data (mid-run saves)
+	# Same for SyncSkillManager
 	var sync_data = save_data.get("sync_skills", {})
 	if SyncSkillManager:
-		SyncSkillManager.load_from_save(sync_data)
+		if RunManager and RunManager.is_run_active():
+			SyncSkillManager.load_from_save(sync_data)
+		else:
+			SyncSkillManager.clear_syncs()
 
 	# Restore PachronDialogSystem story tracking
 	var pachron_data = save_data.get("pachron_dialogs", {})

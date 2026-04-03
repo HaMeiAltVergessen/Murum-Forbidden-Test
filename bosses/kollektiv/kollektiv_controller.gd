@@ -24,7 +24,7 @@ const CORE_ID_MAP: Dictionary = {
 }
 
 # ============ PORTRAITS (for dialog) ============
-const MURUM_PORTRAIT := "res://Assets/AIPlaceholder/Char/Murum/Murum.png"
+const MURUM_PORTRAIT := "res://Assets/AIPlaceholder/Char/Murum/Murum02.png"
 
 # ============ DEATH VFX ============
 const DEATH_VFX_SCENE: PackedScene = preload("res://vfx/boss/boss_death_explosion.tscn")

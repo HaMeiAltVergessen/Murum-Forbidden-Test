@@ -54,6 +54,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	layer = 100
 	_build_ui()
+	_freeze_players()
 	# _setup_symbol_phase() is called from setup() after paths are set
 
 
@@ -540,11 +541,10 @@ func _start_dialog_phase() -> void:
 	_boon_panel.visible = false
 	_bg.visible = false
 
-	# Start Pachron dialog
+	# Start Pachron dialog (connect BEFORE start to avoid race if signal emits synchronously)
 	if PachronDialogSystem:
-		PachronDialogSystem.start_dialog(_selected_path_id)
-		# Wait for dialog to finish
 		PachronDialogSystem.dialog_sequence_finished.connect(_on_pachron_dialog_finished, CONNECT_ONE_SHOT)
+		PachronDialogSystem.start_dialog(_selected_path_id)
 	else:
 		# No dialog system — go straight to boon choice
 		_on_pachron_dialog_finished()
@@ -577,8 +577,8 @@ func _start_sync_dialog_phase() -> void:
 	print("[PachronSelection] Sync dialog starting: %s" % sync_id)
 
 	if PachronDialogSystem:
-		PachronDialogSystem.start_sync_dialog(sync_id)
 		PachronDialogSystem.dialog_sequence_finished.connect(_on_sync_dialog_finished, CONNECT_ONE_SHOT)
+		PachronDialogSystem.start_sync_dialog(sync_id)
 	else:
 		_on_sync_dialog_finished()
 
@@ -639,18 +639,38 @@ func _start_farewell_phase() -> void:
 	_bg.visible = false
 
 	if PachronDialogSystem:
+		PachronDialogSystem.dialog_sequence_finished.connect(_finish_flow, CONNECT_ONE_SHOT)
 		if _chosen_sync_id != "":
-			# Sync farewell (both Pachrons)
 			PachronDialogSystem.play_sync_farewell(_chosen_sync_id)
 		else:
-			# Normal farewell
 			PachronDialogSystem.play_farewell(_selected_path_id)
-		PachronDialogSystem.dialog_sequence_finished.connect(_finish_flow, CONNECT_ONE_SHOT)
 	else:
 		_finish_flow()
 
 
 func _finish_flow() -> void:
 	current_phase = Phase.DONE
+	_unfreeze_players()
 	boon_flow_completed.emit()
 	queue_free()
+
+
+# ============ PLAYER FREEZE ============
+func _freeze_players() -> void:
+	"""Disable player processing so they can't move during Pachron UI"""
+	for p in get_tree().get_nodes_in_group("player"):
+		if p and is_instance_valid(p):
+			p.set_process(false)
+			p.set_physics_process(false)
+			p.set_process_input(false)
+			if p is CharacterBody2D:
+				p.velocity = Vector2.ZERO
+
+
+func _unfreeze_players() -> void:
+	"""Re-enable player processing"""
+	for p in get_tree().get_nodes_in_group("player"):
+		if p and is_instance_valid(p):
+			p.set_process(true)
+			p.set_physics_process(true)
+			p.set_process_input(true)

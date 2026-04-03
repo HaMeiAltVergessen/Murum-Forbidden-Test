@@ -23,7 +23,7 @@ const HERO_SCENES: Dictionary = {
 
 # ============ PORTRAIT SPRITES (for dialog) ============
 const KNIGHT_PORTRAIT := "res://Assets/placeholders/5heros/hero/Hero Knight 2/Sprites/Idle.png"
-const MURUM_PORTRAIT := "res://Assets/AIPlaceholder/Char/Murum/Murum.png"
+const MURUM_PORTRAIT := "res://Assets/AIPlaceholder/Char/Murum/Murum02.png"
 
 # ============ DEATH VFX ============
 const DEATH_VFX_SCENE: PackedScene = preload("res://vfx/boss/boss_death_explosion.tscn")

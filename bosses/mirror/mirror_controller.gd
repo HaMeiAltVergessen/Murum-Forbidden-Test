@@ -63,7 +63,7 @@ var _wave_spawner: BossWaveSpawner = null
 
 # ============ DIALOG SPEAKER IMAGES ============
 const SPIEGEL_PORTRAIT: String = "res://Assets/AIPlaceholder/Char/Murum_Spiegel/mirrorai1.jpg"
-const MURUM_PORTRAIT: String = "res://Assets/AIPlaceholder/Char/Murum/Murum.png"
+const MURUM_PORTRAIT: String = "res://Assets/AIPlaceholder/Char/Murum/Murum02.png"
 
 # ============ BACKGROUND IMAGES (per section) ============
 const BG_PATHS: Dictionary = {

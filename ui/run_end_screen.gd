@@ -147,3 +147,4 @@ func _on_continue() -> void:
 	hide()
 	if RunManager:
 		RunManager._return_to_limbus()
+	queue_free()
