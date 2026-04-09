@@ -26,7 +26,7 @@ var is_stunned: bool = false
 var stun_duration: float = 0.0
 var target: CharacterBody2D = null
 var fire_timer: float = 0.0
-var _default_modulate: Color = Color(0.3, 0.7, 1.0, 0.9)
+var _default_modulate: Color = Color.WHITE
 
 # ============================================================================
 # REFERENCES
@@ -135,13 +135,23 @@ func _fire_projectile() -> void:
 	circle.radius = 8.0
 	shape.shape = circle
 	projectile.add_child(shape)
-	var visual := ColorRect.new()
-	visual.offset_left = -6
-	visual.offset_top = -6
-	visual.offset_right = 6
-	visual.offset_bottom = 6
-	visual.color = Color(0.3, 0.8, 1.0, 0.9)
+	var bolt_tex := load("res://Assets/AIPlaceholder/Gegner/W2/sentinal_Drone_EnergyBolt.png")
+	var visual := Sprite2D.new()
+	if bolt_tex:
+		visual.texture = bolt_tex
+		visual.region_enabled = true
+		visual.region_rect = Rect2(45, 202, 443, 184)
+		visual.scale = Vector2(0.1, 0.1)
+	else:
+		var fallback := ColorRect.new()
+		fallback.offset_left = -6
+		fallback.offset_top = -6
+		fallback.offset_right = 6
+		fallback.offset_bottom = 6
+		fallback.color = Color(0.3, 0.8, 1.0, 0.9)
+		projectile.add_child(fallback)
 	projectile.add_child(visual)
+	projectile.rotation = dir.angle()
 	projectile.global_position = global_position
 	projectile.set_meta("direction", dir)
 	projectile.set_meta("speed", PROJECTILE_SPEED)

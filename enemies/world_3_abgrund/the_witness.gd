@@ -36,7 +36,7 @@ var switch_timer: float = TARGET_SWITCH_INTERVAL
 var blink_cooldown: float = 6.0
 var recovery_timer: float = 0.0
 var target_index: int = 0
-var _default_modulate: Color = Color(0.8, 0.9, 0.2, 0.9)
+var _default_modulate: Color = Color.WHITE
 
 @onready var sprite: Node2D = $Sprite2D
 @onready var hurtbox: Area2D = $HurtboxComponent

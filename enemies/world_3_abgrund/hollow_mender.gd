@@ -32,7 +32,7 @@ var target: CharacterBody2D = null
 var beam_target: CharacterBody2D = null
 var state: State = State.IDLE
 var attack_cooldown: float = 0.0
-var _default_modulate: Color = Color(0.3, 0.6, 0.2, 0.8)
+var _default_modulate: Color = Color.WHITE
 
 @onready var sprite: Node2D = $Sprite2D
 @onready var hurtbox: Area2D = $HurtboxComponent

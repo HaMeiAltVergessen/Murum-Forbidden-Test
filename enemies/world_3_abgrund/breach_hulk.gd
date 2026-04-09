@@ -44,7 +44,7 @@ var burst_cooldown: float = 5.0
 var trail_timer: float = 0.0
 var grabbed_player: CharacterBody2D = null
 var grab_timer: float = 0.0
-var _default_modulate: Color = Color(0.6, 0.1, 0.3, 0.9)
+var _default_modulate: Color = Color.WHITE
 
 @onready var sprite: Node2D = $Sprite2D
 @onready var hurtbox: Area2D = $HurtboxComponent

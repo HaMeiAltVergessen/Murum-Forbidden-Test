@@ -35,7 +35,7 @@ var state: State = State.IDLE
 var attack_timer: float = 0.0
 var cooldown_timer: float = 0.0
 var is_enraged: bool = false
-var _default_modulate: Color = Color(0.7, 0.2, 0.2, 0.9)
+var _default_modulate: Color = Color.WHITE
 @export var warden_path: NodePath = ""
 
 @onready var sprite: Node2D = $Sprite2D

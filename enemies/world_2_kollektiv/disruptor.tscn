@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://d4jy8fwn3x6pz"]
+[gd_scene load_steps=8 format=3 uid="uid://d4jy8fwn3x6pz"]
 
 [ext_resource type="Script" path="res://enemies/world_2_kollektiv/disruptor.gd" id="1_script"]
 [ext_resource type="Script" uid="uid://be8au7dl6rc4k" path="res://components/hurtbox_component.gd" id="2_hurtbox"]
 [ext_resource type="Script" uid="uid://ccjbelb33h57n" path="res://components/hitbox_component.gd" id="3_hitbox"]
+[ext_resource type="Texture2D" uid="uid://dr1qyf5fjdhfi" path="res://Assets/AIPlaceholder/Gegner/W2/Disraptor.png" id="4_texture"]
 
 [sub_resource type="CapsuleShape2D" id="body_shape"]
 radius = 24.0
@@ -20,15 +21,10 @@ collision_mask = 7
 script = ExtResource("1_script")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-modulate = Color(0.8, 0.2, 0.8, 0.9)
-scale = Vector2(3, 3)
-
-[node name="PlaceholderVisual" type="ColorRect" parent="."]
-offset_left = -24.0
-offset_top = -32.0
-offset_right = 24.0
-offset_bottom = 32.0
-color = Color(0.8, 0.2, 0.8, 0.8)
+scale = Vector2(0.42, 0.42)
+texture = ExtResource("4_texture")
+region_enabled = true
+region_rect = Rect2(20, 220, 222, 180)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("body_shape")

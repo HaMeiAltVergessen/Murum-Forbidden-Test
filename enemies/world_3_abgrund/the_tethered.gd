@@ -36,7 +36,7 @@ var attack_timer: float = 0.0
 var cooldown_timer: float = 0.0
 var is_enraged: bool = false
 var facing_right: bool = true
-var _default_modulate: Color = Color(0.4, 0.5, 0.7, 0.9)
+var _default_modulate: Color = Color.WHITE
 @export var beast_path: NodePath = ""
 
 @onready var sprite: Node2D = $Sprite2D

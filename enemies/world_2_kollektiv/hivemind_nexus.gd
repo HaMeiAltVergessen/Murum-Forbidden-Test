@@ -30,7 +30,7 @@ var spawn_timer: float = 2.0
 var minions: Array = []
 var is_immune: bool = true
 var vulnerability_timer: float = 0.0
-var _default_modulate: Color = Color(0.2, 0.9, 0.9, 0.9)
+var _default_modulate: Color = Color.WHITE
 
 @onready var sprite: Node2D = $Sprite2D
 @onready var hurtbox: Area2D = $HurtboxComponent

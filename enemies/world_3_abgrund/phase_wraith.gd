@@ -36,7 +36,7 @@ var attack_timer: float = 0.0
 var cooldown_timer: float = 0.0
 var phase_cooldown: float = 3.0
 var phase_timer: float = 0.0
-var _default_modulate: Color = Color(0.5, 0.1, 0.7, 0.7)
+var _default_modulate: Color = Color.WHITE
 
 @onready var sprite: Node2D = $Sprite2D
 @onready var hurtbox: Area2D = $HurtboxComponent

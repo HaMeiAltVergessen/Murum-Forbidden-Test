@@ -38,7 +38,7 @@ var cooldown_timer: float = 0.0
 var attack_count: int = 0
 var is_afterimage: bool = false
 var afterimage_timer: float = 0.0
-var _default_modulate: Color = Color(0.2, 0.5, 0.5, 0.8)
+var _default_modulate: Color = Color.WHITE
 
 @onready var sprite: Node2D = $Sprite2D
 @onready var hurtbox: Area2D = $HurtboxComponent

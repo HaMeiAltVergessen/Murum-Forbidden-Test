@@ -28,7 +28,7 @@ var stun_duration: float = 0.0
 var target: CharacterBody2D = null
 var active_radius: float = WELL_RADIUS
 var _well_visual: ColorRect = null
-var _default_modulate: Color = Color(0.15, 0.1, 0.4, 0.9)
+var _default_modulate: Color = Color.WHITE
 
 @onready var sprite: Node2D = $Sprite2D
 @onready var hurtbox: Area2D = $HurtboxComponent

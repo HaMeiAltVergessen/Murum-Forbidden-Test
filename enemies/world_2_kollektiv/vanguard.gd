@@ -46,7 +46,7 @@ var combo_count: int = 0
 var rally_timer: float = 8.0
 var facing_right: bool = true
 var _shield_visual: ColorRect = null
-var _default_modulate: Color = Color(1.0, 0.7, 0.2, 0.9)
+var _default_modulate: Color = Color.WHITE
 
 @onready var sprite: Node2D = $Sprite2D
 @onready var hurtbox: Area2D = $HurtboxComponent

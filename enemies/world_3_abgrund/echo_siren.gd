@@ -35,7 +35,7 @@ var state: State = State.IDLE
 var scream_cooldown: float = 4.0
 var charge_timer: float = 0.0
 var attack_cooldown: float = 0.0
-var _default_modulate: Color = Color(0.7, 0.4, 0.9, 0.8)
+var _default_modulate: Color = Color.WHITE
 
 @onready var sprite: Node2D = $Sprite2D
 @onready var hurtbox: Area2D = $HurtboxComponent

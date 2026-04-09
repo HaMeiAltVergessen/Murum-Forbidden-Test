@@ -36,7 +36,7 @@ var attack_timer: float = 0.0
 var cooldown_timer: float = 0.0
 var combo_count: int = 0
 var facing_right: bool = true
-var _default_modulate: Color = Color(0.2, 0.3, 0.8, 0.9)
+var _default_modulate: Color = Color.WHITE
 
 # ============================================================================
 # REFERENCES
