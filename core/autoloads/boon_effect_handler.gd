@@ -9,21 +9,54 @@ const CLONE_SCENE_COLOR := Color(0.5, 0.3, 0.8, 0.6)  # Raelear purple
 # ============ EXPLOSION VFX ============
 const VFX_BASE := "res://vfx/placeholder/Free-Animated-Explosions/PNG/"
 
-# Path -> [primary_folder, secondary_folder]
-const PATH_VFX := {
-	"noron": ["Explosion_1", "Explosion_2"],
-	"arthra": ["Explosion_3", "Explosion_4/1"],
-	"sairias": ["Explosion_5", "Explosion_6"],
-	"murrum": ["Explosion_8", "Explosion_7/1"],
-	"raelear": ["Explosion_9", "Explosion_10"],
+# ============ PACHRON VFX SPRITESHEETS ============
+const PACHRON_VFX_BASE := "res://Assets/AIPlaceholder/PachronVFX/"
+# key: [filename, cols, rows, frame_count, speed]
+const PACHRON_VFX := {
+	"mur_fire": ["MurT1Fire.png", 3, 1, 3, 12.0],
+	"mur_water": ["MurT1Wasser.png", 5, 1, 5, 12.0],
+	"mur_earth": ["MurT1Erde.png", 4, 1, 4, 12.0],
+	"mur_lightning": ["MurT1Blitz.png", 4, 1, 4, 12.0],
+	"mur_t5": ["MurT5.png", 4, 1, 4, 10.0],
+	"mur_t5_ring": ["MurT5_2.png", 4, 1, 4, 12.0],
+	"arthra_mark": ["Arthra_T2T4Mark.png", 2, 1, 2, 4.0],
+	"arthra_meteor": ["ArthraT3.png", 3, 2, 6, 14.0],
+	"arthra_chain": ["ArthraT5.png", 3, 2, 6, 14.0],
+	"sairias_block": ["SairiasT1.png", 5, 1, 5, 14.0],
+	"sairias_reflect": ["SairiasT2.png", 3, 1, 3, 14.0],
+	"sairias_pillar": ["SAiriasT4.png", 5, 1, 5, 12.0],
+	"noron_light": ["NoronT4Light.png", 5, 1, 5, 14.0],
+	"noron_dark": ["NoronT4Dark.png", 5, 1, 5, 14.0],
+	"noron_t5": ["NoronT5.png", 2, 2, 4, 10.0],
+	"raelear_explosion": ["RealerT1_explosion.png", 5, 1, 5, 14.0],
+	"raelear_t5": ["RealearT5_Explosion.png", 5, 1, 5, 14.0],
+	"sync_arthra_mur": ["Sync_Arthra+Mur.png", 4, 1, 4, 10.0],
+	"sync_arthra_noron": ["Sync_Noron+Arthra.png", 4, 1, 4, 12.0],
+	"sync_arthra_sairias": ["Sync_Arthra+Airis.png", 5, 1, 5, 14.0],
+	"sync_arthra_raelear": ["Sync_Arthra+Real.png", 5, 1, 5, 14.0],
+	"sync_raelear_mur": ["Sync_Realear+Mur.png", 2, 2, 4, 10.0],
+	"sync_raelear_noron": ["Sync_Noron+Real.png", 4, 1, 4, 12.0],
+	"sync_raelear_sairias": ["Sync_Ariris+Realer.png", 5, 1, 5, 14.0],
+	"sync_murrum_noron": ["Sync_Noron+Mur.png", 4, 1, 4, 12.0],
+	"sync_murrum_sairias": ["Sync_Airis+Mur.png", 5, 1, 5, 14.0],
+	"sync_noron_sairias": ["Sync_Airis+Noron.png", 4, 1, 4, 10.0],
 }
 
-# Murrum element -> Explosion_7 subfolder
+# Path -> [primary_key, secondary_key]
+const PATH_VFX := {
+	"noron": ["noron_light", "noron_dark"],
+	"arthra": ["arthra_chain", "arthra_meteor"],
+	"sairias": ["sairias_block", "sairias_reflect"],
+	"murrum": ["mur_t5_ring", "mur_fire"],
+	"raelear": ["raelear_explosion", "raelear_t5"],
+}
+
+# Murrum element -> Pachron VFX key
 const ELEMENT_VFX := {
-	"fire": "Explosion_7/1",
-	"water": "Explosion_7/2",
-	"earth": "Explosion_7/3",
-	"lightning": "Explosion_7/4",
+	"fire": "mur_fire",
+	"water": "mur_water",
+	"earth": "mur_earth",
+	"lightning": "mur_lightning",
 }
 
 # Element colors for fallback VFX when sprites not cached
@@ -100,6 +133,7 @@ func _ready() -> void:
 	EventBus.staff_hit_enemy.connect(_on_staff_hit_enemy)
 
 	_preload_vfx()
+	_preload_pachron_vfx()
 	_preload_lightning_vfx()
 	print("[BoonEffectHandler] Initialized")
 
@@ -213,7 +247,7 @@ func _on_enemy_died(enemy: Node, position: Vector2) -> void:
 			if _sync_urteil_clone_cooldown <= 0.0:
 				_spawn_raelear_clone(position)
 				_sync_urteil_clone_cooldown = SyncSkillManager.get_sync_param("arthra_raelear", "extra_clone_cooldown", 1.0)
-				_spawn_raelear_vfx(position, 60.0)
+				_spawn_explosion_vfx(position, "sync_arthra_raelear", 0.8)
 				print("[SyncEffect] Arthra×Raelear: Urteil-death clone at %v" % position)
 
 	# Sync 2: Arthra×Murrum — Elemental kill triggers bonus lightning
@@ -313,14 +347,14 @@ func _activate_twilight_blades() -> void:
 
 	var blade_radius: float = BoonManager.get_scaled_param("noron", 1, "blade_radius", 80)
 
-	# Create 2 blade visuals (light + dark) using Noron explosion sprites
-	var light_tex: Texture2D = load(VFX_BASE + "Explosion_1/Explosion_1.png")
-	var dark_tex: Texture2D = load(VFX_BASE + "Explosion_2/Explosion_1.png")
+	# Create 2 blade visuals (light + dark) using Noron crescent sprites
+	var light_tex := _get_blade_atlas(PACHRON_VFX_BASE + "NoronT1Light.png", 4, 2)
+	var dark_tex := _get_blade_atlas(PACHRON_VFX_BASE + "NoronT1Dark.png", 4, 2)
 
 	for i in range(2):
 		var blade := Sprite2D.new()
 		blade.name = "Blade_%d" % i
-		blade.scale = Vector2(0.15, 0.15)
+		blade.scale = Vector2(0.5, 0.5)
 		var angle: float = i * PI  # Opposite sides
 		blade.position = Vector2(cos(angle), sin(angle)) * blade_radius
 
@@ -526,10 +560,8 @@ func _apply_auto_urteil(enemy: Node) -> void:
 		if urteil:
 			enemy.set_meta("urteil_marker", urteil)
 
-	# Visual mark (red tint)
-	var sprite = enemy.get_node_or_null("Sprite2D")
-	if sprite:
-		sprite.modulate = Color(1.2, 0.5, 0.5)
+	# Visual mark (arthra mark sprite above enemy)
+	_spawn_explosion_vfx(enemy.global_position + Vector2(0, -60), "arthra_mark", 0.4, Color(1.0, 0.8, 0.4))
 
 	print("[BoonEffect] Arthra T4: Auto-Urteil on %s" % enemy.name)
 
@@ -711,7 +743,7 @@ func noron_t5_counter(pos: Vector2) -> void:
 	for enemy in enemies:
 		enemy.take_damage(counter_dmg, player)
 
-	_spawn_noron_vfx(pos, counter_radius, false)
+	_spawn_explosion_vfx(pos, "noron_t5", counter_radius / 80.0)
 	print("[BoonEffect] Noron T5: Counter explosion! %d enemies hit for %d" % [enemies.size(), counter_dmg])
 
 
@@ -1020,6 +1052,7 @@ func _spawn_raelear_clone(pos: Vector2) -> void:
 		# Tint clone with element color
 		var tint: Color = ELEMENT_COLORS.get(element, MURRUM_COLOR)
 		clone.modulate = tint.lerp(CLONE_SCENE_COLOR, 0.4)
+		_spawn_explosion_vfx(pos, "sync_raelear_mur", 0.5, tint)
 
 	# Sync 6: Raelear×Noron — clone is light or dark variant
 	if SyncSkillManager and SyncSkillManager.has_sync("raelear_noron"):
@@ -1033,6 +1066,7 @@ func _spawn_raelear_clone(pos: Vector2) -> void:
 			# Dark clone: +60% damage
 			var bonus: float = SyncSkillManager.get_sync_param("raelear_noron", "dark_damage_bonus_percent", 0.6)
 			clone.clone_damage = int(clone.clone_damage * (1.0 + bonus))
+		_spawn_explosion_vfx(pos, "sync_raelear_noron", 0.5)
 
 	scene_root.add_child(clone)
 	_active_clones.append(clone)
@@ -1092,6 +1126,54 @@ func _preload_vfx() -> void:
 		if sprite_frames.get_frame_count("play") > 0:
 			_vfx_cache[folder] = sprite_frames
 			print("[BoonVFX] Cached %s: %d frames" % [folder, sprite_frames.get_frame_count("play")])
+
+
+func _preload_spritesheet_vfx(key: String, path: String, cols: int, rows: int, frame_count: int, speed: float = 15.0) -> void:
+	"""Loads a spritesheet as SpriteFrames using AtlasTexture regions"""
+	var tex := load(path) as Texture2D
+	if not tex:
+		return
+	var fw: int = tex.get_width() / cols
+	var fh: int = tex.get_height() / rows
+	var sf := SpriteFrames.new()
+	sf.remove_animation("default")
+	sf.add_animation("play")
+	sf.set_animation_loop("play", false)
+	sf.set_animation_speed("play", speed)
+	var count: int = 0
+	for r in range(rows):
+		for c in range(cols):
+			if count >= frame_count:
+				break
+			var atlas := AtlasTexture.new()
+			atlas.atlas = tex
+			atlas.region = Rect2(c * fw, r * fh, fw, fh)
+			sf.add_frame("play", atlas)
+			count += 1
+	if sf.get_frame_count("play") > 0:
+		_vfx_cache[key] = sf
+		print("[BoonVFX] Cached spritesheet %s: %d frames" % [key, sf.get_frame_count("play")])
+
+
+func _preload_pachron_vfx() -> void:
+	"""Preloads all Pachron VFX spritesheets into cache"""
+	for key in PACHRON_VFX:
+		var def: Array = PACHRON_VFX[key]
+		var path: String = PACHRON_VFX_BASE + def[0]
+		_preload_spritesheet_vfx(key, path, def[1], def[2], def[3], def[4])
+
+
+func _get_blade_atlas(path: String, cols: int, frame_index: int) -> AtlasTexture:
+	"""Returns a single AtlasTexture frame from a horizontal spritesheet"""
+	var tex := load(path) as Texture2D
+	if not tex:
+		return null
+	var fw: int = tex.get_width() / cols
+	var fh: int = tex.get_height()
+	var atlas := AtlasTexture.new()
+	atlas.atlas = tex
+	atlas.region = Rect2(frame_index * fw, 0, fw, fh)
+	return atlas
 
 
 func _spawn_explosion_vfx(pos: Vector2, folder: String, vfx_scale: float = 1.0, tint: Color = Color.WHITE) -> void:
@@ -1170,66 +1252,18 @@ func _spawn_element_vfx(pos: Vector2, element: String, vfx_scale: float = 2.0) -
 
 
 func _spawn_element_burst_vfx(pos: Vector2, element: String, vfx_scale: float = 1.0) -> void:
-	"""Fallback VFX: expanding colored ring for element effects"""
-	var scene_root = get_tree().current_scene
-	if not scene_root:
-		return
-
+	"""Element burst VFX using Pachron sprites with element tint"""
 	var color: Color = ELEMENT_COLORS.get(element, MURRUM_COLOR)
-	var size: float = 90.0 * vfx_scale
-
-	# Outer ring
-	var ring := Node2D.new()
-	ring.global_position = pos
-	ring.z_index = 10
-	scene_root.add_child(ring)
-
-	var circle := ColorRect.new()
-	circle.color = color
-	circle.size = Vector2(size, size)
-	circle.position = Vector2(-size / 2.0, -size / 2.0)
-	circle.modulate.a = 0.9
-	ring.add_child(circle)
-
-	# Animate: expand + fade
-	var tween := ring.create_tween()
-	tween.set_parallel(true)
-	tween.tween_property(ring, "scale", Vector2(2.5, 2.5), 0.6).from(Vector2(0.3, 0.3))
-	tween.tween_property(circle, "modulate:a", 0.0, 0.6).from(0.9)
-	tween.set_parallel(false)
-	tween.tween_callback(ring.queue_free)
+	_spawn_explosion_vfx(pos, "mur_t5_ring", vfx_scale, color)
 
 
 func _spawn_element_hit_vfx(pos: Vector2, vfx_scale: float = 0.5) -> void:
 	"""Small element flash on enemy hit (T2 DoT tick, T3 bonus damage)"""
-	var scene_root = get_tree().current_scene
-	if not scene_root:
-		return
-
-	# Pick random element color
 	var elements: Array = ELEMENT_COLORS.keys()
 	var element: String = elements[randi() % elements.size()]
-
-	# Try sprite-based VFX first
 	var folder: String = ELEMENT_VFX.get(element, PATH_VFX["murrum"][0])
-	var frames: SpriteFrames = _vfx_cache.get(folder)
-	if frames:
-		_spawn_explosion_vfx(pos + Vector2(randf_range(-20, 20), -40 + randf_range(-20, 20)), folder, vfx_scale * 1.5)
-		return
-
-	# Fallback: colored flash
-	var color: Color = ELEMENT_COLORS.get(element, MURRUM_COLOR)
-	var flash := ColorRect.new()
-	flash.color = color
-	var s: float = 40.0 * vfx_scale
-	flash.size = Vector2(s, s)
-	flash.position = pos + Vector2(-s / 2.0 + randf_range(-15, 15), -40 - s / 2.0 + randf_range(-15, 15))
-	flash.z_index = 10
-	scene_root.add_child(flash)
-
-	var tween := flash.create_tween()
-	tween.tween_property(flash, "modulate:a", 0.0, 0.5).from(0.9)
-	tween.tween_callback(flash.queue_free)
+	var offset := Vector2(randf_range(-20, 20), -40 + randf_range(-20, 20))
+	_spawn_explosion_vfx(pos + offset, folder, vfx_scale * 1.5)
 
 
 func _spawn_multi_element_vfx(pos: Vector2) -> void:
@@ -1257,24 +1291,7 @@ func _spawn_multi_element_vfx(pos: Vector2) -> void:
 
 func _spawn_lifesteal_vfx(pos: Vector2) -> void:
 	"""T5: Heal/mana restore glow on player"""
-	var scene_root = get_tree().current_scene
-	if not scene_root:
-		return
-
-	var glow := ColorRect.new()
-	glow.color = MURRUM_COLOR
-	var s: float = 70.0
-	glow.size = Vector2(s, s)
-	glow.position = pos + Vector2(-s / 2.0, -60 - s / 2.0)
-	glow.z_index = 9
-	scene_root.add_child(glow)
-
-	var tween := glow.create_tween()
-	tween.set_parallel(true)
-	tween.tween_property(glow, "scale", Vector2(2.2, 2.2), 0.5).from(Vector2(0.4, 0.4))
-	tween.tween_property(glow, "modulate:a", 0.0, 0.5).from(0.7)
-	tween.set_parallel(false)
-	tween.tween_callback(glow.queue_free)
+	_spawn_explosion_vfx(pos + Vector2(0, -60), "mur_t5", 1.5, Color(0.8, 1.0, 1.0))
 
 
 func _restore_dot_tint(enemy: Node) -> void:
@@ -1306,7 +1323,7 @@ func _spawn_meteor_vfx(pos: Vector2, radius: float) -> void:
 
 func _spawn_pillar_vfx(pos: Vector2, radius: float) -> void:
 	"""Sairias: Light pillar VFX"""
-	_spawn_explosion_vfx(pos, PATH_VFX["sairias"][0], radius / 40.0, Color(1.0, 1.0, 0.9))
+	_spawn_explosion_vfx(pos, "sairias_pillar", radius / 40.0, Color(1.0, 1.0, 0.9))
 
 
 func _spawn_noron_vfx(pos: Vector2, radius: float, is_light: bool) -> void:
@@ -1399,12 +1416,15 @@ func _sync_storm_fire_zone(pos: Vector2) -> void:
 	if not scene_root:
 		return
 
-	# Visual zone
-	var zone := ColorRect.new()
-	zone.color = Color(color.r, color.g, color.b, 0.3)
-	var s: float = zone_radius * 2.0
-	zone.size = Vector2(s, s)
-	zone.global_position = pos - Vector2(zone_radius, zone_radius)
+	# Visual zone — Sprite2D from sync spritesheet (4 frames = 4 elements)
+	var element_idx: int = elements.find(element)
+	var zone_tex := _get_blade_atlas(PACHRON_VFX_BASE + "Sync_Arthra+Mur.png", 4, element_idx)
+	var zone := Sprite2D.new()
+	if zone_tex:
+		zone.texture = zone_tex
+		zone.scale = Vector2(zone_radius / 80.0, zone_radius / 80.0)
+	zone.global_position = pos
+	zone.modulate = Color(1.0, 1.0, 1.0, 0.7)
 	zone.z_index = -1
 	scene_root.add_child(zone)
 
@@ -1424,7 +1444,7 @@ func _sync_storm_fire_zone(pos: Vector2) -> void:
 
 	# Fade and remove
 	var tween := zone.create_tween()
-	tween.tween_property(zone, "modulate:a", 0.0, zone_dur).from(1.0)
+	tween.tween_property(zone, "modulate:a", 0.0, zone_dur).from(0.7)
 	tween.tween_callback(zone.queue_free)
 
 	_spawn_element_vfx(pos, element, 1.5)
@@ -1465,6 +1485,7 @@ func _sync_twilight_wrath_blade_lightning(enemy: Node) -> void:
 
 	enemy.take_damage(mini_damage, player)
 	_spawn_lightning_vfx(enemy.global_position)
+	_spawn_explosion_vfx(enemy.global_position + Vector2(0, -30), "sync_arthra_noron", 0.6)
 
 
 func _sync_twilight_wrath_modify_lightning(damage: int, player: Node) -> int:
@@ -1499,6 +1520,7 @@ func _sync_thunder_retribution_storm(center: Vector2) -> void:
 			if target and target.has_method("take_damage"):
 				target.take_damage(dmg, player)
 				_spawn_lightning_vfx(target.global_position)
+				_spawn_explosion_vfx(target.global_position, "sync_arthra_sairias", 0.5)
 		)
 
 	print("[SyncEffect] Arthra×Sairias: Lightning storm! %d strikes" % count)
@@ -1530,7 +1552,7 @@ func _sync_phantom_counter_parry(parried_enemy: Node) -> void:
 		if is_instance_valid(clone) and is_instance_valid(parried_enemy):
 			var dmg: int = int(clone.clone_damage * total_bonus)
 			parried_enemy.take_damage(dmg, player)
-			_spawn_raelear_vfx(clone.global_position, 80.0)
+			_spawn_explosion_vfx(clone.global_position, "sync_raelear_sairias", 0.8)
 			clone.queue_free()
 
 	_active_clones.clear()
@@ -1566,7 +1588,7 @@ func _sync_phantom_counter_absorb(damage: int) -> bool:
 				nearest_clone = clone
 
 	if nearest_clone:
-		_spawn_raelear_vfx(nearest_clone.global_position, 60.0)
+		_spawn_explosion_vfx(nearest_clone.global_position, "sync_raelear_sairias", 0.6)
 		nearest_clone.queue_free()
 		_active_clones.erase(nearest_clone)
 		_sync_clone_absorb_cooldown = SyncSkillManager.get_sync_param("raelear_sairias", "clone_absorb_cooldown", 1.0)
@@ -1589,7 +1611,7 @@ func _sync_prism_blade_element_hit(enemy: Node, player: Node) -> void:
 		_apply_dot(enemy)
 
 	# Small element VFX
-	_spawn_element_hit_vfx(enemy.global_position, 0.4)
+	_spawn_explosion_vfx(enemy.global_position + Vector2(0, -30), "sync_murrum_noron", 0.4)
 
 
 # -- Sync 9: Murrum×Sairias — Elementarer Gegenschlag --
@@ -1610,7 +1632,8 @@ func _sync_elemental_counter_nova(center: Vector2) -> void:
 		if BoonManager.has_boon("murrum", 2):
 			_apply_dot(enemy)
 
-	# VFX: 4 element explosions in sequence
+	# VFX: sync sprite + 4 element explosions in sequence
+	_spawn_explosion_vfx(center, "sync_murrum_sairias", nova_radius / 80.0)
 	var elements: Array = ["fire", "water", "earth", "lightning"]
 	for i in range(4):
 		get_tree().create_timer(i * 0.08).timeout.connect(func():
@@ -1646,12 +1669,13 @@ func _sync_eternal_guardian_activate() -> void:
 	_sync_guardian_shield_active = true
 	_sync_guardian_shield_timer = SyncSkillManager.get_sync_param("noron_sairias", "shield_duration", 5.0)
 
-	# Visual: tint player with twilight glow
+	# Visual: tint player with twilight glow + sync VFX
 	var player = _get_player()
 	if player:
 		var sprite = player.get_node_or_null("AnimatedSprite2D")
 		if sprite:
 			sprite.modulate = Color(0.7, 0.8, 1.0, 0.9)
+		_spawn_explosion_vfx(player.global_position, "sync_noron_sairias", 1.0)
 
 	print("[SyncEffect] Noron×Sairias: Twilight shield activated (%.0fs)" % _sync_guardian_shield_timer)
 
@@ -1676,7 +1700,8 @@ func _sync_eternal_guardian_expire() -> void:
 		for enemy in enemies:
 			enemy.take_damage(nova_dmg, player)
 
-		# VFX: Light + Dark explosion
+		# VFX: Sync nova + Light + Dark explosion
+		_spawn_explosion_vfx(player.global_position, "sync_noron_sairias", nova_radius / 80.0)
 		_spawn_noron_vfx(player.global_position, nova_radius, true)
 		get_tree().create_timer(0.1).timeout.connect(func():
 			_spawn_noron_vfx(player.global_position, nova_radius, false)
