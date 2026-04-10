@@ -9,6 +9,11 @@ const CLONE_SCENE_COLOR := Color(0.5, 0.3, 0.8, 0.6)  # Raelear purple
 # ============ EXPLOSION VFX ============
 const VFX_BASE := "res://vfx/placeholder/Free-Animated-Explosions/PNG/"
 
+# ============ PACHRON VFX SCALING ============
+## Global multiplier applied to every Pachron/Boon VFX spawned via _spawn_explosion_vfx.
+## Call-sites keep their original semantic scale values; this reduces final size only.
+const PACHRON_VFX_GLOBAL_SCALE: float = 0.5
+
 # ============ PACHRON VFX SPRITESHEETS ============
 const PACHRON_VFX_BASE := "res://Assets/AIPlaceholder/PachronVFX/"
 # key: [filename, cols, rows, frame_count, speed]
@@ -323,7 +328,8 @@ func _on_combo_finisher_executed(_combo_count: int) -> void:
 	if BoonManager.has_boon("murrum", 5) and total_elemental_damage > 0:
 		_murrum_t5_lifesteal(player, total_elemental_damage)
 
-	_spawn_element_vfx(player.global_position, element, 2.0)
+	# Murrum T1: extra-kompaktes VFX (auf 25% des Originals skaliert)
+	_spawn_element_vfx(player.global_position, element, 1.0)
 	print("[BoonEffect] Murrum T1: %s finisher! %d enemies hit" % [element, enemies.size()])
 
 
@@ -1189,7 +1195,8 @@ func _spawn_explosion_vfx(pos: Vector2, folder: String, vfx_scale: float = 1.0, 
 	var anim := AnimatedSprite2D.new()
 	anim.sprite_frames = frames
 	anim.global_position = pos
-	anim.scale = Vector2(vfx_scale, vfx_scale)
+	var final_scale: float = vfx_scale * PACHRON_VFX_GLOBAL_SCALE
+	anim.scale = Vector2(final_scale, final_scale)
 	anim.modulate = tint
 	anim.z_index = 10
 	scene_root.add_child(anim)
@@ -1232,7 +1239,8 @@ func _spawn_lightning_vfx(pos: Vector2) -> void:
 	var anim := AnimatedSprite2D.new()
 	anim.sprite_frames = _lightning_frames
 	anim.global_position = pos + Vector2(0, -40)
-	anim.scale = Vector2(2.5, 2.5)
+	var lightning_scale: float = 2.5 * PACHRON_VFX_GLOBAL_SCALE
+	anim.scale = Vector2(lightning_scale, lightning_scale)
 	anim.modulate = Color(0.8, 0.95, 1.0, 0.9)
 	anim.z_index = 10
 	scene_root.add_child(anim)
