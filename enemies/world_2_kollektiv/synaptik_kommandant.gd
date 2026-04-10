@@ -244,8 +244,9 @@ func _spawn_cone_bolt(dir: Vector2, is_middle: bool) -> void:
 	bolt.speed = CONE_BOLT_SPEED
 	bolt.direction = dir
 	bolt.can_be_parried = is_middle
-	bolt.global_position = global_position + dir * 40.0
 	get_tree().current_scene.add_child(bolt)
+	bolt.global_position = global_position + dir * 60.0
+	bolt.rotation = dir.angle()
 
 # ============================================================================
 # OVERLOAD-SCHOCKWELLE (HEAVY)

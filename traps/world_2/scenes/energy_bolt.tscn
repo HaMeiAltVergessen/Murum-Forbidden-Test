@@ -1,7 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://energy_bolt_001"]
+[gd_scene load_steps=4 format=3 uid="uid://energy_bolt_001"]
 
 [ext_resource type="Script" path="res://traps/world_2/energy_bolt.gd" id="1"]
 [ext_resource type="SpriteFrames" path="res://traps/sprites/energy_bolt_frames.tres" id="2_frames"]
+
+[sub_resource type="CircleShape2D" id="bolt_shape"]
+radius = 10.0
 
 [node name="EnergyBolt" type="Area2D"]
 collision_layer = 0
@@ -16,6 +19,7 @@ sprite_frames = ExtResource("2_frames")
 animation = &"default"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("bolt_shape")
 
 [node name="Trail" type="GPUParticles2D" parent="."]
 emitting = false
