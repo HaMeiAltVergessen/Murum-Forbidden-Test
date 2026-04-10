@@ -75,7 +75,7 @@ var _hp_thresholds_triggered: Array[float] = []
 var _default_modulate: Color = Color.WHITE
 
 # Visual helpers for placeholder
-var _charge_ring: Node2D = null
+var _charge_ring: ColorRect = null
 
 # ============================================================================
 # REFERENCES
@@ -265,9 +265,10 @@ func _release_overload() -> void:
 	for player in get_tree().get_nodes_in_group("player"):
 		if not is_instance_valid(player):
 			continue
-		var d := global_position.distance_to(player.global_position)
+		var player_pos: Vector2 = player.global_position
+		var d := global_position.distance_to(player_pos)
 		if d <= OVERLOAD_RADIUS and player.has_method("take_damage"):
-			var kb_dir := (player.global_position - global_position).normalized()
+			var kb_dir: Vector2 = (player_pos - global_position).normalized()
 			var player_hurtbox = player.get_node_or_null("HurtboxComponent")
 			if player_hurtbox and player_hurtbox.has_method("take_damage"):
 				player_hurtbox.take_damage(OVERLOAD_DAMAGE, kb_dir * OVERLOAD_KNOCKBACK, OVERLOAD_STUN, self)
@@ -280,21 +281,19 @@ func _release_overload() -> void:
 func _create_charge_ring() -> void:
 	_clear_charge_ring()
 	_charge_ring = ColorRect.new()
-	var rect := _charge_ring as ColorRect
-	rect.color = Color(0.4, 1.0, 1.3, 0.35)
-	rect.size = Vector2(20, 20)
-	rect.position = -rect.size * 0.5
-	rect.z_index = -1
+	_charge_ring.color = Color(0.4, 1.0, 1.3, 0.35)
+	_charge_ring.size = Vector2(20, 20)
+	_charge_ring.position = -_charge_ring.size * 0.5
+	_charge_ring.z_index = -1
 	add_child(_charge_ring)
 
 func _update_charge_ring(progress: float) -> void:
-	if not _charge_ring or not _charge_ring is ColorRect:
+	if not _charge_ring or not is_instance_valid(_charge_ring):
 		return
-	var rect := _charge_ring as ColorRect
-	var size := OVERLOAD_RADIUS * 2.0 * clamp(progress, 0.0, 1.0)
-	rect.size = Vector2(size, size)
-	rect.position = -rect.size * 0.5
-	rect.color = Color(0.4 + progress * 0.6, 1.0, 1.3, 0.25 + progress * 0.35)
+	var ring_size: float = OVERLOAD_RADIUS * 2.0 * clamp(progress, 0.0, 1.0)
+	_charge_ring.size = Vector2(ring_size, ring_size)
+	_charge_ring.position = -_charge_ring.size * 0.5
+	_charge_ring.color = Color(0.4 + progress * 0.6, 1.0, 1.3, 0.25 + progress * 0.35)
 
 func _clear_charge_ring() -> void:
 	if _charge_ring and is_instance_valid(_charge_ring):
