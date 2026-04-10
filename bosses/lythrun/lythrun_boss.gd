@@ -1185,6 +1185,7 @@ func _spawn_aoe_ring(pos: Vector2, radius: float, damage: float) -> void:
 	var aoe_scene = load(aoe_path)
 	var aoe = aoe_scene.instantiate()
 	get_parent().add_child(aoe)
+	aoe.owner = self
 
 	aoe.global_position = pos
 

@@ -18,6 +18,13 @@ const WELL_RADIUS_COOP: float = 400.0
 const PULL_FORCE: float = 80.0
 const DPS: float = 5.0
 
+const FRAME_REGIONS: Array = [
+	Rect2(0, 50, 210, 450),    # 0: IDLE
+	Rect2(256, 50, 210, 450),  # 1: WELL_ACTIVE
+	Rect2(512, 50, 210, 450),  # 2: TRACKING
+	Rect2(768, 50, 210, 450),  # 3: STUNNED
+]
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -109,19 +116,23 @@ func _find_target() -> void:
 func _update_ai(delta: float) -> void:
 	if not target:
 		_find_target()
+		_set_sprite_frame(0)
 		return
 	_face_target()
 	# Try to position between players
 	var players := get_tree().get_nodes_in_group("player")
 	if players.size() >= 2:
+		_set_sprite_frame(2)
 		var midpoint: Vector2 = (players[0].global_position + players[1].global_position) / 2.0
 		var dir: Vector2 = (midpoint - global_position).normalized()
 		velocity.x = dir.x * MOVE_SPEED
 	else:
 		var dist := get_distance_to_target()
 		if dist > DETECTION_RANGE:
+			_set_sprite_frame(0)
 			velocity.x = 0
 		else:
+			_set_sprite_frame(1)
 			velocity.x = get_direction_to_target().x * MOVE_SPEED * 0.5
 
 # ============================================================================
@@ -178,6 +189,7 @@ func _spawn_loot() -> void:
 
 func stun(duration: float) -> void:
 	is_stunned = true
+	_set_sprite_frame(3)
 	stun_duration = duration
 	if sprite:
 		sprite.modulate = Color(1.5, 1.5, 0.5, _default_modulate.a)
@@ -186,10 +198,15 @@ func stun(duration: float) -> void:
 
 func _end_stun() -> void:
 	is_stunned = false
+	_set_sprite_frame(0)
 	stun_duration = 0.0
 	if sprite:
 		sprite.modulate = _default_modulate
 	stun_ended.emit()
+
+func _set_sprite_frame(index: int) -> void:
+	if sprite and index >= 0 and index < FRAME_REGIONS.size():
+		sprite.region_rect = FRAME_REGIONS[index]
 
 func _face_target() -> void:
 	if not target or not sprite:

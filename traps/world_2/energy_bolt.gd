@@ -116,8 +116,10 @@ func _on_area_entered(area: Area2D) -> void:
 func _handle_player_hit(player: Node2D) -> void:
 	var hurtbox = player.get_node_or_null("HurtboxComponent")
 
-	# Check invulnerability
+	# Check invulnerability - destroy bolt but deal no damage
 	if hurtbox and "is_invulnerable" in hurtbox and hurtbox.is_invulnerable:
+		_play_hit_effect()
+		queue_free()
 		return
 
 	# Deal damage

@@ -20,6 +20,15 @@ const ATTACK_COOLDOWN: float = 1.0
 const TETHER_MAX_DIST: float = 400.0
 const CHARGE_SPEED: float = 300.0
 
+const FRAME_REGIONS: Array = [
+	Rect2(10, 10, 950, 600),     # 0: IDLE
+	Rect2(1030, 10, 950, 600),   # 1: CHASE
+	Rect2(10, 630, 950, 600),    # 2: CHARGE
+	Rect2(1030, 630, 950, 600),  # 3: ATTACK_WINDUP
+	Rect2(10, 1250, 950, 600),   # 4: ATTACK_ACTIVE
+	Rect2(1030, 1250, 950, 600), # 5: STUNNED
+]
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -135,9 +144,11 @@ func _update_ai(delta: float) -> void:
 
 	match state:
 		State.IDLE:
+			_set_sprite_frame(0)
 			if dist <= DETECTION_RANGE:
 				state = State.CHASE
 		State.CHASE:
+			_set_sprite_frame(1)
 			_face_target()
 			if dist > DETECTION_RANGE:
 				state = State.IDLE
@@ -152,6 +163,7 @@ func _update_ai(delta: float) -> void:
 			else:
 				velocity.x = get_direction_to_target().x * _get_effective_speed()
 		State.CHARGE:
+			_set_sprite_frame(2)
 			_face_target()
 			velocity.x = get_direction_to_target().x * CHARGE_SPEED
 			if dist <= ATTACK_RANGE:
@@ -160,6 +172,7 @@ func _update_ai(delta: float) -> void:
 			elif dist > DETECTION_RANGE:
 				state = State.CHASE
 		State.ATTACK_WINDUP:
+			_set_sprite_frame(3)
 			velocity.x = 0
 			attack_timer += delta
 			if attack_timer >= ATTACK_WINDUP:
@@ -168,6 +181,7 @@ func _update_ai(delta: float) -> void:
 				if hitbox:
 					hitbox.monitoring = true
 		State.ATTACK_ACTIVE:
+			_set_sprite_frame(4)
 			attack_timer += delta
 			velocity.x = get_direction_to_target().x * _get_effective_speed() * 2.0
 			if attack_timer >= ATTACK_ACTIVE:
@@ -176,6 +190,7 @@ func _update_ai(delta: float) -> void:
 				state = State.COOLDOWN
 				cooldown_timer = ATTACK_COOLDOWN
 		State.COOLDOWN:
+			_set_sprite_frame(0)
 			_face_target()
 			cooldown_timer -= delta
 			velocity.x = get_direction_to_target().x * _get_effective_speed() * 0.5
@@ -239,6 +254,7 @@ func _spawn_loot() -> void:
 
 func stun(duration: float) -> void:
 	is_stunned = true
+	_set_sprite_frame(5)
 	stun_duration = duration
 	state = State.IDLE
 	if hitbox:
@@ -250,10 +266,15 @@ func stun(duration: float) -> void:
 
 func _end_stun() -> void:
 	is_stunned = false
+	_set_sprite_frame(0)
 	stun_duration = 0.0
 	if sprite:
 		sprite.modulate = _default_modulate
 	stun_ended.emit()
+
+func _set_sprite_frame(index: int) -> void:
+	if sprite and index >= 0 and index < FRAME_REGIONS.size():
+		sprite.region_rect = FRAME_REGIONS[index]
 
 func _face_target() -> void:
 	if not target or not sprite:

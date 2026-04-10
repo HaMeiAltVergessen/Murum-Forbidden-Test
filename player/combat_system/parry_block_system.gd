@@ -214,10 +214,7 @@ func _start_blocking() -> void:
 
 	# Check cooldown
 	if cooldown_timer > 0.0:
-		print("[ParryBlockSystem] Cooldown active, cannot block")
 		return
-
-	print("[ParryBlockSystem] ===== PARRY WINDOW STARTED (%.2fs) =====" % PARRY_WINDOW_DURATION)
 
 	# Enter PARRY_WINDOW state
 	current_state = State.PARRY_WINDOW
@@ -225,14 +222,9 @@ func _start_blocking() -> void:
 
 	# Enable collision detection
 	block_area.monitoring = true
-	print("[ParryBlockSystem] BlockArea monitoring enabled: %s" % block_area.monitoring)
-	print("[ParryBlockSystem] BlockArea collision_layer: %d, collision_mask: %d" % [block_area.collision_layer, block_area.collision_mask])
-	print("[ParryBlockSystem] BlockArea radius: %.1f" % block_collision.shape.radius)
 
 	# Enable invulnerability immediately
-	print("[ParryBlockSystem] About to set player invulnerable to TRUE")
 	_set_player_invulnerable(true)
-	print("[ParryBlockSystem] Finished setting player invulnerable")
 
 	# Visual feedback (gold pulsing during parry window)
 	_show_parry_window_indicators()
@@ -244,9 +236,6 @@ func _start_blocking() -> void:
 func _transition_to_blocking() -> void:
 	"""Transitions from parry window to normal blocking"""
 
-	print("[ParryBlockSystem] ===== PARRY WINDOW EXPIRED -> BLOCKING STATE =====")
-	print("[ParryBlockSystem] BlockArea still monitoring: %s" % block_area.monitoring)
-
 	current_state = State.BLOCKING
 
 	# Visual feedback (dim parry ring, show normal block)
@@ -257,8 +246,6 @@ func _stop_blocking() -> void:
 
 	if current_state == State.IDLE:
 		return
-
-	print("[ParryBlockSystem] Blocking ended")
 
 	current_state = State.IDLE
 
@@ -284,89 +271,46 @@ func _stop_blocking() -> void:
 func _on_block_area_entered(area: Area2D) -> void:
 	"""Called when enemy attack enters block sphere (0-70px)"""
 
-	print("[ParryBlockSystem] ===== AREA_ENTERED SIGNAL FIRED =====")
-	print("[ParryBlockSystem] Area: ", area.name)
-
-	# CRITICAL: Safe owner check to prevent crash on freed objects
-	var owner_name = "null"
-	if is_instance_valid(area.owner):
-		owner_name = area.owner.name
-	print("[ParryBlockSystem] Area owner: ", owner_name)
-
-	print("[ParryBlockSystem] Area groups: ", area.get_groups())
-	var state_name = "IDLE"
-	if current_state == State.PARRY_WINDOW:
-		state_name = "PARRY_WINDOW"
-	elif current_state == State.BLOCKING:
-		state_name = "BLOCKING"
-	print("[ParryBlockSystem] Current state: ", state_name)
-
 	# Safety check
 	if current_state == State.IDLE:
-		print("[ParryBlockSystem] State is IDLE, ignoring")
 		return
 
 	# Check if enemy hitbox
 	if not _is_enemy_hitbox(area):
-		print("[ParryBlockSystem] Not enemy hitbox, ignoring (name: ", area.name, ", groups: ", area.get_groups(), ")")
 		return
 
 	# Get target (enemy or projectile)
 	var target = area.owner
 	if not target:
-		print("[ParryBlockSystem] No owner, ignoring")
 		return
 
-	# CRITICAL: Don't parry/block own hurtbox! (COMMIT 023.9.9)
+	# Don't parry/block own hurtbox
 	if target == player:
-		print("[ParryBlockSystem] Ignoring own hurtbox (self-parry prevented)")
 		return
 
-	# ========== PARRY WINDOW (first 1 second after RMB press) ==========
+	# ========== PARRY WINDOW ==========
 	if current_state == State.PARRY_WINDOW:
-		# Perfect Parry!
-
-		# Check if it's an enemy
 		if target.is_in_group("enemies"):
-			print("[ParryBlockSystem] *** PERFECT PARRY *** on enemy: ", target.name, " (within timing window)")
+			print("[ParryBlockSystem] PERFECT PARRY on: ", target.name)
 			_execute_perfect_parry(target)
 			return
 
-		# Check if it's a projectile
 		if _is_projectile(target):
-			print("[ParryBlockSystem] *** PERFECT PARRY *** on projectile: ", target.name)
+			print("[ParryBlockSystem] PROJECTILE PARRIED: ", target.name)
 			_parry_projectile(target)
 			return
 
-	# ========== NORMAL BLOCK (after 1 second) ==========
+	# ========== NORMAL BLOCK ==========
 	elif current_state == State.BLOCKING:
-		# Normal block - drain mana based on attack category
-
-		# Determine attack category (currently all enemies do Light damage)
 		var category: BlockCategory = BlockCategory.LIGHT
-
-		# Get mana cost for this category
 		var mana_cost: float = _get_mana_cost_for_category(category)
 
-		print("[ParryBlockSystem] Normal block against ", target.name, " (Category: LIGHT, Mana cost: ", mana_cost, ")")
-
-		# Drain mana
 		_drain_mana_on_hit(mana_cost)
-
-		# Spawn block VFX for feedback
 		_spawn_block_effect()
-
-		# Audio feedback
 		AudioManager.play_sfx("combat_block", 0.12)
 
-		# ========== REBOUND RESET (Commit 018) ==========
-		# TESTING: Disabled - only timeout resets counter
-		# Normal block resets parry counter (not perfect)
-		# _reset_parry_counter()
-
-		# Emit signal
 		normal_block_executed.emit(target)
-		EventBus.attack_blocked.emit(target, 1.0)  # 100% damage reduction (invulnerable)
+		EventBus.attack_blocked.emit(target, 1.0)
 
 func _is_enemy_hitbox(area: Area2D) -> bool:
 	"""Checks if area is enemy hitbox or P2 projectile/ability"""
@@ -642,16 +586,6 @@ func _process(delta: float) -> void:
 	if current_state == State.PARRY_WINDOW:
 		parry_window_timer -= delta
 
-		# DEBUG: Check for overlapping areas during parry window
-		var overlapping = block_area.get_overlapping_areas()
-		if overlapping.size() > 0:
-			print("[ParryBlockSystem] PARRY WINDOW - Overlapping areas (", overlapping.size(), "):")
-			for area in overlapping:
-				var area_owner_name = "null"
-				if is_instance_valid(area.owner):
-					area_owner_name = area.owner.name
-				print("  - ", area.name, " (owner: ", area_owner_name, ", groups: ", area.get_groups(), ")")
-
 		if parry_window_timer <= 0.0:
 			# Parry window expired, transition to normal blocking
 			_transition_to_blocking()
@@ -660,16 +594,6 @@ func _process(delta: float) -> void:
 	elif current_state == State.BLOCKING:
 		# Drain mana continuously (1 per second)
 		_drain_mana_continuous(delta)
-
-		# DEBUG: Check for overlapping areas during blocking
-		var overlapping = block_area.get_overlapping_areas()
-		if overlapping.size() > 0:
-			print("[ParryBlockSystem] BLOCKING - Overlapping areas (", overlapping.size(), "):")
-			for area in overlapping:
-				var area_owner_name = "null"
-				if is_instance_valid(area.owner):
-					area_owner_name = area.owner.name
-				print("  - ", area.name, " (owner: ", area_owner_name, ", groups: ", area.get_groups(), ")")
 
 	# ========== REBOUND TIMEOUT TRACKING (Commit 018) ==========
 	if perfect_parry_count > 0 and not rebound_ready:

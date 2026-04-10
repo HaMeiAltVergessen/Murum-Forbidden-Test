@@ -19,6 +19,13 @@ const FLEE_DISTANCE: float = 300.0
 const ATTACK_RANGE: float = 70.0
 const ATTACK_COOLDOWN: float = 2.5
 
+const FRAME_REGIONS: Array = [
+	Rect2(20, 20, 260, 240),    # 0: IDLE
+	Rect2(340, 20, 350, 240),   # 1: HEALING
+	Rect2(720, 20, 260, 240),   # 2: FLEEING
+	Rect2(100, 310, 260, 240),  # 3: STUNNED
+]
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -110,18 +117,22 @@ func _update_ai(delta: float) -> void:
 
 	if heal_target and heal_target.has_method("is_alive") and heal_target.is_alive():
 		state = State.HEAL
+		_set_sprite_frame(1)
 		_do_heal(delta)
 		# Also flee while healing
 		if dist_to_player < FLEE_DISTANCE:
 			_flee_from_player()
 	elif dist_to_player < FLEE_DISTANCE:
 		state = State.FLEE
+		_set_sprite_frame(2)
 		_flee_from_player()
 	elif dist_to_player <= ATTACK_RANGE and attack_cooldown <= 0.0:
 		state = State.ATTACK
+		_set_sprite_frame(1)
 		_do_attack()
 	else:
 		state = State.IDLE
+		_set_sprite_frame(0)
 		# Move toward allies to be in heal range
 		if heal_target:
 			var dir := (heal_target.global_position - global_position).normalized()
@@ -212,6 +223,7 @@ func _spawn_loot() -> void:
 
 func stun(duration: float) -> void:
 	is_stunned = true
+	_set_sprite_frame(3)
 	stun_duration = duration
 	if sprite:
 		sprite.modulate = Color(1.5, 1.5, 0.5, _default_modulate.a)
@@ -220,10 +232,15 @@ func stun(duration: float) -> void:
 
 func _end_stun() -> void:
 	is_stunned = false
+	_set_sprite_frame(0)
 	stun_duration = 0.0
 	if sprite:
 		sprite.modulate = _default_modulate
 	stun_ended.emit()
+
+func _set_sprite_frame(index: int) -> void:
+	if sprite and index >= 0 and index < FRAME_REGIONS.size():
+		sprite.region_rect = FRAME_REGIONS[index]
 
 func _face_target() -> void:
 	if not target or not sprite:

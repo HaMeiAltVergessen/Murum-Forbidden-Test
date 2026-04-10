@@ -22,6 +22,13 @@ const FIELD_DPS: float = 5.0
 const ATTACK_RANGE: float = 70.0
 const ATTACK_COOLDOWN: float = 2.0
 
+const FRAME_REGIONS: Array = [
+	Rect2(10, 100, 240, 350),   # 0: IDLE
+	Rect2(270, 100, 240, 350),  # 1: FIELD_UP
+	Rect2(520, 100, 240, 350),  # 2: PULSE/ATTACK
+	Rect2(770, 100, 240, 350),  # 3: STUNNED
+]
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -109,9 +116,11 @@ func _update_ai(delta: float) -> void:
 
 	match state:
 		State.IDLE:
+			_set_sprite_frame(0)
 			if dist <= DETECTION_RANGE:
 				state = State.REPOSITION
 		State.REPOSITION:
+			_set_sprite_frame(0)
 			_face_target()
 			field_cooldown_timer -= delta
 			if dist > DETECTION_RANGE:
@@ -133,6 +142,7 @@ func _update_ai(delta: float) -> void:
 				if _field_visual:
 					_field_visual.visible = true
 		State.FIELD_ACTIVE:
+			_set_sprite_frame(1)
 			velocity.x = 0
 			field_active_timer -= delta
 			_apply_field_effects(delta)
@@ -142,7 +152,7 @@ func _update_ai(delta: float) -> void:
 				if _field_visual:
 					_field_visual.visible = false
 		State.ATTACK:
-			pass
+			_set_sprite_frame(2)
 
 func _apply_field_effects(delta: float) -> void:
 	for player in get_tree().get_nodes_in_group("player"):
@@ -216,6 +226,7 @@ func _spawn_loot() -> void:
 
 func stun(duration: float) -> void:
 	is_stunned = true
+	_set_sprite_frame(3)
 	stun_duration = duration
 	state = State.IDLE
 	if _field_visual:
@@ -227,10 +238,15 @@ func stun(duration: float) -> void:
 
 func _end_stun() -> void:
 	is_stunned = false
+	_set_sprite_frame(0)
 	stun_duration = 0.0
 	if sprite:
 		sprite.modulate = _default_modulate
 	stun_ended.emit()
+
+func _set_sprite_frame(index: int) -> void:
+	if sprite and index >= 0 and index < FRAME_REGIONS.size():
+		sprite.region_rect = FRAME_REGIONS[index]
 
 func _face_target() -> void:
 	if not target or not sprite:

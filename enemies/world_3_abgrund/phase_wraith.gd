@@ -21,6 +21,15 @@ const ATTACK_COOLDOWN: float = 1.5
 const PHASE_COOLDOWN: float = 6.0
 const PHASE_DURATION: float = 1.5
 
+const FRAME_REGIONS: Array = [
+	Rect2(5, 500, 220, 420),    # 0: IDLE
+	Rect2(260, 500, 220, 420),  # 1: CHASE
+	Rect2(515, 500, 220, 420),  # 2: PHASING
+	Rect2(5, 30, 220, 420),     # 3: ATTACK_WINDUP
+	Rect2(260, 30, 220, 420),   # 4: ATTACK_ACTIVE
+	Rect2(770, 500, 220, 420),  # 5: STUNNED
+]
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -89,9 +98,11 @@ func _update_ai(delta: float) -> void:
 
 	match state:
 		State.IDLE:
+			_set_sprite_frame(0)
 			if dist <= DETECTION_RANGE:
 				state = State.CHASE
 		State.CHASE:
+			_set_sprite_frame(1)
 			_face_target()
 			if dist > DETECTION_RANGE:
 				state = State.IDLE
@@ -109,6 +120,7 @@ func _update_ai(delta: float) -> void:
 			else:
 				velocity.x = get_direction_to_target().x * MOVE_SPEED
 		State.PHASING:
+			_set_sprite_frame(2)
 			phase_timer -= delta
 			# Move toward behind-target position
 			var behind_pos := _get_behind_target_position()
@@ -117,12 +129,14 @@ func _update_ai(delta: float) -> void:
 			if phase_timer <= 0.0 or global_position.distance_to(behind_pos) < 50.0:
 				_end_phase()
 		State.MATERIALIZE:
+			_set_sprite_frame(3)
 			attack_timer += delta
 			velocity = Vector2.ZERO
 			if attack_timer >= 0.3:
 				state = State.ATTACK_WINDUP
 				attack_timer = 0.0
 		State.ATTACK_WINDUP:
+			_set_sprite_frame(3)
 			velocity.x = 0
 			attack_timer += delta
 			if attack_timer >= ATTACK_WINDUP:
@@ -131,6 +145,7 @@ func _update_ai(delta: float) -> void:
 				if hitbox:
 					hitbox.monitoring = true
 		State.ATTACK_ACTIVE:
+			_set_sprite_frame(4)
 			attack_timer += delta
 			velocity.x = get_direction_to_target().x * MOVE_SPEED * 1.5
 			if attack_timer >= ATTACK_ACTIVE:
@@ -139,12 +154,14 @@ func _update_ai(delta: float) -> void:
 				state = State.ATTACK_RECOVERY
 				attack_timer = 0.0
 		State.ATTACK_RECOVERY:
+			_set_sprite_frame(0)
 			velocity.x = 0
 			attack_timer += delta
 			if attack_timer >= ATTACK_RECOVERY:
 				state = State.COOLDOWN
 				cooldown_timer = ATTACK_COOLDOWN
 		State.COOLDOWN:
+			_set_sprite_frame(0)
 			_face_target()
 			cooldown_timer -= delta
 			# Retreat briefly
@@ -243,6 +260,7 @@ func _spawn_loot() -> void:
 
 func stun(duration: float) -> void:
 	is_stunned = true
+	_set_sprite_frame(5)
 	stun_duration = duration
 	if state == State.PHASING:
 		_end_phase()
@@ -256,10 +274,15 @@ func stun(duration: float) -> void:
 
 func _end_stun() -> void:
 	is_stunned = false
+	_set_sprite_frame(0)
 	stun_duration = 0.0
 	if sprite:
 		sprite.modulate = _default_modulate
 	stun_ended.emit()
+
+func _set_sprite_frame(index: int) -> void:
+	if sprite and index >= 0 and index < FRAME_REGIONS.size():
+		sprite.region_rect = FRAME_REGIONS[index]
 
 func _face_target() -> void:
 	if not target or not sprite:

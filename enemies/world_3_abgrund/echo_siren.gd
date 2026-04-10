@@ -21,6 +21,14 @@ const INVERT_DURATION: float = 4.0
 const ATTACK_RANGE: float = 70.0
 const ATTACK_COOLDOWN: float = 2.0
 
+const FRAME_REGIONS: Array = [
+	Rect2(20, 80, 500, 1000),    # 0: IDLE
+	Rect2(570, 80, 500, 1000),   # 1: REPOSITION
+	Rect2(1120, 80, 500, 1000),  # 2: SCREAM_CHARGE
+	Rect2(1670, 80, 500, 1000),  # 3: SCREAM_PULSE
+	Rect2(2220, 80, 500, 1000),  # 4: ATTACK/STUNNED
+]
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -88,9 +96,11 @@ func _update_ai(delta: float) -> void:
 
 	match state:
 		State.IDLE:
+			_set_sprite_frame(0)
 			if dist <= DETECTION_RANGE:
 				state = State.REPOSITION
 		State.REPOSITION:
+			_set_sprite_frame(1)
 			_face_target()
 			if dist > DETECTION_RANGE:
 				state = State.IDLE
@@ -114,6 +124,7 @@ func _update_ai(delta: float) -> void:
 			if dist <= ATTACK_RANGE and attack_cooldown <= 0.0:
 				_do_melee()
 		State.SCREAM_CHARGE:
+			_set_sprite_frame(2)
 			velocity.x = 0
 			charge_timer += delta
 			if sprite:
@@ -122,6 +133,7 @@ func _update_ai(delta: float) -> void:
 			if charge_timer >= SCREAM_CHARGE:
 				_do_scream()
 		State.SCREAM_PULSE:
+			_set_sprite_frame(3)
 			velocity.x = 0
 			charge_timer += delta
 			if charge_timer >= 0.5:
@@ -129,7 +141,10 @@ func _update_ai(delta: float) -> void:
 				scream_cooldown = SCREAM_COOLDOWN
 				if sprite:
 					sprite.modulate = _default_modulate
+		State.ATTACK:
+			_set_sprite_frame(4)
 		State.COOLDOWN:
+			_set_sprite_frame(0)
 			_face_target()
 			attack_cooldown -= delta
 			velocity.x = -get_direction_to_target().x * MOVE_SPEED * 0.5
@@ -211,6 +226,7 @@ func _spawn_loot() -> void:
 
 func stun(duration: float) -> void:
 	is_stunned = true
+	_set_sprite_frame(4)
 	stun_duration = duration
 	state = State.IDLE
 	if sprite:
@@ -220,10 +236,15 @@ func stun(duration: float) -> void:
 
 func _end_stun() -> void:
 	is_stunned = false
+	_set_sprite_frame(0)
 	stun_duration = 0.0
 	if sprite:
 		sprite.modulate = _default_modulate
 	stun_ended.emit()
+
+func _set_sprite_frame(index: int) -> void:
+	if sprite and index >= 0 and index < FRAME_REGIONS.size():
+		sprite.region_rect = FRAME_REGIONS[index]
 
 func _face_target() -> void:
 	if not target or not sprite:

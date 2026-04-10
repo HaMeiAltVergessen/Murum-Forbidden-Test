@@ -19,6 +19,14 @@ const FLEE_DISTANCE: float = 100.0
 const ATTACK_RANGE: float = 70.0
 const ATTACK_COOLDOWN: float = 2.5
 
+const FRAME_REGIONS: Array = [
+	Rect2(10, 5, 250, 360),    # 0: IDLE
+	Rect2(270, 5, 250, 360),   # 1: REPOSITION
+	Rect2(530, 5, 250, 360),   # 2: BEAM_ACTIVE
+	Rect2(790, 5, 250, 360),   # 3: FLEE
+	Rect2(10, 385, 250, 360),  # 4: STUNNED
+]
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -90,9 +98,11 @@ func _update_ai(delta: float) -> void:
 
 	match state:
 		State.IDLE:
+			_set_sprite_frame(0)
 			if dist <= DETECTION_RANGE:
 				state = State.REPOSITION
 		State.REPOSITION:
+			_set_sprite_frame(1)
 			_face_target()
 			if dist > DETECTION_RANGE:
 				state = State.IDLE
@@ -109,6 +119,7 @@ func _update_ai(delta: float) -> void:
 				var dir := get_direction_to_target()
 				velocity.x = dir.x * MOVE_SPEED * 0.5
 		State.BEAM_ACTIVE:
+			_set_sprite_frame(2)
 			_face_target()
 			# Maintain distance while beaming
 			if dist < FLEE_DISTANCE:
@@ -120,12 +131,15 @@ func _update_ai(delta: float) -> void:
 			if not beam_target:
 				state = State.REPOSITION
 		State.FLEE:
+			_set_sprite_frame(3)
 			velocity.x = -get_direction_to_target().x * MOVE_SPEED
 			if dist > FLEE_DISTANCE + 50.0:
 				state = State.REPOSITION
 			# Melee if cornered
 			if dist <= ATTACK_RANGE and attack_cooldown <= 0.0:
 				_do_melee()
+		State.ATTACK:
+			_set_sprite_frame(2)
 
 func _start_beam() -> void:
 	beam_target = target
@@ -202,6 +216,7 @@ func _spawn_loot() -> void:
 
 func stun(duration: float) -> void:
 	is_stunned = true
+	_set_sprite_frame(4)
 	stun_duration = duration
 	_stop_beam()
 	state = State.IDLE
@@ -212,10 +227,15 @@ func stun(duration: float) -> void:
 
 func _end_stun() -> void:
 	is_stunned = false
+	_set_sprite_frame(0)
 	stun_duration = 0.0
 	if sprite:
 		sprite.modulate = _default_modulate
 	stun_ended.emit()
+
+func _set_sprite_frame(index: int) -> void:
+	if sprite and index >= 0 and index < FRAME_REGIONS.size():
+		sprite.region_rect = FRAME_REGIONS[index]
 
 func _face_target() -> void:
 	if not target or not sprite:

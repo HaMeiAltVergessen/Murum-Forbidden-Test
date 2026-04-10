@@ -18,6 +18,15 @@ const MAX_MINIONS: int = 4
 const IMMUNITY_THRESHOLD: int = 2
 const VULNERABILITY_WINDOW: float = 5.0
 
+const FRAME_REGIONS: Array = [
+	Rect2(0, 0, 256, 288),     # 0: DORMANT
+	Rect2(256, 0, 256, 288),   # 1: ACTIVE
+	Rect2(512, 0, 256, 288),   # 2: SPAWNING
+	Rect2(768, 0, 256, 288),   # 3: SHIELDED
+	Rect2(0, 288, 256, 288),   # 4: OVERLOAD
+	Rect2(256, 288, 256, 288), # 5: STUNNED
+]
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -99,6 +108,14 @@ func _update_ai(delta: float) -> void:
 		_spawn_minion()
 		spawn_timer = SPAWN_COOLDOWN
 
+	# Update idle frame based on state
+	if is_immune:
+		_set_sprite_frame(3)
+	elif vulnerability_timer > 0.0:
+		_set_sprite_frame(4)
+	else:
+		_set_sprite_frame(1)
+
 	# Face nearest player
 	_face_target()
 
@@ -114,6 +131,7 @@ func _spawn_minion() -> void:
 	var drone_scene = load("res://enemies/world_2_kollektiv/sentinel_drone.tscn")
 	if not drone_scene:
 		return
+	_set_sprite_frame(2)
 	var drone = drone_scene.instantiate()
 	var offset := Vector2(randf_range(-100, 100), -50)
 	drone.global_position = global_position + offset
@@ -185,6 +203,7 @@ func _spawn_loot() -> void:
 
 func stun(duration: float) -> void:
 	is_stunned = true
+	_set_sprite_frame(5)
 	stun_duration = duration
 	if sprite:
 		sprite.modulate = Color(1.5, 1.5, 0.5, _default_modulate.a)
@@ -193,9 +212,14 @@ func stun(duration: float) -> void:
 
 func _end_stun() -> void:
 	is_stunned = false
+	_set_sprite_frame(0)
 	stun_duration = 0.0
 	_update_immune_visual()
 	stun_ended.emit()
+
+func _set_sprite_frame(index: int) -> void:
+	if sprite and index >= 0 and index < FRAME_REGIONS.size():
+		sprite.region_rect = FRAME_REGIONS[index]
 
 func _face_target() -> void:
 	if not target:

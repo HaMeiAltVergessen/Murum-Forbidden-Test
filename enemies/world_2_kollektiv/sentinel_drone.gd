@@ -17,6 +17,15 @@ const DETECTION_RANGE: float = 500.0
 const FIRE_COOLDOWN: float = 2.0
 const PROJECTILE_SPEED: float = 350.0
 
+# Sprite frame regions: PATROL, ALERT, STRAFE, FIRING, STUNNED
+const FRAME_REGIONS: Array = [
+	Rect2(20, 10, 200, 240),
+	Rect2(340, 10, 250, 240),
+	Rect2(680, 10, 200, 240),
+	Rect2(50, 280, 340, 270),
+	Rect2(600, 280, 300, 270),
+]
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -88,16 +97,20 @@ func _update_ai(delta: float) -> void:
 	var dist := get_distance_to_target()
 	if dist > DETECTION_RANGE:
 		velocity.x = 0
+		_set_sprite_frame(0)  # PATROL
 		return
 
 	_face_target()
+	_set_sprite_frame(1)  # ALERT
 
 	# Maintain preferred distance
 	var dir := get_direction_to_target()
 	if dist < PREFERRED_DISTANCE - 50.0:
 		velocity.x = -dir.x * MOVE_SPEED
+		_set_sprite_frame(2)  # STRAFE
 	elif dist > PREFERRED_DISTANCE + 50.0:
 		velocity.x = dir.x * MOVE_SPEED
+		_set_sprite_frame(2)  # STRAFE
 	else:
 		velocity.x = 0
 
@@ -108,6 +121,7 @@ func _update_ai(delta: float) -> void:
 	# Fire projectile
 	fire_timer -= delta
 	if fire_timer <= 0.0 and dist <= DETECTION_RANGE:
+		_set_sprite_frame(3)  # FIRING
 		_fire_projectile()
 		fire_timer = FIRE_COOLDOWN
 
@@ -128,8 +142,10 @@ func _fire_projectile() -> void:
 		return
 	var dir := get_direction_to_target()
 	var projectile := Area2D.new()
-	projectile.collision_layer = 128
-	projectile.collision_mask = 6
+	projectile.collision_layer = 128  # EnemyHitbox (Layer 8)
+	projectile.collision_mask = 1024  # PlayerHurtbox (Layer 11)
+	projectile.add_to_group("hitbox")
+	projectile.add_to_group("enemy_attack")
 	var shape := CollisionShape2D.new()
 	var circle := CircleShape2D.new()
 	circle.radius = 8.0
@@ -139,9 +155,7 @@ func _fire_projectile() -> void:
 	var visual := Sprite2D.new()
 	if bolt_tex:
 		visual.texture = bolt_tex
-		visual.region_enabled = true
-		visual.region_rect = Rect2(45, 202, 443, 184)
-		visual.scale = Vector2(0.1, 0.1)
+		visual.scale = Vector2(0.06, 0.06)
 	else:
 		var fallback := ColorRect.new()
 		fallback.offset_left = -6
@@ -157,8 +171,11 @@ func _fire_projectile() -> void:
 	projectile.set_meta("speed", PROJECTILE_SPEED)
 	projectile.set_meta("damage", DAMAGE)
 	projectile.set_meta("lifetime", 4.0)
+	projectile.set_meta("source", self)
 	projectile.set_script(_get_projectile_script())
+	# Set owner so ParryBlockSystem can identify the source
 	get_tree().current_scene.add_child(projectile)
+	projectile.owner = self
 
 static func _get_projectile_script() -> GDScript:
 	var s := GDScript.new()
@@ -178,10 +195,18 @@ func _process(d):
 	_life -= d
 	if _life <= 0: queue_free()
 func _on_area_entered(area):
-	if area.get_parent().is_in_group("player"):
-		if area.has_method("take_damage"):
-			area.take_damage(_dmg, Vector2.ZERO, 0.1)
+	var target_node = area.get_parent()
+	if not target_node:
+		return
+	if not target_node.is_in_group("player"):
+		return
+	# Check invulnerability
+	if area.has_method("is_invulnerable") or ("is_invulnerable" in area and area.is_invulnerable):
 		queue_free()
+		return
+	if area.has_method("take_damage"):
+		area.take_damage(_dmg, _dir * _spd, 0.1)
+	queue_free()
 """
 	return s
 
@@ -251,6 +276,7 @@ func _spawn_loot() -> void:
 func stun(duration: float) -> void:
 	is_stunned = true
 	stun_duration = duration
+	_set_sprite_frame(4)  # STUNNED
 	if sprite:
 		sprite.modulate = Color(1.5, 1.5, 0.5, _default_modulate.a)
 	stunned_signal.emit(duration)
@@ -259,6 +285,7 @@ func stun(duration: float) -> void:
 func _end_stun() -> void:
 	is_stunned = false
 	stun_duration = 0.0
+	_set_sprite_frame(0)  # PATROL
 	if sprite:
 		sprite.modulate = _default_modulate
 	stun_ended.emit()
@@ -266,6 +293,10 @@ func _end_stun() -> void:
 # ============================================================================
 # UTILITY
 # ============================================================================
+
+func _set_sprite_frame(index: int) -> void:
+	if sprite and index >= 0 and index < FRAME_REGIONS.size():
+		sprite.region_rect = FRAME_REGIONS[index]
 
 func _face_target() -> void:
 	if not target or not sprite:

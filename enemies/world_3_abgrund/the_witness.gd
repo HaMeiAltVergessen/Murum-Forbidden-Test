@@ -20,6 +20,15 @@ const BLINK_RANGE: float = 300.0
 const BLINK_AOE_RADIUS: float = 120.0
 const BLINK_RECOVERY: float = 1.0
 
+const FRAME_REGIONS: Array = [
+	Rect2(0, 0, 380, 520),     # 0: IDLE
+	Rect2(390, 0, 380, 520),   # 1: BEAM_ACTIVE
+	Rect2(780, 0, 380, 520),   # 2: BLINK_CHARGE
+	Rect2(1170, 0, 380, 520),  # 3: BLINK_RECOVERY
+	Rect2(1560, 0, 380, 520),  # 4: TARGET_SWITCH
+	Rect2(1950, 0, 380, 520),  # 5: STUNNED
+]
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -89,10 +98,12 @@ func _update_ai(delta: float) -> void:
 
 	match state:
 		State.IDLE:
+			_set_sprite_frame(0)
 			if dist <= DETECTION_RANGE:
 				beam_target = target
 				state = State.BEAM_ACTIVE
 		State.BEAM_ACTIVE:
+			_set_sprite_frame(1)
 			_face_beam_target()
 			# Slow drift
 			velocity.x = get_direction_to_target().x * MOVE_SPEED * 0.3
@@ -111,16 +122,19 @@ func _update_ai(delta: float) -> void:
 			if blink_cooldown <= 0.0:
 				_do_blink()
 		State.BLINK_CHARGE:
+			_set_sprite_frame(2)
 			velocity = Vector2.ZERO
 			# Instant blink
 			_do_blink_teleport()
 		State.BLINK_RECOVERY:
+			_set_sprite_frame(3)
 			velocity = Vector2.ZERO
 			recovery_timer -= delta
 			if recovery_timer <= 0.0:
 				state = State.BEAM_ACTIVE
 				blink_cooldown = BLINK_COOLDOWN
 		State.TARGET_SWITCH:
+			_set_sprite_frame(4)
 			# Brief pause during switch (solo mode)
 			recovery_timer -= delta
 			if recovery_timer <= 0.0:
@@ -226,6 +240,7 @@ func _spawn_loot() -> void:
 
 func stun(duration: float) -> void:
 	is_stunned = true
+	_set_sprite_frame(5)
 	stun_duration = duration
 	state = State.IDLE
 	beam_target = null
@@ -236,11 +251,16 @@ func stun(duration: float) -> void:
 
 func _end_stun() -> void:
 	is_stunned = false
+	_set_sprite_frame(0)
 	stun_duration = 0.0
 	beam_target = target
 	if sprite:
 		sprite.modulate = _default_modulate
 	stun_ended.emit()
+
+func _set_sprite_frame(index: int) -> void:
+	if sprite and index >= 0 and index < FRAME_REGIONS.size():
+		sprite.region_rect = FRAME_REGIONS[index]
 
 func _face_target() -> void:
 	if not target or not sprite:
