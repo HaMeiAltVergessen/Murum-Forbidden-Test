@@ -36,6 +36,7 @@ var stun_duration: float = 0.0
 var target: CharacterBody2D = null
 var fire_timer: float = 0.0
 var _default_modulate: Color = Color.WHITE
+var _commander_buffed: bool = false  # +40% damage, -50% damage taken from Synaptik-Kommandant
 
 # ============================================================================
 # REFERENCES
@@ -169,7 +170,10 @@ func _fire_projectile() -> void:
 	projectile.global_position = global_position
 	projectile.set_meta("direction", dir)
 	projectile.set_meta("speed", PROJECTILE_SPEED)
-	projectile.set_meta("damage", DAMAGE)
+	var out_damage: int = DAMAGE
+	if _commander_buffed:
+		out_damage = int(DAMAGE * 1.4)
+	projectile.set_meta("damage", out_damage)
 	projectile.set_meta("lifetime", 4.0)
 	projectile.set_meta("source", self)
 	projectile.set_script(_get_projectile_script())
@@ -222,12 +226,27 @@ func _on_damage_received(damage: int, knockback: Vector2, hitstun: float) -> voi
 		stun(hitstun)
 
 func take_damage(amount: int, _attacker: Node = null) -> void:
-	current_hp -= amount
+	var actual: int = amount
+	if _commander_buffed:
+		actual = int(amount * 0.5)
+	current_hp -= actual
 	current_hp = max(current_hp, 0)
 	health_changed.emit(current_hp, MAX_HP)
 	_flash_damage()
 	if current_hp <= 0:
 		die()
+
+func apply_commander_buff(active: bool) -> void:
+	if _commander_buffed == active:
+		return
+	_commander_buffed = active
+	if sprite:
+		if active:
+			_default_modulate = Color(0.6, 1.5, 2.0, 1.0)
+		else:
+			_default_modulate = Color.WHITE
+		sprite.modulate = _default_modulate
+	EventBus.commander_buff_applied.emit(self, active)
 
 func _flash_damage() -> void:
 	if not sprite:

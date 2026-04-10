@@ -113,6 +113,9 @@ signal controls_inverted(player: Node, duration: float)
 ## Emitted when anti-heal beam is applied/removed (Hollow Mender)
 signal anti_heal_applied(target: Node, active: bool)
 
+## Emitted when Synaptik-Kommandant buff-aura applies/removes on an allied enemy
+signal commander_buff_applied(enemy: Node, active: bool)
+
 # ============ REBOUND SYSTEM SIGNALS (Commit 018) ============
 ## Emitted when parry counter progresses
 signal rebound_progress(current: int, required: int)

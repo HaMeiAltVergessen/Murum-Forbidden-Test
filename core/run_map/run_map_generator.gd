@@ -133,7 +133,8 @@ static func _generate_fixed_w1() -> RunMapData.Map:
 # Row 4: [Docks auf den Daechern]                             (Combat, Pflicht)
 # Row 5: [Tech-Schatzkammer] [AI-Assassine]                   (Wahl, Treasure → same-row Elite)
 # Row 6: [Schwarzmarkt]                                       (Shop, Pflicht)
-# Row 7: [Kollektiv-Arena]                                    (Boss)
+# Row 7: [Synaptik-Kommandant]                                (Pre-Boss Elite, Pflicht)
+# Row 8: [Kollektiv-Arena]                                    (Boss)
 
 static func _generate_fixed_w2() -> RunMapData.Map:
 	var map = RunMapData.Map.new()
@@ -165,8 +166,11 @@ static func _generate_fixed_w2() -> RunMapData.Map:
 	# Row 6: Mandatory shop
 	var n10 = _make_node(10, 6, 0, RunMapData.NodeType.SHOP, P + "shop_room_01.tscn")     # Schwarzmarkt
 
-	# Row 7: Boss
-	var n11 = _make_node(11, 7, 0, RunMapData.NodeType.BOSS, P + "boss_room_01.tscn")     # Kollektiv-Arena
+	# Row 7: Pre-Boss Elite (Synaptik-Kommandant)
+	var n11 = _make_node(11, 7, 0, RunMapData.NodeType.ELITE, P + "pre_boss_room.tscn")   # Synaptik-Kommandant
+
+	# Row 8: Boss
+	var n12 = _make_node(12, 8, 0, RunMapData.NodeType.BOSS, P + "boss_room_01.tscn")     # Kollektiv-Arena
 
 	# ---- Connections ----
 	# Row 0: Event → same-row combat, combat → elite
@@ -185,13 +189,15 @@ static func _generate_fixed_w2() -> RunMapData.Map:
 	# Row 5: Treasure → same-row Elite
 	_connect(n8, [9])
 	_connect(n9, [10])         # Elite → Shop
-	# Row 6 → Boss
+	# Row 6 → Pre-Boss
 	_connect(n10, [11])
+	# Row 7 → Boss
+	_connect(n11, [12])
 
 	# Build map
-	for n in [n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11]:
+	for n in [n0, n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12]:
 		map.nodes[n.id] = n
-	map.rows = [[0, 1, 2], [3], [4], [5, 6], [7], [8, 9], [10], [11]]
+	map.rows = [[0, 1, 2], [3], [4], [5, 6], [7], [8, 9], [10], [11], [12]]
 
 	return map
 

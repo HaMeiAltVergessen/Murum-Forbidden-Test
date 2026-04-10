@@ -151,6 +151,7 @@ const ROOM_SCENES_W2: Dictionary = {
 	RunMapData.NodeType.ELITE: [
 		"res://worlds/run_rooms/kollektiv/elite_room_01.tscn",
 		"res://worlds/run_rooms/kollektiv/elite_room_02.tscn",
+		"res://worlds/run_rooms/kollektiv/pre_boss_room.tscn",
 	],
 	RunMapData.NodeType.TREASURE: [
 		"res://worlds/run_rooms/kollektiv/treasure_room_01.tscn",
@@ -242,6 +243,7 @@ const ROOM_DISPLAY_NAMES: Dictionary = {
 	"res://worlds/run_rooms/kollektiv/event_room_01.tscn": "Wohnung",
 	"res://worlds/run_rooms/kollektiv/shop_room_01.tscn": "Schwarzmarkt",
 	"res://worlds/run_rooms/kollektiv/boss_room_01.tscn": "Kollektiv-Arena",
+	"res://worlds/run_rooms/kollektiv/pre_boss_room.tscn": "Synaptik-Kommandant",
 	"res://worlds/run_rooms/kollektiv/transition_room.tscn": "Brainroom",
 	# === Welt 3: Der Abgrund ===
 	"res://worlds/run_rooms/abgrund/entry_room.tscn": "Auge des Abgrunds",

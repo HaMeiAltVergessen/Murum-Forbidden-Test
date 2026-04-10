@@ -1,0 +1,74 @@
+[gd_scene load_steps=8 format=3 uid="uid://cb8sqy3mk01sk"]
+
+[ext_resource type="Script" path="res://enemies/world_2_kollektiv/synaptik_kommandant.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://be8au7dl6rc4k" path="res://components/hurtbox_component.gd" id="2_hurtbox"]
+[ext_resource type="Script" uid="uid://ccjbelb33h57n" path="res://components/hitbox_component.gd" id="3_hitbox"]
+
+[sub_resource type="CapsuleShape2D" id="body_shape"]
+radius = 40.0
+height = 140.0
+
+[sub_resource type="RectangleShape2D" id="hurtbox_shape"]
+size = Vector2(90, 160)
+
+[sub_resource type="RectangleShape2D" id="hitbox_shape"]
+size = Vector2(90, 160)
+
+[sub_resource type="CircleShape2D" id="detection_shape"]
+radius = 550.0
+
+[node name="SynaptikKommandant" type="CharacterBody2D" groups=["enemies", "synaptik_kommandant", "mini_boss"]]
+collision_layer = 8
+collision_mask = 7
+script = ExtResource("1_script")
+
+[node name="BodyVisual" type="ColorRect" parent="."]
+offset_left = -55.0
+offset_top = -95.0
+offset_right = 55.0
+offset_bottom = 95.0
+color = Color(0.5, 0.2, 0.7, 1)
+
+[node name="CoreAccent" type="ColorRect" parent="BodyVisual"]
+offset_left = 30.0
+offset_top = 20.0
+offset_right = 90.0
+offset_bottom = 80.0
+color = Color(0.4, 1.3, 1.6, 1)
+
+[node name="HeadAccent" type="ColorRect" parent="BodyVisual"]
+offset_left = 25.0
+offset_top = 10.0
+offset_right = 85.0
+offset_bottom = 40.0
+color = Color(1.3, 0.8, 0.3, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+visible = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("body_shape")
+
+[node name="HurtboxComponent" type="Area2D" parent="."]
+collision_layer = 1024
+collision_mask = 48
+script = ExtResource("2_hurtbox")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtboxComponent"]
+shape = SubResource("hurtbox_shape")
+
+[node name="HitboxComponent" type="Area2D" parent="."]
+collision_layer = 128
+collision_mask = 1030
+script = ExtResource("3_hitbox")
+damage = 18
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitboxComponent"]
+shape = SubResource("hitbox_shape")
+
+[node name="DetectionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource("detection_shape")

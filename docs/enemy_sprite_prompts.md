@@ -15,6 +15,7 @@ Schwarzer Hintergrund auf allen Sprites.
 | 5 | Disruptor | W2 | Regular | 5 | 128×128 | 640×128 |
 | 6 | Vanguard | W2 | Elite | 6 | 256×256 | 1536×256 |
 | 7 | Hivemind Nexus | W2 | Elite | 6 | 256×256 | 1536×256 |
+| 7b | Synaptik-Kommandant | W2 | Pre-Boss Elite | 8 | 256×256 | 2048×256 |
 | 8 | Phase Wraith | W3 | Regular | 5 | 128×192 | 640×192 |
 | 9 | Hollow Vessel | W3 | Regular | 5 | 128×128 | 640×128 |
 | 10 | Abyssal Anchor | W3 | Regular | 5 | 128×128 | 640×128 |
@@ -162,6 +163,28 @@ DEATH: shell collapsing inward, eye dimming and closing, tendrils going limp and
 Black background.
 
 Style: Sci-fi cyberpunk, bio-mechanical brain construct, metallic purple shell with glowing cyan neural circuitry, hovering hive-mind intelligence. Pixel art, clean edges, no anti-aliasing.
+No UI.
+```
+
+---
+
+### 7b. Synaptik-Kommandant *(synaptik_kommandant)* — PRE-BOSS ELITE
+**Sheet: 2048×256px (8 × 256×256px)**
+
+```
+2D Pixel Art Sprite Sheet for a Godot Game: Synaptik-Kommandant — a tall imposing humanoid Kollektiv commander, roughly 1.9x human height. Metallic purple armor plating with cyan LED pulse-lines running along every seam. Massive oversized dorsal module on the upper back shaped like a synapse cluster, with four articulated projector arms extending upward and outward from the shoulders, each tipped with a glowing cyan emitter lens that broadcasts buff beams. A heavy shoulder-mounted plasma cone cannon on the right shoulder pointing forward, with an intake funnel and visible charging chamber. Head is an elongated oval visor with a single horizontal cyan sensor slit and small orange warning lights. Narrow waist, long powerful legs with hydraulic pistons. Commanding posture with one hand raised to control the projector arms. Facing right in side-view.
+Sheet shows 8 animation states side by side at 256×256px per frame (total 2048×256px):
+IDLE: standing tall in a steady command pose, projector arms slightly extended and glowing soft cyan, cone cannon dormant, visor glowing steady cyan, orange warning lights calm, LED seams pulsing slowly in rhythm, aura of authority.
+REPOSITION: mid-stride sidestep movement, cone cannon held level and ready, projector arms still active and broadcasting soft cyan, legs angled as if circling to maintain distance, visor tracking forward, tactical reposition posture.
+CONE_WINDUP: planted stance, right shoulder cannon pulled slightly back with the charging chamber glowing bright orange, energy visibly building in the muzzle funnel, projector arms flared wide and trailing more intense cyan, visor brightening, body braced, clear telegraph of incoming volley.
+CONE_FIRE: cone cannon fully extended forward with a bright orange plasma burst erupting from the muzzle in a wide 30-degree fan pattern, five visible plasma bolt trails spreading outward from the barrel, slight recoil throwing the shoulder back, orange muzzle flash and smoke, visor blazing, the middle bolt distinctly brighter than the others.
+OVERLOAD_CHARGE: commander standing still with both arms spread wide to the sides, an expanding cyan energy ring on the ground at his feet growing outward as a radial telegraph, the dorsal synapse cluster glowing dangerously bright cyan-white and overcharging, all four projector arms flared to maximum with crackling cyan lightning arcing between the tips, visor burning bright orange-white with warning lights flashing, body rigid and vulnerable, clearly channeling a devastating attack.
+OVERLOAD_RELEASE: radial cyan-white shockwave exploding outward from the commander at full force, the ground ring now a bright ring of plasma expanding, the body at the center hunched forward slightly from the kickback, projector arms snapped outward stiffly, dorsal module venting steam, intense shockwave burst filling most of the frame with motion lines and energy fragments.
+STUNNED: body staggered backward, visor flickering irregularly, dorsal synapse module sparking and dark, projector arms drooping limp and unlit, cone cannon dangling at the side, LED seams dim and glitching, small electric arcs across the chassis, vulnerable exposed posture.
+DEATH: collapsing forward onto one knee, dorsal synapse module cracked open with cyan neural fluid leaking out, projector arms detached and hanging, cone cannon fallen beside the body, visor dark and cracked, LED seams going out one by one, orange warning lights dead, a slow broken power-down of the commander.
+Black background.
+
+Style: Sci-fi cyberpunk Kollektiv commander elite, metallic purple armor with cyan LED seams and dorsal synapse module, orange plasma weaponry and warning lights, imposing hive-mind authority figure with broadcasting buff-projector arms. Pixel art, clean edges, no anti-aliasing.
 No UI.
 ```
 

@@ -46,6 +46,7 @@ var cooldown_timer: float = 0.0
 var combo_count: int = 0
 var facing_right: bool = true
 var _default_modulate: Color = Color.WHITE
+var _commander_buffed: bool = false  # +40% damage, -50% damage taken from Synaptik-Kommandant
 
 # ============================================================================
 # REFERENCES
@@ -172,6 +173,8 @@ func _on_damage_received(damage: int, knockback: Vector2, hitstun: float) -> voi
 		var is_front_hit := (facing_right and attack_from_right) or (not facing_right and not attack_from_right)
 		if is_front_hit:
 			actual_damage = int(float(damage) * FRONT_ARMOR)
+	if _commander_buffed:
+		actual_damage = int(float(actual_damage) * 0.5)
 	take_damage(actual_damage)
 	if knockback.length() > 0:
 		velocity = knockback * (0.5 if state == State.ATTACK_ACTIVE else 1.0)
@@ -193,6 +196,20 @@ func _flash_damage() -> void:
 	await get_tree().create_timer(0.1).timeout
 	if sprite:
 		sprite.modulate = _default_modulate
+
+func apply_commander_buff(active: bool) -> void:
+	if _commander_buffed == active:
+		return
+	_commander_buffed = active
+	if sprite:
+		if active:
+			_default_modulate = Color(0.6, 1.5, 2.0, 1.0)
+		else:
+			_default_modulate = Color.WHITE
+		sprite.modulate = _default_modulate
+	if hitbox and "damage" in hitbox:
+		hitbox.damage = int(DAMAGE * 1.4) if active else DAMAGE
+	EventBus.commander_buff_applied.emit(self, active)
 
 # ============================================================================
 # DEATH
