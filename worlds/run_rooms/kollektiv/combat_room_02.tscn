@@ -78,7 +78,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(8820, 540)
+position = Vector2(4567, 490)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -129,13 +129,13 @@ position = Vector2(2000, 760)
 position = Vector2(3600, 760)
 
 [node name="EnemySpawn3" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(5200, 760)
+position = Vector2(1358, 688)
 
 [node name="EnemySpawn4" type="Marker2D" parent="EnemySpawnPoints"]
 position = Vector2(6800, 760)
 
 [node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(8000, 760)
+position = Vector2(2974, 749)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
@@ -146,13 +146,13 @@ position = Vector2(1760, 700)
 position = Vector2(3520, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(5280, 700)
+position = Vector2(2267, 706)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(7040, 700)
+position = Vector2(3821, 711)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(7920, 700)
+position = Vector2(4161, 678)
 
 [node name="ArrowTrap1" parent="." instance=ExtResource("2_arrow_trap")]
 position = Vector2(200, 550)

@@ -66,7 +66,7 @@ func _ready() -> void:
 	if hurtbox:
 		hurtbox.damage_received.connect(_on_damage_received)
 	if hitbox:
-		hitbox.monitoring = false
+		hitbox.deactivate()
 	_find_target()
 	CombatManager.register_enemy(self)
 	_create_field_visual()

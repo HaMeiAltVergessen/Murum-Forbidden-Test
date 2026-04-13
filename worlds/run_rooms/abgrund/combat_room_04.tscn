@@ -29,7 +29,7 @@ offset_left = -2548.0
 offset_top = -497.0
 offset_right = 6252.0
 offset_bottom = 303.0
-scale = Vector2(2.5342, 2.5342)
+scale = Vector2(2.5342, 5.0142)
 color = Color(0.06, 0.02, 0.06, 1)
 
 [node name="2dPixelArtBackgroundSpriteGptImage1581992" type="Sprite2D" parent="."]

@@ -41,8 +41,9 @@ scale = Vector2(2.70117, 2.70117)
 texture = ExtResource("1_f8cff")
 
 [node name="2dPixelArtBackgroundSpriteGptImage1510786" type="Sprite2D" parent="."]
-position = Vector2(2167.5, 460)
-scale = Vector2(1.17287, 1.17287)
+self_modulate = Color(1, 1, 1, 0.403922)
+position = Vector2(2613, 76)
+scale = Vector2(2.9904, 2.9904)
 texture = ExtResource("2_klkyh")
 
 [node name="Ground" type="StaticBody2D" parent="."]

@@ -20,8 +20,11 @@ size = Vector2(10400, 40)
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 10400.0
-offset_bottom = 800.0
+offset_left = -4687.0
+offset_top = -2365.0
+offset_right = 5713.0
+offset_bottom = -1565.0
+scale = Vector2(6.55249, 6.55249)
 color = Color(0.1, 0.02, 0.02, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]
@@ -36,7 +39,7 @@ scale = Vector2(3.35026, 3.35026)
 texture = ExtResource("1_1umlh")
 
 [node name="Sprite2D2" type="Sprite2D" parent="."]
-position = Vector2(1971.37, 242.5)
+position = Vector2(1974.37, 243.5)
 scale = Vector2(3.35026, 3.35026)
 texture = ExtResource("1_1umlh")
 flip_h = true

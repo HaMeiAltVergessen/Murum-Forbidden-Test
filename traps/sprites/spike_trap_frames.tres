@@ -1,6 +1,10 @@
-[gd_resource type="SpriteFrames" load_steps=5 format=3]
+[gd_resource type="SpriteFrames" load_steps=5 format=3 uid="uid://dxq2dhvyed5g"]
 
-[ext_resource type="Texture2D" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/spike_trap_sheet.png" id="1_sheet"]
+[ext_resource type="Texture2D" uid="uid://4y8jfwfjepf5" path="res://Assets/AIPlaceholder/Fallen_Spritesheets/spike_trap_sheet.png" id="1_sheet"]
+
+[sub_resource type="AtlasTexture" id="frame_2"]
+atlas = ExtResource("1_sheet")
+region = Rect2(962, 0, 481, 533)
 
 [sub_resource type="AtlasTexture" id="frame_0"]
 atlas = ExtResource("1_sheet")
@@ -10,12 +14,16 @@ region = Rect2(0, 0, 481, 533)
 atlas = ExtResource("1_sheet")
 region = Rect2(481, 0, 481, 533)
 
-[sub_resource type="AtlasTexture" id="frame_2"]
-atlas = ExtResource("1_sheet")
-region = Rect2(962, 0, 481, 533)
-
 [resource]
 animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("frame_2")
+}],
+"loop": false,
+"name": &"active",
+"speed": 5.0
+}, {
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("frame_0")
@@ -30,13 +38,5 @@ animations = [{
 }],
 "loop": false,
 "name": &"warning",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("frame_2")
-}],
-"loop": false,
-"name": &"active",
 "speed": 5.0
 }]

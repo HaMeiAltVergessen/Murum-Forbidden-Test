@@ -70,7 +70,7 @@ func _ready() -> void:
 	if hurtbox:
 		hurtbox.damage_received.connect(_on_damage_received)
 	if hitbox:
-		hitbox.monitoring = false
+		hitbox.deactivate()
 	_find_target()
 	CombatManager.register_enemy(self)
 
@@ -136,14 +136,14 @@ func _update_ai(delta: float) -> void:
 				state = State.ATTACK_ACTIVE
 				attack_timer = 0.0
 				if hitbox:
-					hitbox.monitoring = true
+					hitbox.activate()
 		State.ATTACK_ACTIVE:
 			_set_sprite_frame(3)
 			attack_timer += delta
 			velocity.x = get_direction_to_target().x * MOVE_SPEED * 1.5
 			if attack_timer >= ATTACK_ACTIVE:
 				if hitbox:
-					hitbox.monitoring = false
+					hitbox.deactivate()
 				# Grab chance
 				if randf() < GRAB_CHANCE and dist <= ATTACK_RANGE:
 					_grab_player()
@@ -310,7 +310,7 @@ func stun(duration: float) -> void:
 	stun_duration = duration
 	state = State.IDLE
 	if hitbox:
-		hitbox.monitoring = false
+		hitbox.deactivate()
 	if sprite:
 		sprite.modulate = Color(1.5, 1.5, 0.5, _default_modulate.a)
 	stunned_signal.emit(duration)

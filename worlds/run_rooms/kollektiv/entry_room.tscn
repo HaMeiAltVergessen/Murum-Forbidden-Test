@@ -21,8 +21,11 @@ size = Vector2(7680, 40)
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 7680.0
-offset_bottom = 800.0
+offset_left = -3170.0
+offset_top = -2659.0
+offset_right = 4510.0
+offset_bottom = -1859.0
+scale = Vector2(1.97632, 8.15948)
 color = Color(0.03, 0.05, 0.08, 1)
 
 [node name="GroundVisual" type="ColorRect" parent="."]

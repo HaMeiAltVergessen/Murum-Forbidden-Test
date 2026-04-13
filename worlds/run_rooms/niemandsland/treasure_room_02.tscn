@@ -1,7 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://cq9fw4jl8m7pd"]
+[gd_scene load_steps=7 format=3 uid="uid://crafw4jl8m7pd"]
 
-[ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 [ext_resource type="Texture2D" uid="uid://dwaw2dibcqveu" path="res://Assets/AIPlaceholder/AlbtraumWelten/Welt1_Niemandsland/2D_Pixel_Art_Background_Sprite_GPT_Image_15_66208.jpg" id="1_bg"]
+[ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(5600, 40)
@@ -34,8 +34,8 @@ offset_bottom = 1100.0
 color = Color(0.1, 0.08, 0.06, 1)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(2800, -400)
-scale = Vector2(3.2, 3.2)
+position = Vector2(1495, -239)
+scale = Vector2(2.38403, 2.38403)
 texture = ExtResource("1_bg")
 
 [node name="Ground" type="StaticBody2D" parent="."]
@@ -51,7 +51,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(5620, 540)
+position = Vector2(3042, 453)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")

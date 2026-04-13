@@ -73,7 +73,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(9232, 540)
+position = Vector2(4494, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -111,13 +111,13 @@ position = Vector2(2000, 760)
 position = Vector2(4000, 760)
 
 [node name="EnemySpawn3" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(5600, 760)
+position = Vector2(1466, 760)
 
 [node name="EnemySpawn4" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(7200, 760)
+position = Vector2(1630, 679)
 
 [node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(8800, 760)
+position = Vector2(499, 753)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
@@ -128,22 +128,22 @@ position = Vector2(1920, 700)
 position = Vector2(3840, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(5760, 700)
+position = Vector2(1124, 700)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(7680, 700)
+position = Vector2(3260, 700)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(8640, 700)
+position = Vector2(4059, 438)
 
 [node name="QuicksandPit1" parent="." instance=ExtResource("2_quicksand")]
-position = Vector2(4800, 790)
+position = Vector2(2439, 790)
 
 [node name="SpikeTrap1" parent="." instance=ExtResource("3_spike_trap")]
 position = Vector2(2800, 790)
 
 [node name="SpikeTrap2" parent="." instance=ExtResource("3_spike_trap")]
-position = Vector2(7200, 790)
+position = Vector2(4307, 736)
 
 [node name="ClimbableArea1" parent="." instance=ExtResource("4_climbable")]
 position = Vector2(200, 400)

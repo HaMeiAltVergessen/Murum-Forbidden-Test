@@ -73,7 +73,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(7916, 540)
+position = Vector2(3937, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -137,16 +137,16 @@ position = Vector2(1600, 760)
 position = Vector2(3200, 760)
 
 [node name="EnemySpawn3" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(4800, 760)
+position = Vector2(1375, 760)
 
 [node name="EnemySpawn4" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(6400, 760)
+position = Vector2(1175, 760)
 
 [node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
 position = Vector2(3566, 714)
 
 [node name="EnemySpawn6" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(4674, 723)
+position = Vector2(2362, 723)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
@@ -154,22 +154,22 @@ position = Vector2(4674, 723)
 position = Vector2(2080, 700)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(4160, 700)
+position = Vector2(3053, 700)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(6240, 700)
+position = Vector2(3580, 254)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(6965, 680)
+position = Vector2(3320, 497)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(5675, 723)
+position = Vector2(3822, 723)
 
 [node name="ArrowTrap1" parent="." instance=ExtResource("2_arrow_trap")]
 position = Vector2(200, 500)
 
 [node name="ArrowTrap2" parent="." instance=ExtResource("2_arrow_trap")]
-position = Vector2(6547, 789)
+position = Vector2(3758, 789)
 arrow_direction = Vector2(-1, 0)
 
 [node name="PuzzleGate" type="Node" parent="." groups=["puzzle_gate"]]
@@ -179,11 +179,11 @@ script = ExtResource("3_seq_controller")
 position = Vector2(2600, 700)
 
 [node name="Switch2" parent="PuzzleGate" instance=ExtResource("4_switch")]
-position = Vector2(5200, 700)
+position = Vector2(2888, 700)
 switch_id = 2
 
 [node name="Switch3" parent="PuzzleGate" instance=ExtResource("4_switch")]
-position = Vector2(7800, 700)
+position = Vector2(3322, 700)
 switch_id = 3
 
 [node name="RoomLabel" type="Label" parent="."]

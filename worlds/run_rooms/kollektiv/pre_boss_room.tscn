@@ -35,7 +35,7 @@ count = 2
 
 [sub_resource type="Resource" id="wave1_config"]
 script = ExtResource("7_wave_config")
-enemies = [SubResource("wave1_enemy_kommandant"), SubResource("wave1_enemy_enforcer")]
+enemies = Array[ExtResource("6_enemy_entry")]([SubResource("wave1_enemy_kommandant"), SubResource("wave1_enemy_enforcer")])
 delay_before = 1.5
 delay_after = 2.0
 
@@ -91,7 +91,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(9620, 540)
+position = Vector2(4835, 333)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -103,7 +103,7 @@ position = Vector2(4800, -20)
 shape = SubResource("ceiling_shape")
 
 [node name="Pillar1" type="StaticBody2D" parent="."]
-position = Vector2(2400, 640)
+position = Vector2(120, 152)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Pillar1"]
 shape = SubResource("pillar_shape")
@@ -114,6 +114,7 @@ offset_top = -160.0
 offset_right = 60.0
 offset_bottom = 160.0
 color = Color(0.18, 0.08, 0.28, 1)
+metadata/_edit_use_anchors_ = true
 
 [node name="Accent" type="ColorRect" parent="Pillar1"]
 offset_left = -50.0
@@ -121,9 +122,10 @@ offset_top = -140.0
 offset_right = 50.0
 offset_bottom = -120.0
 color = Color(0.4, 1.1, 1.4, 1)
+metadata/_edit_use_anchors_ = true
 
 [node name="Pillar2" type="StaticBody2D" parent="."]
-position = Vector2(4200, 640)
+position = Vector2(1920, 152)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Pillar2"]
 shape = SubResource("pillar_shape")
@@ -134,6 +136,7 @@ offset_top = -160.0
 offset_right = 60.0
 offset_bottom = 160.0
 color = Color(0.18, 0.08, 0.28, 1)
+metadata/_edit_use_anchors_ = true
 
 [node name="Accent" type="ColorRect" parent="Pillar2"]
 offset_left = -50.0
@@ -141,9 +144,10 @@ offset_top = -140.0
 offset_right = 50.0
 offset_bottom = -120.0
 color = Color(0.4, 1.1, 1.4, 1)
+metadata/_edit_use_anchors_ = true
 
 [node name="Pillar3" type="StaticBody2D" parent="."]
-position = Vector2(6000, 640)
+position = Vector2(3720, 152)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Pillar3"]
 shape = SubResource("pillar_shape")
@@ -154,6 +158,7 @@ offset_top = -160.0
 offset_right = 60.0
 offset_bottom = 160.0
 color = Color(0.18, 0.08, 0.28, 1)
+metadata/_edit_use_anchors_ = true
 
 [node name="Accent" type="ColorRect" parent="Pillar3"]
 offset_left = -50.0
@@ -161,9 +166,10 @@ offset_top = -140.0
 offset_right = 50.0
 offset_bottom = -120.0
 color = Color(0.4, 1.1, 1.4, 1)
+metadata/_edit_use_anchors_ = true
 
 [node name="Pillar4" type="StaticBody2D" parent="."]
-position = Vector2(7800, 640)
+position = Vector2(5520, 152)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Pillar4"]
 shape = SubResource("pillar_shape")
@@ -174,6 +180,7 @@ offset_top = -160.0
 offset_right = 60.0
 offset_bottom = 160.0
 color = Color(0.18, 0.08, 0.28, 1)
+metadata/_edit_use_anchors_ = true
 
 [node name="Accent" type="ColorRect" parent="Pillar4"]
 offset_left = -50.0
@@ -181,6 +188,7 @@ offset_top = -140.0
 offset_right = 50.0
 offset_bottom = -120.0
 color = Color(0.4, 1.1, 1.4, 1)
+metadata/_edit_use_anchors_ = true
 
 [node name="SpawnPoints" type="Node2D" parent="."]
 
@@ -190,21 +198,21 @@ position = Vector2(700, 760)
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 
 [node name="KommandantSpawn" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(5000, 720)
+position = Vector2(2965, 720)
 
 [node name="AddSpawn1" type="Marker2D" parent="EnemySpawnPoints"]
 position = Vector2(3600, 760)
 
 [node name="AddSpawn2" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(6400, 760)
+position = Vector2(3884, 760)
 
 [node name="AddSpawn3" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(8400, 760)
+position = Vector2(1969, 634)
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(8800, 700)
+position = Vector2(1222, 656)
 
 [node name="CombatWaveHolder" type="Node" parent="."]
 script = ExtResource("5_wave_holder")

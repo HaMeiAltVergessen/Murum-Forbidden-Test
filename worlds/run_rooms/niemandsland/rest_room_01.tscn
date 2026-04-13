@@ -1,8 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://cryb5ora5olsa"]
+[gd_scene load_steps=7 format=3 uid="uid://cryb5ora5olsa"]
 
 [ext_resource type="Texture2D" uid="uid://cuimle8ymyug4" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_Dorf/Create_a_single_high-resolutio_GPT_Image_15_99523.jpg" id="1_55bvd"]
 [ext_resource type="PackedScene" uid="uid://c53il8iofx73" path="res://environment/spawn_point.tscn" id="1_spawn"]
-[ext_resource type="Texture2D" uid="uid://b5ylomvu8bkb" path="res://Assets/AIPlaceholder/World1AssetsAI/World1_Dorf/Create_a_single_high-resolutio_GPT_Image_15_09321.jpg" id="2_vq2el"]
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
 size = Vector2(6400, 40)
@@ -23,20 +22,16 @@ position = Vector2(2337, 508)
 texture = ExtResource("1_55bvd")
 
 [node name="Sprite2D3" type="Sprite2D" parent="."]
-position = Vector2(790, 505)
+position = Vector2(798, 505)
 texture = ExtResource("1_55bvd")
 flip_h = true
-
-[node name="Sprite2D2" type="Sprite2D" parent="."]
-position = Vector2(3878, 498)
-texture = ExtResource("2_vq2el")
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
 offset_left = -377.0
-offset_top = -599.0
+offset_top = -603.0
 offset_right = 6023.0
-offset_bottom = 201.0
+offset_bottom = 197.0
 scale = Vector2(0.925026, 3.13982)
 color = Color(0, 0, 0, 1)
 
@@ -56,10 +51,11 @@ shape = SubResource("ground_shape")
 position = Vector2(-20, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
+position = Vector2(26, 0)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(4678, 504)
+position = Vector2(3121, 513)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -70,19 +66,12 @@ position = Vector2(3200, -20)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling"]
 shape = SubResource("ceiling_shape")
 
-[node name="Campfire" type="ColorRect" parent="."]
-offset_left = 3140.0
-offset_top = 740.0
-offset_right = 3260.0
-offset_bottom = 800.0
-color = Color(0.9, 0.5, 0.1, 1)
-
 [node name="CampfireGlow" type="ColorRect" parent="."]
 z_index = -1
-offset_left = 3100.0
-offset_top = 700.0
-offset_right = 3300.0
-offset_bottom = 810.0
+offset_left = 2375.0
+offset_top = 637.0
+offset_right = 2575.0
+offset_bottom = 747.0
 color = Color(0.3, 0.15, 0.05, 0.4)
 
 [node name="SpawnPoints" type="Node2D" parent="."]

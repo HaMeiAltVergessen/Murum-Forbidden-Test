@@ -81,6 +81,7 @@ shape = SubResource("wall_left_shape")
 position = Vector2(9181, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
+position = Vector2(-4587, 0)
 shape = SubResource("wall_right_shape")
 
 [node name="Ceiling" type="StaticBody2D" parent="."]
@@ -129,10 +130,10 @@ position = Vector2(2000, 760)
 position = Vector2(4000, 760)
 
 [node name="EnemySpawn3" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(5600, 760)
+position = Vector2(4286, 760)
 
 [node name="EnemySpawn4" type="Marker2D" parent="EnemySpawnPoints"]
-position = Vector2(7600, 760)
+position = Vector2(3529, 760)
 
 [node name="EnemySpawn5" type="Marker2D" parent="EnemySpawnPoints"]
 position = Vector2(8800, 760)
@@ -149,16 +150,16 @@ position = Vector2(3840, 700)
 position = Vector2(5760, 700)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(7680, 700)
+position = Vector2(3590, 512)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(8640, 700)
+position = Vector2(4201, 452)
 
 [node name="FallingRock1" parent="." instance=ExtResource("2_falling_rock")]
 position = Vector2(3200, 100)
 
 [node name="FallingRock2" parent="." instance=ExtResource("2_falling_rock")]
-position = Vector2(6400, 100)
+position = Vector2(3744, 100)
 
 [node name="Platform1" parent="." instance=ExtResource("3_platform")]
 position = Vector2(4800, 550)

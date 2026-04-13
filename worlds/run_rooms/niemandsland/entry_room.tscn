@@ -66,7 +66,7 @@ color = Color(0.0562916, 0.0562916, 0.0562916, 1)
 [node name="World1Predorfbackground" type="Sprite2D" parent="."]
 z_index = -4
 position = Vector2(8816, -731)
-scale = Vector2(2.32321, 2.32321)
+scale = Vector2(2.29893, 2.29893)
 texture = ExtResource("1_ghxj8")
 
 [node name="Background" type="ColorRect" parent="."]
@@ -118,51 +118,61 @@ position = Vector2(12709, -2618)
 position = Vector2(1658, 756)
 
 [node name="CosmicEye" parent="DoorPositions" instance=ExtResource("3_3kaiq")]
-position = Vector2(683, -721)
+position = Vector2(10194, -1380)
+scale = Vector2(1.37792, 1.37792)
 
 [node name="PhasePlatform" parent="DoorPositions" instance=ExtResource("4_ubdyy")]
 position = Vector2(1512, -55)
 
 [node name="ShadowTendril" parent="DoorPositions" instance=ExtResource("5_ek2rh")]
-position = Vector2(1981, 135)
+position = Vector2(6514, 954)
+scale = Vector2(2.99693, 2.99693)
 
 [node name="TimeDistortion" parent="DoorPositions" instance=ExtResource("6_b5ahd")]
-position = Vector2(2392, -120)
+position = Vector2(1436, -454)
 
 [node name="VoidRiftTrap" parent="DoorPositions" instance=ExtResource("7_wa02y")]
-position = Vector2(1239, -89)
-scale = Vector2(4.08628, 4.08628)
+position = Vector2(4522, -3934)
+scale = Vector2(11.9607, 11.9607)
 
 [node name="ElectroPanel" parent="DoorPositions" instance=ExtResource("8_jeaoy")]
-position = Vector2(4439, -1350)
+position = Vector2(7157, -1818)
+scale = Vector2(10.6694, 10.6694)
 
 [node name="EnergyTurret" parent="DoorPositions" instance=ExtResource("9_nqgum")]
-position = Vector2(3695, -1139)
+position = Vector2(6291, -537)
+scale = Vector2(2.3499, 2.3499)
 
 [node name="ForceField" parent="DoorPositions" instance=ExtResource("10_ni6hl")]
-position = Vector2(3507, -1171)
+position = Vector2(3385, -198)
+rotation = -1.55818
+scale = Vector2(6.83082, 6.83082)
 
 [node name="GravityAnomaly" parent="DoorPositions" instance=ExtResource("11_0k7q0")]
-position = Vector2(2904, -1262)
+position = Vector2(772, -1988)
+scale = Vector2(2.67661, 2.67661)
 
 [node name="LaserWallTrap" parent="DoorPositions" instance=ExtResource("12_8tws0")]
-position = Vector2(5588, -1984)
+position = Vector2(4554, -2685)
+scale = Vector2(1.46978, 1.64)
 
 [node name="SecurityDrone" parent="DoorPositions" instance=ExtResource("13_yqugh")]
-position = Vector2(3507, -1698)
+position = Vector2(8757, -2842)
 
 [node name="ArrowTrap" parent="DoorPositions" instance=ExtResource("14_wa02y")]
-position = Vector2(5313, -1334)
+position = Vector2(1867, -1689)
 
 [node name="FallingRock" parent="DoorPositions" instance=ExtResource("15_jeaoy")]
-position = Vector2(4270, -1761)
+position = Vector2(7429, -140)
+scale = Vector2(3.83003, 3.83003)
 
 [node name="PendulumBlade" parent="DoorPositions" instance=ExtResource("16_nqgum")]
-position = Vector2(4315, -1098)
-scale = Vector2(6.17943, 6.17943)
+position = Vector2(4297, -250)
+scale = Vector2(3, 3)
 
 [node name="QuicksandPit" parent="DoorPositions" instance=ExtResource("17_ni6hl")]
-position = Vector2(2909, -242)
+position = Vector2(5902, 818)
+scale = Vector2(2.89737, 2.89737)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
@@ -172,52 +182,52 @@ offset_bottom = 50.0
 text = "Das Niemandsland - Eingang"
 
 [node name="ClimbableArea" parent="." instance=ExtResource("3_gy43q")]
-position = Vector2(5155.75, -1866)
-rotation = -0.0437175
+position = Vector2(4626, -412)
+rotation = 0.0576863
 climb_speed = 600.0
 area_width = 222.0
 area_height = 1511.0
 
 [node name="ClimbableArea9" parent="." instance=ExtResource("3_gy43q")]
-position = Vector2(12404, -2494)
-rotation = 0.58746
+position = Vector2(12577, -2498)
+rotation = 0.988033
 climb_speed = 600.0
 area_width = 222.0
-area_height = 1511.0
+area_height = 1611.0
 
 [node name="ClimbableArea2" parent="." instance=ExtResource("3_gy43q")]
-position = Vector2(11300, 1075)
-rotation = 0.716844
+position = Vector2(10922, 202)
+rotation = 0.212628
 area_width = 222.0
 area_height = 666.0
 
 [node name="ClimbableArea7" parent="." instance=ExtResource("3_gy43q")]
-position = Vector2(13566, 800)
+position = Vector2(10553, -923.999)
 rotation = -0.631365
 area_width = 222.0
 area_height = 666.0
 
 [node name="ClimbableArea8" parent="." instance=ExtResource("3_gy43q")]
-position = Vector2(14388.3, 1764.97)
-rotation = -0.0611751
+position = Vector2(10452, -3707)
+rotation = -1.58313
 area_width = 222.0
 area_height = 666.0
 
 [node name="ClimbableArea4" parent="." instance=ExtResource("3_gy43q")]
-position = Vector2(10776.2, 537.662)
-rotation = -0.727724
+position = Vector2(10985, -577)
+rotation = -0.0338027
 area_width = 222.0
 area_height = 888.0
 
 [node name="ClimbableArea5" parent="." instance=ExtResource("3_gy43q")]
-position = Vector2(9729.05, 513.399)
-rotation = 0.50857
+position = Vector2(10180, -3670)
+rotation = -0.598259
 area_width = 222.0
 area_height = 888.0
 
 [node name="ClimbableArea3" parent="." instance=ExtResource("3_gy43q")]
-position = Vector2(9048, 1281)
-rotation = -0.647915
+position = Vector2(9823, 2225)
+rotation = -1.71076
 area_width = 222.0
 area_height = 666.0
 
@@ -232,8 +242,8 @@ position = Vector2(6693, 836)
 rotation = -0.0437175
 
 [node name="Tier1" parent="PassThroughPlatforms" instance=ExtResource("4_0o1q2")]
-position = Vector2(4478.95, 922.622)
-rotation = 0.0221545
+position = Vector2(4051.38, 514.552)
+rotation = 1.46994
 platform_width = 888.0
 platform_color = Color(0.489622, 0.489622, 0.489622, 0.5)
 
@@ -255,7 +265,8 @@ position = Vector2(4076.21, -419.258)
 platform_width = 888.0
 
 [node name="Tier7" parent="PassThroughPlatforms" instance=ExtResource("4_0o1q2")]
-position = Vector2(2797.75, -505.213)
+position = Vector2(3703.88, -1563.62)
+rotation = 0.051466
 platform_width = 888.0
 
 [node name="Tier8" parent="PassThroughPlatforms" instance=ExtResource("4_0o1q2")]
@@ -306,11 +317,11 @@ rotation = 0.036028
 platform_width = 555.0
 
 [node name="Tier12" parent="PassThroughPlatforms" instance=ExtResource("4_0o1q2")]
-position = Vector2(-1154.03, -2679)
+position = Vector2(393.921, -4520.1)
 rotation = 0.0359606
 
 [node name="Tier16" parent="PassThroughPlatforms" instance=ExtResource("4_0o1q2")]
-position = Vector2(-1373.68, -3195.09)
+position = Vector2(-5870.71, -4757.12)
 rotation = 0.0359606
 platform_width = 555.0
 
@@ -325,7 +336,7 @@ rotation = 0.0410387
 platform_width = 444.0
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
-position = Vector2(1545, 481)
+position = Vector2(2034, 202)
 
 [node name="Block" type="CollisionShape2D" parent="StaticBody2D"]
 position = Vector2(525.166, -1162.03)
@@ -405,21 +416,21 @@ position = Vector2(10036, 1184)
 scale = Vector2(1.23279, 1.33357)
 
 [node name="Wegweise12" parent="Wegweiser" instance=ExtResource("7_ieii3")]
-position = Vector2(11021, 115)
+position = Vector2(8969, -1992)
 scale = Vector2(0.730765, 0.790507)
 
 [node name="Wegweise13" parent="Wegweiser" instance=ExtResource("7_ieii3")]
-position = Vector2(13836, 483)
+position = Vector2(12236, -77)
 scale = Vector2(1.89133, 2.04595)
 
 [node name="Wegweise2" parent="Wegweiser" instance=ExtResource("6_ghxj8")]
-position = Vector2(16297, 2412)
+position = Vector2(11573, 1870)
 
 [node name="Wegweise15" parent="Wegweiser" instance=ExtResource("6_ghxj8")]
-position = Vector2(13257, 1460)
+position = Vector2(13767, 1117)
 
 [node name="Wegweise16" parent="Wegweiser" instance=ExtResource("6_ghxj8")]
-position = Vector2(13284, 2288)
+position = Vector2(13067, 1925)
 
 [node name="Ground2" type="StaticBody2D" parent="."]
 position = Vector2(0, 640)
@@ -432,7 +443,7 @@ region_rect = Rect2(0, 0, 256, 16)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground2"]
 position = Vector2(4900, 410)
-rotation = -0.0437175
+rotation = 0.0110519
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D5" type="CollisionShape2D" parent="Ground2"]
@@ -490,13 +501,13 @@ scale = Vector2(0.189543, 0.63981)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D9" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(10085, 873)
+position = Vector2(9724, 880)
 rotation = 3.12345
 scale = Vector2(0.50947, -1.0165)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D45" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(10053, 637)
+position = Vector2(9464, 620)
 rotation = 3.12345
 scale = Vector2(0.34053, -0.598532)
 shape = SubResource("RectangleShape2D_02d11")
@@ -508,27 +519,27 @@ scale = Vector2(0.686221, -1.35565)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D12" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(15519, 1118)
-rotation = 3.19307
-scale = Vector2(0.363387, -0.580639)
+position = Vector2(14916, -742)
+rotation = 3.13157
+scale = Vector2(0.789733, -0.473979)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D10" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(10066, -389)
+position = Vector2(12524, -4241)
 rotation = 0.00196817
-scale = Vector2(0.189543, 0.281319)
+scale = Vector2(0.804199, 0.492973)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D11" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(11518, -996)
+position = Vector2(12388, -344)
 rotation = 0.00196817
-scale = Vector2(0.189543, 0.281319)
+scale = Vector2(0.687006, 0.777619)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D28" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(9893, -1614)
+position = Vector2(9711, -1695)
 rotation = 0.00196817
-scale = Vector2(0.189543, 0.281319)
+scale = Vector2(0.203159, 0.625736)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D43" type="CollisionShape2D" parent="Ground2"]
@@ -538,9 +549,9 @@ scale = Vector2(0.189543, 0.281319)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D44" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(10062, 148)
+position = Vector2(9385, -878)
 rotation = -0.0181398
-scale = Vector2(0.228069, 0.281319)
+scale = Vector2(0.318893, 0.839633)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D29" type="CollisionShape2D" parent="Ground2"]
@@ -550,15 +561,15 @@ scale = Vector2(0.213597, 0.253724)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D48" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(13220, 197)
+position = Vector2(11352, -1165)
 rotation = -0.0181398
 scale = Vector2(0.213597, 0.253724)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D6" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(15297, 335)
+position = Vector2(15064, 707)
 rotation = -0.0181398
-scale = Vector2(0.389513, 0.63981)
+scale = Vector2(0.945933, 0.609699)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D19" type="CollisionShape2D" parent="Ground2"]
@@ -580,9 +591,9 @@ scale = Vector2(0.389513, 0.63981)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D7" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(12812, 1135)
+position = Vector2(11998, 1574)
 rotation = -0.0181398
-scale = Vector2(0.389513, 0.63981)
+scale = Vector2(0.855029, 0.958116)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D41" type="CollisionShape2D" parent="Ground2"]
@@ -595,12 +606,6 @@ shape = SubResource("RectangleShape2D_02d11")
 position = Vector2(746, 276)
 rotation = 0.072992
 scale = Vector2(0.641439, 1)
-shape = SubResource("RectangleShape2D_02d11")
-
-[node name="CollisionShape2D42" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(996, -193)
-rotation = 0.040256
-scale = Vector2(-0.0352345, 0.515407)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D54" type="CollisionShape2D" parent="Ground2"]
@@ -622,15 +627,15 @@ scale = Vector2(0.39018, -0.281567)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D55" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(3123, -613)
+position = Vector2(2884, 938)
 rotation = -0.645025
 scale = Vector2(0.119659, -0.240447)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D23" type="CollisionShape2D" parent="Ground2"]
 position = Vector2(1056, -2193)
-rotation = -3.09512
-scale = Vector2(0.896238, 0.758378)
+rotation = -3.15742
+scale = Vector2(0.909911, 0.495214)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D24" type="CollisionShape2D" parent="Ground2"]
@@ -652,15 +657,15 @@ scale = Vector2(0.37199, 0.439553)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D49" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(5789, -1714)
+position = Vector2(5831, -1718)
 rotation = -1.56027
-scale = Vector2(0.30027, -1.35426)
+scale = Vector2(0.206484, -0.931271)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D50" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(6157, -4008)
+position = Vector2(15743, -3721)
 rotation = -1.56027
-scale = Vector2(0.300247, -2.34585)
+scale = Vector2(0.415322, -3.24494)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D33" type="CollisionShape2D" parent="Ground2"]
@@ -670,7 +675,7 @@ scale = Vector2(31.7276, -76.1246)
 shape = SubResource("RectangleShape2D_xlch5")
 
 [node name="CollisionShape2D34" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(2939, -174)
+position = Vector2(13544, 2542)
 rotation = -1.56143
 scale = Vector2(14.7743, -40.1666)
 shape = SubResource("RectangleShape2D_xlch5")
@@ -682,8 +687,8 @@ scale = Vector2(0.910507, -0.664288)
 shape = SubResource("RectangleShape2D_02d11")
 
 [node name="CollisionShape2D4" type="CollisionShape2D" parent="Ground2"]
-position = Vector2(2679, 368)
-rotation = 0.072992
+position = Vector2(2690, 356)
+rotation = 0.0189124
 scale = Vector2(0.641439, 1)
 shape = SubResource("RectangleShape2D_02d11")
 
@@ -766,14 +771,14 @@ scale = Vector2(2.75998, 1.48)
 shape = SubResource("RectangleShape2D_v0ibx")
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="WallRight2"]
-position = Vector2(16859.8, -428.075)
-scale = Vector2(2.75998, 5.24381)
+position = Vector2(15245, -1027)
+scale = Vector2(3.49684, 6.64381)
 shape = SubResource("RectangleShape2D_v0ibx")
 
 [node name="CollisionShape2D3" type="CollisionShape2D" parent="WallRight2"]
 position = Vector2(-1577, -745)
 rotation = -0.00624159
-scale = Vector2(2.75998, 5.24381)
+scale = Vector2(3.57116, 6.785)
 shape = SubResource("RectangleShape2D_v0ibx")
 
 [node name="DeathBoxLeft" type="Area2D" parent="."]
@@ -788,14 +793,14 @@ position = Vector2(8506, 740)
 scale = Vector2(0.514062, 0.569013)
 
 [node name="CorpseTrap1" parent="Enemies" instance=ExtResource("10_ieii3")]
-position = Vector2(2184, 910)
+position = Vector2(2222, 838)
 scale = Vector2(2.40585, 2.25687)
 spawn_chance = 1.0
 min_spawns = 3
 max_spawns = 5
 
 [node name="CorpseTrap2" parent="Enemies" instance=ExtResource("10_ieii3")]
-position = Vector2(1398, 669)
+position = Vector2(4231, 870)
 scale = Vector2(3.57582, 3.2086)
 spawn_chance = 1.0
 
@@ -806,16 +811,16 @@ position = Vector2(2635, 916)
 position = Vector2(3436, 971)
 
 [node name="Untote3" parent="Enemies" instance=ExtResource("11_x50rg")]
-position = Vector2(4988, 980)
+position = Vector2(4928, 889)
 
 [node name="Untote4" parent="Enemies" instance=ExtResource("11_x50rg")]
-position = Vector2(5483, 961)
+position = Vector2(5499, 870)
 
 [node name="Geist" parent="Enemies" instance=ExtResource("12_nwvau")]
-position = Vector2(5604, 43)
+position = Vector2(5747, -3)
 
 [node name="Geist2" parent="Enemies" instance=ExtResource("12_nwvau")]
-position = Vector2(4913, -1251)
+position = Vector2(5403, -733)
 scale = Vector2(0.514062, 0.569013)
 
 [node name="DeathBoxBottom" type="Area2D" parent="."]
@@ -830,7 +835,7 @@ shape = SubResource("RectangleShape2D_7flxl")
 position = Vector2(-8504, -3234)
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="DeathBoxBottom"]
-position = Vector2(8163, -4697)
+position = Vector2(8233, -6058)
 shape = SubResource("RectangleShape2D_7flxl")
 
 [node name="Marker2D" type="Marker2D" parent="DeathBoxBottom/CollisionShape2D2"]

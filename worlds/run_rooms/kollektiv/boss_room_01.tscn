@@ -110,7 +110,7 @@ offset_left = 40.0
 offset_top = 20.0
 offset_right = 600.0
 offset_bottom = 50.0
-text = "Boss - Das Kollektiv der Einen Stimme"
+text = "Boss - Wille der Massen"
 
 [node name="PassThroughFloors" type="Node2D" parent="."]
 

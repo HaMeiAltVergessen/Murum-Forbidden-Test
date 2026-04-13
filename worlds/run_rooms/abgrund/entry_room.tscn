@@ -19,9 +19,12 @@ size = Vector2(7680, 40)
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
-offset_right = 7680.0
-offset_bottom = 800.0
-color = Color(0.04, 0.02, 0.06, 1)
+offset_left = -3579.0
+offset_top = -1534.0
+offset_right = 4101.0
+offset_bottom = -734.0
+scale = Vector2(6.70192, 6.70192)
+color = Color(0, 0, 0, 1)
 
 [node name="2dPixelArtBackgroundSpriteGptImage1551290" type="Sprite2D" parent="."]
 position = Vector2(715, 426)

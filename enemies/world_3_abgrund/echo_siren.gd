@@ -61,7 +61,7 @@ func _ready() -> void:
 	if hurtbox:
 		hurtbox.damage_received.connect(_on_damage_received)
 	if hitbox:
-		hitbox.monitoring = false
+		hitbox.deactivate()
 	_find_target()
 	CombatManager.register_enemy(self)
 
@@ -163,11 +163,11 @@ func _do_scream() -> void:
 
 func _do_melee() -> void:
 	if hitbox:
-		hitbox.monitoring = true
+		hitbox.activate()
 	attack_cooldown = ATTACK_COOLDOWN
 	await get_tree().create_timer(0.2).timeout
 	if hitbox:
-		hitbox.monitoring = false
+		hitbox.deactivate()
 
 # ============================================================================
 # DAMAGE / DEATH / STUN

@@ -30,24 +30,20 @@ offset_bottom = 222.0
 scale = Vector2(2.78929, 2.78929)
 color = Color(0.05, 0.02, 0.05, 1)
 
-[node name="2dPixelArtBackgroundSpriteGptImage1507032" type="Sprite2D" parent="."]
-position = Vector2(749, 434)
-texture = ExtResource("1_tyugk")
-
 [node name="2dPixelArtBackgroundSpriteGptImage1507033" type="Sprite2D" parent="."]
-position = Vector2(2286, 434)
+position = Vector2(391, 434)
 texture = ExtResource("1_tyugk")
 
 [node name="2dPixelArtBackgroundSpriteGptImage1507034" type="Sprite2D" parent="."]
-position = Vector2(5330, 475)
+position = Vector2(3435, 475)
 texture = ExtResource("1_tyugk")
 
 [node name="2dPixelArtBackgroundSpriteGptImage1507035" type="Sprite2D" parent="."]
-position = Vector2(6867, 475)
+position = Vector2(4972, 475)
 texture = ExtResource("1_tyugk")
 
 [node name="2dPixelArtBackgroundSpriteGptImage1521488" type="Sprite2D" parent="."]
-position = Vector2(3823, 341)
+position = Vector2(1928, 341)
 texture = ExtResource("2_n73yh")
 
 [node name="GroundVisual" type="ColorRect" parent="."]
@@ -69,7 +65,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(7658, 540)
+position = Vector2(2753, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
