@@ -9,6 +9,10 @@ signal pachron_selected(path_id: String)
 signal selection_cancelled()
 signal boon_flow_completed()
 
+# ============ AUDIO (Inspector-editable) ============
+@export var selection_sfx: AudioStream = preload("res://sfx/PlaceholderSFX/Mega Sound Pack/Magic & Spells SFX 7/Magic & Spells SFX 7/OGG/Magic Spell Pack 7 - 8.ogg")
+@export var selection_sfx_volume_db: float = 0.0
+
 # ============ CONSTANTS ============
 const PACHRON_MASKS: Dictionary = {
 	"arthra": "res://Assets/AIPlaceholder/Char/Pachrons/Arthra/arthra maske.png",
@@ -521,6 +525,7 @@ func _confirm_symbol_selection() -> void:
 	if _selected_index < 0 or _selected_index >= _offered_paths.size():
 		return
 	_selected_path_id = _offered_paths[_selected_index]
+	AudioManager.play_sfx_stream(selection_sfx, selection_sfx_volume_db)
 	pachron_selected.emit(_selected_path_id)
 	print("[PachronSelection] Pachron selected: %s" % _selected_path_id)
 

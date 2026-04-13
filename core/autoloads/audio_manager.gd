@@ -213,6 +213,26 @@ func play_sfx_at_position(sfx_name: String, _position: Vector2, pitch_variation:
 	play_sfx(sfx_name, pitch_variation)
 
 
+func play_sfx_stream(stream: AudioStream, volume_db: float = 0.0, pitch_variation: float = 0.0) -> void:
+	"""Plays a direct AudioStream (used for Inspector-exposed @export sounds)"""
+	if stream == null:
+		return
+
+	var player: AudioStreamPlayer = sfx_pool[next_pool_index]
+	next_pool_index = (next_pool_index + 1) % SFX_POOL_SIZE
+
+	player.stream = stream
+	player.volume_db = volume_db
+
+	var base_pitch = 0.75
+	if pitch_variation > 0.0:
+		player.pitch_scale = base_pitch * randf_range(1.0 - pitch_variation, 1.0 + pitch_variation)
+	else:
+		player.pitch_scale = base_pitch
+
+	player.play()
+
+
 # ============ MUSIC PLAYBACK ============
 func play_music(track_name: String, fade_in: bool = true) -> void:
 	"""Plays a music track with optional fade-in. If multiple variants exist, picks one randomly."""

@@ -2,6 +2,10 @@ extends Area2D
 ## PachronAltar — Test altar in Limbus for Pachron boon selection
 ## Can be used repeatedly
 
+# ============ AUDIO (Inspector-editable) ============
+@export var activation_sfx: AudioStream = preload("res://sfx/PlaceholderSFX/Mega Sound Pack/Magic and Spells 5 - Universal Sound Effects/Magic and Spells 5 - Universal Sound Effects/Ogg/Magic Spell 24.ogg")
+@export var activation_sfx_volume_db: float = 0.0
+
 var player_in_area: bool = false
 var _selection_active: bool = false
 
@@ -43,6 +47,8 @@ func _on_body_exited(body: Node2D) -> void:
 
 func _open_pachron_selection() -> void:
 	_selection_active = true
+
+	AudioManager.play_sfx_stream(activation_sfx, activation_sfx_volume_db)
 
 	var screen: PachronSelectionScreen = preload("res://ui/pachron/pachron_selection_screen.tscn").instantiate()
 	get_tree().root.add_child(screen)

@@ -24,6 +24,13 @@ var node_type: RunMapData.NodeType = RunMapData.NodeType.COMBAT
 var world_id: RunMapData.WorldId = RunMapData.WorldId.NIEMANDSLAND
 var node_data: RunMapData.MapNode = null
 
+# ============ AUDIO (script attached at runtime — defaults adjustable here) ============
+## Sound played when the node is cleared. Script is attached at runtime via
+## RunManager, so this isn't per-scene editable in the Inspector. Default
+## changes here apply to every run-node room.
+@export var clear_sfx: AudioStream = preload("res://sfx/PlaceholderSFX/Mega Sound Pack/Magic & Spells SFX 7/Magic & Spells SFX 7/OGG/Magic Spell Pack 7 - 4.ogg")
+@export var clear_sfx_volume_db: float = 0.0
+
 # ============ INTERNAL STATE ============
 var arena_controller: ArenaController = null
 var doors_spawned: bool = false
@@ -1245,6 +1252,8 @@ func _on_node_cleared() -> void:
 	if _node_cleared:
 		return
 	_node_cleared = true
+
+	AudioManager.play_sfx_stream(clear_sfx, clear_sfx_volume_db)
 
 	if not RunManager or not RunManager.current_map:
 		return
