@@ -652,7 +652,12 @@ func _spawn_light_pillars(center: Vector2) -> void:
 func _on_attack_blocked(enemy: Node, _damage_reduction: float) -> void:
 	if not _is_in_run():
 		return
+	_trigger_block_effects(enemy)
 
+
+func _trigger_block_effects(enemy: Node) -> void:
+	"""Shared body for Sairias T1/T3 + Sync 9. Called from both normal block
+	and perfect parry so T1 AoE/T3 Launch/Sync9 charge are not lost on quick taps."""
 	var player = _get_player()
 	if not player:
 		return
@@ -718,6 +723,14 @@ func _on_perfect_parry_executed(enemy: Node) -> void:
 			var heal_amount: int = int(health.max_health * heal_pct)
 			health.heal(heal_amount)
 			print("[BoonEffect] Sairias T5: Parry heal +%d HP" % heal_amount)
+
+		# T5 heal VFX: golden radial burst around player
+		_spawn_explosion_vfx(player.global_position, "sairias_block", 1.8, Color(1.2, 1.1, 0.7))
+		_spawn_explosion_vfx(player.global_position + Vector2(0, -40), "sairias_pillar", 1.2, Color(1.0, 0.95, 0.6))
+
+	# Perfect Parry also triggers T1 AoE, T3 Launch/Slam, Sync 9 charge
+	# (a perfect parry is a "perfect block" — should include all block rewards)
+	_trigger_block_effects(enemy)
 
 	# Sync 4: Arthra×Sairias — parry triggers lightning storm
 	if SyncSkillManager and SyncSkillManager.has_sync("arthra_sairias") and player:
@@ -1321,7 +1334,8 @@ func _spawn_block_aoe_vfx(pos: Vector2, radius: float) -> void:
 
 func _spawn_reflect_vfx(pos: Vector2) -> void:
 	"""Sairias: Parry reflect VFX"""
-	_spawn_explosion_vfx(pos, PATH_VFX["sairias"][1], 0.5)
+	_spawn_explosion_vfx(pos, PATH_VFX["sairias"][1], 1.4, Color(1.3, 1.05, 0.4))
+	_spawn_explosion_vfx(pos + Vector2(0, -20), PATH_VFX["sairias"][1], 0.9, Color(1.0, 0.9, 0.5, 0.7))
 
 
 func _spawn_meteor_vfx(pos: Vector2, radius: float) -> void:
