@@ -14,6 +14,14 @@ signal challenge_run_completed(active_modifiers: Dictionary)
 signal schwellensicht_changed(active: bool)
 
 # ============================================================================
+# TUNABLES
+# ============================================================================
+
+## Schwellensicht triggers when current Tiefe >= SCHWELLENSICHT_THRESHOLD_PCT * max Tiefe.
+## 0.5 means "half of all seal depth active". Lower values trigger it earlier.
+const SCHWELLENSICHT_THRESHOLD_PCT: float = 0.5
+
+# ============================================================================
 # SIEGEL-MODIFIER DEFINITIONS (33 Knotenpunkte)
 # ============================================================================
 
@@ -443,8 +451,8 @@ func get_tiefenstufe_index() -> int:
 # ============================================================================
 
 func _check_schwellensicht() -> void:
-	"""Checks if Schwellensicht threshold is reached (50%+ Tiefe)"""
-	var threshold = get_max_tiefe() * 0.5
+	"""Checks if Schwellensicht threshold is reached (SCHWELLENSICHT_THRESHOLD_PCT of max Tiefe)"""
+	var threshold = get_max_tiefe() * SCHWELLENSICHT_THRESHOLD_PCT
 	var new_state = get_tiefe() >= threshold
 	if new_state != is_schwellensicht_active:
 		is_schwellensicht_active = new_state

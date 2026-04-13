@@ -548,6 +548,7 @@ func _start_dialog_phase() -> void:
 
 	# Start Pachron dialog (connect BEFORE start to avoid race if signal emits synchronously)
 	if PachronDialogSystem:
+		PachronDialogSystem.register_selection(_selected_path_id)
 		PachronDialogSystem.dialog_sequence_finished.connect(_on_pachron_dialog_finished, CONNECT_ONE_SHOT)
 		PachronDialogSystem.start_dialog(_selected_path_id)
 	else:

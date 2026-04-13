@@ -498,7 +498,17 @@ func end_run(victory: bool) -> void:
 		else:
 			ChallengeRunManager.end_challenge_run()
 
-	# Show run end screen
+	# Play pachron ending dialog on victory, then show run end screen
+	if victory and PachronDialogSystem:
+		var started: bool = PachronDialogSystem.play_run_end_dialog()
+		if started:
+			PachronDialogSystem.dialog_sequence_finished.connect(
+				func(): _show_run_end_screen(victory),
+				CONNECT_ONE_SHOT
+			)
+			return
+
+	# Show run end screen (no ending dialog to wait for)
 	_show_run_end_screen(victory)
 
 

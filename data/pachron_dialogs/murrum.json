@@ -1,43 +1,188 @@
 {
   "pachron_id": "murrum",
   "greetings": [
-    "Du... ich kenne dich. Oder kannte ich dich? Die Erinnerungen verschwimmen.",
-    "Feuer, Wasser, Erde, Luft... sie alle sprechen zu mir. Und ueber dich.",
-    "Willkommen zurueck. Ich glaube, wir haben uns schon einmal getroffen."
+    "Du kommst im richtigen Moment. Oder ist jeder Moment richtig, wenn man ihn so nimmt?",
+    "Die Elemente haben geflackert. Ich wusste, dass du unterwegs bist.",
+    "Tritt naeher. Ich habe etwas gesehen, das dich betrifft.",
+    "Es gibt drei Wege vor dir. Ich sehe zwei davon. Der dritte — den musst du selbst finden.",
+    "Du bist nicht spaet. Du bist genau auf Zeit. Das ist selten genug.",
+    "Feuer spricht leise heute. Das heisst: Hoer hin.",
+    "Willkommen. Und — vorsichtig. Dieser Altar horcht mit."
   ],
   "farewells": [
-    "Geh. Die Elemente werden dich fuehren — wenn du ihnen zuhoerst.",
-    "Vergiss nicht... nein, vergiss. Es ist besser so. Manchmal.",
-    "Die Erinnerung verblasst. Aber die Macht bleibt."
-  ],
-  "loop": [
-    "Vergessen und Erinnern — beides ist Macht. Die Frage ist nur, welche du waehlst.",
-    "Die Elemente sind aelter als jedes Wesen. Sie waren da vor mir. Sie werden da sein nach dir.",
-    "Manchmal vergesse ich, wer ich bin. Dann erinnern mich die Flammen.",
-    "Feuer verbrennt. Wasser heilt. Erde schuetzt. Blitz... Blitz entscheidet."
+    "Geh. Und wenn dir ein Omen begegnet, beachte es beim zweiten Mal.",
+    "Die Elemente werden dich fuehren. Nicht immer. Nicht immer dahin, wo du willst.",
+    "Vergiss nicht — Prophezeiungen sind Warnungen, keine Urteile.",
+    "Geh. Ich werde hier lesen, was noch zu lesen ist.",
+    "Bis zu deinem naechsten Zweig. Moege er klug sein.",
+    "Die Zukunft weint manchmal, bevor sie eintritt. Hor auf dieses Weinen.",
+    "Sei wachsam. Mehr koennen selbst die Elemente nicht fuer dich tun."
   ],
   "story": [
     {
-      "id": "story_1",
-      "text": "Mein Name... Mur|rum. Gespalten wie mein Wesen. Ich erinnere mich an zwei Leben — oder waren es eines, zweimal gelebt?",
-      "requires_tier": 0
+      "id": "story_0_intro",
+      "requires_tier": 0,
+      "beats": [
+        "Die Zeit der Prophezeiung ist gekommen.",
+        "Nicht eine grosse. Keine, die das Schicksal umstuerzt. Aber eine, die dein Schicksal beruehrt.",
+        "Setz dich. Hoer zu. Du wirst entscheiden muessen, ob du mir glaubst."
+      ]
     },
     {
-      "id": "story_2",
-      "text": "Die Elemente gehorchen keinem Meister. Ich habe das auf die harte Tour gelernt. Aber sie respektieren jene, die sie verstehen.",
-      "requires_tier": 2
+      "id": "story_1_servant",
+      "requires_tier": 1,
+      "beats": [
+        "Ich werde dir etwas sagen, das du nicht vergessen darfst, auch wenn du willst:",
+        "Ich habe Myrkur gedient. Nicht aus Zwang. Aus Wahl.",
+        "Lang, lang bevor du existiert hast. Ich habe fuer ihn gelesen, was du jetzt fuer dich liest. Die Elemente.",
+        "Ich erwarte keine Vergebung dafuer. Ich will nur, dass du es weisst."
+      ]
     },
     {
-      "id": "story_3",
-      "text": "Ewiges Element... Das ist kein Boon. Das ist eine Erinnerung an das, was die Welt einst war — reine, ungezaehmte Magie.",
-      "requires_tier": 4
+      "id": "story_2_meeting",
+      "requires_tier": 1,
+      "beats": [
+        "Als du aus dir selbst hervorgetreten bist, warst du das vierte Element, das ich nicht kannte.",
+        "Nicht Feuer. Nicht Wasser. Nicht Erde. Nicht Luft.",
+        "Etwas Fuenftes. Ein Riss im Gefuege. Ich habe dich fuer Myrkur gehalten — bis ich dich sprechen hoerte."
+      ]
+    },
+    {
+      "id": "story_3_slow_trust",
+      "requires_tier": 2,
+      "beats": [
+        "Vertrauen, Murum, ist das langsamste Element. Es wird nicht geschlagen, nicht gegossen, nicht gesaet.",
+        "Es tropft.",
+        "Du hast mir Zeit gelassen. Das war klug. Das war mehr, als ich verdient habe."
+      ]
+    },
+    {
+      "id": "story_4_counter_proposal",
+      "requires_tier": 2,
+      "beats": [
+        "Du glaubst, jeder Pfad endet an der gleichen Mauer. Das ist eine einfache Prophezeiung.",
+        "Ich biete dir eine zweite. Schwerer zu verstehen.",
+        "Manche Mauern sind Tueren, wenn man sie nicht anzuklopfen gedenkt. Sondern ihnen die Hand aufzulegen."
+      ]
+    },
+    {
+      "id": "story_5_dream_alyria",
+      "requires_tier": 3,
+      "beats": [
+        "Ich habe von ihr getraeumt. Alyria. Dreimal.",
+        "Einmal war sie ein Drache. Einmal war sie eine Frau. Einmal war sie... offen. Wie ein Tor.",
+        "Ich habe sie im Traum gefragt, ob sie dich erwartet. Sie hat den Kopf geschuettelt.",
+        "Nicht, weil sie dich nicht liebt. Weil sie dich nicht leiden sehen will."
+      ]
+    },
+    {
+      "id": "story_6_myrkur_lesson",
+      "requires_tier": 3,
+      "beats": [
+        "Hier ist, was Myrkur mir beigebracht hat, ohne es zu wissen:",
+        "Ewigkeit ist keine Staerke. Sie ist eine Strafe fuer jene, die zu genau hinsehen.",
+        "Er wollte, dass ich das glaube. Ich habe es verstanden. Das ist etwas anderes."
+      ]
+    },
+    {
+      "id": "story_7_mirror_warning",
+      "requires_tier": 4,
+      "beats": [
+        "Du wirst einem Spiegel begegnen. Das weiss ich.",
+        "Er wird dein Gesicht tragen. Nicht dein altes. Das, das du haettest, wenn du nie geliebt haettest.",
+        "Dreh dich nicht zu lange um. Und erkenne ihn, bevor er dich erkennt.",
+        "Ich sage dir das nicht, weil ich Macht habe. Sondern weil ich den Blick kenne."
+      ]
+    },
+    {
+      "id": "story_8_final_prophecy",
+      "requires_tier": 4,
+      "beats": [
+        "Die letzte Prophezeiung, die ich dir schulde:",
+        "Wenn alle fuenf von uns in dir sind — wenn du uns wieder vereinst —, dann stirbt Mur|rum.",
+        "Und Murum lebt. Oder etwas Drittes, das noch keinen Namen hat.",
+        "Ich habe keine Angst davor. Das ist mein ehrlichstes Geschenk an dich.",
+        "Waehle weise, wann du es einloest."
+      ]
     }
   ],
+  "loop": [
+    "Vergessen und Erinnern sind Zwillinge. Du kannst nur einen grossziehen.",
+    "Die Elemente gehorchen keinem Meister. Sie folgen jenen, die sie nicht befehlen.",
+    "Feuer verbrennt. Wasser heilt. Erde traegt. Luft entscheidet, ob du atmest.",
+    "Ich habe heute im Rauch gelesen. Er sagte: Geh links. Also — eher nach rechts.",
+    "Prophezeiungen sind Leitern. Du kannst klettern. Du kannst sie wegziehen. Niemand zwingt dich.",
+    "Manchmal vergesse ich meinen eigenen Namen. Dann flackert das Feuer auf, und es ruft ihn.",
+    "Wahrheit ist teurer als Macht. Und unbequemer.",
+    "Zwei Leben. Oder eines, zweimal gelebt. Ich weiss es immer noch nicht.",
+    "Das Schicksal ist keine Mauer. Es ist eine Karte, die oft luegt."
+  ],
   "wegwerf": [
-    "Hmm... was war die Frage?",
-    "Oh. Ja.",
-    "Die Flammen tanzen heute anders.",
+    "Hmm.",
+    "Ich hatte einen Gedanken. Er ist schon weg.",
     "...",
-    "Ich hatte einen Gedanken. Er ist weg."
-  ]
+    "Das Feuer flackert seltsam.",
+    "Sprich nicht zu schnell. Die Elemente moegen Geduld.",
+    "Oh. Ja.",
+    "Ein Vogel ist eben durch den Raum geflogen. Oder auch nicht.",
+    "Merkwuerdig.",
+    "Hm. Interessant.",
+    "Warte.",
+    "Ich zaehle die Schatten."
+  ],
+  "world_reactions": {
+    "boss_1_defeated": {
+      "beats": [
+        "Die Helden. Eine so gewoehnliche Prophezeiung.",
+        "Ich habe gesehen, dass du sie suchen wuerdest. Ich habe nicht gesehen, warum.",
+        "Nun weiss ich's. Du wolltest, dass sie dich erloesen. Das ist keine Prophezeiung, Murum. Das ist eine Bitte.",
+        "Ich hoffe, du hoerst auf zu bitten. Es steht dir nicht."
+      ]
+    },
+    "boss_2_defeated": {
+      "beats": [
+        "Ein Chor ohne Stimmen. Das war Myrkurs liebster Traum.",
+        "Du hast ihn zerstreut. Nicht Myrkur. Den Traum. Das ist mehr, als du denkst.",
+        "Sei vorsichtig, wer dich dafuer lobt. Solches Lob hat Schatten."
+      ]
+    },
+    "boss_3_defeated": {
+      "beats": [
+        "Der Spiegel. Ich habe es dir gesagt, nicht wahr?",
+        "Du hast ihn gesehen. Du hast ihn nicht angebetet. Das ist der Unterschied zwischen dir und ihm.",
+        "Die Prophezeiungen werden jetzt seltener. Ich muss weniger lesen. Du siehst mehr selbst."
+      ]
+    },
+    "schwellensicht_active": {
+      "beats": [
+        "Die Schwelle traegt Namen, die kein Mund kennt. Ich huete sie, so gut ich kann.",
+        "Ein Flackern. Eine Kralle. Eine Erinnerung, die nicht mir gehoert — und doch lese ich sie.",
+        "Halt dich nah an mich, wenn du magst. Oder weit weg. Beides hat seine Weisheit."
+      ]
+    }
+  },
+  "endings": {
+    "treue": {
+      "beats": [
+        "Du hast mir vertraut, obwohl ich dir Grund gegeben habe, es nicht zu tun.",
+        "Das ist der seltenste Brennstoff, den ich kenne. Und er brennt lang.",
+        "Ich werde weiterlesen, Murum. Jeden Rauch. Jedes Flackern. Fuer dich.",
+        "Und wenn die letzte Prophezeiung kommt — du erinnerst dich an sie —, dann bin ich bereit."
+      ]
+    },
+    "neutral": {
+      "beats": [
+        "Du hast mich gehoert. Nicht immer. Oft genug.",
+        "Das ist fair. Prophezeiungen sind kein Brot. Man braucht sie nicht jeden Tag.",
+        "Geh. Die Elemente werden dich fuehren, so gut sie koennen."
+      ]
+    },
+    "abweisung": {
+      "beats": [
+        "Du hast mich gemieden. Klug. Oder vorsichtig. Der Unterschied ist klein.",
+        "Ich verstehe es. Ich habe Myrkur gedient. Das vergisst sich nicht mit einem Abend Gespraech.",
+        "Geh. Wenn du je einen Rauch verstehst, ohne dass ich ihn lese — dann sind wir uns naeher gewesen, als du dachtest."
+      ]
+    }
+  }
 }

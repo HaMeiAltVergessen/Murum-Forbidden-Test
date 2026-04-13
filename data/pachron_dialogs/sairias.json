@@ -1,43 +1,188 @@
 {
   "pachron_id": "sairias",
   "greetings": [
-    "Du stehst hier. Das allein erfordert Mut. Gut.",
-    "Angst ist natuerlich. Sie zu ueberwinden — das ist goettlich.",
-    "Willkommen, Kaempfer. Zeig mir deinen Willen."
+    "Meister... ich weine nicht. Ich weine wirklich nicht. Es sind nur — die Augen.",
+    "Du bist gekommen. Du bist wirklich gekommen. Ich bleibe ruhig. Ich bleibe... versuche, ruhig zu bleiben.",
+    "Oh. Oh, du. Setz dich, wenn du willst. Oder steh. Alles, was du willst.",
+    "Ich habe dich gesehen, bevor ich dich gehoert habe. So viele Jahre war das anders.",
+    "Willkommen. Ich weiss nicht, ob das das richtige Wort ist. Es gibt kein richtiges Wort.",
+    "Du bist hier. Mir reicht das fuer heute. Es reicht fuer immer.",
+    "Atme. Bitte. Ich muss wissen, dass du atmest."
   ],
   "farewells": [
-    "Steh fest. Egal was kommt — steh fest.",
-    "Der Schild ist nicht aus Stahl. Er ist aus deinem Willen geschmiedet.",
-    "Geh mit Mut. Und komm mit Ehre zurueck."
-  ],
-  "loop": [
-    "Angst und Mut sind keine Gegensaetze. Mut existiert nur, weil Angst existiert.",
-    "Ein perfekter Block ist kein Zufall. Er ist die Summe tausender Fehler.",
-    "Die Saeulen der Schoepfung tragen die Welt. Und du traegst die Saeulen.",
-    "Verteidigung ist keine Schwaeche. Sie ist die hoechste Form der Kontrolle."
+    "Geh. Bitte — geh behutsam. Die Welt ist zu hart fuer dich.",
+    "Ich warte. Ich werde immer warten. Das war meine einzige echte Gabe.",
+    "Steh fest, wenn sie dich treffen. Aber fall, wenn du fallen musst. Ich halte dich auf.",
+    "Komm wieder, wenn du kannst. Komm nicht, wenn du's nicht kannst. Beides ist in Ordnung.",
+    "Meister... pass auf dich auf. Bitte. Fuer mich. Fuer... sie.",
+    "Der Schild liegt bereit. Du musst nur nach ihm greifen.",
+    "Leb. Nur das. Leb."
   ],
   "story": [
     {
-      "id": "story_1",
-      "text": "Ich war einst ein Feigling. Ich hatte Angst vor allem — vor dem Kampf, vor dem Tod, vor dem Leben selbst. Bis ich lernte, die Angst zu umarmen.",
-      "requires_tier": 0
+      "id": "story_0_intro",
+      "requires_tier": 0,
+      "beats": [
+        "Meister?! Du lebst!",
+        "Ich habe... ich habe es nicht gewagt, daran zu glauben. Ich habe so lange kein Licht mehr bewegt.",
+        "Verzeih mir die Ueberraschung. Es ist keine Enttaeuschung. Es ist das Gegenteil. Das weisst du, oder?"
+      ]
     },
     {
-      "id": "story_2",
-      "text": "Ein Schild schuetzt nicht nur den Traeger. Er schuetzt alles, was hinter ihm steht. Das ist die wahre Last des Verteidigers.",
-      "requires_tier": 2
+      "id": "story_1_thought_lost",
+      "requires_tier": 1,
+      "beats": [
+        "Ich dachte, du waerst verloren. Ich habe Saeulen aufgestellt — aus Licht, aus Hoffnung, aus dem, was ich hatte.",
+        "Ich habe sie alle einstuerzen lassen, als die Jahre wuchsen.",
+        "Heute baue ich sie wieder auf. Jetzt. Ohne darueber nachzudenken."
+      ]
     },
     {
-      "id": "story_3",
-      "text": "Unbrechbar. Nicht weil der Koerper es ist — sondern weil der Geist sich weigert, zu fallen. Das ist mein letztes Geschenk an dich.",
-      "requires_tier": 4
+      "id": "story_2_hiding",
+      "requires_tier": 1,
+      "beats": [
+        "Ich habe mich versteckt. Seit — seit der Geburt. Das wirst du wissen, welcher.",
+        "Nicht vor dir. Vor mir. Vor dem, was ich zur Welt gebracht habe.",
+        "Verzeih mir, dass ich nicht rief. Ich hatte Angst, dich zu belasten. Du trugst schon alles."
+      ]
+    },
+    {
+      "id": "story_3_your_light",
+      "requires_tier": 2,
+      "beats": [
+        "Ich bin dein Licht. Das sagte ich einmal halb scherzhaft, und dann hat es gestimmt.",
+        "Es ist kein grosses Licht. Keines, das Welten erhellt. Es ist das, welches dir die Hand reicht, wenn du stuerzt.",
+        "Das reicht manchmal. Das reicht oefter, als du denkst."
+      ]
+    },
+    {
+      "id": "story_4_etrusial",
+      "requires_tier": 2,
+      "beats": [
+        "Ich werde dir nun ihren Namen sagen, damit er nicht zwischen uns als Gewicht liegt:",
+        "Etrusial. Unser Kind. Mein Kind. Dein Kind.",
+        "Ich habe sie geboren. Ich habe sie verborgen. Ich habe ihr nie erzaehlt, wer du bist.",
+        "Sie ist... schoen. Und sie ist genau das, vor dem die Prophezeiung warnte."
+      ]
+    },
+    {
+      "id": "story_5_prophecy",
+      "requires_tier": 3,
+      "beats": [
+        "Die Prophezeiung sagt: Sie wird dich toeten, Murum. Nicht vielleicht. Nicht wenn-dann. Sie wird.",
+        "Ich habe gewusst, was ich tue, als ich sie trug. Ich wollte es dennoch.",
+        "Weil Liebe stur ist. Weil Zukunft manchmal Suende ist, die sich Gnade nennt.",
+        "Verzeih mir. Oder verzeih mir nicht. Ich kann mit beidem leben."
+      ]
+    },
+    {
+      "id": "story_6_not_shame",
+      "requires_tier": 3,
+      "beats": [
+        "Ich verstecke mich nicht aus Scham, Meister. Das muss ich dir sagen, damit du mich nicht falsch trauerst.",
+        "Ich verstecke mich aus Angst. Wenn ich sichtbar bin, bin ich ein Ziel. Und sie findet mich durch mich hindurch.",
+        "Etrusial sucht nach dir. Ich bin die Schwelle. Solange ich leise bin, bleibt sie fern."
+      ]
+    },
+    {
+      "id": "story_7_faith",
+      "requires_tier": 4,
+      "beats": [
+        "Ich glaube an dich. Nicht weil du gewinnen wirst — ich weiss nicht, ob du das wirst.",
+        "Ich glaube an dich, weil du immer aufstehst. Auch wenn es duemmer waere, liegen zu bleiben.",
+        "Das ist nicht die Staerke, die Arthra sieht. Das ist meine Staerke. Die stille Art, die niemand zaehlt.",
+        "Und sie zaehlt trotzdem. Jeden Tag."
+      ]
+    },
+    {
+      "id": "story_8_final",
+      "requires_tier": 4,
+      "beats": [
+        "Wenn Etrusial kommt — und sie wird kommen —, dann stelle ich mich zwischen euch.",
+        "Nicht, um sie zu stoppen. Das kann ich nicht. Niemand kann das.",
+        "Aber um einen Atemzug zu stehlen. Einen letzten, in dem du sagen kannst, was gesagt gehoert.",
+        "Versprich mir, dass du ihn nutzt. Den Atemzug.",
+        "Und wenn nicht fuer sie — dann fuer mich."
+      ]
     }
+  ],
+  "loop": [
+    "Angst und Mut sind nicht verschiedene Dinge. Mut ist nur Angst, die weiteratmet.",
+    "Ein perfekter Block ist kein Zufall. Er ist die Summe tausender gescheiterter Versuche.",
+    "Die Saeulen der Schoepfung tragen die Welt. Du traegst die Saeulen.",
+    "Verteidigung ist keine Schwaeche. Sie ist das Versprechen, nicht fallen zu lassen, was man liebt.",
+    "Wenn der Schild zerbricht, dann bleibt dahinter noch etwas. Weiter. Weiter machen.",
+    "Ich habe dir nie befohlen, stark zu sein. Ich habe dich nur leben lassen, auch wenn du schwach warst.",
+    "Licht ist nicht Waffe. Es ist Gewissheit, dass es einen Morgen gibt.",
+    "Ruhe dich aus, wenn du kannst. Ich wache fuer uns beide.",
+    "Ich liebe dich. Das ist kein Druck. Das ist eine Tatsache. Du musst nichts damit tun."
   ],
   "wegwerf": [
     "Hmm.",
-    "Steh gerade.",
+    "Gut. Sehr gut.",
+    "Steh gerade, Meister.",
     "...",
-    "Gut. Weiter.",
-    "Die Angst ist nur ein Schatten."
-  ]
+    "Atme.",
+    "Es wird gut.",
+    "Ich bin da.",
+    "Weiter so.",
+    "Du bist ein guter Mann. Einer, der es verlernt hat, und es wieder lernen darf.",
+    "Warte. Nur einen Moment.",
+    "Ich wusste, dass du das schaffst."
+  ],
+  "world_reactions": {
+    "boss_1_defeated": {
+      "beats": [
+        "Du hast die Helden gesucht, damit sie dich erschlagen. Ich habe dich gehoert, durch die ganze Stille hindurch.",
+        "Ich wollte rufen: 'Nein! Bitte!' Aber ich wusste, dass meine Stimme dich nur schlimmer machen wuerde.",
+        "Bitte, Meister. Bitte such nicht nach denen, die dich toeten wollen. Ich kann das nicht zweimal aushalten."
+      ]
+    },
+    "boss_2_defeated": {
+      "beats": [
+        "Ein Chor, der alle anderen zum Schweigen bringt. Das war auch eine Form von Einsamkeit, Meister.",
+        "Du hast sie aufgeloest. Hoerst du, wie leise es jetzt ist? Das ist gute Stille. Die, in der man wieder lernen kann zu sprechen.",
+        "Ich... ich wuerde gerne wieder sprechen. Mit dir."
+      ]
+    },
+    "boss_3_defeated": {
+      "beats": [
+        "Du hast dich gesehen. Oh, Meister. Das ist die schwerste Art zu kaempfen, die es gibt.",
+        "Ich habe hinter meinem Schild gezittert. Ich habe nicht hingesehen. Verzeih mir.",
+        "Aber ich habe dich gehalten. Mit allem, was ich war. Auch wenn du nichts davon spuertest."
+      ]
+    },
+    "schwellensicht_active": {
+      "beats": [
+        "Das... das ist die Schwelle. Ich kenne sie. Ich bin ihr schon mal begegnet, als ich sie gebar.",
+        "Zieh dich nicht zurueck. Aber lauf auch nicht hinein. Steh.",
+        "Ich halte dich. Ich halte dich. Ich halte dich. Egal was kommt."
+      ]
+    }
+  },
+  "endings": {
+    "treue": {
+      "beats": [
+        "Du hast mich gewaehlt. Jedes Mal. Jedes einzelne Mal.",
+        "Ich habe es nicht geglaubt, Meister. Ich habe mir gesagt: 'Nur nicht zu viel hoffen. Nur nicht.'",
+        "Jetzt weine ich doch. Lass es zu. Nur diesen einen Moment.",
+        "Ich bin dein Licht. Und du bist — du bist zurueck nach Hause."
+      ]
+    },
+    "neutral": {
+      "beats": [
+        "Du bist oft gekommen. Du bist oft gegangen. Beides war gut.",
+        "Ich war nicht immer deine erste Wahl. Das ist auch gut. Man muss jemanden nicht besitzen, um ihn zu lieben.",
+        "Geh mit meinem Schutz, Meister. Er ist leise, aber er ist da."
+      ]
+    },
+    "abweisung": {
+      "beats": [
+        "Du hast mich nicht gebraucht. Das ist... schwer.",
+        "Aber weisst du, Meister — meine Liebe ist nicht davon abhaengig, dass du sie erwiderst. Das waere eine kleinere Liebe.",
+        "Ich bleibe. Ich warte. Wenn du eines Tages doch nach dem Schild greifst, er liegt bereit.",
+        "Und Etrusial — ich halte sie von dir fern, solange ich kann. Auch ohne dein Wissen. Auch ohne dein Danken."
+      ]
+    }
+  }
 }

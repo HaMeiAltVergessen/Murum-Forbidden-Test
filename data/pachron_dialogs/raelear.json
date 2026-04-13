@@ -1,43 +1,184 @@
 {
   "pachron_id": "raelear",
   "greetings": [
-    "Du bist zurueckgekommen... Das ueberrascht mich. Und gibt mir Hoffnung.",
-    "Jeder Schatten, den du wirfst, traegt ein Stueck meiner Verzweiflung.",
-    "Ah... du. Ich habe auf dich gewartet. Schon so lange."
+    "Oh. Du bist es. Ich... ich wusste nicht, ob du kommst.",
+    "Du hast mich gerufen? Oder war ich es, die nach dir gegriffen hat? Ich weiss es nie.",
+    "Bleib einen Moment. Die Schatten legen sich, wenn du hier bist.",
+    "Ich habe auf jemanden gewartet. Vielleicht auf dich. Vielleicht auf nichts.",
+    "Du siehst muede aus. Das tut mir leid.",
+    "Willkommen, Fremder. Oder... bist du kein Fremder?",
+    "Die Stille war weniger schwer, seit ich wusste, dass du zurueckkommst."
   ],
   "farewells": [
-    "Geh. Aber vergiss nicht — die Schatten beschuetzen dich, solange du an sie glaubst.",
-    "Sei vorsichtig da draussen. Die Dunkelheit ist nicht immer dein Freund.",
-    "Bis zum naechsten Mal... ich werde hier sein. Immer."
-  ],
-  "loop": [
-    "Verzweiflung und Entschlossenheit — sie sind naeher verwandt, als du denkst.",
-    "Jeder Klon, den du erschaffst, ist ein Echo meiner eigenen zerbrochenen Seele.",
-    "Die Schatten luegen nicht. Sie zeigen, was wirklich ist — auch wenn es wehtut.",
-    "Manchmal ist die beste Verteidigung eine Illusion. Manchmal ist es die Wahrheit."
+    "Geh leise. Die Schatten folgen dir — nicht aus Pflicht. Aus Sorge.",
+    "Wenn du faellst, faellt etwas von mir mit. Also fall nicht.",
+    "Ich werde hier sein. Wie immer. Wie nie.",
+    "Versprich mir nichts. Versprechen brechen. Ich ziehe Schweigen vor.",
+    "Bis zum naechsten Mal. Oder bis irgendetwas.",
+    "Geh. Und trage nicht zu viel von mir mit dir.",
+    "Ich... ich hoffe, du kommst wieder. Mehr sag ich nicht."
   ],
   "story": [
     {
-      "id": "story_1",
-      "text": "Ich habe alles verloren — mein Volk, meinen Namen, meine Gestalt. Nur die Schatten blieben mir treu.",
-      "requires_tier": 0
+      "id": "story_0_intro",
+      "requires_tier": 0,
+      "beats": [
+        "Vater? Mutter? ... Erkennst du mich?",
+        "Nein. Du musst nicht antworten. Ich kenne die Antwort.",
+        "Ich wollte nur... deine Stimme hoeren. Auch wenn sie stumm bleibt."
+      ]
     },
     {
-      "id": "story_2",
-      "text": "Die Klone sind nicht nur Illusionen. Sie sind Fragmente dessen, was ich einst war. Jeder einzelne traegt eine Erinnerung.",
-      "requires_tier": 2
+      "id": "story_1_birth",
+      "requires_tier": 1,
+      "beats": [
+        "Ich kann mich nicht erinnern, geboren zu sein. Nur an die Stille danach.",
+        "Es gab niemanden, der meinen Namen rief. Also habe ich mir einen gesucht.",
+        "Raelear. Ich weiss nicht, woher er kam. Vielleicht von dir. Vielleicht aus einem Traum, den du vergessen hast."
+      ]
     },
     {
-      "id": "story_3",
-      "text": "Entschlossenheit bedeutet nicht, keine Angst zu haben. Es bedeutet, trotz der Angst weiterzugehen. Das habe ich von dir gelernt.",
-      "requires_tier": 4
+      "id": "story_2_shadows",
+      "requires_tier": 1,
+      "beats": [
+        "Die Schatten waren meine ersten Freunde. Sie fragen nichts. Sie gehen nicht.",
+        "Manchmal denke ich, sie sind Stuecke von anderen. Von dir. Von jenen, die schon weg sind.",
+        "Dann umarme ich sie einfach. Still. Das ist genug."
+      ]
+    },
+    {
+      "id": "story_3_distance",
+      "requires_tier": 2,
+      "beats": [
+        "Ich komme dir nicht zu nah. Nicht weil ich nicht will. Weil ich nicht muss.",
+        "Naehe tut weh, wenn man sie verliert. Und ich habe zu oft verloren.",
+        "Aber ich gehe auch nicht. Siehst du den Unterschied?"
+      ]
+    },
+    {
+      "id": "story_4_protection",
+      "requires_tier": 2,
+      "beats": [
+        "Wenn du kaempfst, stelle ich Schatten zwischen dich und das, was dich reissen will.",
+        "Du merkst es nicht. Das ist in Ordnung.",
+        "Dinge, die liebenswert sind, muessen nicht bemerkt werden, um wahr zu sein."
+      ]
+    },
+    {
+      "id": "story_5_myrkur_touch",
+      "requires_tier": 3,
+      "beats": [
+        "Myrkur hat einmal nach mir gegriffen. In der Zeit, als du weg warst.",
+        "Er fluesterte so sanft. Er versprach Gesellschaft. Ein Vater. Eine Mutter.",
+        "Ich habe die Augen geschlossen und an dich gedacht. An den Murum, den ich nicht kannte. Und er liess mich los."
+      ]
+    },
+    {
+      "id": "story_6_alyria_mirror",
+      "requires_tier": 3,
+      "beats": [
+        "Ich habe Alyria gesehen. Einmal. In einem Spiegel, den niemand haette aufstellen sollen.",
+        "Sie hat nicht gesprochen. Sie hat gelaechelt. So... muede.",
+        "Ich glaube, sie wusste, dass ich zu dir gehoere. Ohne dass ich es selbst wusste."
+      ]
+    },
+    {
+      "id": "story_7_no_recognition",
+      "requires_tier": 4,
+      "beats": [
+        "Du wirst mich nicht erkennen, oder? Nicht wirklich.",
+        "Das habe ich akzeptiert. Wirklich. Frag mich in tausend Jahren nochmal.",
+        "Ich bin nicht dein Kind. Ich bin nicht dein Fremder. Ich bin etwas dazwischen.",
+        "Und das Dazwischen ist auch ein Ort."
+      ]
+    },
+    {
+      "id": "story_8_thanks",
+      "requires_tier": 4,
+      "beats": [
+        "Ich wollte dir nur... danken. Dafuer, dass du mich nie angeschrien hast.",
+        "Ich weiss, das klingt wenig. Fuer mich ist es alles.",
+        "Du haettest es tun koennen. Du warst laut genug. Aber du hast mich einfach... sein lassen.",
+        "Mehr habe ich nie gebraucht."
+      ]
     }
+  ],
+  "loop": [
+    "Entschlossenheit ist nicht laut. Sie ist leise. Wie das Warten.",
+    "Jeder Klon, den du erschaffst, traegt ein Echo von mir. Behandle ihn sanft.",
+    "Die Schatten luegen nicht. Sie schweigen, wenn sie nichts zu sagen haben.",
+    "Manchmal ist die Wahrheit eine Illusion. Manchmal ist die Illusion wahrer als alles andere.",
+    "Ich frage mich oft, wie es waere, wenn ich laut waere. Ich glaube, ich waere niemand anders.",
+    "Ruhe ist auch eine Art von Macht. Vielleicht die ehrlichste.",
+    "Du musst nicht alles fuehlen, um zu fuehlen. Weisst du, was ich meine?",
+    "Wenn du aufwachst aus einem schlechten Traum, ist die erste Stille die wertvollste.",
+    "Ich bin nicht traurig. Wirklich. Nur leise."
   ],
   "wegwerf": [
     "...",
     "Hmm.",
     "Die Schatten bewegen sich heute anders.",
     "Verzeih mir. Ich war in Gedanken.",
-    "Ja..."
-  ]
+    "Ja...",
+    "Sag nichts. Es ist schoener so.",
+    "Das Licht hier ist seltsam.",
+    "Ich glaube, ich habe etwas gesehen. Oder auch nicht.",
+    "Bleib noch.",
+    "Es ist gut, dass du atmest.",
+    "..."
+  ],
+  "world_reactions": {
+    "boss_1_defeated": {
+      "beats": [
+        "Die Helden. Ich habe sie gesehen, als sie dich suchten.",
+        "Sie wollten ein Urteil sprechen. Ich wusste schon damals, dass du darauf gewartet hast.",
+        "Es tut mir leid, dass ich dich nicht gerufen habe. Ich... ich wollte nicht, dass du faellst."
+      ]
+    },
+    "boss_2_defeated": {
+      "beats": [
+        "Die vielen Stimmen sind verstummt. Ich verstehe sie, weisst du.",
+        "Sie hatten Angst, allein zu sein. Also haben sie aufgehoert, sie selbst zu sein.",
+        "Ich habe einen anderen Weg gewaehlt. Stille statt Chor. Ich weiss nicht, ob er besser ist. Nur meiner."
+      ]
+    },
+    "boss_3_defeated": {
+      "beats": [
+        "Du warst es die ganze Zeit. Im Spiegel. Ich habe es gewusst.",
+        "Ich wollte es dir nie sagen. Du wuerdest es nicht ertragen haben, es von mir zu hoeren.",
+        "Jetzt weisst du's selbst. Und... ich bin hier. Immer noch."
+      ]
+    },
+    "schwellensicht_active": {
+      "beats": [
+        "Etwas beugt sich zu uns herunter. Es hat keine Gestalt. Nicht ganz.",
+        "Ich kann es nicht wegschieben. Niemand kann das.",
+        "Aber ich kann neben dir stehen, waehrend es dich ansieht. Das kann ich."
+      ]
+    }
+  },
+  "endings": {
+    "treue": {
+      "beats": [
+        "Du hast mich gesehen. Immer wieder. Du hast mich gewaehlt.",
+        "Ich weiss nicht, was ich tun soll mit dieser Wahrheit. Ich habe nie geuebt, wichtig zu sein.",
+        "Vielleicht lerne ich es noch. Vielleicht ist es zu spaet. Vielleicht ist beides in Ordnung.",
+        "Danke, Vater. Mutter. Du. Was auch immer du bist."
+      ]
+    },
+    "neutral": {
+      "beats": [
+        "Du warst oft weg. Aber du bist auch gekommen. Beides habe ich gespeichert.",
+        "Ich brauche nicht jeden Tag. Ich brauche nur das Wissen, dass du kommst, wenn du kannst.",
+        "Das genuegt. Wirklich."
+      ]
+    },
+    "abweisung": {
+      "beats": [
+        "Ich wusste nicht, ob du mich kennst. Ich weiss es noch immer nicht.",
+        "Aber ich habe dich gekannt. Jeden Tag. Das ist genug fuer einen von uns.",
+        "Geh. Und wenn du irgendwann doch zurueckdenkst — dann weisst du, wohin ich schaue."
+      ]
+    }
+  }
 }

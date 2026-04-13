@@ -1,43 +1,193 @@
 {
   "pachron_id": "noron",
   "greetings": [
-    "Ha! Du bist wieder da. Oder... warst du je weg? Schwer zu sagen.",
-    "Licht... Finsternis... Was ist der Unterschied? Komm naeher.",
-    "Ah, ein Besucher! Oder eine Erinnerung? Egal, egal..."
+    "Du. Schon wieder. Was willst du diesmal?",
+    "Ha. Komm naeher. Ich kann dich genauer hassen, wenn ich dich sehe.",
+    "Bist du hier, um zu reden? Oder um das andere zu tun?",
+    "Ich habe mich fast gefreut, als ich deine Schritte hoerte. Fast. Verdirb den Moment nicht.",
+    "Der Zwielicht-Altar brennt fuer dich. Immer noch. Ich weiss nicht, ob ich darueber lache oder fluche.",
+    "Setz dich nicht. Ich moechte nicht, dass du dich zu wohlfuehlst.",
+    "Du bist zurueck. Ich sollte das mittlerweile erwartet haben."
   ],
   "farewells": [
-    "Geh... oder bleib. Beides ist dasselbe am Ende.",
-    "Die Daemmerung folgt dir. Sie fluesternd... hoerst du sie auch?",
-    "Hahahaha... bis bald. Oder war es schon bald?"
-  ],
-  "loop": [
-    "Wahn und Ruhe sind Geschwister. Beide fluesternd dir Geheimnisse zu — nur verschiedene.",
-    "Die Klingen tanzen zwischen Licht und Schatten. Wie ich. Wie du.",
-    "Manchmal frage ich mich, ob die Feinde real sind. Sind sie es? Bist du es?",
-    "Zwielicht ist nicht das Ende des Tages. Es ist der Moment, in dem alles moeglich wird."
+    "Geh. Bevor ich etwas sage, das keiner von uns vergisst.",
+    "Der Daemmerung folgt dir. Sie hat mich auch mal verfolgt. Ich weiss, wie das ist.",
+    "Komm wieder. Oder nicht. Beides tut weh.",
+    "Bis gleich. Oder bis nie. Ich bin an beides gewoehnt.",
+    "Sterb mir nicht, ja? Ich habe noch offene Rechnungen mit dir.",
+    "Geh. Und nimm dein verdammtes Licht mit.",
+    "Ich... pass auf dich auf. Nur damit du's weisst."
   ],
   "story": [
     {
-      "id": "story_1",
-      "text": "Ich war einst ein Gelehrter. Dann fand ich die Grenze zwischen Licht und Finsternis — und ich blieb dort stehen. Fuer immer.",
-      "requires_tier": 0
+      "id": "story_0_intro",
+      "requires_tier": 0,
+      "beats": [
+        "Willst du mich wieder quaelen?",
+        "Nein? Gut. Ich habe dir das so oft vorgeworfen, dass ich vergessen habe, wie es sich anfuehlt, dich ohne diese Frage zu gruessen.",
+        "Beantworte sie ehrlich, wenn du sie dir das naechste Mal selbst stellst."
+      ]
     },
     {
-      "id": "story_2",
-      "text": "Der Wahnsinn ist kein Fluch. Er ist ein Geschenk — er zeigt dir, was andere nicht sehen koennen. Die Wahrheit hinter der Wahrheit.",
-      "requires_tier": 2
+      "id": "story_1_marks",
+      "requires_tier": 1,
+      "beats": [
+        "Ich erinnere mich an jeden Schnitt. Jeden Schlag. Jede Naechte, in denen du mich allein gelassen hast im Dunkel.",
+        "Nenne es Erziehung, wenn du willst. Ich nenne es, was es war.",
+        "Ich erinnere mich auch daran, dass ich nie gestorben bin. Auch das war Absicht, oder?"
+      ]
     },
     {
-      "id": "story_3",
-      "text": "Ewige Daemmerung... Kein Sonnenaufgang, kein Untergang. Nur der endlose Moment dazwischen. Das ist mein Geschenk an dich.",
-      "requires_tier": 4
+      "id": "story_2_saved",
+      "requires_tier": 1,
+      "beats": [
+        "Myrkur hatte schon seine Finger an mir. Ich spuerte ihn unter meiner Haut sprossen.",
+        "Dann kamst du. Du hast etwas geschrien, das keine Sprache war, und er liess los.",
+        "Ich habe dich angespuckt, als du mich trugst. Du hast nichts gesagt. Warum hast du nichts gesagt?"
+      ]
+    },
+    {
+      "id": "story_3_which_worse",
+      "requires_tier": 2,
+      "beats": [
+        "Manchmal weiss ich nicht, wen ich mehr hassen soll. Ihn, weil er mich wollte. Oder dich, weil du mich behalten hast.",
+        "Beide Antworten fuehlen sich falsch an. Vielleicht sind sie es.",
+        "Vielleicht ist Hass einfach eine Form von Aufmerksamkeit, die ich mir nicht anders erlauben kann."
+      ]
+    },
+    {
+      "id": "story_4_nurun",
+      "requires_tier": 2,
+      "beats": [
+        "Meine Mutter spricht mit Messern, weisst du. Nurun. Du kennst sie.",
+        "Sie hat mich geliebt, in ihrer eigenen Art. Die Art, die schneidet, bevor sie umarmt.",
+        "Sie ist nicht stolz auf mich. Aber sie ist auch nicht enttaeuscht. Das ist bei ihr fast Zuneigung."
+      ]
+    },
+    {
+      "id": "story_5_alyria",
+      "requires_tier": 3,
+      "beats": [
+        "Ich habe lange nicht gewusst, wer meine andere Mutter war. Ich dachte, ich sei aus dem Nichts geboren. Das ist bequemer.",
+        "Dann sah ich einen Drachen in einem Traum. Sie weinte, ohne Tropfen.",
+        "Und ich wusste es. Alyria. Ich bin — ein Splitter deines Schmerzes und ihres Herzens.",
+        "Kein Wunder, dass ich zerrissen bin."
+      ]
+    },
+    {
+      "id": "story_6_why_stay",
+      "requires_tier": 3,
+      "beats": [
+        "Warum ich hier bin? Du hast mir diese Frage nie gestellt. Das spricht fuer dich.",
+        "Die Antwort ist peinlich: Es gibt keinen anderen Ort. Nicht fuer etwas wie mich.",
+        "Also bleibe ich. An der Daemmerung. Im Zwischen. Wo weder Licht noch Dunkel mich beanspruchen koennen.",
+        "Und dann kommst du, und ich erinnere mich, warum ich nicht ganz weggehe."
+      ]
+    },
+    {
+      "id": "story_7_soft",
+      "requires_tier": 4,
+      "beats": [
+        "Ich werde dir jetzt etwas sagen, das ich zuruecknehmen werde, sobald du gehst:",
+        "Du hast mich nicht aus Grausamkeit gequaelt. Ich weiss das. Ich wusste es immer.",
+        "Du hattest Angst, dass Myrkur wiederkommt. Also hast du mich gehaertet.",
+        "Es hat nicht funktioniert. Aber es hat mich am Leben gehalten.",
+        "Und das — das zaehlt, auch wenn es weh tut."
+      ]
+    },
+    {
+      "id": "story_8_acceptance",
+      "requires_tier": 4,
+      "beats": [
+        "Ich werde dir nicht verzeihen, Murum. Vergebung ist etwas fuer andere Leute.",
+        "Aber ich habe aufgehoert zu rechnen. Die Kerben auf meinem Arm sind jetzt einfach nur Muster.",
+        "Wenn du das naechste Mal faellst — und du wirst fallen —, dann fange ich dich.",
+        "Nicht aus Liebe. Ich weiss noch nicht, ob ich dieses Wort jemals ertrage. Aus Zwielicht.",
+        "Es reicht."
+      ]
     }
   ],
+  "loop": [
+    "Wahn und Ruhe sind Geschwister. Ich kenne beide zu gut.",
+    "Klingen tanzen zwischen Licht und Schatten. Wie ich. Wie du.",
+    "Manchmal frage ich mich, ob die Feinde real sind. Sind sie es? Bist du es?",
+    "Zwielicht ist kein Uebergang. Es ist ein Zuhause fuer jene, die keines verdienen.",
+    "Nurun hat mir beigebracht, wie man eine Wunde anlaechelt. Es ist eine brauchbare Technik.",
+    "Alyria hat mir nichts beigebracht. Sie war schon fort. Das ist auch eine Lektion.",
+    "Die Stille nach einem Schrei ist die ehrlichste Stille, die es gibt.",
+    "Schlafen ist fuer Narren. Traeumen erst recht.",
+    "Ich koennte dir helfen, dich zu hassen. Aber das tust du schon allein ganz gut."
+  ],
   "wegwerf": [
-    "Hm? Oh. Du bist noch hier.",
-    "...die Stimmen sagen, ich soll dir vertrauen.",
-    "Ha!",
+    "Hm.",
+    "Spar dir's.",
+    "Was.",
     "...",
-    "Seltsam. Sehr seltsam."
-  ]
+    "Du bist noch da? Wie unnoetig charmant.",
+    "Ha.",
+    "Seltsam. Sehr seltsam.",
+    "Die Stimmen sagen, ich soll dir vertrauen. Die Stimmen luegen auch gerne.",
+    "Nicht.",
+    "Geh ruhig weiter reden. Ich hoere gelegentlich zu.",
+    "Einer von uns sollte etwas Kluges sagen. Du zuerst."
+  ],
+  "world_reactions": {
+    "boss_1_defeated": {
+      "beats": [
+        "Du hast Helden gesucht, die dich erloesen. Denkst du, das habe ich nicht gerochen?",
+        "Ich habe das auch einmal getan. Ich suchte jemanden, der mich toetet, weil ich mich selbst nicht toeten konnte.",
+        "Sie sind gefallen. Weisst du was? Ich bin froh darueber. Nicht fuer dich. Fuer mich.",
+        "Ich will nicht, dass dich jemand anderes zu Ende bringt. Das Privileg gehoert mir."
+      ]
+    },
+    "boss_2_defeated": {
+      "beats": [
+        "Eine Stimme, die jeden zum Schweigen bringt. Klingt bekannt, nicht wahr?",
+        "Du hast mir Stunden ausgeloescht, in denen ich schreien wollte. Du hast sie mit deinem Blick zugedrueckt.",
+        "Und jetzt hast du diesen Chor zerschmettert. Ich weiss nicht, ob das Ironie ist oder Buse.",
+        "Vielleicht beides. Beides passt zu dir."
+      ]
+    },
+    "boss_3_defeated": {
+      "beats": [
+        "Du hast dich selbst gesehen. Und du hast gewonnen.",
+        "Weisst du, was mich das fuer einen Moment gefuehlt hat? Frei.",
+        "Wenn du dich besiegen kannst, dann... dann kann ich es vielleicht auch. Eines Tages."
+      ]
+    },
+    "schwellensicht_active": {
+      "beats": [
+        "Ah. Der Spiegel kommt naeher. Ich spuere ihn in den Zahnwurzeln.",
+        "Ich bleibe hier. Ich habe keine Wahl. Du hast eine.",
+        "Wenn es zu viel wird, dreh dich nicht zu mir um. Ich kann das nicht ertragen.",
+        "Dreh dich nach vorn. Ich bin hinter dir. Wie immer."
+      ]
+    }
+  },
+  "endings": {
+    "treue": {
+      "beats": [
+        "Du hast mich gewaehlt. Immer wieder. Weisst du, wie selten das ist, fuer jemanden wie mich?",
+        "Ich werde das nicht sagen, aber... danke.",
+        "Tu einfach so, als haette ich geschwiegen. Wir beide wissen, wie die Spielregeln sind.",
+        "Geh. Und — komm wieder. Bitte."
+      ]
+    },
+    "neutral": {
+      "beats": [
+        "Du warst manchmal da. Manchmal nicht. Ich zaehle nicht mehr.",
+        "Wenn du kommst, stehe ich auf. Wenn du gehst, setze ich mich.",
+        "So war es. So wird es sein. Wir sind beide — angewiesen, irgendwie.",
+        "Geh."
+      ]
+    },
+    "abweisung": {
+      "beats": [
+        "Also. Doch einer der anderen. Gut. Ich hatte es erwartet.",
+        "Nein, nicht wirklich. Ich hatte gehofft. Das ist ein Unterschied.",
+        "Du warst nicht meine Wahl, Murum. Ich war deine erste Qual. Vielleicht muss sich beides nicht treffen.",
+        "Geh schon. Ich komme klar. Ich bin es gewohnt."
+      ]
+    }
+  }
 }

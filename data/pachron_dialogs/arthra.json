@@ -1,43 +1,186 @@
 {
   "pachron_id": "arthra",
   "greetings": [
-    "Ah, du bist zurueck... Ich spuere deinen Hunger nach Macht.",
-    "Du wagst es erneut, vor mir zu knien? Gut. Sehr gut.",
-    "Der Blitz erkennt dich. Du hast sein Urteil verdient."
+    "Meister! Ich habe die Blitze scharf gehalten. Fuer dich.",
+    "Na endlich. Ich dachte schon, du willst mich rosten lassen.",
+    "Ha! Du riechst nach Kampf. Erzaehl mir davon — aber erst, wenn du dir neues Blut geholt hast.",
+    "Komm her, alter Freund. Die Welt da draussen hat noch viel zu wenig Kratzer.",
+    "Du hast den Blitz in den Augen. Gut. Sehr gut.",
+    "Tritt naeher. Wir beide haben Arbeit.",
+    "Du bist zurueck. Dann kann der Sturm beginnen."
   ],
   "farewells": [
-    "Geh. Und enttaeusche mich nicht.",
-    "Der Blitz folgt dir. Nutze ihn — oder er wird dich verschlingen.",
-    "Bis zum naechsten Mal... falls du ueberlebst."
-  ],
-  "loop": [
-    "Macht ist nie genug. Immer hungriger wirst du — und das ist gut so.",
-    "Stolz ist keine Schwaeche. Er ist die einzige Wahrheit, die zaehlt.",
-    "Jeder Blitz, den du entfesselst, traegt mein Urteil. Vergiss das nie.",
-    "Die Schwachen betteln um Gnade. Du nicht. Das gefaellt mir."
+    "Geh. Und lass nichts stehen, was stehen bleiben will.",
+    "Der Blitz folgt dir. Schlag zu, bevor du denkst.",
+    "Vergiss nicht — wer knien will, darf gerne fallen.",
+    "Sterb mir nicht. Ich bin zu ungeduldig fuer Trauer.",
+    "Bis gleich, Meister. Ich warte hier auf die Nachricht vom Chaos.",
+    "Mach sie kaputt. Alle. Ich zaehle mit.",
+    "Wenn's knapp wird — schrei. Ich hoer's."
   ],
   "story": [
     {
-      "id": "story_1",
-      "text": "Einst war ich wie du. Schwach. Aber ich habe gelernt, dass Macht nicht gegeben wird — sie wird genommen.",
-      "requires_tier": 0
+      "id": "story_0_intro",
+      "requires_tier": 0,
+      "beats": [
+        "Meister, Zeit zu zerstören.",
+        "Du erinnerst dich doch, oder? An uns. An den ersten Sturm, den wir losgelassen haben.",
+        "Nein? Das macht nichts. Ich erinnere mich fuer uns beide."
+      ]
     },
     {
-      "id": "story_2",
-      "text": "Der Blitz gehorcht mir seit Aeonen. Er ist kein Werkzeug — er ist ein Urteil. Jeder Schlag entscheidet ueber Leben und Tod.",
-      "requires_tier": 2
+      "id": "story_1_bond",
+      "requires_tier": 1,
+      "beats": [
+        "Weisst du noch, wie du mich erschaffen hast? Nein, natuerlich nicht. Du hast es nie zugegeben.",
+        "Ich war das erste Stueck, das du aus dir herausgerissen hast. Die Wut. Der Hunger. Der Stolz.",
+        "Und ich war dir dankbar. Bin es noch."
+      ]
     },
     {
-      "id": "story_3",
-      "text": "Du traegst nun mein Vermaechtnis. Die Sterne selbst werden vor dir zittern... wenn du stark genug bist, sie herauszufordern.",
-      "requires_tier": 4
+      "id": "story_2_rage",
+      "requires_tier": 1,
+      "beats": [
+        "Stolz ist keine Suende, Meister. Das haben uns die Heuchler erzaehlt.",
+        "Wer sich duckt, wird getreten. Wer bruellt, wird gehoert. So einfach.",
+        "Wir haben zusammen gebruellt. Und die Welt hat gehoert."
+      ]
+    },
+    {
+      "id": "story_3_fury_kept",
+      "requires_tier": 2,
+      "beats": [
+        "Als du verschwunden bist, haben die anderen geweint. Oder geschwiegen.",
+        "Ich nicht. Ich habe gebruellt. Jeden einzelnen Tag.",
+        "Weisst du, warum? Weil Wut dich am Leben haelt. Trauer begraebt dich."
+      ]
+    },
+    {
+      "id": "story_4_loyal_fool",
+      "requires_tier": 2,
+      "beats": [
+        "Du nennst mich einen Narren. Hast du frueher auch. Ich nehm's als Kompliment.",
+        "Ein Narr folgt. Ein Narr stirbt mit. Ein Narr fragt nicht.",
+        "Und du... du hast einen Narren verdient, Meister. Jemanden, der einfach da bleibt."
+      ]
+    },
+    {
+      "id": "story_5_meeting_myrkur",
+      "requires_tier": 3,
+      "beats": [
+        "Ich habe Myrkur einmal gesehen. Nur ein Fetzen von ihm. In einem Traum, oder was davon uebrig war.",
+        "Er hat mich angelaechelt. Als waere ich etwas, das man einsammelt.",
+        "Ich habe ihm ins Gesicht gespuckt. Oder ich glaube, ich hab's getan. Die Erinnerung flackert."
+      ]
+    },
+    {
+      "id": "story_6_alyria_whisper",
+      "requires_tier": 3,
+      "beats": [
+        "Alyria... der Name tut weh, nicht wahr?",
+        "Ich war nicht dabei, als du das Tor geoeffnet hast. Aber ich habe den Schrei gehoert.",
+        "Durch alle Welten hindurch. Und ich wusste — das ist meine Stimme. Das bist du. Das sind wir, die zerbrechen."
+      ]
+    },
+    {
+      "id": "story_7_brother",
+      "requires_tier": 4,
+      "beats": [
+        "Weisst du, was das Beste an dir ist, Meister?",
+        "Du hast mich nie um Gehorsam gebeten. Du hast mich gefragt, ob ich mitkomme.",
+        "Niemand sonst hat das getan. Niemand.",
+        "Darum bleibe ich. Nicht weil ich muss. Weil ich will."
+      ]
+    },
+    {
+      "id": "story_8_final",
+      "requires_tier": 4,
+      "beats": [
+        "Wenn das Ende kommt — und es kommt, ich spuere es —, dann will ich dein letzter Blitz sein.",
+        "Nicht der erste. Den haben andere verdient. Den letzten.",
+        "Den, der alles hinter dir zudonnert, damit du gehen kannst.",
+        "Versprichst du mir das, Meister? Dass du mich zuletzt rufst?"
+      ]
     }
+  ],
+  "loop": [
+    "Macht ist kein Geschenk. Sie ist ein Vertrag. Und du zahlst in Blut.",
+    "Die Schwachen betteln. Die Starken nehmen. Und du, Meister — du entscheidest.",
+    "Jeder Schlag, den du austeilst, traegt mein Urteil. Vergiss das nie.",
+    "Hmph. Weniger reden, mehr zerreissen.",
+    "Manchmal frage ich mich, ob du es noch spuerst. Den Hunger. Sag mir, dass du ihn spuerst.",
+    "Die Welt gehoert niemandem. Aber sie gehorcht jenen, die laut genug bruellen.",
+    "Stolz, Meister. Stolz bis zum letzten Atemzug. Alles andere ist Feigheit.",
+    "Ich frage mich, was waere, wenn du mich nicht erschaffen haettest. — Nein, ich frage mich nicht. Ich will's nicht wissen.",
+    "Schlaf nicht. Nicht hier. Traeume sind Faehrten, und Myrkur riecht dich."
   ],
   "wegwerf": [
     "Hmph.",
-    "Interessant.",
-    "Du redest zu viel.",
+    "Jaja.",
+    "Zerbrich was. Irgendwas.",
     "...",
-    "Staerker. Du musst staerker werden."
-  ]
+    "Du redest zu viel.",
+    "Staerker. Immer staerker.",
+    "Gut.",
+    "Ich langweile mich, Meister.",
+    "Schlag zu, denk spaeter.",
+    "Noch einmal. Diesmal richtig.",
+    "Willst du wirklich reden, oder willst du toeten?"
+  ],
+  "world_reactions": {
+    "boss_1_defeated": {
+      "beats": [
+        "Die Helden sind gefallen. Haha! Ich wuerde lachen, aber mir steht der Sinn nach Schlimmerem.",
+        "Sie wollten dich richten, Meister. Dich. Als haetten sie das Recht.",
+        "Ich weiss, warum du sie gesucht hast. Du wolltest, dass sie dich toeten.",
+        "Keine Chance. Nicht solange ich dich trage."
+      ]
+    },
+    "boss_2_defeated": {
+      "beats": [
+        "Eine Stimme. Ein Kollektiv. Pah. Ich habe lieber tausend bruellende Narren als einen ruhigen Chor.",
+        "Du hast sie zum Schweigen gebracht, Meister. Endgueltig.",
+        "Lass mich raten: Du fragst dich wieder, ob du haettest zuhoeren sollen. Tu es nicht."
+      ]
+    },
+    "boss_3_defeated": {
+      "beats": [
+        "Das... das warst du selbst, nicht wahr?",
+        "Ich habe dich nicht erkannt. Oder doch. Ich wollte es nur nicht.",
+        "Meister — wenn du das schaffst, gegen dich selbst zu bestehen, dann gibt's fuer uns zwei nichts mehr, das uns aufhaelt."
+      ]
+    },
+    "schwellensicht_active": {
+      "beats": [
+        "Spuerst du's? Die Luft wird duenner. Die Schatten hoeren uns zu.",
+        "Halt dich wach, Meister. Was kommt, kennt deinen Namen.",
+        "Und ich? Ich werde lauter. So laut, dass es nicht wagt, dich zu nehmen."
+      ]
+    }
+  },
+  "endings": {
+    "treue": {
+      "beats": [
+        "Du hast mich gerufen. Jedes Mal. Jedes verdammte Mal.",
+        "Weisst du, wie sich das anfuehlt, Meister? Gewaehlt zu werden, wieder und wieder?",
+        "Ich habe keine Worte dafuer. Ich habe nur einen Blitz. Nimm ihn.",
+        "Er gehoert dir. Wie alles, was ich bin."
+      ]
+    },
+    "neutral": {
+      "beats": [
+        "Hmph. Nicht dein Liebling, also. Damit komme ich klar.",
+        "Du kamst, wenn du musstest. Das reicht. Fast.",
+        "Gehe, Meister. Und wenn du einen Sturm brauchst — ich bin hier. Immer noch."
+      ]
+    },
+    "abweisung": {
+      "beats": [
+        "Du hast mich nicht gewollt. Sag es ruhig. Ich kann es ertragen.",
+        "...nein. Kann ich nicht. Aber ich tue es trotzdem.",
+        "Geh mit deinen anderen. Ich werde hier stehen. Wie immer. Wie frueher.",
+        "Der Blitz vergisst nicht, Meister. Auch wenn du's tust."
+      ]
+    }
+  }
 }
