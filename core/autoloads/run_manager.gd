@@ -491,6 +491,9 @@ func end_run(victory: bool) -> void:
 		victory, run_rooms_completed, run_enemies_killed
 	])
 
+	# Capture Schwellensicht flag BEFORE complete_challenge_run() resets it
+	var was_schwellensicht: bool = ChallengeRunManager and ChallengeRunManager.is_schwellensicht_active
+
 	# End challenge run if active
 	if ChallengeRunManager and ChallengeRunManager.is_challenge_run_active:
 		if victory:
@@ -498,18 +501,28 @@ func end_run(victory: bool) -> void:
 		else:
 			ChallengeRunManager.end_challenge_run()
 
-	# Play pachron ending dialog on victory, then show run end screen
+	var should_play_outro: bool = victory and was_schwellensicht \
+		and CutsceneManager and CutsceneManager.has_cutscene("final_outro")
+
+	var post_dialog_action: Callable = func() -> void:
+		if should_play_outro:
+			CutsceneManager.play_cutscene("final_outro",
+				func(_id, _sk): _show_run_end_screen(victory))
+		else:
+			_show_run_end_screen(victory)
+
+	# Play pachron ending dialog on victory, then outro (if Schwellensicht), then run end screen
 	if victory and PachronDialogSystem:
 		var started: bool = PachronDialogSystem.play_run_end_dialog()
 		if started:
 			PachronDialogSystem.dialog_sequence_finished.connect(
-				func(): _show_run_end_screen(victory),
+				post_dialog_action,
 				CONNECT_ONE_SHOT
 			)
 			return
 
-	# Show run end screen (no ending dialog to wait for)
-	_show_run_end_screen(victory)
+	# No pachron dialog to wait for
+	post_dialog_action.call()
 
 
 func _show_run_end_screen(victory: bool) -> void:

@@ -76,7 +76,7 @@ static func _register_all_cutscenes() -> void:
 	# ==========================================================================
 
 	var intro = CutsceneDefinition.new("intro", CutsceneType.VIDEO)
-	intro.video_path = "res://Assets/AIVids/Murum Introklein.ogv"
+	intro.video_path = "res://Assets/AIVids/AIRandomvid01.ogv"
 	intro.image_texts = [
 		"Vor langer Zeit existierte eine Welt voller Magie und Wunder...",
 		"Die alten Tempel bewahrten Geheimnisse, die kein Sterblicher verstehen sollte.",
@@ -96,6 +96,21 @@ static func _register_all_cutscenes() -> void:
 	intro.chapter = "Prolog"
 	intro.is_story_critical = false
 	_register(intro)
+
+	# ==========================================================================
+	# FINAL OUTRO CUTSCENE - Wird nach Mirror-Boss Sieg auf Schwellensicht gespielt
+	# ==========================================================================
+
+	var final_outro = CutsceneDefinition.new("final_outro", CutsceneType.VIDEO)
+	final_outro.video_path = "res://Assets/AIVids/Murum Introklein.ogv"
+	final_outro.image_duration = 9.0
+	final_outro.skippable = true
+	final_outro.show_skip_warning = false
+	final_outro.title = "Epilog"
+	final_outro.description = "Das Gleichgewicht ist wiederhergestellt."
+	final_outro.chapter = "Epilog"
+	final_outro.is_story_critical = true
+	_register(final_outro)
 
 
 ## Registriert eine Cutscene
