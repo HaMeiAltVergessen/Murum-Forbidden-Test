@@ -17,12 +17,12 @@ const PREFERRED_DISTANCE: float = 280.0
 const FRONT_ARMOR: float = 0.7  # 30% reduction
 
 # Cone-Puls (ranged, parryable on middle bolt)
-const CONE_COOLDOWN: float = 2.5
-const CONE_WINDUP: float = 0.4
-const CONE_BOLT_COUNT: int = 5
-const CONE_SPREAD_DEG: float = 30.0
+const CONE_COOLDOWN: float = 1.3
+const CONE_WINDUP: float = 0.3
+const CONE_BOLT_COUNT: int = 7
+const CONE_SPREAD_DEG: float = 36.0
 const CONE_BOLT_DAMAGE: int = 14
-const CONE_BOLT_SPEED: float = 360.0
+const CONE_BOLT_SPEED: float = 650.0
 
 # Overload-Schockwelle (heavy, charged)
 const OVERLOAD_COOLDOWN: float = 12.0

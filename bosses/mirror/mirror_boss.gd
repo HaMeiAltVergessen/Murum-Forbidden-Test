@@ -18,7 +18,7 @@ const MELEE_CHARGE_DISTANCE: float = 60.0  # X-distance during melee rush
 const Y_SMOOTHING: float = 6.0            # How fast boss tracks player Y
 
 # ============ ATTACK CONFIG ============
-const RANGED_ATTACK_COOLDOWN: float = 4.0
+const RANGED_ATTACK_COOLDOWN: float = 1.8
 const MELEE_ATTACK_RANGE: float = 350.0
 const MELEE_ATTACK_COOLDOWN: float = 4.0
 const STUN_DURATION: float = 5.0

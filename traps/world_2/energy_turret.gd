@@ -32,8 +32,8 @@ enum State {
 # ============================================================================
 
 @export var damage: int = 18
-@export var fire_rate: float = 1.5
-@export var bolt_speed: float = 350.0
+@export var fire_rate: float = 0.75
+@export var bolt_speed: float = 650.0
 @export var detection_range: float = 400.0
 @export var rotation_speed: float = 90.0       ## Degrees/s turret head rotation
 @export var retract_duration: float = 6.0       ## Time hidden underground

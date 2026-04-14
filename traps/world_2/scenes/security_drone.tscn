@@ -18,6 +18,8 @@ max_hp = 25
 damage = 12
 patrol_speed = 80.0
 detection_range = 250.0
+burst_count = 5
+burst_interval = 0.12
 respawn_time = 10.0
 
 [node name="DroneVisual" type="AnimatedSprite2D" parent="."]

@@ -37,8 +37,8 @@ enum State {
 @export var patrol_speed: float = 80.0
 @export var detection_range: float = 250.0
 @export var alert_duration: float = 1.0
-@export var burst_count: int = 3
-@export var burst_interval: float = 0.3
+@export var burst_count: int = 5
+@export var burst_interval: float = 0.12
 @export var stun_duration: float = 3.0
 @export var respawn_time: float = 10.0
 @export var patrol_path: NodePath = ""
@@ -268,7 +268,7 @@ func _fire_burst_shot() -> void:
 	if bolt_scene and current_target and is_instance_valid(current_target):
 		var bolt: EnergyBolt = bolt_scene.instantiate()
 		bolt.damage = damage
-		bolt.speed = 300.0
+		bolt.speed = 650.0
 		bolt.direction = (current_target.global_position - global_position).normalized()
 
 		get_parent().add_child(bolt)

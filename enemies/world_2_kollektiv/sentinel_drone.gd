@@ -14,8 +14,12 @@ const DAMAGE: int = 12
 const GRAVITY: float = 980.0
 const PREFERRED_DISTANCE: float = 250.0
 const DETECTION_RANGE: float = 500.0
-const FIRE_COOLDOWN: float = 2.0
-const PROJECTILE_SPEED: float = 350.0
+const FIRE_COOLDOWN: float = 0.8
+const BURST_COUNT: int = 3
+const BURST_INTERVAL: float = 0.12
+const PROJECTILE_SPEED: float = 650.0
+
+const ENERGY_BOLT_SCENE: PackedScene = preload("res://traps/world_2/scenes/energy_bolt.tscn")
 
 # Sprite frame regions: PATROL, ALERT, STRAFE, FIRING, STUNNED
 const FRAME_REGIONS: Array = [
@@ -139,80 +143,30 @@ func _update_networked_target() -> void:
 		target = players[my_index % players.size()]
 
 func _fire_projectile() -> void:
-	if not target:
+	if not target or not ENERGY_BOLT_SCENE:
 		return
-	var dir := get_direction_to_target()
-	var projectile := Area2D.new()
-	projectile.collision_layer = 128  # EnemyHitbox (Layer 8)
-	projectile.collision_mask = 1024  # PlayerHurtbox (Layer 11)
-	projectile.add_to_group("hitbox")
-	projectile.add_to_group("enemy_attack")
-	var shape := CollisionShape2D.new()
-	var circle := CircleShape2D.new()
-	circle.radius = 8.0
-	shape.shape = circle
-	projectile.add_child(shape)
-	var bolt_tex := load("res://Assets/AIPlaceholder/Gegner/W2/sentinal_Drone_EnergyBolt.png")
-	var visual := Sprite2D.new()
-	if bolt_tex:
-		visual.texture = bolt_tex
-		visual.scale = Vector2(0.06, 0.06)
-	else:
-		var fallback := ColorRect.new()
-		fallback.offset_left = -6
-		fallback.offset_top = -6
-		fallback.offset_right = 6
-		fallback.offset_bottom = 6
-		fallback.color = Color(0.3, 0.8, 1.0, 0.9)
-		projectile.add_child(fallback)
-	projectile.add_child(visual)
-	projectile.rotation = dir.angle()
-	projectile.global_position = global_position
-	projectile.set_meta("direction", dir)
-	projectile.set_meta("speed", PROJECTILE_SPEED)
-	var out_damage: int = DAMAGE
-	if _commander_buffed:
-		out_damage = int(DAMAGE * 1.4)
-	projectile.set_meta("damage", out_damage)
-	projectile.set_meta("lifetime", 4.0)
-	projectile.set_meta("source", self)
-	projectile.set_script(_get_projectile_script())
-	# Set owner so ParryBlockSystem can identify the source
-	get_tree().current_scene.add_child(projectile)
-	projectile.owner = self
+	_fire_burst()
 
-static func _get_projectile_script() -> GDScript:
-	var s := GDScript.new()
-	s.source_code = """extends Area2D
-var _dir: Vector2
-var _spd: float
-var _dmg: int
-var _life: float
-func _ready():
-	_dir = get_meta("direction")
-	_spd = get_meta("speed")
-	_dmg = get_meta("damage")
-	_life = get_meta("lifetime")
-	area_entered.connect(_on_area_entered)
-func _process(d):
-	position += _dir * _spd * d
-	_life -= d
-	if _life <= 0: queue_free()
-func _on_area_entered(area):
-	var target_node = area.get_parent()
-	if not target_node:
+func _fire_burst() -> void:
+	for i in range(BURST_COUNT):
+		if not is_instance_valid(self) or not target or not is_instance_valid(target):
+			return
+		_spawn_bolt()
+		if i < BURST_COUNT - 1:
+			await get_tree().create_timer(BURST_INTERVAL).timeout
+
+func _spawn_bolt() -> void:
+	if not target or not is_instance_valid(target):
 		return
-	if not target_node.is_in_group("player"):
-		return
-	# Check invulnerability
-	if area.has_method("is_invulnerable") or ("is_invulnerable" in area and area.is_invulnerable):
-		queue_free()
-		return
-	if area.has_method("take_damage"):
-		area.take_damage(_dmg, _dir * _spd, 0.1)
-	queue_free()
-"""
-	return s
+	var dir: Vector2 = (target.global_position - global_position).normalized()
+	var bolt: EnergyBolt = ENERGY_BOLT_SCENE.instantiate()
+	bolt.direction = dir
+	bolt.speed = PROJECTILE_SPEED
+	bolt.damage = int(DAMAGE * 1.4) if _commander_buffed else DAMAGE
+	bolt.can_be_parried = true
+	get_tree().current_scene.add_child(bolt)
+	bolt.global_position = global_position + dir * 40.0
+	bolt.rotation = dir.angle()
 
 # ============================================================================
 # DAMAGE

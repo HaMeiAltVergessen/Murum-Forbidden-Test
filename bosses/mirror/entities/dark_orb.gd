@@ -18,9 +18,14 @@ var _lifetime_timer: float = 0.0
 
 
 func _ready() -> void:
-	# Collision setup: same as enemy projectiles
-	collision_layer = 128  # Layer 8 — Enemy Hitboxes (detected by parry BlockArea)
-	collision_mask = 2  # Layer 2 — Player body (for body_entered)
+	# Collision setup: enemy hitbox, detects world + both players
+	collision_layer = 0
+	set_collision_layer_value(8, true)   # EnemyHitbox (for parry BlockArea)
+	set_collision_layer_value(11, true)  # Projectiles
+	collision_mask = 0
+	set_collision_mask_value(1, true)    # World
+	set_collision_mask_value(2, true)    # P1 body
+	set_collision_mask_value(3, true)    # P2 body
 
 	# Add to projectiles group for parry detection
 	add_to_group("projectiles")
