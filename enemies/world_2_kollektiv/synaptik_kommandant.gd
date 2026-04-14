@@ -37,10 +37,18 @@ const OVERLOAD_STUN: float = 1.5
 const AURA_RADIUS: float = 350.0
 const AURA_TICK: float = 0.4
 
-# Sprite frame regions placeholder (populated when spritesheet exists)
 # 0=IDLE, 1=REPOSITION, 2=CONE_WINDUP, 3=CONE_FIRE,
 # 4=OVERLOAD_CHARGE, 5=OVERLOAD_RELEASE, 6=STUNNED, 7=DEATH
-const FRAME_REGIONS: Array = []
+const FRAME_REGIONS: Array = [
+	Rect2(0, 0, 352, 347),      # IDLE
+	Rect2(352, 0, 352, 347),    # REPOSITION
+	Rect2(704, 0, 352, 347),    # CONE_WINDUP
+	Rect2(1056, 0, 352, 347),   # CONE_FIRE
+	Rect2(0, 347, 352, 347),    # OVERLOAD_CHARGE
+	Rect2(352, 347, 352, 347),  # OVERLOAD_RELEASE
+	Rect2(704, 347, 352, 347),  # STUNNED
+	Rect2(1056, 347, 352, 347), # DEATH
+]
 
 const ENERGY_BOLT_SCENE: PackedScene = preload("res://traps/world_2/scenes/energy_bolt.tscn")
 
