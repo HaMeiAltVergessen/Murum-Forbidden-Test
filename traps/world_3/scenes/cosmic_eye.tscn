@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://cosmic_eye_001"]
+[gd_scene load_steps=7 format=3 uid="uid://cosmic_eye_001"]
 
 [ext_resource type="Script" path="res://traps/world_3/cosmic_eye.gd" id="1"]
 [ext_resource type="SpriteFrames" path="res://traps/sprites/cosmic_eye_frames.tres" id="2_frames"]
+[ext_resource type="SpriteFrames" path="res://traps/sprites/eye_laser_frames.tres" id="3_laser"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_detection"]
 radius = 500.0
@@ -25,10 +26,12 @@ scale = Vector2(0.19, 0.19)
 sprite_frames = ExtResource("2_frames")
 animation = &"closed"
 
-[node name="BeamVisual" type="Line2D" parent="."]
+[node name="BeamVisual" type="AnimatedSprite2D" parent="."]
 visible = false
-width = 4.0
-default_color = Color(1, 0.15, 0.3, 0.8)
+sprite_frames = ExtResource("3_laser")
+animation = &"default"
+autoplay = "default"
+offset = Vector2(248, 0)
 
 [node name="RayCast2D" type="RayCast2D" parent="."]
 enabled = false

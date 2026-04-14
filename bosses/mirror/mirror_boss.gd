@@ -688,7 +688,6 @@ func _spawn_dark_orb() -> void:
 		return
 
 	var orb: DarkOrb = DARK_ORB_SCENE.instantiate()
-	orb.global_position = global_position + Vector2(-30, -50)  # Spawn from hand area
 
 	# Direction toward player (slightly behind boss)
 	var dir: Vector2 = (player.global_position - global_position).normalized()
@@ -696,6 +695,7 @@ func _spawn_dark_orb() -> void:
 	orb.shooter = self
 
 	get_tree().current_scene.add_child(orb)
+	orb.global_position = global_position + Vector2(-30, -50)  # Spawn from hand area
 	print("[MirrorBoss] Dark Orb fired!")
 
 

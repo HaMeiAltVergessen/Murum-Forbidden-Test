@@ -49,8 +49,12 @@ var damage_accumulator: float = 0.0
 @onready var eye_visual: AnimatedSprite2D = $EyeVisual if has_node("EyeVisual") else null
 @onready var pupil_visual: Node2D = $PupilVisual if has_node("PupilVisual") else null
 @onready var iris_visual: Node2D = $IrisVisual if has_node("IrisVisual") else null
-@onready var beam_visual: Line2D = $BeamVisual if has_node("BeamVisual") else null
+@onready var beam_visual: AnimatedSprite2D = $BeamVisual if has_node("BeamVisual") else null
 @onready var raycast: RayCast2D = $RayCast2D if has_node("RayCast2D") else null
+
+const BEAM_TEXTURE_WIDTH: float = 497.0   # eye_laser_sheet.png frame width
+const BEAM_TEXTURE_HEIGHT: float = 176.0  # eye_laser_sheet.png frame height
+const BEAM_THICKNESS_SCALE: float = 0.12  # Y-scale for visible beam thickness
 @onready var detection_area: Area2D = $DetectionArea if has_node("DetectionArea") else null
 @onready var hurtbox_area: Area2D = $HurtboxArea if has_node("HurtboxArea") else null
 
@@ -243,13 +247,19 @@ func _stop_beam() -> void:
 	eye_beam_stopped.emit()
 
 func _update_beam_visual() -> void:
-	"""Update beam line from eye to target"""
+	"""Stretch the beam sprite from eye to target along the direction vector"""
 	if not beam_visual or not current_target or not is_instance_valid(current_target):
 		return
 
-	beam_visual.clear_points()
-	beam_visual.add_point(Vector2.ZERO)
-	beam_visual.add_point(to_local(current_target.global_position))
+	var to_target: Vector2 = current_target.global_position - global_position
+	var distance: float = to_target.length()
+	if distance < 1.0:
+		beam_visual.visible = false
+		return
+
+	beam_visual.position = Vector2.ZERO
+	beam_visual.rotation = to_target.angle()
+	beam_visual.scale = Vector2(distance / BEAM_TEXTURE_WIDTH, BEAM_THICKNESS_SCALE)
 
 # ============================================================================
 # DETECTION

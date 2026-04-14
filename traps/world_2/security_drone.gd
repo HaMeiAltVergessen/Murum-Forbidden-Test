@@ -114,6 +114,13 @@ func _ready() -> void:
 	if alert_indicator:
 		alert_indicator.visible = false
 
+	# Play idle/patrol animation
+	if drone_visual and drone_visual.sprite_frames:
+		if drone_visual.sprite_frames.has_animation("patrol"):
+			drone_visual.play("patrol")
+		else:
+			drone_visual.play()
+
 	# Timers
 	stun_timer = Timer.new()
 	stun_timer.one_shot = true
@@ -264,12 +271,11 @@ func _fire_burst_shot() -> void:
 		bolt.speed = 300.0
 		bolt.direction = (current_target.global_position - global_position).normalized()
 
+		get_parent().add_child(bolt)
 		if fire_point:
 			bolt.global_position = fire_point.global_position
 		else:
 			bolt.global_position = global_position
-
-		get_parent().add_child(bolt)
 		drone_fired.emit()
 
 		# Audio

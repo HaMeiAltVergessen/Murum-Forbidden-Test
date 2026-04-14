@@ -207,13 +207,12 @@ func _fire_bolt() -> void:
 	else:
 		bolt.direction = Vector2.RIGHT.rotated(turret_head.rotation) if turret_head else Vector2.RIGHT
 
-	# Position at fire point
+	get_parent().add_child(bolt)
+	# Position at fire point (after add_child so global_position applies correctly)
 	if fire_point:
 		bolt.global_position = fire_point.global_position
 	else:
 		bolt.global_position = global_position
-
-	get_parent().add_child(bolt)
 	turret_fired.emit()
 
 	# Visual recoil

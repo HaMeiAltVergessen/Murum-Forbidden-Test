@@ -33,7 +33,6 @@ var is_parried: bool = false
 # ============================================================================
 
 @onready var bolt_visual: AnimatedSprite2D = $BoltVisual if has_node("BoltVisual") else null
-@onready var trail: GPUParticles2D = $Trail if has_node("Trail") else null
 
 var lifetime_timer: Timer = null
 
@@ -57,9 +56,9 @@ func _ready() -> void:
 	set_collision_mask_value(2, true)   # P1
 	set_collision_mask_value(3, true)   # P2
 
-	# Trail
-	if trail:
-		trail.emitting = true
+	# Start visual animation
+	if bolt_visual:
+		bolt_visual.play("default")
 
 	# Rotate visual to match direction
 	rotation = direction.angle()
