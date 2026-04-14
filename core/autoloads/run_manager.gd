@@ -506,8 +506,15 @@ func end_run(victory: bool) -> void:
 
 	var post_dialog_action: Callable = func() -> void:
 		if should_play_outro:
+			var saved_music_scene: String = ""
+			if MusicScenePlayer and MusicScenePlayer.current_scene:
+				saved_music_scene = MusicScenePlayer.current_scene.scene_name
+				MusicScenePlayer.stop_music(true)
 			CutsceneManager.play_cutscene("final_outro",
-				func(_id, _sk): _show_run_end_screen(victory))
+				func(_id, _sk):
+					if not saved_music_scene.is_empty() and MusicScenePlayer:
+						MusicScenePlayer.force_play_scene(saved_music_scene)
+					_show_run_end_screen(victory))
 		else:
 			_show_run_end_screen(victory)
 
