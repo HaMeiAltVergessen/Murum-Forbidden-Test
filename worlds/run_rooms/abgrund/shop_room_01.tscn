@@ -97,13 +97,13 @@ position = Vector2(800, 760)
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1120, 700)
+position = Vector2(1505, 796)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(2240, 700)
+position = Vector2(2250, 786)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1769, 700)
+position = Vector2(1862, 788)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
 position = Vector2(124, 700)
@@ -116,4 +116,4 @@ offset_left = 40.0
 offset_top = 20.0
 offset_right = 400.0
 offset_bottom = 50.0
-text = "Schattenwandler"
+text = "wq"

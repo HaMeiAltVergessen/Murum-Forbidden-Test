@@ -82,13 +82,13 @@ position = Vector2(1423, 760)
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1120, 700)
+position = Vector2(360, 705)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(2240, 700)
+position = Vector2(3246, 747)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(2663, 372)
+position = Vector2(2305, 761)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
 position = Vector2(2748, 378)
@@ -104,17 +104,18 @@ offset_bottom = 50.0
 text = "Ereignis - Fluesternde Schatten"
 
 [node name="EventTitle" type="Label" parent="."]
-offset_left = 2300.0
-offset_top = 350.0
-offset_right = 3300.0
-offset_bottom = 390.0
-text = "Schatten fluestern dir zwei Wege zu..."
+offset_left = 1005.0
+offset_top = 226.0
+offset_right = 2005.0
+offset_bottom = 275.0
+text = "
+"
 horizontal_alignment = 1
 
 [node name="EventChoices" type="Node2D" parent="."]
 
 [node name="ChoiceA" type="Area2D" parent="EventChoices"]
-position = Vector2(1036, 490)
+position = Vector2(997, 553)
 collision_layer = 0
 collision_mask = 2
 
@@ -126,7 +127,7 @@ shape = SubResource("choice_shape")
 offset_left = -80.0
 offset_top = -120.0
 offset_right = 80.0
-color = Color(0.3, 0.8, 0.4, 0.3)
+color = Color(0.301961, 0.8, 0.4, 0.811765)
 
 [node name="Border" type="ColorRect" parent="EventChoices/ChoiceA"]
 z_index = -1
@@ -153,7 +154,7 @@ text = "+20 HP, -10 Mana"
 horizontal_alignment = 1
 
 [node name="ChoiceB" type="Area2D" parent="EventChoices"]
-position = Vector2(1842, 490)
+position = Vector2(1842, 560)
 collision_layer = 0
 collision_mask = 2
 
@@ -165,7 +166,7 @@ shape = SubResource("choice_shape")
 offset_left = -80.0
 offset_top = -120.0
 offset_right = 80.0
-color = Color(0.8, 0.3, 0.3, 0.3)
+color = Color(0.8, 0.301961, 0.301961, 0.784314)
 
 [node name="Border" type="ColorRect" parent="EventChoices/ChoiceB"]
 z_index = -1

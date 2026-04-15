@@ -51,7 +51,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(3042, 453)
+position = Vector2(4287, 453)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -63,16 +63,16 @@ position = Vector2(2800, -20)
 shape = SubResource("ceiling_shape")
 
 [node name="TreasurePedestal" type="ColorRect" parent="."]
-offset_left = 2640.0
+offset_left = 1834.0
 offset_top = 700.0
-offset_right = 2960.0
+offset_right = 2154.0
 offset_bottom = 800.0
 color = Color(0.45, 0.35, 0.1, 1)
 
 [node name="TreasureGlow" type="ColorRect" parent="."]
-offset_left = 2720.0
+offset_left = 1914.0
 offset_top = 660.0
-offset_right = 2880.0
+offset_right = 2074.0
 offset_bottom = 700.0
 color = Color(0.8, 0.7, 0.2, 0.5)
 
@@ -86,19 +86,19 @@ position = Vector2(700, 760)
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1120, 700)
+position = Vector2(3334, 767)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(2240, 700)
+position = Vector2(93, 750)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(3360, 700)
+position = Vector2(3728, 788)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(4200, 700)
+position = Vector2(4200, 775)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1680, 700)
+position = Vector2(1475, 754)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

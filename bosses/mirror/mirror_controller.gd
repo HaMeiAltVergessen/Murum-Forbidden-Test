@@ -16,25 +16,25 @@ enum Section { DER_FALL, DER_SPIEGELKAMPF, DER_GEBROCHENE_ABGRUND, FINALE_VERFOL
 
 const SECTION_CONFIG: Dictionary = {
 	Section.DER_FALL: {
-		"name": "Der Fall",
+		"name": "Fall",
 		"scroll_speed": 200.0,
 		"duration": 45.0,
 		"chunk_pool": "fall",
 	},
 	Section.DER_SPIEGELKAMPF: {
-		"name": "Der Spiegelkampf",
+		"name": "Schicksalskampf",
 		"scroll_speed": 280.0,
 		"duration": 60.0,
 		"chunk_pool": "spiegel",
 	},
 	Section.DER_GEBROCHENE_ABGRUND: {
-		"name": "Der gebrochene Abgrund",
+		"name": "Abgrund",
 		"scroll_speed": 350.0,
 		"duration": 60.0,
 		"chunk_pool": "abgrund",
 	},
 	Section.FINALE_VERFOLGUNG: {
-		"name": "Finale Verfolgung",
+		"name": "Es kann nur einen geben",
 		"scroll_speed": 400.0,
 		"duration": 45.0,
 		"chunk_pool": "finale",
@@ -62,15 +62,15 @@ var momentum_bar: CanvasLayer = null
 var _wave_spawner: BossWaveSpawner = null
 
 # ============ DIALOG SPEAKER IMAGES ============
-const SPIEGEL_PORTRAIT: String = "res://Assets/AIPlaceholder/Char/Murum_Spiegel/mirrorai1.jpg"
+const SPIEGEL_PORTRAIT: String = "res://Assets/AIPlaceholder/Char/Murum/NurunBack.png"
 const MURUM_PORTRAIT: String = "res://Assets/AIPlaceholder/Char/Murum/Murum02.png"
 
 # ============ BACKGROUND IMAGES (per section) ============
 const BG_PATHS: Dictionary = {
 	Section.DER_FALL: "res://Assets/AIPlaceholder/AlbtraumWelten/Welt3_Abgrund/2D_pixel_art_cosmic_horror_bac_GPT_Image_15_29025.jpg",
-	Section.DER_SPIEGELKAMPF: "res://Assets/AIPlaceholder/AlbtraumWelten/Welt3_Abgrund/2D_pixel_art_cosmic_horror_bac_GPT_Image_15_45960.jpg",
-	Section.DER_GEBROCHENE_ABGRUND: "res://Assets/AIPlaceholder/AlbtraumWelten/Welt3_Abgrund/2D_pixel_art_cosmic_horror_env_GPT_Image_15_03661.jpg",
-	Section.FINALE_VERFOLGUNG: "res://Assets/AIPlaceholder/AlbtraumWelten/Welt3_Abgrund/2D_pixel_art_cosmic_horror_bos_GPT_Image_15_12927.jpg",
+	Section.DER_SPIEGELKAMPF: "res://Assets/AIPlaceholder/AlbtraumWelten/Welt3_Abgrund/2D_pixel_art_cosmic_horror_bos_GPT_Image_15_44765.jpg",
+	Section.DER_GEBROCHENE_ABGRUND: "res://Assets/AIPlaceholder/AlbtraumWelten/Welt3_Abgrund/2D_pixel_art_cosmic_horror_env_GPT_Image_15_84370.jpg",
+	Section.FINALE_VERFOLGUNG: "res://Assets/AIPlaceholder/AlbtraumWelten/Welt3_Abgrund/2D_pixel_art_cosmic_horror_bos_GPT_Image_15_15505.jpg",
 }
 var _bg_sprite: Sprite2D = null
 
@@ -850,8 +850,8 @@ func _play_defeat_dialog() -> void:
 
 	# Build dialog entries
 	var entries: Array[DialogEntry] = [
-		_make_dialog_entry("Spiegel", SPIEGEL_PORTRAIT, "Du suchst Antworten. Doch du bist nur die Frage."),
-		_make_dialog_entry("Spiegel", SPIEGEL_PORTRAIT, "Ich gebe dir deine Antworten."),
+		_make_dialog_entry("Nurun", SPIEGEL_PORTRAIT, "Du suchst Antworten. Doch du bist nur die Frage."),
+		_make_dialog_entry("Nurun", SPIEGEL_PORTRAIT, "Ich gebe dir deine Antworten."),
 		_make_dialog_entry("Murum", MURUM_PORTRAIT, "Ich brauche keine Antworten."),
 	]
 

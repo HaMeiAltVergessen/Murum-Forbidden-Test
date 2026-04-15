@@ -78,19 +78,19 @@ position = Vector2(800, 760)
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1120, 700)
+position = Vector2(1462, 797)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(448, 767)
+position = Vector2(381, 792)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
 position = Vector2(296, 663)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1073, 700)
+position = Vector2(22, 790)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1621, 737)
+position = Vector2(1683, 785)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

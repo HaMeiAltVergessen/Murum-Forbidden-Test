@@ -179,7 +179,7 @@ offset_left = 40.0
 offset_top = 20.0
 offset_right = 400.0
 offset_bottom = 50.0
-text = "Das Niemandsland - Eingang"
+text = "Ruinen von Xa"
 
 [node name="ClimbableArea" parent="." instance=ExtResource("3_gy43q")]
 position = Vector2(4626, -412)

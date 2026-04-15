@@ -153,7 +153,7 @@ func _load_audio_library() -> void:
 		"w3_schatz": [load(w3 + "w3_schatz_v1.mp3"), load(w3 + "w3_schatz_v2.mp3")],
 		"w3_boss": [load(w3 + "w3_boss_v1.mp3"), load(w3 + "w3_boss_v2.mp3")],
 		"w3_boss_endless_chase": [load(w3 + "w3_boss_endless_chase_v1.mp3"), load(w3 + "w3_boss_endless_chase_v2.mp3")],
-		"w3_boss_finale": load(w3 + "w3_boss_finale.mp3"),
+		"w3_boss_finale": load(w3 + "bossfight_v1.mp3"),
 
 		# === LEGACY (Placeholder) ===
 		"test_music": load("res://Assets/Placeholder/Legacy Collection/Assets/Packs/Meta data assets files/sounds/music/determination.ogg"),

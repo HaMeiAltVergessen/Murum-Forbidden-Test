@@ -18,7 +18,7 @@ size = Vector2(6400, 40)
 [node name="RestRoom01" type="Node2D"]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(2337, 508)
+position = Vector2(2331, 508)
 texture = ExtResource("1_55bvd")
 
 [node name="Sprite2D3" type="Sprite2D" parent="."]
@@ -84,7 +84,7 @@ position = Vector2(800, 760)
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1280, 700)
+position = Vector2(2386, 476)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
 position = Vector2(2560, 700)

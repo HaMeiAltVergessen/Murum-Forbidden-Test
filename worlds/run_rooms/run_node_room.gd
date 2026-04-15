@@ -1409,8 +1409,8 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 	door_container.global_position = pos
 	add_child(door_container)
 
-	var door_width: float = 800.0
-	var door_height: float = 800.0
+	var door_width: float = 600.0
+	var door_height: float = 600.0
 	var door_color: Color = DOOR_COLORS.get(node.type, Color.WHITE)
 
 	# Door sprite

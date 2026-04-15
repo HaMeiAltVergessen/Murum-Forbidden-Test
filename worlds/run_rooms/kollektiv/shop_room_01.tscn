@@ -53,7 +53,7 @@ position = Vector2(-20, 540)
 shape = SubResource("wall_left_shape")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
-position = Vector2(2301, 540)
+position = Vector2(2794, 540)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
 shape = SubResource("wall_right_shape")
@@ -97,19 +97,19 @@ position = Vector2(800, 760)
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1120, 700)
+position = Vector2(1122, 794)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(2240, 700)
+position = Vector2(2675, 788)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(152, 700)
+position = Vector2(1522, 794)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1974, 700)
+position = Vector2(2315, 788)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1824, 650)
+position = Vector2(1919, 788)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

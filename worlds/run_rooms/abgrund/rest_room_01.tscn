@@ -56,30 +56,29 @@ shape = SubResource("ceiling_shape")
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Default" parent="SpawnPoints" instance=ExtResource("1_spawn")]
-position = Vector2(800, 760)
+position = Vector2(77, 775)
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(163, 659)
+position = Vector2(240, 790)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(2226, 728)
+position = Vector2(2262, 771)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1109, 753)
+position = Vector2(1726, 785)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(66, 700)
+position = Vector2(1401, 790)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(500, 700)
+position = Vector2(54, 100)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
 offset_top = 20.0
 offset_right = 500.0
 offset_bottom = 50.0
-text = "Der Letzte Lichtfunke"

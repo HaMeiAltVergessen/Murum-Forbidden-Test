@@ -118,7 +118,7 @@ horizontal_alignment = 1
 [node name="EventChoices" type="Node2D" parent="."]
 
 [node name="ChoiceA" type="Area2D" parent="EventChoices"]
-position = Vector2(736, 553)
+position = Vector2(769, 704)
 collision_layer = 0
 collision_mask = 2
 
@@ -130,7 +130,7 @@ shape = SubResource("choice_shape")
 offset_left = -80.0
 offset_top = -120.0
 offset_right = 80.0
-color = Color(0.3, 0.8, 0.4, 0.3)
+color = Color(0.894118, 0.627451, 0, 0.647059)
 metadata/_edit_use_anchors_ = true
 
 [node name="Border" type="ColorRect" parent="EventChoices/ChoiceA"]
@@ -161,7 +161,7 @@ horizontal_alignment = 1
 metadata/_edit_use_anchors_ = true
 
 [node name="ChoiceB" type="Area2D" parent="EventChoices"]
-position = Vector2(2328, 553)
+position = Vector2(2281, 707)
 collision_layer = 0
 collision_mask = 2
 
@@ -173,7 +173,7 @@ shape = SubResource("choice_shape")
 offset_left = -80.0
 offset_top = -120.0
 offset_right = 80.0
-color = Color(0.8, 0.3, 0.3, 0.3)
+color = Color(0.45098, 0.356863, 1, 0.733333)
 
 [node name="Border" type="ColorRect" parent="EventChoices/ChoiceB"]
 z_index = -1

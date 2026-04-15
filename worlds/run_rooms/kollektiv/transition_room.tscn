@@ -71,17 +71,17 @@ position = Vector2(4000, -20)
 shape = SubResource("ceiling_shape")
 
 [node name="PortalFrame" type="ColorRect" parent="."]
-offset_left = 2015.0
-offset_top = 420.0
-offset_right = 2255.0
-offset_bottom = 720.0
+offset_left = 2444.0
+offset_top = 429.0
+offset_right = 2684.0
+offset_bottom = 729.0
 color = Color(0.14902, 0.0509804, 0.25098, 0.258824)
 
 [node name="PortalCore" type="ColorRect" parent="."]
-offset_left = 2058.0
-offset_top = 489.0
-offset_right = 2218.0
-offset_bottom = 729.0
+offset_left = 2487.0
+offset_top = 498.0
+offset_right = 2647.0
+offset_bottom = 738.0
 color = Color(0.301961, 0.101961, 0.501961, 0.0509804)
 
 [node name="SpawnPoints" type="Node2D" parent="."]
@@ -94,14 +94,14 @@ position = Vector2(1200, 760)
 [node name="DoorPositions" type="Node2D" parent="."]
 
 [node name="DoorPos1" type="Marker2D" parent="DoorPositions"]
-position = Vector2(2000, 700)
+position = Vector2(2579, 719)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(2269, 694)
+position = Vector2(2558, 720)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0
 offset_top = 20.0
 offset_right = 600.0
 offset_bottom = 50.0
-text = "Uebergang - Portal zum Abgrund"
+text = "q"

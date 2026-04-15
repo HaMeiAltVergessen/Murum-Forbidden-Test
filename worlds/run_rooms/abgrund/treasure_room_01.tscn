@@ -31,7 +31,7 @@ position = Vector2(764, 468)
 texture = ExtResource("1_0tgw5")
 
 [node name="2dPixelArtBackgroundSpriteGptImage1562686" type="Sprite2D" parent="."]
-position = Vector2(2308, 468)
+position = Vector2(2300, 468)
 texture = ExtResource("1_0tgw5")
 flip_h = true
 
@@ -66,16 +66,16 @@ position = Vector2(2800, -20)
 shape = SubResource("ceiling_shape")
 
 [node name="VoidAltar" type="ColorRect" parent="."]
-offset_left = 2740.0
+offset_left = 1484.0
 offset_top = 700.0
-offset_right = 2860.0
+offset_right = 1604.0
 offset_bottom = 800.0
 color = Color(0.3, 0.1, 0.3, 1)
 
 [node name="SpawnPoints" type="Node2D" parent="."]
 
 [node name="Default" parent="SpawnPoints" instance=ExtResource("1_spawn")]
-position = Vector2(800, 760)
+position = Vector2(56, 766)
 
 [node name="EnemySpawnPoints" type="Node2D" parent="."]
 
@@ -85,16 +85,16 @@ position = Vector2(800, 760)
 position = Vector2(1120, 700)
 
 [node name="DoorPos2" type="Marker2D" parent="DoorPositions"]
-position = Vector2(2240, 700)
+position = Vector2(2540, 792)
 
 [node name="DoorPos3" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1523, 700)
+position = Vector2(2104, 794)
 
 [node name="DoorPos4" type="Marker2D" parent="DoorPositions"]
-position = Vector2(1912, 700)
+position = Vector2(1820, 790)
 
 [node name="DoorPos5" type="Marker2D" parent="DoorPositions"]
-position = Vector2(2554, 700)
+position = Vector2(2970, 794)
 
 [node name="RoomLabel" type="Label" parent="."]
 offset_left = 40.0

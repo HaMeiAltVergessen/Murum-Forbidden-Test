@@ -1,8 +1,10 @@
-[gd_scene load_steps=11 format=3 uid="uid://b7yq7v8xoycin"]
+[gd_scene load_steps=13 format=3 uid="uid://b7yq7v8xoycin"]
 
 [ext_resource type="Script" uid="uid://bdgf8vtqkvbss" path="res://levels/item_room.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://bk7a8n73qcfla" path="res://environment/pickups/pickup_base.tscn" id="3"]
 [ext_resource type="Script" uid="uid://2jypdg4vx0n2" path="res://environment/door.gd" id="4"]
+[ext_resource type="Texture2D" uid="uid://bsetarjvw4pvx" path="res://Assets/AIAssets/AIStuff/Item.png" id="4_f7nx2"]
+[ext_resource type="Texture2D" uid="uid://d2u7oykxauuid" path="res://Assets/AIAssets/AIStuff/Relikt.png" id="5_44t1v"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
 size = Vector2(4000, 100)
@@ -342,90 +344,112 @@ text = "CONSUMABLES (Green)"
 [node name="Pickup_titanenblut_stein" parent="Items" instance=ExtResource("3")]
 position = Vector2(250, 300)
 item_id = "titanenblut_stein"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_staub_einkehr" parent="Items" instance=ExtResource("3")]
 position = Vector2(400, 300)
 item_id = "staub_einkehr"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_splitter_erdung" parent="Items" instance=ExtResource("3")]
 position = Vector2(550, 300)
 item_id = "splitter_erdung"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_resonanzstaub" parent="Items" instance=ExtResource("3")]
 position = Vector2(700, 300)
 item_id = "resonanzstaub"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_energiesplitter" parent="Items" instance=ExtResource("3")]
 position = Vector2(850, 300)
 item_id = "energiesplitter"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_impulsdraht" parent="Items" instance=ExtResource("3")]
 position = Vector2(1000, 300)
 item_id = "impulsdraht"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_kondensatorfragment" parent="Items" instance=ExtResource("3")]
 position = Vector2(1150, 300)
 item_id = "kondensatorfragment"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_heilkraeuter" parent="Items" instance=ExtResource("3")]
 position = Vector2(250, 450)
 item_id = "heilkraeuter"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_glas_gleichgewicht" parent="Items" instance=ExtResource("3")]
 position = Vector2(400, 450)
 item_id = "glas_gleichgewicht"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_schimmernde_essenz" parent="Items" instance=ExtResource("3")]
 position = Vector2(550, 450)
 item_id = "schimmernde_essenz"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_zerbrochene_muenze" parent="Items" instance=ExtResource("3")]
 position = Vector2(700, 450)
 item_id = "zerbrochene_muenze"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_funken_gnade" parent="Items" instance=ExtResource("3")]
 position = Vector2(850, 450)
 item_id = "funken_gnade"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_nanofluid_patch" parent="Items" instance=ExtResource("3")]
 position = Vector2(1000, 450)
 item_id = "nanofluid_patch"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_stabilitaet_modul" parent="Items" instance=ExtResource("3")]
 position = Vector2(1150, 450)
 item_id = "stabilitaet_modul"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_neural_booster" parent="Items" instance=ExtResource("3")]
 position = Vector2(1300, 450)
 item_id = "neural_booster"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_katalysatorchip" parent="Items" instance=ExtResource("3")]
 position = Vector2(250, 600)
 item_id = "katalysatorchip"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_core_reconstructor" parent="Items" instance=ExtResource("3")]
 position = Vector2(400, 600)
 item_id = "core_reconstructor"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_blut_vergessens" parent="Items" instance=ExtResource("3")]
 position = Vector2(550, 600)
 item_id = "blut_vergessens"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_zerfallener_segen" parent="Items" instance=ExtResource("3")]
 position = Vector2(700, 600)
 item_id = "zerfallener_segen"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_zeitlose_scherbe" parent="Items" instance=ExtResource("3")]
 position = Vector2(850, 600)
 item_id = "zeitlose_scherbe"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_echo_relikt" parent="Items" instance=ExtResource("3")]
 position = Vector2(1000, 600)
 item_id = "echo_relikt"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="Pickup_traene_erwachens" parent="Items" instance=ExtResource("3")]
 position = Vector2(1150, 600)
 item_id = "traene_erwachens"
+custom_sprite = ExtResource("4_f7nx2")
 
 [node name="SectionLabel_Relics" type="Label" parent="Items"]
 offset_left = 1450.0
@@ -438,38 +462,47 @@ text = "RELICS (Gold)"
 [node name="Pickup_auge_von_xy" parent="Items" instance=ExtResource("3")]
 position = Vector2(1450, 300)
 item_id = "auge_von_xy"
+custom_sprite = ExtResource("5_44t1v")
 
 [node name="Pickup_splitter_von_xa" parent="Items" instance=ExtResource("3")]
 position = Vector2(1450, 450)
 item_id = "splitter_von_xa"
+custom_sprite = ExtResource("5_44t1v")
 
 [node name="Pickup_urtraene" parent="Items" instance=ExtResource("3")]
 position = Vector2(1450, 600)
 item_id = "urtraene"
+custom_sprite = ExtResource("5_44t1v")
 
 [node name="Pickup_quanten_nucleus" parent="Items" instance=ExtResource("3")]
 position = Vector2(1600, 300)
 item_id = "quanten_nucleus"
+custom_sprite = ExtResource("5_44t1v")
 
 [node name="Pickup_lins_kette" parent="Items" instance=ExtResource("3")]
 position = Vector2(1600, 450)
 item_id = "lins_kette"
+custom_sprite = ExtResource("5_44t1v")
 
 [node name="Pickup_blitzmauer" parent="Items" instance=ExtResource("3")]
 position = Vector2(1600, 600)
 item_id = "blitzmauer"
+custom_sprite = ExtResource("5_44t1v")
 
 [node name="Pickup_runenfragment_lythrun" parent="Items" instance=ExtResource("3")]
 position = Vector2(1750, 300)
 item_id = "runenfragment_lythrun"
+custom_sprite = ExtResource("5_44t1v")
 
 [node name="Pickup_echo_antwort" parent="Items" instance=ExtResource("3")]
 position = Vector2(1750, 450)
 item_id = "echo_antwort"
+custom_sprite = ExtResource("5_44t1v")
 
 [node name="Pickup_herz_leere" parent="Items" instance=ExtResource("3")]
 position = Vector2(1750, 600)
 item_id = "herz_leere"
+custom_sprite = ExtResource("5_44t1v")
 
 [node name="SectionLabel_KeyItems" type="Label" parent="Items"]
 offset_left = 200.0
