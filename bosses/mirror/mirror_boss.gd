@@ -722,7 +722,7 @@ func _setup_melee_hitbox() -> void:
 	_hitbox = Area2D.new()
 	_hitbox.name = "MeleeHitbox"
 	_hitbox.collision_layer = 128  # Layer 8 — Enemy hitbox (parry-able)
-	_hitbox.collision_mask = 2  # Layer 2 — Player body
+	_hitbox.collision_mask = 4  # Layer 3 — Player HurtboxComponent (NICHT Body!)
 	_hitbox.monitoring = false
 	_hitbox.monitorable = true  # So parry BlockArea can detect us
 
@@ -1093,10 +1093,9 @@ func _try_dark_machtstoss() -> void:
 	# Damage and knockback player if in range
 	var dist: float = global_position.distance_to(player.global_position)
 	if dist < 250.0:
-		if player.has_node("HurtboxArea"):
-			var hurtbox: HurtboxComponent = player.get_node("HurtboxArea")
-			if not hurtbox.is_invulnerable:
-				hurtbox.take_damage(dmg, knockback, 0.3, self)
+		var hurtbox := player.get_node_or_null("HurtboxComponent") as HurtboxComponent
+		if hurtbox and not hurtbox.is_invulnerable:
+			hurtbox.take_damage(dmg, knockback, 0.3, self)
 
 	var tween := create_tween()
 	tween.tween_property(wave, "position:x", wave.position.x + dir.x * 200, 0.3)
@@ -1114,11 +1113,10 @@ func _deal_aoe_damage(damage: int, radius: float) -> void:
 				continue
 			var dist: float = center.distance_to(node.global_position)
 			if dist <= radius:
-				if node.has_node("HurtboxArea"):
-					var hurtbox: HurtboxComponent = node.get_node("HurtboxArea")
-					if not hurtbox.is_invulnerable:
-						var kb: Vector2 = (node.global_position - center).normalized() * 200.0
-						hurtbox.take_damage(damage, kb, 0.2, self)
+				var hurtbox := node.get_node_or_null("HurtboxComponent") as HurtboxComponent
+				if hurtbox and not hurtbox.is_invulnerable:
+					var kb: Vector2 = (node.global_position - center).normalized() * 200.0
+					hurtbox.take_damage(damage, kb, 0.2, self)
 
 
 # ============ ANIMATION ============

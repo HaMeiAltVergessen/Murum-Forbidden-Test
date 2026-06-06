@@ -541,7 +541,7 @@ func _start_transition_to_phase_2() -> void:
 	# 4. Switch camera to vertical
 	if runner_camera:
 		runner_camera.switch_to_vertical()
-		runner_camera.scroll_speed = 150.0  # Slower initial fall speed
+		runner_camera.scroll_speed = 230.0  # Snappiere Basis-Fallgeschwindigkeit (Kamera folgt schneller fallendem Spieler via maxf)
 
 	# 5. Switch chunk spawner to vertical
 	if chunk_spawner:

@@ -141,6 +141,12 @@ func start_lythrun_fight() -> void:
 func start_mirror_fight() -> void:
 	if _is_fighting:
 		return
+	_is_fighting = true
+
+	# Tuer-UI ausblenden
+	var doors_node = get_node_or_null("Doors")
+	if doors_node:
+		doors_node.visible = false
 
 	# Boons sichern, da run_started sie loescht
 	var saved_boons: Dictionary = BoonManager.get_save_data() if BoonManager else {}

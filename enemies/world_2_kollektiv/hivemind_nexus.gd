@@ -18,6 +18,13 @@ const MAX_MINIONS: int = 4
 const IMMUNITY_THRESHOLD: int = 2
 const VULNERABILITY_WINDOW: float = 5.0
 
+# Psychischer Puls (MIND_PULSE) — aktive Bedrohung, auch waehrend Immunitaet
+const PULSE_COOLDOWN: float = 5.0
+const PULSE_TELEGRAPH: float = 0.8
+const PULSE_RADIUS: float = 280.0
+const PULSE_DAMAGE: int = 15
+const PULSE_CENTER_OFFSET: Vector2 = Vector2(0, -100)
+
 const FRAME_REGIONS: Array = [
 	Rect2(0, 0, 256, 288),     # 0: DORMANT
 	Rect2(256, 0, 256, 288),   # 1: ACTIVE
@@ -39,6 +46,8 @@ var spawn_timer: float = 2.0
 var minions: Array = []
 var is_immune: bool = true
 var vulnerability_timer: float = 0.0
+var pulse_timer: float = 4.0
+var is_pulsing: bool = false
 var _default_modulate: Color = Color.WHITE
 
 @onready var sprite: Node2D = $Sprite2D
@@ -108,16 +117,86 @@ func _update_ai(delta: float) -> void:
 		_spawn_minion()
 		spawn_timer = SPAWN_COOLDOWN
 
-	# Update idle frame based on state
-	if is_immune:
-		_set_sprite_frame(3)
-	elif vulnerability_timer > 0.0:
-		_set_sprite_frame(4)
-	else:
-		_set_sprite_frame(1)
+	# Psychischer Puls — periodische AoE-Schockwelle (auch waehrend Immunitaet)
+	if not is_pulsing:
+		pulse_timer -= delta
+		if pulse_timer <= 0.0 and get_distance_to_target() <= DETECTION_RANGE:
+			_start_pulse()
+
+	# Update idle frame based on state (Puls steuert seinen Frame selbst)
+	if not is_pulsing:
+		if is_immune:
+			_set_sprite_frame(3)
+		elif vulnerability_timer > 0.0:
+			_set_sprite_frame(4)
+		else:
+			_set_sprite_frame(1)
 
 	# Face nearest player
 	_face_target()
+
+# ============================================================================
+# PSYCHIC PULSE (MIND_PULSE)
+# ============================================================================
+
+func _start_pulse() -> void:
+	is_pulsing = true
+	_set_sprite_frame(4)  # OVERLOAD-Frame als MIND_PULSE-Aufladung
+	if sprite:
+		sprite.modulate = Color(0.6, 1.6, 1.6, _default_modulate.a)
+
+	var ring := _create_pulse_ring()
+	var tw := create_tween()
+	tw.tween_property(ring, "scale", Vector2.ONE, PULSE_TELEGRAPH).from(Vector2(0.05, 0.05))
+	tw.parallel().tween_property(ring, "modulate:a", 1.0, PULSE_TELEGRAPH * 0.6)
+
+	await get_tree().create_timer(PULSE_TELEGRAPH).timeout
+
+	if not is_instance_valid(self):
+		return
+	# Bei Stun waehrend der Aufladung: Puls abbrechen
+	if is_stunned:
+		if is_instance_valid(ring):
+			ring.queue_free()
+		is_pulsing = false
+		pulse_timer = PULSE_COOLDOWN
+		return
+
+	_deal_pulse_damage()
+	_update_immune_visual()
+
+	if is_instance_valid(ring):
+		var tw2 := create_tween()
+		tw2.tween_property(ring, "modulate:a", 0.0, 0.25)
+		tw2.tween_callback(ring.queue_free)
+
+	pulse_timer = PULSE_COOLDOWN
+	is_pulsing = false
+
+func _create_pulse_ring() -> Polygon2D:
+	var ring := Polygon2D.new()
+	var pts := PackedVector2Array()
+	var segments := 32
+	for i in segments:
+		var a: float = TAU * float(i) / float(segments)
+		pts.append(Vector2(cos(a), sin(a)) * PULSE_RADIUS)
+	ring.polygon = pts
+	ring.color = Color(0.3, 1.0, 1.0, 0.45)
+	ring.modulate.a = 0.0  # Startet unsichtbar, wird via Tween eingeblendet
+	ring.position = PULSE_CENTER_OFFSET
+	ring.z_index = -1
+	add_child(ring)
+	return ring
+
+func _deal_pulse_damage() -> void:
+	var center: Vector2 = global_position + PULSE_CENTER_OFFSET
+	for grp in ["player", "player2"]:
+		for p in get_tree().get_nodes_in_group(grp):
+			if not is_instance_valid(p):
+				continue
+			if center.distance_to(p.global_position) <= PULSE_RADIUS:
+				if p.has_method("take_damage"):
+					p.take_damage(PULSE_DAMAGE)
 
 func _update_immune_visual() -> void:
 	if not sprite:

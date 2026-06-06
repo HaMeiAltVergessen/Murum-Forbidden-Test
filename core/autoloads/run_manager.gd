@@ -180,6 +180,10 @@ func _load_arena_room(node: RunMapData.MapNode) -> void:
 	_replace_current_scene(room)
 	print("[RunManager] Loaded arena room (Urgathon) for node %d" % node.id)
 
+	# Arena-Raeume nutzen ihr eigenes Script (kein RunNodeRoom) — Musik daher hier starten
+	if MusicScenePlayer:
+		MusicScenePlayer.play_for_run_room(current_world, RunMapData.NodeType.ARENA)
+
 	# Monitor for boss defeat — then mark node complete and offer next doors
 	_monitor_arena_completion(room, node)
 

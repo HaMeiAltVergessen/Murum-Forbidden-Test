@@ -18,22 +18,37 @@ const COLOR_KD_BG := Color(0.1, 0.05, 0.15, 0.8)
 const COLOR_KD_FILL := Color(0.6, 0.3, 0.8)
 const COLOR_KD_HIGH := Color(1.0, 0.85, 0.3)
 const COLOR_KD_MAX := Color(1.0, 1.0, 1.0)
+# Durchgehende Boss-Lebensleiste (ueber alle Phasen)
+const COLOR_LIFE_FULL := Color(0.8, 0.15, 0.15)
+const COLOR_LIFE_MID := Color(0.9, 0.45, 0.1)
+const COLOR_LIFE_LOW := Color(1.0, 0.8, 0.2)
 
 # ============ LAYOUT ============
+# Primaere, durchgehende Lebensleiste ganz oben
+const LIFE_BAR_WIDTH: float = 820.0
+const LIFE_BAR_HEIGHT: float = 30.0
+const LIFE_BAR_Y: float = 30.0
+# Sekundaere "aktive Mechanik"-Leisten darunter (Momentum bzw. Knockdown)
 const BAR_WIDTH: float = 800.0
-const BAR_HEIGHT: float = 30.0
-const BAR_Y: float = 50.0
+const BAR_HEIGHT: float = 26.0
+const BAR_Y: float = 96.0
 const HP_BAR_WIDTH: float = 800.0
 const HP_BAR_HEIGHT: float = 24.0
 const HP_BAR_Y: float = 40.0
 const KD_BAR_WIDTH: float = 600.0
 const KD_BAR_HEIGHT: float = 16.0
-const KD_BAR_Y: float = 72.0
+const KD_BAR_Y: float = 100.0
 
 # ============ STATE ============
 var momentum_system: MomentumSystem = null
 var controller: Node = null
 var _current_hud_phase: int = 1
+
+# Durchgehende Boss-Lebensleiste (immer sichtbar)
+var _life_container: Control = null
+var _life_bar_bg: ColorRect = null
+var _life_bar_fill: ColorRect = null
+var _life_label: Label = null
 
 # Phase 1 elements
 var _bar_container: Control = null
@@ -51,6 +66,7 @@ var _phase2_container: Control = null
 var _hp_bar_bg: ColorRect = null
 var _hp_bar_fill: ColorRect = null
 var _hp_label: Label = null
+var _hp_border: ColorRect = null
 var _kd_bar_bg: ColorRect = null
 var _kd_bar_fill: ColorRect = null
 var _kd_label: Label = null
@@ -60,11 +76,14 @@ var _kd_pulse_tween: Tween = null
 
 
 func _ready() -> void:
+	_create_life_bar()
 	_create_phase_1_ui()
 	_create_phase_2_ui()
 
 	# Show Phase 1 by default
 	_phase2_container.visible = false
+	# Durchgehende Lebensleiste ist immer sichtbar
+	_life_container.visible = true
 
 	if momentum_system:
 		momentum_system.momentum_changed.connect(_on_momentum_changed)
@@ -175,11 +194,11 @@ func _create_phase_2_ui() -> void:
 	_phase2_container.add_child(_hp_label)
 
 	# HP bar border
-	var hp_border := ColorRect.new()
-	hp_border.position = Vector2(hp_x - 2.0, HP_BAR_Y - 2.0)
-	hp_border.size = Vector2(HP_BAR_WIDTH + 4.0, HP_BAR_HEIGHT + 4.0)
-	hp_border.color = COLOR_BORDER
-	_phase2_container.add_child(hp_border)
+	_hp_border = ColorRect.new()
+	_hp_border.position = Vector2(hp_x - 2.0, HP_BAR_Y - 2.0)
+	_hp_border.size = Vector2(HP_BAR_WIDTH + 4.0, HP_BAR_HEIGHT + 4.0)
+	_hp_border.color = COLOR_BORDER
+	_phase2_container.add_child(_hp_border)
 
 	# HP bar background
 	_hp_bar_bg = ColorRect.new()
@@ -247,8 +266,95 @@ func _create_phase_2_ui() -> void:
 	_vulnerable_label.visible = false
 	_phase2_container.add_child(_vulnerable_label)
 
+	# Die alte Phasen-HP-Leiste wird durch die durchgehende Lebensleiste ersetzt
+	_hp_label.visible = false
+	_hp_border.visible = false
+	_hp_bar_bg.visible = false
+	_hp_bar_fill.visible = false
+
+
+func _create_life_bar() -> void:
+	_life_container = Control.new()
+	_life_container.name = "BossLifeContainer"
+	add_child(_life_container)
+
+	var x: float = (1920.0 - LIFE_BAR_WIDTH) * 0.5
+
+	# Boss-Name
+	_life_label = Label.new()
+	_life_label.position = Vector2(x, LIFE_BAR_Y - 26.0)
+	_life_label.size = Vector2(LIFE_BAR_WIDTH, 24.0)
+	_life_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_life_label.text = "Murum (Spiegel)"
+	_life_label.add_theme_font_size_override("font_size", 22)
+	_life_label.add_theme_color_override("font_color", Color(0.95, 0.8, 0.8))
+	_life_container.add_child(_life_label)
+
+	# Rahmen
+	var border := ColorRect.new()
+	border.position = Vector2(x - 3.0, LIFE_BAR_Y - 3.0)
+	border.size = Vector2(LIFE_BAR_WIDTH + 6.0, LIFE_BAR_HEIGHT + 6.0)
+	border.color = COLOR_BORDER
+	_life_container.add_child(border)
+
+	# Hintergrund
+	_life_bar_bg = ColorRect.new()
+	_life_bar_bg.position = Vector2(x, LIFE_BAR_Y)
+	_life_bar_bg.size = Vector2(LIFE_BAR_WIDTH, LIFE_BAR_HEIGHT)
+	_life_bar_bg.color = COLOR_HP_BG
+	_life_container.add_child(_life_bar_bg)
+
+	# Fuellung
+	_life_bar_fill = ColorRect.new()
+	_life_bar_fill.position = Vector2(x, LIFE_BAR_Y)
+	_life_bar_fill.size = Vector2(LIFE_BAR_WIDTH, LIFE_BAR_HEIGHT)
+	_life_bar_fill.color = COLOR_LIFE_FULL
+	_life_container.add_child(_life_bar_fill)
+
+
+func _update_life_bar() -> void:
+	## Durchgehende Lebensleiste ueber alle 3 Phasen:
+	## Phase 1 (Momentum/Finisher), Phase 2 (Knockdowns), Phase 3 (HP) — je 1/3.
+	if not controller or not _life_bar_fill:
+		return
+
+	var req: float = 4.0
+	if "finishers_required" in controller and controller.finishers_required > 0:
+		req = float(controller.finishers_required)
+
+	var base: float = 0.0
+	var within: float = 0.0
+	match _current_hud_phase:
+		1:
+			base = 0.0
+			within = clampf(float(controller.finisher_count) / req, 0.0, 1.0)
+		2:
+			base = 1.0 / 3.0
+			var kc: float = float(momentum_system.knockdown_count) if momentum_system else 0.0
+			within = clampf(kc / 4.0, 0.0, 1.0)
+		_:
+			base = 2.0 / 3.0
+			var hp_ratio: float = 1.0
+			if controller.mirror_boss and controller.mirror_boss.has_node("HealthComponent"):
+				var hc: HealthComponentGeneric = controller.mirror_boss.get_node("HealthComponent")
+				if hc.max_hp > 0:
+					hp_ratio = hc.current_hp / hc.max_hp
+			within = clampf(1.0 - hp_ratio, 0.0, 1.0)
+
+	var done: float = base + within / 3.0
+	var life_ratio: float = clampf(1.0 - done, 0.0, 1.0)
+	_life_bar_fill.size.x = LIFE_BAR_WIDTH * life_ratio
+
+	if life_ratio > 0.5:
+		_life_bar_fill.color = COLOR_LIFE_FULL
+	elif life_ratio > 0.25:
+		_life_bar_fill.color = COLOR_LIFE_MID
+	else:
+		_life_bar_fill.color = COLOR_LIFE_LOW
+
 
 func _process(_delta: float) -> void:
+	_update_life_bar()
 	if _current_hud_phase == 1:
 		_process_phase_1()
 	else:

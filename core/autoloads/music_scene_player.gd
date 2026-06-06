@@ -38,7 +38,7 @@ const NODE_TYPE_KEYS: Dictionary = {
 	4: "event",    # EVENT
 	5: "boss",     # BOSS
 	6: "shop",     # SHOP
-	7: "arena",    # ARENA -> combat
+	7: "combat",   # ARENA -> nutzt Combat-Musik (kein eigenes arena-Resource)
 }
 
 ## Wird in _ready() aus den run_keys der MusicScene-Ressourcen aufgebaut

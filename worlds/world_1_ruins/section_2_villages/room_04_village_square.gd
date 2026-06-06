@@ -100,20 +100,16 @@ func _on_arena_cleared() -> void:
 	"""Called when arena is cleared (during this session)"""
 
 	_show_merchant()
-	_unlock_boss_door()  # NEW: Unlock boss door for testing
 
 func _setup_boss_door() -> void:
-	"""Sets up boss door (locked for now)"""
+	"""Sets up boss door (locked until proper progression unlocks it)"""
 
 	if not door_to_boss:
 		print("[Room04_VillageSquare] No boss door in scene")
 		return
 
-	# Check if boss door should be unlocked (testing: after arena clear)
-	if GameManager.world1_arena_cleared:
-		_unlock_boss_door()
-	else:
-		_lock_boss_door()
+	# Boss door stays locked by default — no test auto-unlock on arena clear.
+	_lock_boss_door()
 
 func _lock_boss_door() -> void:
 	"""Locks the boss door"""

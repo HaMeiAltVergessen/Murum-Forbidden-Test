@@ -1421,25 +1421,7 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 	door_sprite.modulate = door_color
 	door_container.add_child(door_sprite)
 
-	# Node type label
-	var type_label = Label.new()
-	type_label.text = node.get_display_name()
-	type_label.add_theme_font_size_override("font_size", 16)
-	type_label.add_theme_color_override("font_color", Color.WHITE)
-	type_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	type_label.size = Vector2(door_width, 30)
-	type_label.position = Vector2(-door_width / 2.0, -door_height / 2.0 - 15)
-	door_container.add_child(type_label)
-
-	# Reward label above door
-	var reward_label = Label.new()
-	reward_label.text = node.reward_type.capitalize()
-	reward_label.add_theme_font_size_override("font_size", 14)
-	reward_label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.5, 0.9))
-	reward_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	reward_label.size = Vector2(door_width, 20)
-	reward_label.position = Vector2(-door_width / 2.0, -door_height - 25)
-	door_container.add_child(reward_label)
+	# Room type / reward labels disabled (no text overlays on doors)
 
 	# Interaction area
 	var area = Area2D.new()
@@ -1459,7 +1441,7 @@ func _create_door(node: RunMapData.MapNode, pos: Vector2, index: int) -> void:
 	# Prompt label
 	var prompt = Label.new()
 	prompt.name = "PromptLabel"
-	prompt.text = "E - %s" % node.get_display_name()
+	prompt.text = "E"
 	prompt.add_theme_font_size_override("font_size", 14)
 	prompt.add_theme_color_override("font_color", Color.WHITE)
 	prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
